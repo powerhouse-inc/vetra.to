@@ -1,0 +1,10 @@
+modules/__generated__/**
+node_modules
+.next
+out
+dist
+build
+.vercel
+coverage
+package-lock.json
+pnpm-lock.yaml

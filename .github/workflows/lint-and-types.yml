@@ -1,0 +1,37 @@
+name: Lint and Type Check
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['main', 'staging', 'dev']
+  pull_request:
+    branches: ['main', 'staging', 'dev']
+    types: [opened, synchronize]
+
+jobs:
+  lint-and-types:
+    name: Lint and Types Checks
+    runs-on: ubuntu-latest
+    container: node:22
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Code Format
+        run: pnpm run format:check
+
+      - name: Type check
+        run: pnpm exec tsc -p tsconfig.json --noEmit

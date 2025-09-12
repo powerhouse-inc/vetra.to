@@ -1,0 +1,38 @@
+query GetAtlasSet {
+  AtlasSet {
+    getDocuments {
+      documentType
+      id
+      created
+      initialState {
+        id
+        name
+      }
+      lastModified
+      name
+      operations(first: 10) {
+        error
+        hash
+        id
+        index
+        inputText
+        skip
+        timestamp
+        type
+      }
+      revision
+      state {
+        id
+        name
+        notionId
+        parent {
+          documentType
+          icon
+          id
+          title
+        }
+      }
+      stateJSON
+    }
+  }
+}
