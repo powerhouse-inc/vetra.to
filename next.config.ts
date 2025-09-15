@@ -2,18 +2,18 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    if (!process.env.HOMEPAGE_REMOTE_URL) {
-      throw new Error(
-        'Environment variable HOMEPAGE_REMOTE_URL is not set. Please add HOMEPAGE_REMOTE_URL to your environment variables (e.g., in .env.local) and restart the development server.',
-      )
+    // Only apply rewrites if HOMEPAGE_REMOTE_URL is set (for production)
+    if (process.env.HOMEPAGE_REMOTE_URL) {
+      return [
+        {
+          source: '/',
+          destination: process.env.HOMEPAGE_REMOTE_URL,
+        },
+      ]
     }
 
-    return [
-      {
-        source: '/',
-        destination: process.env.HOMEPAGE_REMOTE_URL ?? '',
-      },
-    ]
+    // In development, return empty array to allow normal routing
+    return []
   },
   turbopack: {
     rules: {

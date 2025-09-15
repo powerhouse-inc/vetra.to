@@ -1,4 +1,4 @@
-export { default as AchraLogo } from './achra-logo.svg'
+export { default as VetraLogo } from './vetra-logo.svg'
 export { default as SkyIsotype } from './sky-isotype.svg'
 export { default as SkyLogotype } from './sky-logotype.svg'
 export { default as KebabMenu } from './kebab-menu.svg'
