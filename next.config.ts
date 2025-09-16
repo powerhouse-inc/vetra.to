@@ -7,7 +7,9 @@ const nextConfig: NextConfig = {
       return [
         {
           source: '/',
-          destination: process.env.HOMEPAGE_REMOTE_URL,
+          destination:
+            process.env.HOMEPAGE_REMOTE_URL ||
+            'https://understanding-assistant-316991.framer.app/page',
         },
       ]
     }
