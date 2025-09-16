@@ -15,11 +15,11 @@ const nextConfig: NextConfig = {
         {
           source: '/',
           destination: 'https://understanding-assistant-316991.framer.app/page',
-        }
+        },
       ]
     }
   },
-  output
+  output: 'standalone',
   turbopack: {
     rules: {
       '*.svg': {
