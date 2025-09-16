@@ -7,17 +7,19 @@ const nextConfig: NextConfig = {
       return [
         {
           source: '/',
-          destination:
-            process.env.HOMEPAGE_REMOTE_URL ||
-            'https://understanding-assistant-316991.framer.app/page',
+          destination: process.env.HOMEPAGE_REMOTE_URL,
         },
       ]
+    } else {
+      return [
+        {
+          source: '/',
+          destination: 'https://understanding-assistant-316991.framer.app/page',
+        }
+      ]
     }
-
-    // In development, return empty array to allow normal routing
-    return []
   },
-  output: 'standalone',
+  output
   turbopack: {
     rules: {
       '*.svg': {
