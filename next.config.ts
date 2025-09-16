@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
     // In development, return empty array to allow normal routing
     return []
   },
+  output: 'standalone',
   turbopack: {
     rules: {
       '*.svg': {
