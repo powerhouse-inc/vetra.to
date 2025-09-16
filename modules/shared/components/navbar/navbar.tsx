@@ -27,8 +27,16 @@ function Navbar() {
           <div className="flex items-center gap-4 md:gap-6">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                {BrandLogo && <BrandLogo className="" />}
-                {BrandLogotype && <BrandLogotype className="" />}
+                {BrandLogo && (
+                  <a href="/">
+                    <BrandLogo className="" />
+                  </a>
+                )}
+                {BrandLogotype && (
+                  <a href="/">
+                    <BrandLogotype className="" />
+                  </a>
+                )}
               </div>
               <NavbarItemMobile activeItem={activeItem} navItems={navItems} pathname={pathname} />
             </div>
