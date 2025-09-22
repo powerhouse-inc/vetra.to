@@ -1,49 +1,46 @@
+import { notFound } from 'next/navigation'
 import { BuilderSpaces } from '@/modules/builders/components/builder-spaces'
+import { fetchBuilderAccount } from '@/modules/builders/lib/server-data'
 
-// Sample data for demonstration
-const sampleSpaces = [
-  {
-    title: 'Governance & Automation',
-    packages: [
-      {
-        title: 'Atlas - Automated Governance',
-        description: 'The atlas is the rulebook for your AI driven governance practices',
-        githubUrl: 'https://github.com/powerhouse/atlas',
-        npmUrl: 'https://www.npmjs.com/package/@powerhouse/atlas',
-      },
-      {
-        title: 'Vetra - Cloud Infrastructure',
-        description: 'Comprehensive cloud infrastructure management and deployment tools',
-        githubUrl: 'https://github.com/powerhouse/vetra',
-        npmUrl: 'https://www.npmjs.com/package/@powerhouse/vetra',
-      },
-    ],
-  },
-  {
-    title: 'Development Tools',
-    packages: [
-      {
-        title: 'Reactor - State Management',
-        description: 'Advanced state management system for complex applications',
-        githubUrl: 'https://github.com/powerhouse/reactor',
-        npmUrl: 'https://www.npmjs.com/package/@powerhouse/reactor',
-      },
-      {
-        title: 'Document Drive',
-        description: 'File and document management system with version control',
-        githubUrl: 'https://github.com/powerhouse/document-drive',
-        npmUrl: 'https://www.npmjs.com/package/@powerhouse/document-drive',
-      },
-    ],
-  },
-]
+interface TeamPageProps {
+  params: {
+    'team-name': string
+  }
+}
 
-export default function TeamPage() {
+export default async function TeamPage({ params }: TeamPageProps) {
+  const teamName = await params['team-name']
+
+  // Fetch team data server-side
+  const teamData = await fetchBuilderAccount(teamName)
+
+  // If no team data found, show 404
+  if (!teamData) {
+    notFound()
+  }
+
+  // Transform the team data to match the expected format
+  // For now, we'll use the sample data as the team data structure
+  // might need to be adapted based on the actual GraphQL schema
+  const spaces =
+    teamData.spaces?.length > 0
+      ? teamData.spaces.map((space) => ({
+          title: space.title || 'Team Packages', // This might need to be adjusted based on actual schema
+          packages:
+            space.packages?.map((pkg) => ({
+              title: pkg.name || 'Unknown Package',
+              description: pkg.description || 'Package description', // This would need to come from the GraphQL schema
+              githubUrl: pkg.githubUrl,
+              npmUrl: pkg.npmUrl,
+            })) || [],
+        }))
+      : []
+
   return (
     <main className="container mx-auto py-8">
       <BuilderSpaces
-        spaces={sampleSpaces}
-        teamName="BAI Team"
+        spaces={spaces}
+        teamName={teamData.profileName || teamName}
         discordUrl="https://discord.com/invite/powerhouse"
       />
     </main>

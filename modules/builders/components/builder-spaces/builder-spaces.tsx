@@ -37,8 +37,8 @@ const BuilderSpaces: React.FC<BuilderSpacesProps> = ({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Builder Spaces</h1>
-            <p className="mt-2 text-gray-600">
+            <h1 className="text-3xl font-bold md:text-4xl">Builder Spaces</h1>
+            <p className="mt-2">
               Builder spaces collect all the packages under a specific category, industry or
               use-case
             </p>
