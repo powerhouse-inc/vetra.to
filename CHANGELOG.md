@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.1.0...v1.2.0) (2025-09-23)
+
+### Features
+
+* new release ([89e4f44](https://github.com/powerhouse-inc/vetra.to/commit/89e4f44d99f09b5c40db39142f3dc8f3dc82f02c))
+
 ## [1.1.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.0.0...v1.1.0) (2025-09-23)
 
 ### Features
