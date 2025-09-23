@@ -2,11 +2,11 @@
 
 ### Features
 
-* publish docker image on new release ([c3cd8a8](https://github.com/powerhouse-inc/vetra.to/commit/c3cd8a8c5c55576ab289e3942ce01e8276f3045a))
+- publish docker image on new release ([c3cd8a8](https://github.com/powerhouse-inc/vetra.to/commit/c3cd8a8c5c55576ab289e3942ce01e8276f3045a))
 
 ### Bug Fixes
 
-* formatted changelog... ([4722eac](https://github.com/powerhouse-inc/vetra.to/commit/4722eac6df253858255e109cc9a9761c24eb7e80))
+- formatted changelog... ([4722eac](https://github.com/powerhouse-inc/vetra.to/commit/4722eac6df253858255e109cc9a9761c24eb7e80))
 
 ## 1.0.0 (2025-09-23)
 
