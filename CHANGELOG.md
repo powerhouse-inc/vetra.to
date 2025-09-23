@@ -2,16 +2,16 @@
 
 ### Features
 
-* added docker build ([52ef5e7](https://github.com/powerhouse-inc/vetra.to/commit/52ef5e7341cfa4b37e1dd762a151349dbe294dd9))
-* added semantic release ([9f41987](https://github.com/powerhouse-inc/vetra.to/commit/9f41987f6abaf8762fe8c4e067e440cd1c600540))
+- added docker build ([52ef5e7](https://github.com/powerhouse-inc/vetra.to/commit/52ef5e7341cfa4b37e1dd762a151349dbe294dd9))
+- added semantic release ([9f41987](https://github.com/powerhouse-inc/vetra.to/commit/9f41987f6abaf8762fe8c4e067e440cd1c600540))
 
 ### Bug Fixes
 
-* docker hostname ([caa624c](https://github.com/powerhouse-inc/vetra.to/commit/caa624cf747064467e014595964e9471af2f7890))
-* docker image name ([6978937](https://github.com/powerhouse-inc/vetra.to/commit/69789376f4422a8810c321a908e965ec43dcefdb))
-* dockerfile build ([6d1e612](https://github.com/powerhouse-inc/vetra.to/commit/6d1e612cd3ec6a8093c60e8f341e2e0a6904740f))
-* landing page ([e7773eb](https://github.com/powerhouse-inc/vetra.to/commit/e7773eb80a6f6a009fae076008762f4e27fa3c4e))
-* landing page ([f08c50e](https://github.com/powerhouse-inc/vetra.to/commit/f08c50e1fd5d9ae2c49a13e2a638a202781c1d30))
-* linting issues ([c295a08](https://github.com/powerhouse-inc/vetra.to/commit/c295a0862a734b70b4499f15b53ee06ce0665a44))
-* release workflow ([e6a9a01](https://github.com/powerhouse-inc/vetra.to/commit/e6a9a0199c5d2d1566e6a689ac35d5c44f400798))
-* semantic release ([8868739](https://github.com/powerhouse-inc/vetra.to/commit/88687391a3e1d112c67a9fa511f2a85681148dbd))
+- docker hostname ([caa624c](https://github.com/powerhouse-inc/vetra.to/commit/caa624cf747064467e014595964e9471af2f7890))
+- docker image name ([6978937](https://github.com/powerhouse-inc/vetra.to/commit/69789376f4422a8810c321a908e965ec43dcefdb))
+- dockerfile build ([6d1e612](https://github.com/powerhouse-inc/vetra.to/commit/6d1e612cd3ec6a8093c60e8f341e2e0a6904740f))
+- landing page ([e7773eb](https://github.com/powerhouse-inc/vetra.to/commit/e7773eb80a6f6a009fae076008762f4e27fa3c4e))
+- landing page ([f08c50e](https://github.com/powerhouse-inc/vetra.to/commit/f08c50e1fd5d9ae2c49a13e2a638a202781c1d30))
+- linting issues ([c295a08](https://github.com/powerhouse-inc/vetra.to/commit/c295a0862a734b70b4499f15b53ee06ce0665a44))
+- release workflow ([e6a9a01](https://github.com/powerhouse-inc/vetra.to/commit/e6a9a0199c5d2d1566e6a689ac35d5c44f400798))
+- semantic release ([8868739](https://github.com/powerhouse-inc/vetra.to/commit/88687391a3e1d112c67a9fa511f2a85681148dbd))
