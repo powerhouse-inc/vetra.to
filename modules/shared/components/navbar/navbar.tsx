@@ -21,7 +21,7 @@ function Navbar() {
   const activeItem = navItems.find((item) => pathname === item.href)
 
   return (
-    <header className="sticky top-0 mx-auto flex min-h-9 max-w-[var(--container-width)] items-center justify-center rounded-3xl backdrop-blur-[7.5px] md:top-1.5 md:p-2.5">
+    <header className="sticky top-0 mx-auto mt-3 flex min-h-9 max-w-[var(--container-width)] items-center justify-center rounded-3xl backdrop-blur-[7.5px] md:top-1.5 md:p-2.5">
       <div className="bg-card flex flex-1 items-center justify-between rounded-2xl px-4 md:px-4">
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-4 md:gap-6">

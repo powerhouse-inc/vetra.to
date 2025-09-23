@@ -127,8 +127,8 @@ const FETCH_BUILDER_ACCOUNT = gql`
 `
 
 const FETCH_ALL_BUILDER_ACCOUNTS = gql`
-  query fetchAllBuilderAccounts {
-    fetchAllBuilderAccounts {
+  query fetchAllBuilderAccounts($search: String) {
+    fetchAllBuilderAccounts(search: $search) {
       id
       profileName
       profileSlug
@@ -207,11 +207,16 @@ export async function fetchBuilderAccount(accountId: string): Promise<BuilderAcc
   }
 }
 
-export async function fetchAllBuilderAccounts(): Promise<BuilderAccount[]> {
+export async function fetchAllBuilderAccounts(search?: string): Promise<BuilderAccount[]> {
   try {
     const response = await serverGraphqlRequest<FetchAllBuilderAccountsResponse>(
       FETCH_ALL_BUILDER_ACCOUNTS,
+      { search },
     )
+
+    console.log(FETCH_ALL_BUILDER_ACCOUNTS, { search })
+
+    console.log('response', response)
     return response.fetchAllBuilderAccounts
   } catch (error) {
     console.error('Failed to fetch all builder accounts:', error)

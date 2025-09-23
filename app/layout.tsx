@@ -1,5 +1,6 @@
 import { Inter } from 'next/font/google'
 import './globals.css'
+import BackgroundSvg from '@/modules/shared/components/svgs/background.svg'
 import { ThemeProvider } from '@/modules/shared/providers/theme-provider'
 import { Footer } from '@/shared/components/footer/footer'
 import Navbar from '@/shared/components/navbar/navbar'
@@ -24,6 +25,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} antialiased`}>
+        {/* Background SVG - positioned at the highest level */}
+        {/* <div className="fixed inset-0 -z-10">
+          <BackgroundSvg className="h-full w-full object-cover" />
+        </div> */}
+
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
           <QueryClientProvider>
             <Navbar />
