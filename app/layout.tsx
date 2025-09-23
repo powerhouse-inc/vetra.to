@@ -1,11 +1,10 @@
 import { Inter } from 'next/font/google'
-import './globals.css'
-import BackgroundSvg from '@/modules/shared/components/svgs/background.svg'
 import { ThemeProvider } from '@/modules/shared/providers/theme-provider'
 import { Footer } from '@/shared/components/footer/footer'
 import Navbar from '@/shared/components/navbar/navbar'
 import { QueryClientProvider } from '@/shared/providers/query-client'
 import type { Metadata } from 'next'
+import './globals.css'
 
 const inter = Inter({
   variable: '--font-inter',
