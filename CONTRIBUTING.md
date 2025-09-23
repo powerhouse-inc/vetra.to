@@ -70,6 +70,7 @@ Closes #123"
 ### Semantic Release
 
 This project uses semantic-release to automatically:
+
 - Determine the next version number based on commit messages
 - Generate changelog entries
 - Create GitHub releases

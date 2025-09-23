@@ -21,7 +21,7 @@ export function BuilderList({ initialBuilders }: BuilderListProps) {
     }
 
     setIsLoading(true)
-    
+
     const searchBuilders = async () => {
       try {
         const response = await fetch('/api/builders/search', {
@@ -31,7 +31,7 @@ export function BuilderList({ initialBuilders }: BuilderListProps) {
           },
           body: JSON.stringify({ search: searchTerm }),
         })
-        
+
         if (response.ok) {
           const data = await response.json()
           setBuilders(data.builders)
