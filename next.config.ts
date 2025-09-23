@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
       return [
         {
           source: '/',
-          destination: 'https://understanding-assistant-316991.framer.app/page',
+          destination: 'https://understanding-assistant-316991.framer.app',
         },
       ]
     }
