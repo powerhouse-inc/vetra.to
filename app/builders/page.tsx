@@ -12,7 +12,7 @@ import {
 } from '@/modules/shared/components/ui/breadcrumb'
 
 export default async function BuildersPage() {
-  const builderTeams = await fetchAllBuilderAccounts()
+  const builderTeams = await fetchAllBuilderAccounts('team')
 
   return (
     <BuildersPageClient initialBuilders={builderTeams}>
