@@ -140,13 +140,7 @@ const BuilderTeamCard: React.FC<BuilderTeamCardProps> = ({
           <div className="flex-shrink-0">
             <div className="flex flex-col gap-2">
               {actions.map((action, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  size="sm"
-                  asChild
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                >
+                <Button key={index} variant="outline" size="sm" asChild className="">
                   <a href={action.link} className="flex items-center gap-2">
                     <User className="size-4" />
                     {action.title}

@@ -10,7 +10,6 @@ import {
 import ProfileSvg from '@/modules/shared/components/svgs/profile.svg'
 import RenownSvg from '@/modules/shared/components/svgs/renown.svg'
 import { Avatar, AvatarFallback, AvatarImage } from '@/modules/shared/components/ui/avatar'
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
 import { cn } from '@/modules/shared/lib/utils'
 
 interface TeamMember {
@@ -62,11 +61,11 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
   }
 
   return (
-    <Card className={cn('w-full', className)}>
-      <CardHeader>
-        <CardTitle className="text-xl">Team Members</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <StripedCard className={cn('w-full', className)}>
+      <StripedCardHeader>
+        <StripedCardTitle className="text-center">Team Members</StripedCardTitle>
+      </StripedCardHeader>
+      <StripedCardContent>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
           {members.map((member) => (
             <StripedCard
@@ -108,12 +107,12 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
             </StripedCard>
           ))}
 
-          {/* Spared Card - Add New Member */}
-          <StripedCard className="flex cursor-pointer flex-col items-center justify-center space-y-4 border-2 border-dashed border-gray-300 bg-gray-50 text-center transition-all hover:border-gray-400 hover:bg-gray-100">
+          {/* Spare Card - Add New Member */}
+          <StripedCard className="flex cursor-pointer flex-col items-center justify-center space-y-4 border-2 border-dashed border-gray-300 text-center transition-all hover:border-gray-400">
             <StripedCardHeader className="w-full">
-              <StripedCardTitle className="text-center text-gray-600">Add Member</StripedCardTitle>
+              <StripedCardTitle className="text-center">Add Member</StripedCardTitle>
             </StripedCardHeader>
-            <StripedCardContent className="flex flex-col items-center space-y-3">
+            <StripedCardContent className="flex h-50 flex-col items-center space-y-3 pt-10">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200">
                 <Plus className="h-8 w-8 text-gray-500" />
               </div>
@@ -121,8 +120,8 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
             </StripedCardContent>
           </StripedCard>
         </div>
-      </CardContent>
-    </Card>
+      </StripedCardContent>
+    </StripedCard>
   )
 }
 

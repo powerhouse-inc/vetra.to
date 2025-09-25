@@ -17,7 +17,7 @@ interface NavbarItemMobileProps {
 
 function NavbarItemMobile({ navItems, pathname }: NavbarItemMobileProps) {
   const triggerLabel = useMemo(() => {
-    const item = navItems.find((item) => !item.isExternal && item.isActive(pathname))
+    const item = navItems.find((item) => !item.isExternal && item?.isActive?.(pathname))
     return item ? item.label : 'Home'
   }, [navItems, pathname])
 

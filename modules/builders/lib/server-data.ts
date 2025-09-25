@@ -214,10 +214,6 @@ export async function fetchAllBuilderAccounts(search?: string): Promise<BuilderA
       FETCH_ALL_BUILDER_ACCOUNTS,
       { search },
     )
-
-    console.log(FETCH_ALL_BUILDER_ACCOUNTS, { search })
-
-    console.log('response', response)
     return response.fetchAllBuilderAccounts
   } catch (error) {
     console.error('Failed to fetch all builder accounts:', error)

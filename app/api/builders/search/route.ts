@@ -6,8 +6,6 @@ export async function POST(request: NextRequest) {
     const { search } = await request.json()
 
     const builders = await fetchAllBuilderAccounts(search)
-    console.log('builders', builders, search)
-
     return NextResponse.json({ builders })
   } catch (error) {
     console.error('Search API error:', error)

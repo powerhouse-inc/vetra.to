@@ -11,12 +11,12 @@ export const NAVBAR_CONFIGS: Record<string, NavbarConfig> = {
       {
         label: 'Packages',
         href: '/packages',
-        isActive: () => window.location.pathname.includes('/packages'),
+        isActive: (currentPath) => currentPath.includes('/packages'),
       },
       {
         label: 'Builders',
         href: '/builders',
-        isActive: () => window.location.pathname.includes('/builders'),
+        isActive: (currentPath) => currentPath.includes('/builders'),
       },
       { label: 'Academy', href: 'https://staging.academy.vetra.to', isExternal: true },
       { label: 'Cloud', href: 'https://cloud.vetra.to', isExternal: true },
