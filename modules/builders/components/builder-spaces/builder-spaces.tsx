@@ -1,8 +1,14 @@
 import { ExternalLink, Github, MessageCircle, Package } from 'lucide-react'
 import React from 'react'
 
+import {
+  StripedCard,
+  StripedCardContent,
+  StripedCardHeader,
+  StripedCardTitle,
+} from '@/modules/shared/components/striped-card'
+import ConnectSvg from '@/modules/shared/components/svgs/connect.svg'
 import { Button } from '@/modules/shared/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
 import { cn } from '@/modules/shared/lib/utils'
 
 interface Package {
@@ -63,14 +69,14 @@ const BuilderSpaces: React.FC<BuilderSpacesProps> = ({
       {/* Builder Spaces */}
       <div className="space-y-6">
         {spaces.map((space, spaceIndex) => (
-          <Card key={spaceIndex} className="w-full">
-            <CardHeader>
-              <CardTitle className="text-xl">{space.title}</CardTitle>
+          <StripedCard key={spaceIndex} className="w-full">
+            <StripedCardHeader>
+              <StripedCardTitle className="text-xl">{space.title}</StripedCardTitle>
               {space.description && (
                 <p className="mt-1 text-sm text-gray-600">{space.description}</p>
               )}
-            </CardHeader>
-            <CardContent>
+            </StripedCardHeader>
+            <StripedCardContent>
               <div className="space-y-4">
                 {space.packages.map((pkg, packageIndex) => (
                   <div
@@ -95,7 +101,7 @@ const BuilderSpaces: React.FC<BuilderSpacesProps> = ({
                     {/* Action Buttons */}
                     <div className="flex flex-shrink-0 items-center gap-2">
                       {pkg.githubUrl && (
-                        <Button variant="outline" size="sm" asChild>
+                        <Button variant="ghost" size="sm" asChild>
                           <a
                             href={pkg.githubUrl}
                             target="_blank"
@@ -109,7 +115,7 @@ const BuilderSpaces: React.FC<BuilderSpacesProps> = ({
                         </Button>
                       )}
                       {pkg.npmUrl && (
-                        <Button variant="outline" size="sm" asChild>
+                        <Button variant="ghost" size="sm" asChild>
                           <a
                             href={pkg.npmUrl}
                             target="_blank"
@@ -122,20 +128,34 @@ const BuilderSpaces: React.FC<BuilderSpacesProps> = ({
                           </a>
                         </Button>
                       )}
-                      {pkg.vetraDriveUrl && (
-                        <div className="flex flex-col items-center gap-1">
-                          <Button size="sm" className="bg-purple-600 hover:bg-purple-700">
-                            OPEN & CONNECT
-                          </Button>
-                          <span className="text-xs text-gray-500">Vetra Stacks Drive</span>
-                        </div>
-                      )}
+                      {
+                        <Button variant="outline" size="sm" asChild className="flex">
+                          <a
+                            className="flex p-6"
+                            href={`${process.env.NEXT_PUBLIC_CONNECT_URL || 'https://connect.staging.vetra.io'}?driveUrl=${pkg.vetraDriveUrl || 'https://switchboard.staging.vetra.io/d/61fff014-ff45-4270-aa16-5ca75429cc55'}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <div className="flex items-center justify-center">
+                              <ConnectSvg />
+                            </div>
+                            <div className="flex flex-col items-start">
+                              <span className="text-xs font-medium tracking-wide text-gray-700 uppercase">
+                                OPEN IN CONNECT
+                              </span>
+                              <span className="text-sm font-bold text-gray-800">
+                                Vetra Studio Drive
+                              </span>
+                            </div>
+                          </a>
+                        </Button>
+                      }
                     </div>
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </StripedCardContent>
+          </StripedCard>
         ))}
       </div>
     </div>

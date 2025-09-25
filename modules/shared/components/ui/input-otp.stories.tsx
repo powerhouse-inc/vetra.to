@@ -1,13 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
 import React from 'react'
-import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from './input-otp'
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from './input-otp'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Shadcn/InputOTP',
   component: InputOTP,
   tags: ['autodocs'],
   parameters: { layout: 'centered' },
-  args: { children: <></>, maxLength: 6 },
+  args: { children: <div />, maxLength: 6 },
 } satisfies Meta<typeof InputOTP>
 
 export default meta

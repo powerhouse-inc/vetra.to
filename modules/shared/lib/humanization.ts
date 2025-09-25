@@ -1,5 +1,5 @@
 export const usLocalizedNumber = (num: number, decimalPlace = 0): string => {
-  const value = num?.toLocaleString('en-US', {
+  const value = num.toLocaleString('en-US', {
     currency: 'USD',
     currencyDisplay: 'symbol',
     minimumFractionDigits: decimalPlace,

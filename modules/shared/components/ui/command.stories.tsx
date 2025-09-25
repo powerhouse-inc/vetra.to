@@ -1,17 +1,17 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import { Calculator, Calendar, CreditCard, Settings, Smile, User } from 'lucide-react'
 import React from 'react'
 import {
   Command,
-  CommandInput,
-  CommandList,
+  CommandDialog,
   CommandEmpty,
   CommandGroup,
+  CommandInput,
   CommandItem,
+  CommandList,
   CommandSeparator,
-  CommandDialog,
   CommandShortcut,
 } from './command'
-import { Calculator, Calendar, CreditCard, Settings, Smile, User } from 'lucide-react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Shadcn/Command',
@@ -55,7 +55,9 @@ export const Dialog: Story = {
         }
       }
       document.addEventListener('keydown', down)
-      return () => document.removeEventListener('keydown', down)
+      return () => {
+        document.removeEventListener('keydown', down)
+      }
     }, [])
 
     return (

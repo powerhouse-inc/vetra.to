@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
 import React from 'react'
-import { Toaster } from './sonner'
 import { toast } from 'sonner'
 import { Button } from './button'
+import { Toaster } from './sonner'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Shadcn/Sonner',

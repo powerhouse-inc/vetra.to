@@ -1,7 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
-import React from 'react'
-import Link from 'next/link'
 import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from 'lucide-react'
+import Link from 'next/link'
+import React from 'react'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -11,6 +10,8 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from './navigation-menu'
+import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Route } from 'next'
 
 const meta = {
   title: 'Shared/Shadcn/NavigationMenu',
@@ -68,7 +69,7 @@ function ListItem({
   return (
     <li {...props}>
       <NavigationMenuLink asChild>
-        <Link href={href}>
+        <Link href={href as Route}>
           <div className="text-sm leading-none font-medium">{title}</div>
           <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">{children}</p>
         </Link>
@@ -124,7 +125,7 @@ export const Demo: Story = {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            <Link href="/docs">Docs</Link>
+            <Link href={'/docs' as Route}>Docs</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem>

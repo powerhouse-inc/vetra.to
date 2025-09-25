@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
-import { Button } from './button'
-import { ArrowRight, Trash2, Mail } from 'lucide-react'
+import { ArrowRight, Mail, Trash2 } from 'lucide-react'
 import React from 'react'
+import { Button } from './button'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Shadcn/Button',
@@ -119,7 +119,12 @@ export const AsChildLink: Story = {
   args: {
     asChild: true,
     children: (
-      <a href="#" onClick={(e) => e.preventDefault()}>
+      <a
+        href="#"
+        onClick={(e) => {
+          e.preventDefault()
+        }}
+      >
         Open docs
       </a>
     ),

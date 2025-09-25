@@ -1,6 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
-import React from 'react'
 import { Label } from './label'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Shadcn/Label',

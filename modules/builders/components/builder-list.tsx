@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { BuilderTeamCard } from './list-card'
-import { BuilderAccount } from '../lib/server-data'
+import { type BuilderAccount } from '../lib/server-data'
 import { useSearch } from './builders-page-client'
+import { BuilderTeamCard } from './list-card'
 
 interface BuilderListProps {
   initialBuilders: BuilderAccount[]

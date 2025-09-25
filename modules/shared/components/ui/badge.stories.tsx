@@ -1,4 +1,3 @@
-import React from 'react'
 import { Badge } from './badge'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 

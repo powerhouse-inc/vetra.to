@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
 import React from 'react'
 import { Separator } from './separator'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Shadcn/Separator',

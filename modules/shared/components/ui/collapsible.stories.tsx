@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
 import React from 'react'
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from './collapsible'
 import { Button } from './button'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './collapsible'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Shadcn/Collapsible',

@@ -1,16 +1,16 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
 import React from 'react'
+import { Button } from './button'
 import {
   Dialog,
-  DialogTrigger,
+  DialogClose,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from './dialog'
-import { Button } from './button'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Shadcn/Dialog',

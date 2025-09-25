@@ -80,7 +80,7 @@ const BuilderTeamCard: React.FC<BuilderTeamCardProps> = ({
 
   return (
     <Card className={cn('w-full border border-gray-200 bg-white shadow-sm', className)}>
-      <CardContent className="p-6">
+      <CardContent>
         <div className="flex items-start gap-6">
           {/* Left Column - Avatar */}
           <div className="flex-shrink-0">

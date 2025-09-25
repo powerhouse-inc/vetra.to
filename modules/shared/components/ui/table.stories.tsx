@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
 import React from 'react'
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from './table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Shadcn/Table',

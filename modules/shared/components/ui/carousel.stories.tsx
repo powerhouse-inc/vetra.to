@@ -1,5 +1,5 @@
 import React from 'react'
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from './carousel'
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from './carousel'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {

@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
 import React from 'react'
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from './select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Shadcn/Select',

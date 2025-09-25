@@ -1,11 +1,12 @@
+// This is a generated component from shadcn/ui so keep it as is
+/* eslint-disable react/no-unstable-nested-components */
 'use client'
 
-import * as React from 'react'
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
-import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker'
-
-import { cn } from '@/shared/lib/utils'
+import * as React from 'react'
+import { type DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker'
 import { Button, buttonVariants } from '@/shared/components/ui/button'
+import { cn } from '@/shared/lib/utils'
 
 function Calendar({
   className,

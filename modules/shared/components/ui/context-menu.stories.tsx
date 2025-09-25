@@ -1,13 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
 import React from 'react'
 import {
   ContextMenu,
-  ContextMenuTrigger,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuSeparator,
   ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
 } from './context-menu'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Shadcn/ContextMenu',

@@ -1,6 +1,12 @@
-import { Copy, User } from 'lucide-react'
+import { Copy, Plus, User } from 'lucide-react'
 import React from 'react'
 
+import {
+  StripedCard,
+  StripedCardContent,
+  StripedCardHeader,
+  StripedCardTitle,
+} from '@/modules/shared/components/striped-card/striped-card'
 import ProfileSvg from '@/modules/shared/components/svgs/profile.svg'
 import RenownSvg from '@/modules/shared/components/svgs/renown.svg'
 import { Avatar, AvatarFallback, AvatarImage } from '@/modules/shared/components/ui/avatar'
@@ -63,41 +69,57 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
       <CardContent>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
           {members.map((member) => (
-            <Card
+            <StripedCard
               key={member.id}
-              className="flex flex-col items-center space-y-4 rounded-lg border-2 bg-white p-6 text-center transition-shadow hover:shadow-md"
+              className="flex flex-col items-center space-y-4 text-center transition-shadow hover:shadow-md"
             >
-              {/* Avatar */}
-              <Avatar className="size-16">
-                <ProfileSvg className="size-16" />
-              </Avatar>
+              <StripedCardHeader className="w-full">
+                <StripedCardTitle className="text-center">
+                  {getDisplayName(member)}
+                </StripedCardTitle>
+              </StripedCardHeader>
+              <StripedCardContent className="flex flex-col items-center space-y-4">
+                {/* Avatar */}
+                <Avatar className="size-16">
+                  <ProfileSvg className="size-16" />
+                </Avatar>
 
-              {/* Member Name */}
-              <h4 className="text-lg font-bold text-gray-800">{getDisplayName(member)}</h4>
-
-              {/* ETH Address with Copy Icon */}
-              <div className="flex items-center gap-2">
-                <p className="text-sm text-gray-500">{getDisplayEmail(member)}</p>
-
-                <Copy className="size-4" />
-              </div>
-
-              {/* Role with Icon */}
-              <div className="flex items-center gap-2">
-                <User className="size-4 text-gray-500" />
-                <p className="text-sm text-gray-600">{member.role || 'Developer'}</p>
-              </div>
-
-              {/* Renown Button */}
-              {member.isRenown && (
-                <div className="mt-2">
-                  <div className="flex items-center justify-center gap-2 rounded px-4 py-2">
-                    <RenownSvg className="" />
-                  </div>
+                {/* ETH Address with Copy Icon */}
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-gray-500">{getDisplayEmail(member)}</p>
+                  <Copy className="size-4" />
                 </div>
-              )}
-            </Card>
+
+                {/* Role with Icon */}
+                <div className="flex items-center gap-2">
+                  <User className="size-4 text-gray-500" />
+                  <p className="text-sm text-gray-600">{member.role || 'Developer'}</p>
+                </div>
+
+                {/* Renown Button */}
+                {member.isRenown && (
+                  <div className="mt-2">
+                    <div className="flex items-center justify-center gap-2 rounded px-4 py-2">
+                      <RenownSvg className="" />
+                    </div>
+                  </div>
+                )}
+              </StripedCardContent>
+            </StripedCard>
           ))}
+
+          {/* Spared Card - Add New Member */}
+          <StripedCard className="flex cursor-pointer flex-col items-center justify-center space-y-4 border-2 border-dashed border-gray-300 bg-gray-50 text-center transition-all hover:border-gray-400 hover:bg-gray-100">
+            <StripedCardHeader className="w-full">
+              <StripedCardTitle className="text-center text-gray-600">Add Member</StripedCardTitle>
+            </StripedCardHeader>
+            <StripedCardContent className="flex flex-col items-center space-y-3">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200">
+                <Plus className="h-8 w-8 text-gray-500" />
+              </div>
+              <p className="text-sm text-gray-500">Invite a new team member</p>
+            </StripedCardContent>
+          </StripedCard>
         </div>
       </CardContent>
     </Card>

@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
 import React from 'react'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './card'
 import { Button } from './button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './card'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Shadcn/Card',

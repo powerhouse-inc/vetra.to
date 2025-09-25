@@ -10,9 +10,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../../ui/dropdown-menu'
-import { type User } from '../types'
 import LoginAvatar from './login-avatar'
 import ThemeIconLabel from './toogle-theme-label'
+import type { User } from '../types'
 
 interface NavbarRightSideProps {
   isLoggedIn: boolean
@@ -29,7 +29,7 @@ function NavbarRightSide({ isLoggedIn, user, onLoginClick }: NavbarRightSideProp
 
   return (
     <>
-      <div className="hidden items-center gap-2 md:flex">
+      <div className="hidden items-center md:flex">
         <ThemeToggle />
         <div className="bg-border mx-4 h-9 w-px" />
         <LoginAvatar isLoggedIn={isLoggedIn} user={user} onLoginClick={onLoginClick} />
@@ -40,13 +40,13 @@ function NavbarRightSide({ isLoggedIn, user, onLoginClick }: NavbarRightSideProp
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="text-background focus:ring-ring rounded-md focus:ring-2 focus:ring-offset-2 focus:outline-none"
+              className="text-background rounded-md focus:ring-2 focus:ring-offset-2 focus:outline-none"
             >
               <KebabMenu className="h-9 w-9" />
               <span className="sr-only">Open menu</span>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end">
+          <DropdownMenuContent className="z-160 w-56" align="end">
             {isLoggedIn ? (
               <DropdownMenuItem>
                 <LoginAvatar isLoggedIn={isLoggedIn} user={user} />

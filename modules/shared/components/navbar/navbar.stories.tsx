@@ -1,16 +1,14 @@
-import React from 'react'
 import Navbar from './navbar'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Components/Navbar',
   component: Navbar,
-  tags: ['autodocs'],
   parameters: {
     nextjs: {
       appDirectory: true,
-      router: {
-        pathname: '/',
+      navigation: {
+        pathname: '/networks',
       },
     },
   },
@@ -20,5 +18,27 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Basic: Story = {
-  render: () => <Navbar />,
+  name: 'Navbar (Achra)',
+}
+
+export const WithPowerhousePathname: Story = {
+  name: 'Navbar (Powerhouse)',
+  parameters: {
+    nextjs: {
+      navigation: {
+        pathname: '/network/powerhouse/roadmap',
+      },
+    },
+  },
+}
+
+export const WithSkyPathname: Story = {
+  name: 'Navbar (Sky)',
+  parameters: {
+    nextjs: {
+      navigation: {
+        pathname: '/network/sky/finances',
+      },
+    },
+  },
 }

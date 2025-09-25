@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
 import React from 'react'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Shadcn/Tabs',

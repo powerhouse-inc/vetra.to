@@ -1,5 +1,5 @@
 import React from 'react'
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {

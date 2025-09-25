@@ -1,8 +1,8 @@
 'use client'
 
-import * as React from 'react'
 import { OTPInput, OTPInputContext } from 'input-otp'
 import { MinusIcon } from 'lucide-react'
+import * as React from 'react'
 
 import { cn } from '@/shared/lib/utils'
 
@@ -37,6 +37,8 @@ function InputOTPSlot({
   index: number
 }) {
   const inputOTPContext = React.useContext(OTPInputContext)
+  // keeping it as it comes from shadcn
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const { char, hasFakeCaret, isActive } = inputOTPContext?.slots[index] ?? {}
 
   return (

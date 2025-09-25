@@ -1,6 +1,6 @@
 import { Terminal } from 'lucide-react'
 import React from 'react'
-import { Alert, AlertTitle, AlertDescription } from './alert'
+import { Alert, AlertDescription, AlertTitle } from './alert'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {

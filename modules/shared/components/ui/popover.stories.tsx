@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
 import React from 'react'
-import { Popover, PopoverTrigger, PopoverContent } from './popover'
 import { Button } from './button'
+import { Popover, PopoverContent, PopoverTrigger } from './popover'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Shared/Shadcn/Popover',

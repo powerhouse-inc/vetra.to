@@ -6,7 +6,7 @@ import {
   type UseQueryResult,
 } from '@tanstack/react-query'
 
-type Exact<T extends { [key: string]: unknown }> = {
+type Exact<T extends Record<string, unknown>> = {
   [K in keyof T]: T[K]
 }
 
@@ -31,9 +31,7 @@ const hasVariablesTypeGuard = <TQuery extends QueryWithKey>(
 } => !!Object.keys(variables || {}).length
 
 type ServerPreFetchOptions<TQuery extends QueryWithKey> = Parameters<TQuery>[0] extends
-  | Exact<{
-      [key: string]: never
-    }>
+  | Exact<Record<string, never>>
   | undefined
   ? { next?: NextFetchRequestConfig; cache?: RequestCache }
   : {

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
 import { Button } from '../../ui/button'
-import { type User } from '../types'
+import type { User } from '../types'
 
 interface LoginAvatarProps {
   isLoggedIn: boolean
@@ -15,7 +15,7 @@ function LoginAvatar({ isLoggedIn, user, onLoginClick }: LoginAvatarProps) {
       <div className="flex items-center gap-2">
         <Avatar>
           <AvatarImage src={user?.avatar} alt="avatar" />
-          <AvatarFallback>{user?.username?.substring(0, 2).toUpperCase()}</AvatarFallback>
+          <AvatarFallback>{user?.username.substring(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
         <span className="flex text-sm font-medium md:hidden">{user?.username}</span>
       </div>
