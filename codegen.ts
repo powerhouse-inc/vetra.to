@@ -5,7 +5,7 @@ import type { CodegenConfig } from '@graphql-codegen/cli'
 const config: CodegenConfig = {
   // Where your GQL schema is located (could also be externally hosted)
   // TODO: move the URL to the .env file
-  schema: 'https://sky-switchboard-staging.vetra.to/graphql',
+  schema: 'https://switchboard.staging.vetra.io/graphql',
   overwrite: true,
   documents: ['./modules/**/*.gql', './modules/**/*.{tsx,ts}', './app/**/*.{tsx,ts}'],
   generates: {

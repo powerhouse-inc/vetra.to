@@ -42,7 +42,7 @@ export type Scalars = {
   OLabel: { input: any; output: any; }
   PHID: { input: any; output: any; }
   URL: { input: any; output: any; }
-  Unknown: { input: any; output: any; }
+  Upload: { input: any; output: any; }
 };
 
 export type AddDriveResult = {
@@ -128,1137 +128,395 @@ export type AnalyticsSeriesDimension = {
   path?: Maybe<Scalars['String']['output']>;
 };
 
-export type AtlasExploratory = IDocument & {
-  __typename?: 'AtlasExploratory';
-  created: Scalars['DateTime']['output'];
+export type AppModule = IDocument & {
+  __typename?: 'AppModule';
+  createdAtUtcIso: Scalars['DateTime']['output'];
   documentType: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  initialState: AtlasExploratory_AtlasExploratoryState;
-  lastModified: Scalars['DateTime']['output'];
+  initialState: AppModule_AppModuleState;
+  lastModifiedAtUtcIso: Scalars['DateTime']['output'];
   name: Scalars['String']['output'];
   operations: Array<Operation>;
   revision: Scalars['Int']['output'];
-  state: AtlasExploratory_AtlasExploratoryState;
+  state: AppModule_AppModuleState;
   stateJSON?: Maybe<Scalars['JSONObject']['output']>;
 };
 
 
-export type AtlasExploratoryOperationsArgs = {
+export type AppModuleOperationsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/** Queries: AtlasExploratory */
-export type AtlasExploratoryQueries = {
-  __typename?: 'AtlasExploratoryQueries';
-  getDocument?: Maybe<AtlasExploratory>;
-  getDocuments?: Maybe<Array<AtlasExploratory>>;
+/** Queries: AppModule */
+export type AppModuleQueries = {
+  __typename?: 'AppModuleQueries';
+  getDocument?: Maybe<AppModule>;
+  getDocuments?: Maybe<Array<AppModule>>;
 };
 
 
-/** Queries: AtlasExploratory */
-export type AtlasExploratoryQueriesGetDocumentArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
+/** Queries: AppModule */
+export type AppModuleQueriesGetDocumentArgs = {
+  docId: Scalars['PHID']['input'];
+  driveId?: InputMaybe<Scalars['PHID']['input']>;
 };
 
-/** Subgraph definition for AtlasExploratory (sky/atlas-exploratory) */
-export type AtlasExploratoryState = {
-  __typename?: 'AtlasExploratoryState';
-  /** Additional commentary and context for guidance. */
-  additionalGuidance: Scalars['String']['output'];
-  /**
-   * The type of the Exploratory document within Atlas.
-   * Example: Tenet, Original Context Data, Active Data.
-   */
-  atlasType: EAtlasType;
-  /** Entire content body of the Exploratory document within Atlas. */
-  content?: Maybe<Scalars['String']['output']>;
-  /** Unique document number assigned to the Exploratory document within Atlas. */
-  docNo?: Maybe<Scalars['String']['output']>;
-  /** Alignmnet boolean findings. */
-  findings: Finding;
-  /** Document tags managed by the Atlas Axis facilitator group for classification. */
-  globalTags: Array<Scalars['String']['output']>;
-  /** Master status of the Exploratory document as managed by the Atlas Axis facilitator group. */
-  masterStatus: EStatus;
-  /** Full name of the Exploratory document entity. */
-  name?: Maybe<Scalars['String']['output']>;
-  /**
-   * Original Notion document ID of the Exploratory document.
-   * Used for cross-system referencing and linking back to the original Notion source.
-   */
-  notionId?: Maybe<Scalars['String']['output']>;
-  /** List of Atlas documents that were relevant for the creation of this Exploratory document. */
-  originalContextData: Array<Scalars['String']['output']>;
-  /**
-   * Parent entity that this Exploratory document belongs to.
-   * This is a reference to another Atlas document.
-   */
-  parent: EDocumentLink;
+
+/** Queries: AppModule */
+export type AppModuleQueriesGetDocumentsArgs = {
+  driveId: Scalars['String']['input'];
 };
 
-/** Module: Context */
-export type AtlasExploratory_AddContextDataInput = {
-  id: Scalars['String']['input'];
+/** Subgraph definition for AppModule (powerhouse/app) */
+export type AppModuleState = {
+  __typename?: 'AppModuleState';
+  documentTypes?: Maybe<Array<DocumentTypeItem>>;
+  dragAndDrop?: Maybe<DragAndDropSettings>;
+  name: Scalars['String']['output'];
+  status: StatusType;
 };
 
-/** Module: Tags */
-export type AtlasExploratory_AddTagsInput = {
-  newTags: Array<Scalars['String']['input']>;
+export type AppModule_AddDocumentTypeInput = {
+  documentType: Scalars['String']['input'];
+  id: Scalars['OID']['input'];
 };
 
-export type AtlasExploratory_AtlasExploratoryState = {
-  __typename?: 'AtlasExploratory_AtlasExploratoryState';
-  /** Additional commentary and context for guidance.  */
-  additionalGuidance: Scalars['String']['output'];
-  /**
-   * The type AtlasExploratory_of the Exploratory document within Atlas.
-   * Example: Tenet, Original Context Data, Active Data.
-   */
-  atlasType: AtlasExploratory_EAtlasType;
-  /** Entire content body AtlasExploratory_of the Exploratory document within Atlas. */
-  content?: Maybe<Scalars['String']['output']>;
-  /** Unique document number assigned to the Exploratory document within Atlas. */
-  docNo?: Maybe<Scalars['String']['output']>;
-  /** Alignmnet boolean findings.  */
-  findings: AtlasExploratory_Finding;
-  /** Document tags managed by the Atlas Axis facilitator group for classification.   */
-  globalTags: Array<Scalars['String']['output']>;
-  /** Master status AtlasExploratory_of the Exploratory document as managed by the Atlas Axis facilitator group.   */
-  masterStatus: AtlasExploratory_EStatus;
-  /** Full name AtlasExploratory_of the Exploratory document entity.   */
-  name?: Maybe<Scalars['String']['output']>;
-  /**
-   * Original Notion document ID AtlasExploratory_of the Exploratory document.
-   * Used for cross-system referencing and linking back to the original Notion source.
-   */
-  notionId?: Maybe<Scalars['String']['output']>;
-  /** List AtlasExploratory_of Atlas documents that were relevant for the creation AtlasExploratory_of this Exploratory document.   */
-  originalContextData: Array<Scalars['String']['output']>;
-  /**
-   * Parent entity that this Exploratory document belongs to.
-   * This is a reference to another Atlas document.
-   */
-  parent: AtlasExploratory_EDocumentLink;
+export type AppModule_AppModuleState = {
+  __typename?: 'AppModule_AppModuleState';
+  documentTypes?: Maybe<Array<AppModule_DocumentTypeItem>>;
+  dragAndDrop?: Maybe<AppModule_DragAndDropSettings>;
+  name: Scalars['String']['output'];
+  status: AppModule_StatusType;
 };
 
-/** Domain (i.e., Atlas) specific document types with the same document model global schema.   */
-export enum AtlasExploratory_EAtlasType {
-  Scenario = 'SCENARIO',
-  ScenarioVariation = 'SCENARIO_VARIATION'
-}
-
-export type AtlasExploratory_EDocumentLink = {
-  __typename?: 'AtlasExploratory_EDocumentLink';
-  docNo?: Maybe<Scalars['String']['output']>;
-  documentType?: Maybe<Scalars['String']['output']>;
-  icon?: Maybe<Scalars['String']['output']>;
-  id: Scalars['PHID']['output'];
-  title?: Maybe<Scalars['OLabel']['output']>;
+export type AppModule_DocumentTypeItem = {
+  __typename?: 'AppModule_DocumentTypeItem';
+  documentType: Scalars['String']['output'];
+  id: Scalars['OID']['output'];
 };
 
-/** Defines the lifecycle stage AtlasExploratory_of the Exploratory document within Atlas.   */
-export enum AtlasExploratory_EStatus {
-  Approved = 'APPROVED',
-  Archived = 'ARCHIVED',
-  Deferred = 'DEFERRED',
-  Placeholder = 'PLACEHOLDER',
-  Provisional = 'PROVISIONAL'
-}
-
-/** Reference to a document within Atlas with optional name and document number for display reasons.  */
-export type AtlasExploratory_Finding = {
-  __typename?: 'AtlasExploratory_Finding';
-  isAligned: Scalars['Boolean']['output'];
+export type AppModule_DragAndDropSettings = {
+  __typename?: 'AppModule_DragAndDropSettings';
+  enabled: Scalars['Boolean']['output'];
 };
 
-export type AtlasExploratory_RemoveContextDataInput = {
-  id: Scalars['String']['input'];
+export type AppModule_RemoveDocumentTypeInput = {
+  id: Scalars['OID']['input'];
 };
 
-export type AtlasExploratory_RemoveTagsInput = {
-  tags: Array<Scalars['String']['input']>;
-};
-
-export type AtlasExploratory_ReplaceContextDataInput = {
-  id: Scalars['String']['input'];
-  prevId: Scalars['String']['input'];
-};
-
-export type AtlasExploratory_SetAdditionalGuidanceInput = {
-  additionalGuidance: Scalars['String']['input'];
-};
-
-export type AtlasExploratory_SetAtlasTypeInput = {
-  atlasType: EAtlasType;
-};
-
-export type AtlasExploratory_SetContentInput = {
-  content: Scalars['String']['input'];
-};
-
-export type AtlasExploratory_SetDocNumberInput = {
-  docNo?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** Module: General */
-export type AtlasExploratory_SetExploratoryNameInput = {
+/** Module: BaseOperations */
+export type AppModule_SetAppNameInput = {
   name: Scalars['String']['input'];
 };
 
-export type AtlasExploratory_SetFindingsInput = {
-  isAligned: Scalars['Boolean']['input'];
+export type AppModule_SetAppStatusInput = {
+  status: StatusType;
 };
 
-export type AtlasExploratory_SetMasterStatusInput = {
-  masterStatus: EStatus;
+/** Module: DndOperations */
+export type AppModule_SetDragAndDropEnabledInput = {
+  enabled: Scalars['Boolean']['input'];
 };
 
-export type AtlasExploratory_SetNotionIdInput = {
-  notionID?: InputMaybe<Scalars['String']['input']>;
+export enum AppModule_StatusType {
+  Confirmed = 'CONFIRMED',
+  Draft = 'DRAFT'
+}
+
+export type Author = {
+  __typename?: 'Author';
+  name?: Maybe<Scalars['String']['output']>;
+  website?: Maybe<Scalars['URL']['output']>;
 };
 
-export type AtlasExploratory_SetParentInput = {
-  docNo?: InputMaybe<Scalars['String']['input']>;
-  documentType?: InputMaybe<Scalars['String']['input']>;
-  icon?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['PHID']['input'];
-  title?: InputMaybe<Scalars['OLabel']['input']>;
-};
-
-export type AtlasFeedbackIssues = IDocument & {
-  __typename?: 'AtlasFeedbackIssues';
-  created: Scalars['DateTime']['output'];
+export type BuilderAccount = IDocument & {
+  __typename?: 'BuilderAccount';
+  createdAtUtcIso: Scalars['DateTime']['output'];
   documentType: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  initialState: AtlasFeedbackIssues_AtlasFeedbackIssuesState;
-  lastModified: Scalars['DateTime']['output'];
+  initialState: BuilderAccount_BuilderAccountState;
+  lastModifiedAtUtcIso: Scalars['DateTime']['output'];
   name: Scalars['String']['output'];
   operations: Array<Operation>;
   revision: Scalars['Int']['output'];
-  state: AtlasFeedbackIssues_AtlasFeedbackIssuesState;
+  state: BuilderAccount_BuilderAccountState;
   stateJSON?: Maybe<Scalars['JSONObject']['output']>;
 };
 
 
-export type AtlasFeedbackIssuesOperationsArgs = {
+export type BuilderAccountOperationsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/** Queries: AtlasFeedbackIssues */
-export type AtlasFeedbackIssuesQueries = {
-  __typename?: 'AtlasFeedbackIssuesQueries';
-  getDocument?: Maybe<AtlasFeedbackIssues>;
-  getDocuments?: Maybe<Array<AtlasFeedbackIssues>>;
+export type BuilderAccountFilter = {
+  __typename?: 'BuilderAccountFilter';
+  profileDescription?: Maybe<Scalars['String']['output']>;
+  profileLogo?: Maybe<Scalars['String']['output']>;
+  profileName?: Maybe<Scalars['String']['output']>;
+  profileSlug?: Maybe<Scalars['String']['output']>;
 };
 
-
-/** Queries: AtlasFeedbackIssues */
-export type AtlasFeedbackIssuesQueriesGetDocumentArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** Subgraph definition for AtlasFeedbackIssues (makerdao/feedback-issues) */
-export type AtlasFeedbackIssuesState = {
-  __typename?: 'AtlasFeedbackIssuesState';
-  /** The list of issues submitted to the Atlas. */
-  issues: Array<Issue>;
-};
-
-export type AtlasFeedbackIssues_AddNotionIdInput = {
-  notionId: Scalars['String']['input'];
-  phid: Scalars['PHID']['input'];
-};
-
-export type AtlasFeedbackIssues_AtlasFeedbackIssuesState = {
-  __typename?: 'AtlasFeedbackIssues_AtlasFeedbackIssuesState';
-  /** The list of issues submitted to the Atlas. */
-  issues: Array<AtlasFeedbackIssues_Issue>;
-};
-
-/**
- * Issues are comprised of Comments.
- *
- * When an AtlasFeedbackIssues_Issue is first created, it is empty and has no comments. Users can then submit comments which are associated with a given issue.
- *
- * A comment refers to a specific item from the Atlas. This field is required, but can be changed later.
- */
-export type AtlasFeedbackIssues_Comment = {
-  __typename?: 'AtlasFeedbackIssues_Comment';
-  content: Scalars['String']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  creatorAddress: Scalars['EthereumAddress']['output'];
-  lastEditedAt: Scalars['DateTime']['output'];
-  notionId: Scalars['String']['output'];
-  phid: Scalars['PHID']['output'];
-};
-
-/** Module: Comments */
-export type AtlasFeedbackIssues_CreateCommentInput = {
-  content: Scalars['String']['input'];
-  createdAt: Scalars['DateTime']['input'];
-  issuePhid: Scalars['PHID']['input'];
-  notionId: Scalars['String']['input'];
-  phid: Scalars['PHID']['input'];
-};
-
-/** Module: Issues */
-export type AtlasFeedbackIssues_CreateIssueInput = {
-  createdAt: Scalars['DateTime']['input'];
-  notionIds: Array<InputMaybe<Scalars['String']['input']>>;
-  phid: Scalars['PHID']['input'];
-};
-
-export type AtlasFeedbackIssues_DeleteCommentInput = {
-  issuePhid: Scalars['PHID']['input'];
-  phid: Scalars['PHID']['input'];
-};
-
-export type AtlasFeedbackIssues_DeleteIssueInput = {
-  phid: Scalars['PHID']['input'];
-};
-
-export type AtlasFeedbackIssues_EditCommentInput = {
-  content?: InputMaybe<Scalars['String']['input']>;
-  editedAt: Scalars['DateTime']['input'];
-  issuePhid: Scalars['PHID']['input'];
-  notionId?: InputMaybe<Scalars['String']['input']>;
-  phid: Scalars['PHID']['input'];
-};
-
-/**
- * An issue that has been submitted to the Atlas.
- *
- * Holds a list of comments pertaining to specific items in the Atlas.
- *
- * Uses the same identifiers to register the relevant content as are used in the Atlas itself. These identifiers are the UUID's used by Notion, sometimes with a suffix of a part of the item's parent for cases where multiple parents exist.
- *
- * The relevant Notion IDs are separate from the Notion IDs referenced in the Comments themselves, because we might want to determine the scope of the AtlasFeedbackIssues_Issue's content before any actual comments are added yet.
- */
-export type AtlasFeedbackIssues_Issue = {
-  __typename?: 'AtlasFeedbackIssues_Issue';
-  comments: Array<AtlasFeedbackIssues_Comment>;
-  createdAt: Scalars['DateTime']['output'];
-  creatorAddress: Scalars['EthereumAddress']['output'];
-  notionIds: Array<Scalars['String']['output']>;
-  phid: Scalars['PHID']['output'];
-};
-
-export type AtlasFeedbackIssues_RemoveNotionIdInput = {
-  notionId: Scalars['String']['input'];
-  phid: Scalars['PHID']['input'];
-};
-
-export type AtlasFoundation = IDocument & {
-  __typename?: 'AtlasFoundation';
-  created: Scalars['DateTime']['output'];
-  documentType: Scalars['String']['output'];
+export type BuilderAccountMember = {
+  __typename?: 'BuilderAccountMember';
+  builderAccountId: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  ethAddress: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  initialState: AtlasFoundation_AtlasFoundationState;
-  lastModified: Scalars['DateTime']['output'];
-  name: Scalars['String']['output'];
-  operations: Array<Operation>;
-  revision: Scalars['Int']['output'];
-  state: AtlasFoundation_AtlasFoundationState;
-  stateJSON?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+/** Queries: BuilderAccount */
+export type BuilderAccountQueries = {
+  __typename?: 'BuilderAccountQueries';
+  getDocument?: Maybe<BuilderAccount>;
+  getDocuments?: Maybe<Array<BuilderAccount>>;
 };
 
 
-export type AtlasFoundationOperationsArgs = {
-  first?: InputMaybe<Scalars['Int']['input']>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-};
-
-/** Queries: AtlasFoundation */
-export type AtlasFoundationQueries = {
-  __typename?: 'AtlasFoundationQueries';
-  getDocument?: Maybe<AtlasFoundation>;
-  getDocuments?: Maybe<Array<AtlasFoundation>>;
+/** Queries: BuilderAccount */
+export type BuilderAccountQueriesGetDocumentArgs = {
+  docId: Scalars['PHID']['input'];
+  driveId?: InputMaybe<Scalars['PHID']['input']>;
 };
 
 
-/** Queries: AtlasFoundation */
-export type AtlasFoundationQueriesGetDocumentArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
+/** Queries: BuilderAccount */
+export type BuilderAccountQueriesGetDocumentsArgs = {
+  driveId: Scalars['String']['input'];
 };
 
-/** Subgraph definition for AtlasFoundation (sky/atlas-foundation) */
-export type AtlasFoundationState = {
-  __typename?: 'AtlasFoundationState';
-  /**
-   * The type of the Foundation entity within Atlas.
-   * Example: DAO, Governance Body, Research Hub, etc.
-   */
-  atlasType: FAtlasType;
-  /** Entire content body of the Foundation document within Atlas. */
-  content?: Maybe<Scalars['String']['output']>;
-  /** Unique document number assigned to the Foundation document within Atlas. */
-  docNo?: Maybe<Scalars['String']['output']>;
-  /** Document tags managed by the Atlas Axis facilitator group for classification. */
-  globalTags: Array<Scalars['String']['output']>;
-  /** Master status of the Foundation entity as managed by the Atlas Axis facilitator group. */
-  masterStatus: FStatus;
-  /** Full name of the Foundation entity. */
-  name?: Maybe<Scalars['String']['output']>;
-  /**
-   * Original Notion document ID of the Foundation document.
-   * Used for cross-system referencing and linking back to the original Notion source.
-   */
-  notionId?: Maybe<Scalars['String']['output']>;
-  /** List of Atlas documents that were relevant for the creation of this Foundation document. */
-  originalContextData: Array<Scalars['String']['output']>;
-  /**
-   * Parent entity that this Foundation belongs to.
-   * This is a reference to another Atlas document.
-   */
-  parent?: Maybe<FDocumentLink>;
+/** Subgraph definition for BuilderAccount (powerhouse/vetra/builder-account) */
+export type BuilderAccountState = {
+  __typename?: 'BuilderAccountState';
+  members: Array<Scalars['EthereumAddress']['output']>;
+  profile: VetraBuilderProfile;
+  spaces: Array<VetraBuilderSpace>;
 };
 
-/** Module: Context */
-export type AtlasFoundation_AddContextDataInput = {
-  id: Scalars['String']['input'];
-};
-
-/** Module: Tags */
-export type AtlasFoundation_AddTagsInput = {
-  tags: Array<Scalars['String']['input']>;
-};
-
-export type AtlasFoundation_AtlasFoundationState = {
-  __typename?: 'AtlasFoundation_AtlasFoundationState';
-  /**
-   * The type AtlasFoundation_of the Foundation entity within Atlas.
-   * Example: DAO, Governance Body, Research Hub, etc.
-   */
-  atlasType: AtlasFoundation_FAtlasType;
-  /** Entire content body AtlasFoundation_of the Foundation document within Atlas.  */
-  content?: Maybe<Scalars['String']['output']>;
-  /** Unique document number assigned to the Foundation document within Atlas. */
-  docNo?: Maybe<Scalars['String']['output']>;
-  /** Document tags managed by the Atlas Axis facilitator group for classification. */
-  globalTags: Array<Scalars['String']['output']>;
-  /** Master status AtlasFoundation_of the Foundation entity as managed by the Atlas Axis facilitator group. */
-  masterStatus: AtlasFoundation_FStatus;
-  /** Full name AtlasFoundation_of the Foundation entity. */
-  name?: Maybe<Scalars['String']['output']>;
-  /**
-   * Original Notion document ID AtlasFoundation_of the Foundation document.
-   * Used for cross-system referencing and linking back to the original Notion source.
-   */
-  notionId?: Maybe<Scalars['String']['output']>;
-  /** List AtlasFoundation_of Atlas documents that were relevant for the creation AtlasFoundation_of this Foundation document. */
-  originalContextData: Array<Scalars['String']['output']>;
-  /**
-   * Parent entity that this Foundation belongs to.
-   * This is a reference to another Atlas document.
-   */
-  parent?: Maybe<AtlasFoundation_FDocumentLink>;
-};
-
-/** Domain (i.e., Atlas) specific document types with the same document model global schema.  */
-export enum AtlasFoundation_FAtlasType {
-  ActiveDataController = 'ACTIVE_DATA_CONTROLLER',
-  Article = 'ARTICLE',
-  Core = 'CORE',
-  Section = 'SECTION',
-  TypeSpecification = 'TYPE_SPECIFICATION'
-}
-
-/** Reference to a document within Atlas with optional name and document number for display reasons.  */
-export type AtlasFoundation_FDocumentLink = {
-  __typename?: 'AtlasFoundation_FDocumentLink';
-  docNo?: Maybe<Scalars['String']['output']>;
-  documentType?: Maybe<Scalars['String']['output']>;
-  icon?: Maybe<Scalars['String']['output']>;
-  id: Scalars['PHID']['output'];
-  title?: Maybe<Scalars['OLabel']['output']>;
-};
-
-export enum AtlasFoundation_FStatus {
-  Approved = 'APPROVED',
-  Archived = 'ARCHIVED',
-  Deferred = 'DEFERRED',
-  Placeholder = 'PLACEHOLDER',
-  Provisional = 'PROVISIONAL'
-}
-
-export type AtlasFoundation_RemoveContextDataInput = {
-  id: Scalars['String']['input'];
-};
-
-export type AtlasFoundation_RemoveTagsInput = {
-  tags: Array<Scalars['String']['input']>;
-};
-
-export type AtlasFoundation_ReplaceContextDataInput = {
-  id: Scalars['String']['input'];
-  prevId: Scalars['String']['input'];
-};
-
-export type AtlasFoundation_SetAtlasTypeInput = {
-  atlasType: FAtlasType;
-};
-
-export type AtlasFoundation_SetContentInput = {
-  content: Scalars['String']['input'];
-};
-
-export type AtlasFoundation_SetDocNumberInput = {
-  docNo?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** Module: General */
-export type AtlasFoundation_SetFoundationNameInput = {
-  name: Scalars['String']['input'];
-};
-
-export type AtlasFoundation_SetMasterStatusInput = {
-  masterStatus: FStatus;
-};
-
-export type AtlasFoundation_SetNotionIdInput = {
-  notionID: Scalars['String']['input'];
-};
-
-export type AtlasFoundation_SetParentInput = {
-  docNo?: InputMaybe<Scalars['String']['input']>;
-  documentType?: InputMaybe<Scalars['String']['input']>;
-  icon?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['PHID']['input'];
-  title?: InputMaybe<Scalars['OLabel']['input']>;
-};
-
-export type AtlasGrounding = IDocument & {
-  __typename?: 'AtlasGrounding';
-  created: Scalars['DateTime']['output'];
-  documentType: Scalars['String']['output'];
+/** Subgraph definition for Vetra Read Model */
+export type BuilderAccountType = {
+  __typename?: 'BuilderAccountType';
+  createdAt: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  initialState: AtlasGrounding_AtlasGroundingState;
-  lastModified: Scalars['DateTime']['output'];
-  name: Scalars['String']['output'];
-  operations: Array<Operation>;
-  revision: Scalars['Int']['output'];
-  state: AtlasGrounding_AtlasGroundingState;
-  stateJSON?: Maybe<Scalars['JSONObject']['output']>;
+  members: Array<BuilderAccountMember>;
+  profileDescription?: Maybe<Scalars['String']['output']>;
+  profileLogo?: Maybe<Scalars['String']['output']>;
+  profileName: Scalars['String']['output'];
+  profileSlug: Scalars['String']['output'];
+  profileSocialsGithub?: Maybe<Scalars['String']['output']>;
+  profileSocialsWebsite?: Maybe<Scalars['String']['output']>;
+  profileSocialsX?: Maybe<Scalars['String']['output']>;
+  spaces: Array<BuilderSpace>;
+  updatedAt: Scalars['String']['output'];
 };
 
-
-export type AtlasGroundingOperationsArgs = {
-  first?: InputMaybe<Scalars['Int']['input']>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-};
-
-/** Queries: AtlasGrounding */
-export type AtlasGroundingQueries = {
-  __typename?: 'AtlasGroundingQueries';
-  getDocument?: Maybe<AtlasGrounding>;
-  getDocuments?: Maybe<Array<AtlasGrounding>>;
-};
-
-
-/** Queries: AtlasGrounding */
-export type AtlasGroundingQueriesGetDocumentArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** Subgraph definition for AtlasGrounding (sky/atlas-grounding) */
-export type AtlasGroundingState = {
-  __typename?: 'AtlasGroundingState';
-  /**
-   * The type of the Grounding document within Atlas.
-   * Example: Tenet, Original Context Data, Active Data.
-   */
-  atlasType: GAtlasType;
-  /** Entire content body of the Grounding document within Atlas. */
-  content?: Maybe<Scalars['String']['output']>;
-  /** Unique document number assigned to the Grounding document within Atlas. */
-  docNo?: Maybe<Scalars['String']['output']>;
-  /** Document tags managed by the Atlas Axis facilitator group for classification. */
-  globalTags: Array<Scalars['String']['output']>;
-  /** Master status of the Grounding document as managed by the Atlas Axis facilitator group. */
-  masterStatus: GStatus;
-  /** Full name of the Grounding document entity. */
-  name?: Maybe<Scalars['String']['output']>;
-  /**
-   * Original Notion document ID of the Grounding document.
-   * Used for cross-system referencing and linking back to the original Notion source.
-   */
-  notionId?: Maybe<Scalars['String']['output']>;
-  /** List of Atlas documents that were relevant for the creation of this Grounding document. */
-  originalContextData: Array<Scalars['String']['output']>;
-  /**
-   * Parent entity that this Grounding document belongs to.
-   * This is a reference to another Atlas document.
-   */
-  parent: GDocumentLink;
-};
-
-/** Module: Context */
-export type AtlasGrounding_AddContextDataInput = {
-  id: Scalars['String']['input'];
-};
-
-/** Module: Tags */
-export type AtlasGrounding_AddTagsInput = {
-  tags: Array<Scalars['String']['input']>;
-};
-
-export type AtlasGrounding_AtlasGroundingState = {
-  __typename?: 'AtlasGrounding_AtlasGroundingState';
-  /**
-   * The type AtlasGrounding_of the Grounding document within Atlas.
-   * Example: Tenet, Original Context Data, Active Data.
-   */
-  atlasType: AtlasGrounding_GAtlasType;
-  /** Entire content body AtlasGrounding_of the Grounding document within Atlas.   */
-  content?: Maybe<Scalars['String']['output']>;
-  /** Unique document number assigned to the Grounding document within Atlas. */
-  docNo?: Maybe<Scalars['String']['output']>;
-  /** Document tags managed by the Atlas Axis facilitator group for classification.   */
-  globalTags: Array<Scalars['String']['output']>;
-  /** Master status AtlasGrounding_of the Grounding document as managed by the Atlas Axis facilitator group.   */
-  masterStatus: AtlasGrounding_GStatus;
-  /** Full name AtlasGrounding_of the Grounding document entity.   */
-  name?: Maybe<Scalars['String']['output']>;
-  /**
-   * Original Notion document ID AtlasGrounding_of the Grounding document.
-   * Used for cross-system referencing and linking back to the original Notion source.
-   */
-  notionId?: Maybe<Scalars['String']['output']>;
-  /** List AtlasGrounding_of Atlas documents that were relevant for the creation AtlasGrounding_of this Grounding document.   */
-  originalContextData: Array<Scalars['String']['output']>;
-  /**
-   * Parent entity that this Grounding document belongs to.
-   * This is a reference to another Atlas document.
-   */
-  parent: AtlasGrounding_GDocumentLink;
-};
-
-/** Domain (i.e., Atlas) specific document types with the same document model global schema.   */
-export enum AtlasGrounding_GAtlasType {
-  ActiveData = 'ACTIVE_DATA',
-  OriginalContextData = 'ORIGINAL_CONTEXT_DATA',
-  Tenet = 'TENET'
-}
-
-/** Reference to a document within Atlas with optional name and document number for display reasons.  */
-export type AtlasGrounding_GDocumentLink = {
-  __typename?: 'AtlasGrounding_GDocumentLink';
-  docNo?: Maybe<Scalars['String']['output']>;
-  documentType?: Maybe<Scalars['String']['output']>;
-  icon?: Maybe<Scalars['String']['output']>;
-  id: Scalars['PHID']['output'];
-  title?: Maybe<Scalars['OLabel']['output']>;
-};
-
-/** Defines the lifecycle stage AtlasGrounding_of the Grounding document within Atlas.   */
-export enum AtlasGrounding_GStatus {
-  Approved = 'APPROVED',
-  Archived = 'ARCHIVED',
-  Deferred = 'DEFERRED',
-  Placeholder = 'PLACEHOLDER',
-  Provisional = 'PROVISIONAL'
-}
-
-export type AtlasGrounding_RemoveContextDataInput = {
-  id: Scalars['String']['input'];
-};
-
-export type AtlasGrounding_RemoveTagsInput = {
-  tags: Array<Scalars['String']['input']>;
-};
-
-export type AtlasGrounding_ReplaceContextDataInput = {
-  id: Scalars['String']['input'];
-  prevId: Scalars['String']['input'];
-};
-
-export type AtlasGrounding_SetAtlasTypeInput = {
-  atlasType: GAtlasType;
-};
-
-export type AtlasGrounding_SetContentInput = {
-  content: Scalars['String']['input'];
-};
-
-export type AtlasGrounding_SetDocNumberInput = {
-  docNo?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** Module: General */
-export type AtlasGrounding_SetGroundingNameInput = {
-  name: Scalars['String']['input'];
-};
-
-export type AtlasGrounding_SetMasterStatusInput = {
+/** Module: Members */
+export type BuilderAccount_AddMemberInput = {
   /** Add your inputs here */
-  masterStatus: GStatus;
+  ethAddress?: InputMaybe<Scalars['EthereumAddress']['input']>;
 };
 
-export type AtlasGrounding_SetNotionIdInput = {
-  notionID: Scalars['String']['input'];
-};
-
-export type AtlasGrounding_SetParentInput = {
-  docNo?: InputMaybe<Scalars['String']['input']>;
-  documentType?: InputMaybe<Scalars['String']['input']>;
-  icon?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['PHID']['input'];
-  title?: InputMaybe<Scalars['OLabel']['input']>;
-};
-
-export type AtlasMultiParent = IDocument & {
-  __typename?: 'AtlasMultiParent';
-  created: Scalars['DateTime']['output'];
-  documentType: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  initialState: AtlasMultiParent_AtlasMultiParentState;
-  lastModified: Scalars['DateTime']['output'];
-  name: Scalars['String']['output'];
-  operations: Array<Operation>;
-  revision: Scalars['Int']['output'];
-  state: AtlasMultiParent_AtlasMultiParentState;
-  stateJSON?: Maybe<Scalars['JSONObject']['output']>;
-};
-
-
-export type AtlasMultiParentOperationsArgs = {
-  first?: InputMaybe<Scalars['Int']['input']>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-};
-
-/** Queries: AtlasMultiParent */
-export type AtlasMultiParentQueries = {
-  __typename?: 'AtlasMultiParentQueries';
-  getDocument?: Maybe<AtlasMultiParent>;
-  getDocuments?: Maybe<Array<AtlasMultiParent>>;
-};
-
-
-/** Queries: AtlasMultiParent */
-export type AtlasMultiParentQueriesGetDocumentArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** Subgraph definition for AtlasMultiParent (sky/atlas-multiparent) */
-export type AtlasMultiParentState = {
-  __typename?: 'AtlasMultiParentState';
-  /**
-   * The type of the MultiParent document within Atlas.
-   * Example: Tenet, Original Context Data, Active Data.
-   */
-  atlasType: MAtlasType;
-  /** Entire content body of the MultiParent document within Atlas. */
-  content?: Maybe<Scalars['String']['output']>;
-  /** Document tags managed by the Atlas Axis facilitator group for classification. */
-  globalTags: Array<Scalars['String']['output']>;
-  /** Master status of the MultiParent document as managed by the Atlas Axis facilitator group. */
-  masterStatus: MStatus;
-  /** Full name of the MultiParent document entity. */
-  name?: Maybe<Scalars['String']['output']>;
-  /**
-   * Original Notion document ID of the MultiParent document.
-   * Used for cross-system referencing and linking back to the original Notion source.
-   */
-  notionId?: Maybe<Scalars['String']['output']>;
-  /**
-   *   List of Atlas documents that were relevant for the creation of this MultiParent document.
-   *
-   *   Should the subfields of the MDocumentLink object differ from the subfields of the MDocumentLink for Parent? Potentially we don't need docNo field.
-   *
-   * Change a subfield "name" to "title" in MDocumentLink object.
-   *
-   *
-   *   type MDocumentCDLink {
-   *   id: PHID!
-   *   title: OLabel
-   * }
-   */
-  originalContextData: Array<Scalars['String']['output']>;
-  /**
-   * Parent entity that this MultiParent document belongs to.
-   * This is a reference to another Atlas document.
-   */
-  parents: Array<MDocumentLink>;
-};
-
-/** Module: Context */
-export type AtlasMultiParent_AddContextDataInput = {
-  id: Scalars['String']['input'];
-};
-
-export type AtlasMultiParent_AddParentInput = {
-  docNo?: InputMaybe<Scalars['String']['input']>;
-  documentType?: InputMaybe<Scalars['String']['input']>;
-  icon?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['PHID']['input'];
-  title?: InputMaybe<Scalars['OLabel']['input']>;
-};
-
-/** Module: Tags */
-export type AtlasMultiParent_AddTagsInput = {
-  tags: Array<Scalars['String']['input']>;
-};
-
-export type AtlasMultiParent_AtlasMultiParentState = {
-  __typename?: 'AtlasMultiParent_AtlasMultiParentState';
-  /**
-   * The type AtlasMultiParent_of the MultiParent document within Atlas.
-   * Example: Tenet, Original Context Data, Active Data.
-   */
-  atlasType: AtlasMultiParent_MAtlasType;
-  /** Entire content body AtlasMultiParent_of the MultiParent document within Atlas. */
-  content?: Maybe<Scalars['String']['output']>;
-  /** Document tags managed by the Atlas Axis facilitator group for classification.   */
-  globalTags: Array<Scalars['String']['output']>;
-  /** Master status AtlasMultiParent_of the MultiParent document as managed by the Atlas Axis facilitator group.   */
-  masterStatus: AtlasMultiParent_MStatus;
-  /** Full name AtlasMultiParent_of the MultiParent document entity. */
-  name?: Maybe<Scalars['String']['output']>;
-  /**
-   * Original Notion document ID AtlasMultiParent_of the MultiParent document.
-   * Used for cross-system referencing and linking back to the original Notion source.
-   */
-  notionId?: Maybe<Scalars['String']['output']>;
-  /**
-   *   List AtlasMultiParent_of Atlas documents that were relevant for the creation AtlasMultiParent_of this MultiParent document.
-   *
-   *   Should the subfields AtlasMultiParent_of the AtlasMultiParent_MDocumentLink object differ from the subfields AtlasMultiParent_of the AtlasMultiParent_MDocumentLink for Parent? Potentially we don't need docNo field.
-   *
-   * Change a subfield "name" to "title" in AtlasMultiParent_MDocumentLink object.
-   *
-   *
-   *   type AtlasMultiParent_MDocumentCDLink {
-   *   id: PHID!
-   *   title: OLabel
-   * }
-   */
-  originalContextData: Array<Scalars['String']['output']>;
-  /**
-   * Parent entity that this MultiParent document belongs to.
-   * This is a reference to another Atlas document.
-   */
-  parents: Array<AtlasMultiParent_MDocumentLink>;
-};
-
-/** Domain (i.e., Atlas) specific document types with the same document model global schema.   */
-export enum AtlasMultiParent_MAtlasType {
-  Annotation = 'ANNOTATION',
-  NeededResearch = 'NEEDED_RESEARCH'
-}
-
-/** Reference to a document within Atlas with optional name and document number for display reasons.  */
-export type AtlasMultiParent_MDocumentLink = {
-  __typename?: 'AtlasMultiParent_MDocumentLink';
-  docNo?: Maybe<Scalars['String']['output']>;
-  documentType?: Maybe<Scalars['String']['output']>;
-  icon?: Maybe<Scalars['String']['output']>;
-  id: Scalars['PHID']['output'];
-  title?: Maybe<Scalars['OLabel']['output']>;
-};
-
-/** Defines the lifecycle stage AtlasMultiParent_of the MultiParent document within Atlas. */
-export enum AtlasMultiParent_MStatus {
-  Approved = 'APPROVED',
-  Archived = 'ARCHIVED',
-  Deferred = 'DEFERRED',
-  Placeholder = 'PLACEHOLDER',
-  Provisional = 'PROVISIONAL'
-}
-
-export type AtlasMultiParent_RemoveContextDataInput = {
-  id: Scalars['String']['input'];
-};
-
-export type AtlasMultiParent_RemoveParentInput = {
-  id: Scalars['PHID']['input'];
-};
-
-export type AtlasMultiParent_RemoveTagsInput = {
-  tags: Array<Scalars['String']['input']>;
-};
-
-export type AtlasMultiParent_ReplaceContextDataInput = {
-  id: Scalars['String']['input'];
-  prevId: Scalars['String']['input'];
-};
-
-export type AtlasMultiParent_ReplaceParentInput = {
-  docNo?: InputMaybe<Scalars['String']['input']>;
-  documentType?: InputMaybe<Scalars['String']['input']>;
-  icon?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['PHID']['input'];
-  prevID: Scalars['PHID']['input'];
-  title?: InputMaybe<Scalars['OLabel']['input']>;
-};
-
-export type AtlasMultiParent_SetAtlasTypeInput = {
-  atlasType: MAtlasType;
-};
-
-export type AtlasMultiParent_SetContentInput = {
-  content: Scalars['String']['input'];
-};
-
-/** Module: General */
-export type AtlasMultiParent_SetExploratoryNameInput = {
+export type BuilderAccount_AddPackageInput = {
+  author?: InputMaybe<BuilderAccount_AuthorInput>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  github?: InputMaybe<Scalars['URL']['input']>;
+  keywords?: InputMaybe<Array<Scalars['String']['input']>>;
   name: Scalars['String']['input'];
-};
-
-export type AtlasMultiParent_SetMasterStatusInput = {
-  masterStatus: MStatus;
-};
-
-export type AtlasMultiParent_SetNotionIdInput = {
-  notionId: Scalars['String']['input'];
-};
-
-export type AtlasScope = IDocument & {
-  __typename?: 'AtlasScope';
-  created: Scalars['DateTime']['output'];
-  documentType: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  initialState: AtlasScope_AtlasScopeState;
-  lastModified: Scalars['DateTime']['output'];
-  name: Scalars['String']['output'];
-  operations: Array<Operation>;
-  revision: Scalars['Int']['output'];
-  state: AtlasScope_AtlasScopeState;
-  stateJSON?: Maybe<Scalars['JSONObject']['output']>;
-};
-
-
-export type AtlasScopeOperationsArgs = {
-  first?: InputMaybe<Scalars['Int']['input']>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-};
-
-/** Queries: AtlasScope */
-export type AtlasScopeQueries = {
-  __typename?: 'AtlasScopeQueries';
-  getDocument?: Maybe<AtlasScope>;
-  getDocuments?: Maybe<Array<AtlasScope>>;
-};
-
-
-/** Queries: AtlasScope */
-export type AtlasScopeQueriesGetDocumentArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** Subgraph definition for AtlasScope (sky/atlas-scope) */
-export type AtlasScopeState = {
-  __typename?: 'AtlasScopeState';
-  /**
-   * Document number of the scope document within Atlas.
-   * For example: "A.1" for the Governance Scope.
-   */
-  content?: Maybe<Scalars['String']['output']>;
-  /** Unique document number assigned to the Scope document within Atlas. */
-  docNo?: Maybe<Scalars['String']['output']>;
-  /** Document tags as managed by the Atlas Axis facilitator group. */
-  globalTags: Array<Scalars['String']['output']>;
-  /** Master status as managed by the Atlas Axis facilitator group. */
-  masterStatus: Status;
-  /**
-   * Full name of the Scope without the document number.
-   * For example: "The Support Scope"
-   */
-  name?: Maybe<Scalars['OLabel']['output']>;
-  /** Original Notion document ID of the scope document. */
-  notionId?: Maybe<Scalars['String']['output']>;
-  /** List of Atlas documents that were relevant for the creation of the scope document. */
-  originalContextData: Array<Scalars['String']['output']>;
-};
-
-/** Module: Context */
-export type AtlasScope_AddContextDataInput = {
-  id: Scalars['String']['input'];
-};
-
-/** Module: Tags */
-export type AtlasScope_AddTagsInput = {
-  /** Tags to be added */
-  newTags: Array<Scalars['String']['input']>;
-};
-
-export type AtlasScope_AtlasScopeState = {
-  __typename?: 'AtlasScope_AtlasScopeState';
-  /**
-   * Document number of the scope document within Atlas.
-   * For example: "A.1" for the Governance Scope.
-   */
-  content?: Maybe<Scalars['String']['output']>;
-  /** Unique document number assigned to the Scope document within Atlas. */
-  docNo?: Maybe<Scalars['String']['output']>;
-  /** Document tags as managed by the Atlas Axis facilitator group. */
-  globalTags: Array<Scalars['String']['output']>;
-  /** Master status as managed by the Atlas Axis facilitator group. */
-  masterStatus: AtlasScope_Status;
-  /**
-   * Full name of the Scope without the document number.
-   * For example: "The Support Scope"
-   */
-  name?: Maybe<Scalars['OLabel']['output']>;
-  /** Original Notion document ID of the scope document. */
-  notionId?: Maybe<Scalars['String']['output']>;
-  /** List of Atlas documents that were relevant for the creation of the scope document.  */
-  originalContextData: Array<Scalars['String']['output']>;
-};
-
-/** Reference to a document within Atlas with optional name and document number for display reasons.  */
-export type AtlasScope_DocumentInfo = {
-  __typename?: 'AtlasScope_DocumentInfo';
-  docNo?: Maybe<Scalars['String']['output']>;
-  documentType?: Maybe<Scalars['String']['output']>;
-  icon?: Maybe<Scalars['String']['output']>;
-  id: Scalars['PHID']['output'];
-  title?: Maybe<Scalars['OLabel']['output']>;
-};
-
-export type AtlasScope_RemoveContextDataInput = {
-  id: Scalars['String']['input'];
-};
-
-export type AtlasScope_RemoveTagsInput = {
-  /** Tags to be removed */
-  tags: Array<Scalars['String']['input']>;
-};
-
-export type AtlasScope_ReplaceContextDataInput = {
-  id: Scalars['String']['input'];
-  prevId: Scalars['String']['input'];
-};
-
-export type AtlasScope_SetContentInput = {
-  /** Update the content of the scope document */
-  content: Scalars['String']['input'];
-};
-
-export type AtlasScope_SetDocNumberInput = {
-  docNo?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type AtlasScope_SetMasterStatusInput = {
-  /** New master status */
-  masterStatus: Status;
-};
-
-export type AtlasScope_SetNotionIdInput = {
+  npm?: InputMaybe<Scalars['URL']['input']>;
   /** Add your inputs here */
-  notionID?: InputMaybe<Scalars['String']['input']>;
+  spaceId: Scalars['OID']['input'];
+  vetraDriveUrl?: InputMaybe<Scalars['URL']['input']>;
 };
 
-/** Module: General */
-export type AtlasScope_SetScopeNameInput = {
-  name: Scalars['OLabel']['input'];
+/** Module: Spaces */
+export type BuilderAccount_AddSpaceInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** Add your inputs here */
+  title: Scalars['String']['input'];
 };
 
-export enum AtlasScope_Status {
-  Approved = 'APPROVED',
-  Archived = 'ARCHIVED',
-  Deferred = 'DEFERRED',
-  Placeholder = 'PLACEHOLDER',
-  Provisional = 'PROVISIONAL'
-}
-
-export type AtlasSet = IDocument & {
-  __typename?: 'AtlasSet';
-  created: Scalars['DateTime']['output'];
-  documentType: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  initialState: AtlasSet_AtlasSetState;
-  lastModified: Scalars['DateTime']['output'];
-  name: Scalars['String']['output'];
-  operations: Array<Operation>;
-  revision: Scalars['Int']['output'];
-  state: AtlasSet_AtlasSetState;
-  stateJSON?: Maybe<Scalars['JSONObject']['output']>;
+/** Module: Packages */
+export type BuilderAccount_AuthorInput = {
+  name: Scalars['String']['input'];
+  website?: InputMaybe<Scalars['URL']['input']>;
 };
 
-
-export type AtlasSetOperationsArgs = {
-  first?: InputMaybe<Scalars['Int']['input']>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
+export type BuilderAccount_BuilderAccountState = {
+  __typename?: 'BuilderAccount_BuilderAccountState';
+  members: Array<Scalars['EthereumAddress']['output']>;
+  profile: BuilderAccount_VetraBuilderProfile;
+  spaces: Array<BuilderAccount_VetraBuilderSpace>;
 };
 
-/** Queries: AtlasSet */
-export type AtlasSetQueries = {
-  __typename?: 'AtlasSetQueries';
-  getDocument?: Maybe<AtlasSet>;
-  getDocuments?: Maybe<Array<AtlasSet>>;
+export type BuilderAccount_DeletePackageInput = {
+  /** Add your inputs here */
+  id: Scalars['OID']['input'];
 };
 
+export type BuilderAccount_DeleteSpaceInput = {
+  /** Add your inputs here */
+  id: Scalars['OID']['input'];
+};
 
-/** Queries: AtlasSet */
-export type AtlasSetQueriesGetDocumentArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
+export type BuilderAccount_RemoveMemberInput = {
+  /** Add your inputs here */
+  ethAddress?: InputMaybe<Scalars['EthereumAddress']['input']>;
+};
+
+export type BuilderAccount_ReorderPackagesInput = {
+  ids: Array<Scalars['OID']['input']>;
+  insertAfter?: InputMaybe<Scalars['OID']['input']>;
+  /** Add your inputs here */
+  spaceId: Scalars['OID']['input'];
+};
+
+export type BuilderAccount_ReorderSpacesInput = {
+  /** Add your inputs here */
+  ids: Array<Scalars['OID']['input']>;
+  insertAfter?: InputMaybe<Scalars['OID']['input']>;
+};
+
+/** Module: Profile */
+export type BuilderAccount_SetLogoInput = {
+  /** Add your inputs here */
+  logoUrl: Scalars['String']['input'];
+};
+
+export type BuilderAccount_SetPackageDriveIdInput = {
   driveId?: InputMaybe<Scalars['String']['input']>;
+  /** Add your inputs here */
+  packageId: Scalars['OID']['input'];
 };
 
-/** Subgraph definition for AtlasSet (sky/atlas-set) */
-export type AtlasSetState = {
-  __typename?: 'AtlasSetState';
-  id: Scalars['PHID']['output'];
-  name: Scalars['String']['output'];
-  notionId?: Maybe<Scalars['String']['output']>;
-  parent?: Maybe<SetDocumentLink>;
+export type BuilderAccount_SetProfileDescriptionInput = {
+  /** Add your inputs here */
+  description?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type AtlasSet_AtlasSetState = {
-  __typename?: 'AtlasSet_AtlasSetState';
-  id: Scalars['PHID']['output'];
-  name: Scalars['String']['output'];
-  notionId?: Maybe<Scalars['String']['output']>;
-  parent?: Maybe<AtlasSet_SetDocumentLink>;
-};
-
-export type AtlasSet_SetDocumentLink = {
-  __typename?: 'AtlasSet_SetDocumentLink';
-  documentType?: Maybe<Scalars['String']['output']>;
-  icon?: Maybe<Scalars['String']['output']>;
-  id: Scalars['PHID']['output'];
-  title?: Maybe<Scalars['OLabel']['output']>;
-};
-
-export type AtlasSet_SetNotionIdInput = {
-  notionId: Scalars['String']['input'];
-};
-
-/** Module: General */
-export type AtlasSet_SetSetNameInput = {
+export type BuilderAccount_SetProfileNameInput = {
+  /** Add your inputs here */
   name: Scalars['String']['input'];
 };
 
-export type AtlasSet_SetSetParentInput = {
-  documentType?: InputMaybe<Scalars['String']['input']>;
-  icon?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['PHID']['input'];
-  title?: InputMaybe<Scalars['OLabel']['input']>;
+export type BuilderAccount_SetSlugInput = {
+  /** Add your inputs here */
+  slug: Scalars['String']['input'];
 };
 
-/**
- * Issues are comprised of Comments.
- *
- * When an Issue is first created, it is empty and has no comments. Users can then submit comments which are associated with a given issue.
- *
- * A comment refers to a specific item from the Atlas. This field is required, but can be changed later.
- */
-export type Comment = {
-  __typename?: 'Comment';
-  content: Scalars['String']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  creatorAddress: Scalars['EthereumAddress']['output'];
-  lastEditedAt: Scalars['DateTime']['output'];
-  notionId: Scalars['String']['output'];
-  phid: Scalars['PHID']['output'];
+export type BuilderAccount_SetSpaceDescriptionInput = {
+  description: Scalars['String']['input'];
+  /** Add your inputs here */
+  id: Scalars['OID']['input'];
+};
+
+export type BuilderAccount_SetSpaceTitleInput = {
+  /** Add your inputs here */
+  id: Scalars['OID']['input'];
+  newTitle: Scalars['String']['input'];
+};
+
+export type BuilderAccount_UpdatePackageInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** Add your inputs here */
+  id: Scalars['OID']['input'];
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BuilderAccount_UpdateSocialsInput = {
+  github?: InputMaybe<Scalars['URL']['input']>;
+  website?: InputMaybe<Scalars['URL']['input']>;
+  /** Add your inputs here */
+  x?: InputMaybe<Scalars['URL']['input']>;
+};
+
+export type BuilderAccount_VetraBuilderPackage = {
+  __typename?: 'BuilderAccount_VetraBuilderPackage';
+  author: BuilderAccount_VetraBuilderPackageAuthor;
+  category?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  github?: Maybe<Scalars['URL']['output']>;
+  id: Scalars['OID']['output'];
+  keywords: Array<BuilderAccount_VetraBuilderPackageKeyword>;
+  name: Scalars['String']['output'];
+  npm?: Maybe<Scalars['URL']['output']>;
+  vetraDriveUrl?: Maybe<Scalars['URL']['output']>;
+};
+
+export type BuilderAccount_VetraBuilderPackageAuthor = {
+  __typename?: 'BuilderAccount_VetraBuilderPackageAuthor';
+  name: Scalars['String']['output'];
+  website?: Maybe<Scalars['URL']['output']>;
+};
+
+export type BuilderAccount_VetraBuilderPackageKeyword = {
+  __typename?: 'BuilderAccount_VetraBuilderPackageKeyword';
+  id: Scalars['OID']['output'];
+  label: Scalars['String']['output'];
+};
+
+export type BuilderAccount_VetraBuilderProfile = {
+  __typename?: 'BuilderAccount_VetraBuilderProfile';
+  description?: Maybe<Scalars['String']['output']>;
+  logo?: Maybe<Scalars['URL']['output']>;
+  name: Scalars['String']['output'];
+  slug: Scalars['String']['output'];
+  socials: BuilderAccount_VetraBuilderSocials;
+};
+
+export type BuilderAccount_VetraBuilderSocials = {
+  __typename?: 'BuilderAccount_VetraBuilderSocials';
+  github?: Maybe<Scalars['URL']['output']>;
+  website?: Maybe<Scalars['URL']['output']>;
+  xProfile?: Maybe<Scalars['URL']['output']>;
+};
+
+export type BuilderAccount_VetraBuilderSpace = {
+  __typename?: 'BuilderAccount_VetraBuilderSpace';
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['OID']['output'];
+  packages: Array<BuilderAccount_VetraBuilderPackage>;
+  title: Scalars['String']['output'];
+};
+
+export type BuilderPackage = {
+  __typename?: 'BuilderPackage';
+  authorName: Scalars['String']['output'];
+  authorWebsite?: Maybe<Scalars['String']['output']>;
+  category?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  driveId?: Maybe<Scalars['String']['output']>;
+  githubUrl?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  keywords: Array<BuilderPackageKeyword>;
+  name: Scalars['String']['output'];
+  npmUrl?: Maybe<Scalars['String']['output']>;
+  sortOrder: Scalars['Int']['output'];
+  spaceId: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+  vetraDriveUrl?: Maybe<Scalars['String']['output']>;
+};
+
+export type BuilderPackageKeyword = {
+  __typename?: 'BuilderPackageKeyword';
+  createdAt: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  label: Scalars['String']['output'];
+  packageId: Scalars['String']['output'];
+};
+
+export type BuilderSpace = {
+  __typename?: 'BuilderSpace';
+  builderAccountId: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  packages: Array<BuilderPackage>;
+  sortOrder: Scalars['Int']['output'];
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
 };
 
 export type CurrencyConversion = {
@@ -1274,11 +532,11 @@ export type Dimension = {
 
 export type DocumentDrive = IDocument & {
   __typename?: 'DocumentDrive';
-  created: Scalars['DateTime']['output'];
+  createdAtUtcIso: Scalars['DateTime']['output'];
   documentType: Scalars['String']['output'];
   id: Scalars['String']['output'];
   initialState: DocumentDrive_DocumentDriveState;
-  lastModified: Scalars['DateTime']['output'];
+  lastModifiedAtUtcIso: Scalars['DateTime']['output'];
   name: Scalars['String']['output'];
   operations: Array<Operation>;
   revision: Scalars['Int']['output'];
@@ -1321,7 +579,6 @@ export type DocumentDrive_FileNode = {
   kind: Scalars['String']['output'];
   name: Scalars['String']['output'];
   parentFolder?: Maybe<Scalars['String']['output']>;
-  synchronizationUnits: Array<DocumentDrive_SynchronizationUnit>;
 };
 
 export type DocumentDrive_FolderNode = {
@@ -1366,13 +623,6 @@ export type DocumentDrive_PullResponderTriggerData = {
   url: Scalars['String']['output'];
 };
 
-export type DocumentDrive_SynchronizationUnit = {
-  __typename?: 'DocumentDrive_SynchronizationUnit';
-  branch: Scalars['String']['output'];
-  scope: Scalars['String']['output'];
-  syncId: Scalars['ID']['output'];
-};
-
 export enum DocumentDrive_TransmitterType {
   Internal = 'Internal',
   MatrixConnect = 'MatrixConnect',
@@ -1395,22 +645,96 @@ export enum DocumentDrive_TriggerType {
   PullResponder = 'PullResponder'
 }
 
-/** Reference to a document within Atlas with optional name and document number for display reasons. */
-export type DocumentInfo = {
-  __typename?: 'DocumentInfo';
-  docNo?: Maybe<Scalars['String']['output']>;
-  documentType?: Maybe<Scalars['String']['output']>;
-  icon?: Maybe<Scalars['String']['output']>;
-  id: Scalars['PHID']['output'];
-  title?: Maybe<Scalars['OLabel']['output']>;
+export type DocumentEditor = IDocument & {
+  __typename?: 'DocumentEditor';
+  createdAtUtcIso: Scalars['DateTime']['output'];
+  documentType: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  initialState: DocumentEditor_DocumentEditorState;
+  lastModifiedAtUtcIso: Scalars['DateTime']['output'];
+  name: Scalars['String']['output'];
+  operations: Array<Operation>;
+  revision: Scalars['Int']['output'];
+  state: DocumentEditor_DocumentEditorState;
+  stateJSON?: Maybe<Scalars['JSONObject']['output']>;
 };
+
+
+export type DocumentEditorOperationsArgs = {
+  first?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Queries: DocumentEditor */
+export type DocumentEditorQueries = {
+  __typename?: 'DocumentEditorQueries';
+  getDocument?: Maybe<DocumentEditor>;
+  getDocuments?: Maybe<Array<DocumentEditor>>;
+};
+
+
+/** Queries: DocumentEditor */
+export type DocumentEditorQueriesGetDocumentArgs = {
+  docId: Scalars['PHID']['input'];
+  driveId?: InputMaybe<Scalars['PHID']['input']>;
+};
+
+
+/** Queries: DocumentEditor */
+export type DocumentEditorQueriesGetDocumentsArgs = {
+  driveId: Scalars['String']['input'];
+};
+
+/** Subgraph definition for DocumentEditor (powerhouse/document-editor) */
+export type DocumentEditorState = {
+  __typename?: 'DocumentEditorState';
+  documentTypes: Array<DocumentTypeItem>;
+  name: Scalars['String']['output'];
+  status: StatusType;
+};
+
+export type DocumentEditor_AddDocumentTypeInput = {
+  documentType: Scalars['String']['input'];
+  id: Scalars['OID']['input'];
+};
+
+export type DocumentEditor_DocumentEditorState = {
+  __typename?: 'DocumentEditor_DocumentEditorState';
+  documentTypes: Array<DocumentEditor_DocumentTypeItem>;
+  name: Scalars['String']['output'];
+  status: DocumentEditor_StatusType;
+};
+
+export type DocumentEditor_DocumentTypeItem = {
+  __typename?: 'DocumentEditor_DocumentTypeItem';
+  documentType: Scalars['String']['output'];
+  id: Scalars['OID']['output'];
+};
+
+export type DocumentEditor_RemoveDocumentTypeInput = {
+  id: Scalars['OID']['input'];
+};
+
+/** Module: BaseOperations */
+export type DocumentEditor_SetEditorNameInput = {
+  name: Scalars['String']['input'];
+};
+
+export type DocumentEditor_SetEditorStatusInput = {
+  status: StatusType;
+};
+
+export enum DocumentEditor_StatusType {
+  Confirmed = 'CONFIRMED',
+  Draft = 'DRAFT'
+}
 
 export type DocumentModel = IDocument & {
   __typename?: 'DocumentModel';
-  created: Scalars['DateTime']['output'];
+  createdAtUtcIso: Scalars['DateTime']['output'];
   documentType: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  lastModified: Scalars['DateTime']['output'];
+  lastModifiedAtUtcIso: Scalars['DateTime']['output'];
   name: Scalars['String']['output'];
   operations: Array<Operation>;
   revision: Scalars['Int']['output'];
@@ -1423,94 +747,113 @@ export type DocumentModelOperationsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/** Domain (i.e., Atlas) specific document types with the same document model global schema. */
-export enum EAtlasType {
-  Scenario = 'SCENARIO',
-  ScenarioVariation = 'SCENARIO_VARIATION'
-}
-
-export type EDocumentLink = {
-  __typename?: 'EDocumentLink';
-  docNo?: Maybe<Scalars['String']['output']>;
-  documentType?: Maybe<Scalars['String']['output']>;
-  icon?: Maybe<Scalars['String']['output']>;
-  id: Scalars['PHID']['output'];
-  title?: Maybe<Scalars['OLabel']['output']>;
+export type DocumentModel_Author = {
+  __typename?: 'DocumentModel_Author';
+  name: Scalars['String']['output'];
+  website?: Maybe<Scalars['String']['output']>;
 };
 
-/** Defines the lifecycle stage of the Exploratory document within Atlas. */
-export enum EStatus {
-  Approved = 'APPROVED',
-  Archived = 'ARCHIVED',
-  Deferred = 'DEFERRED',
-  Placeholder = 'PLACEHOLDER',
-  Provisional = 'PROVISIONAL'
-}
-
-/** Domain (i.e., Atlas) specific document types with the same document model global schema. */
-export enum FAtlasType {
-  ActiveDataController = 'ACTIVE_DATA_CONTROLLER',
-  Article = 'ARTICLE',
-  Core = 'CORE',
-  Section = 'SECTION',
-  TypeSpecification = 'TYPE_SPECIFICATION'
-}
-
-/** Reference to a document within Atlas with optional name and document number for display reasons. */
-export type FDocumentLink = {
-  __typename?: 'FDocumentLink';
-  docNo?: Maybe<Scalars['String']['output']>;
-  documentType?: Maybe<Scalars['String']['output']>;
-  icon?: Maybe<Scalars['String']['output']>;
-  id: Scalars['PHID']['output'];
-  title?: Maybe<Scalars['OLabel']['output']>;
+export type DocumentModel_CodeExample = {
+  __typename?: 'DocumentModel_CodeExample';
+  id: Scalars['ID']['output'];
+  value: Scalars['String']['output'];
 };
 
-export enum FStatus {
-  Approved = 'APPROVED',
-  Archived = 'ARCHIVED',
-  Deferred = 'DEFERRED',
-  Placeholder = 'PLACEHOLDER',
-  Provisional = 'PROVISIONAL'
-}
-
-/** Reference to a document within Atlas with optional name and document number for display reasons. */
-export type Finding = {
-  __typename?: 'Finding';
-  isAligned: Scalars['Boolean']['output'];
+export type DocumentModel_DocumentModelState = {
+  __typename?: 'DocumentModel_DocumentModelState';
+  author: DocumentModel_Author;
+  description: Scalars['String']['output'];
+  extension: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  specifications: Array<DocumentModel_DocumentSpecification>;
 };
 
-/** Domain (i.e., Atlas) specific document types with the same document model global schema. */
-export enum GAtlasType {
-  ActiveData = 'ACTIVE_DATA',
-  OriginalContextData = 'ORIGINAL_CONTEXT_DATA',
-  Tenet = 'TENET'
-}
-
-/** Reference to a document within Atlas with optional name and document number for display reasons. */
-export type GDocumentLink = {
-  __typename?: 'GDocumentLink';
-  docNo?: Maybe<Scalars['String']['output']>;
-  documentType?: Maybe<Scalars['String']['output']>;
-  icon?: Maybe<Scalars['String']['output']>;
-  id: Scalars['PHID']['output'];
-  title?: Maybe<Scalars['OLabel']['output']>;
+export type DocumentModel_DocumentSpecification = {
+  __typename?: 'DocumentModel_DocumentSpecification';
+  changeLog: Array<Scalars['String']['output']>;
+  modules: Array<DocumentModel_Module>;
+  state: DocumentModel_ScopeState;
+  version: Scalars['Int']['output'];
 };
 
-/** Defines the lifecycle stage of the Grounding document within Atlas. */
-export enum GStatus {
-  Approved = 'APPROVED',
-  Archived = 'ARCHIVED',
-  Deferred = 'DEFERRED',
-  Placeholder = 'PLACEHOLDER',
-  Provisional = 'PROVISIONAL'
-}
+export type DocumentModel_Module = {
+  __typename?: 'DocumentModel_Module';
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  operations: Array<DocumentModel_Operation>;
+};
 
-export type IDocument = {
-  created: Scalars['DateTime']['output'];
+export type DocumentModel_Operation = {
+  __typename?: 'DocumentModel_Operation';
+  description?: Maybe<Scalars['String']['output']>;
+  errors: Array<DocumentModel_OperationError>;
+  examples: Array<DocumentModel_CodeExample>;
+  id: Scalars['ID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  reducer?: Maybe<Scalars['String']['output']>;
+  schema?: Maybe<Scalars['String']['output']>;
+  scope?: Maybe<Scalars['String']['output']>;
+  template?: Maybe<Scalars['String']['output']>;
+};
+
+export type DocumentModel_OperationError = {
+  __typename?: 'DocumentModel_OperationError';
+  code?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  template?: Maybe<Scalars['String']['output']>;
+};
+
+export type DocumentModel_ScopeState = {
+  __typename?: 'DocumentModel_ScopeState';
+  global: DocumentModel_State;
+  local: DocumentModel_State;
+};
+
+export type DocumentModel_State = {
+  __typename?: 'DocumentModel_State';
+  examples: Array<DocumentModel_CodeExample>;
+  initialValue: Scalars['String']['output'];
+  schema: Scalars['String']['output'];
+};
+
+export type DocumentTypeItem = {
+  __typename?: 'DocumentTypeItem';
+  documentType: Scalars['String']['output'];
+  id: Scalars['OID']['output'];
+};
+
+export type DragAndDropSettings = {
+  __typename?: 'DragAndDropSettings';
+  enabled: Scalars['Boolean']['output'];
+};
+
+export type DriveDocument = IDocument & {
+  __typename?: 'DriveDocument';
+  createdAtUtcIso: Scalars['DateTime']['output'];
   documentType: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  lastModified: Scalars['DateTime']['output'];
+  lastModifiedAtUtcIso: Scalars['DateTime']['output'];
+  name: Scalars['String']['output'];
+  operations: Array<Operation>;
+  revision: Scalars['Int']['output'];
+  stateJSON?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+
+export type DriveDocumentOperationsArgs = {
+  first?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type IDocument = {
+  createdAtUtcIso: Scalars['DateTime']['output'];
+  documentType: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  lastModifiedAtUtcIso: Scalars['DateTime']['output'];
   name: Scalars['String']['output'];
   operations: Array<Operation>;
   revision: Scalars['Int']['output'];
@@ -1523,48 +866,11 @@ export type IDocumentOperationsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/**
- * An issue that has been submitted to the Atlas.
- *
- * Holds a list of comments pertaining to specific items in the Atlas.
- *
- * Uses the same identifiers to register the relevant content as are used in the Atlas itself. These identifiers are the UUID's used by Notion, sometimes with a suffix of a part of the item's parent for cases where multiple parents exist.
- *
- * The relevant Notion IDs are separate from the Notion IDs referenced in the Comments themselves, because we might want to determine the scope of the Issue's content before any actual comments are added yet.
- */
-export type Issue = {
-  __typename?: 'Issue';
-  comments: Array<Comment>;
-  createdAt: Scalars['DateTime']['output'];
-  creatorAddress: Scalars['EthereumAddress']['output'];
-  notionIds: Array<Scalars['String']['output']>;
-  phid: Scalars['PHID']['output'];
+export type Keyword = {
+  __typename?: 'Keyword';
+  id: Scalars['OID']['output'];
+  label: Scalars['String']['output'];
 };
-
-/** Domain (i.e., Atlas) specific document types with the same document model global schema. */
-export enum MAtlasType {
-  Annotation = 'ANNOTATION',
-  NeededResearch = 'NEEDED_RESEARCH'
-}
-
-/** Reference to a document within Atlas with optional name and document number for display reasons. */
-export type MDocumentLink = {
-  __typename?: 'MDocumentLink';
-  docNo?: Maybe<Scalars['String']['output']>;
-  documentType?: Maybe<Scalars['String']['output']>;
-  icon?: Maybe<Scalars['String']['output']>;
-  id: Scalars['PHID']['output'];
-  title?: Maybe<Scalars['OLabel']['output']>;
-};
-
-/** Defines the lifecycle stage of the MultiParent document within Atlas. */
-export enum MStatus {
-  Approved = 'APPROVED',
-  Archived = 'ARCHIVED',
-  Deferred = 'DEFERRED',
-  Placeholder = 'PLACEHOLDER',
-  Provisional = 'PROVISIONAL'
-}
 
 export type MultiCurrencyConversions = {
   conversions: Array<InputMaybe<CurrencyConversion>>;
@@ -1579,88 +885,58 @@ export type MultiCurrencyConversions = {
   start?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Mutations: AtlasMultiParent */
+/** Mutations: AppModule */
 export type Mutation = {
   __typename?: 'Mutation';
-  AtlasExploratory_addContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasExploratory_addTags?: Maybe<Scalars['Int']['output']>;
-  AtlasExploratory_createDocument?: Maybe<Scalars['String']['output']>;
-  AtlasExploratory_removeContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasExploratory_removeTags?: Maybe<Scalars['Int']['output']>;
-  AtlasExploratory_replaceContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasExploratory_setAdditionalGuidance?: Maybe<Scalars['Int']['output']>;
-  AtlasExploratory_setAtlasType?: Maybe<Scalars['Int']['output']>;
-  AtlasExploratory_setContent?: Maybe<Scalars['Int']['output']>;
-  AtlasExploratory_setDocNumber?: Maybe<Scalars['Int']['output']>;
-  AtlasExploratory_setExploratoryName?: Maybe<Scalars['Int']['output']>;
-  AtlasExploratory_setFindings?: Maybe<Scalars['Int']['output']>;
-  AtlasExploratory_setMasterStatus?: Maybe<Scalars['Int']['output']>;
-  AtlasExploratory_setNotionId?: Maybe<Scalars['Int']['output']>;
-  AtlasExploratory_setParent?: Maybe<Scalars['Int']['output']>;
-  AtlasFeedbackIssues_addNotionId?: Maybe<Scalars['Int']['output']>;
-  AtlasFeedbackIssues_createComment?: Maybe<Scalars['Int']['output']>;
-  AtlasFeedbackIssues_createDocument?: Maybe<Scalars['String']['output']>;
-  AtlasFeedbackIssues_createIssue?: Maybe<Scalars['Int']['output']>;
-  AtlasFeedbackIssues_deleteComment?: Maybe<Scalars['Int']['output']>;
-  AtlasFeedbackIssues_deleteIssue?: Maybe<Scalars['Int']['output']>;
-  AtlasFeedbackIssues_editComment?: Maybe<Scalars['Int']['output']>;
-  AtlasFeedbackIssues_removeNotionId?: Maybe<Scalars['Int']['output']>;
-  AtlasFoundation_addContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasFoundation_addTags?: Maybe<Scalars['Int']['output']>;
-  AtlasFoundation_createDocument?: Maybe<Scalars['String']['output']>;
-  AtlasFoundation_removeContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasFoundation_removeTags?: Maybe<Scalars['Int']['output']>;
-  AtlasFoundation_replaceContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasFoundation_setAtlasType?: Maybe<Scalars['Int']['output']>;
-  AtlasFoundation_setContent?: Maybe<Scalars['Int']['output']>;
-  AtlasFoundation_setDocNumber?: Maybe<Scalars['Int']['output']>;
-  AtlasFoundation_setFoundationName?: Maybe<Scalars['Int']['output']>;
-  AtlasFoundation_setMasterStatus?: Maybe<Scalars['Int']['output']>;
-  AtlasFoundation_setNotionId?: Maybe<Scalars['Int']['output']>;
-  AtlasFoundation_setParent?: Maybe<Scalars['Int']['output']>;
-  AtlasGrounding_addContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasGrounding_addTags?: Maybe<Scalars['Int']['output']>;
-  AtlasGrounding_createDocument?: Maybe<Scalars['String']['output']>;
-  AtlasGrounding_removeContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasGrounding_removeTags?: Maybe<Scalars['Int']['output']>;
-  AtlasGrounding_replaceContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasGrounding_setAtlasType?: Maybe<Scalars['Int']['output']>;
-  AtlasGrounding_setContent?: Maybe<Scalars['Int']['output']>;
-  AtlasGrounding_setDocNumber?: Maybe<Scalars['Int']['output']>;
-  AtlasGrounding_setGroundingName?: Maybe<Scalars['Int']['output']>;
-  AtlasGrounding_setMasterStatus?: Maybe<Scalars['Int']['output']>;
-  AtlasGrounding_setNotionId?: Maybe<Scalars['Int']['output']>;
-  AtlasGrounding_setParent?: Maybe<Scalars['Int']['output']>;
-  AtlasMultiParent_addContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasMultiParent_addParent?: Maybe<Scalars['Int']['output']>;
-  AtlasMultiParent_addTags?: Maybe<Scalars['Int']['output']>;
-  AtlasMultiParent_createDocument?: Maybe<Scalars['String']['output']>;
-  AtlasMultiParent_removeContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasMultiParent_removeParent?: Maybe<Scalars['Int']['output']>;
-  AtlasMultiParent_removeTags?: Maybe<Scalars['Int']['output']>;
-  AtlasMultiParent_replaceContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasMultiParent_replaceParent?: Maybe<Scalars['Int']['output']>;
-  AtlasMultiParent_setAtlasType?: Maybe<Scalars['Int']['output']>;
-  AtlasMultiParent_setContent?: Maybe<Scalars['Int']['output']>;
-  AtlasMultiParent_setExploratoryName?: Maybe<Scalars['Int']['output']>;
-  AtlasMultiParent_setMasterStatus?: Maybe<Scalars['Int']['output']>;
-  AtlasMultiParent_setNotionId?: Maybe<Scalars['Int']['output']>;
-  AtlasScope_addContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasScope_addTags?: Maybe<Scalars['Int']['output']>;
-  AtlasScope_createDocument?: Maybe<Scalars['String']['output']>;
-  AtlasScope_removeContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasScope_removeTags?: Maybe<Scalars['Int']['output']>;
-  AtlasScope_replaceContextData?: Maybe<Scalars['Int']['output']>;
-  AtlasScope_setContent?: Maybe<Scalars['Int']['output']>;
-  AtlasScope_setDocNumber?: Maybe<Scalars['Int']['output']>;
-  AtlasScope_setMasterStatus?: Maybe<Scalars['Int']['output']>;
-  AtlasScope_setNotionId?: Maybe<Scalars['Int']['output']>;
-  AtlasScope_setScopeName?: Maybe<Scalars['Int']['output']>;
-  AtlasSet_createDocument?: Maybe<Scalars['String']['output']>;
-  AtlasSet_setNotionId?: Maybe<Scalars['Int']['output']>;
-  AtlasSet_setSetName?: Maybe<Scalars['Int']['output']>;
-  AtlasSet_setSetParent?: Maybe<Scalars['Int']['output']>;
-  ForkAtlas?: Maybe<Scalars['String']['output']>;
+  AppModule_addDocumentType?: Maybe<Scalars['Int']['output']>;
+  AppModule_createDocument?: Maybe<Scalars['String']['output']>;
+  AppModule_removeDocumentType?: Maybe<Scalars['Int']['output']>;
+  AppModule_setAppName?: Maybe<Scalars['Int']['output']>;
+  AppModule_setAppStatus?: Maybe<Scalars['Int']['output']>;
+  AppModule_setDragAndDropEnabled?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_addMember?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_addPackage?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_addSpace?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_createDocument?: Maybe<Scalars['String']['output']>;
+  BuilderAccount_deletePackage?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_deleteSpace?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_removeMember?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_reorderPackages?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_reorderSpaces?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_setLogo?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_setPackageDriveId?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_setProfileDescription?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_setProfileName?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_setSlug?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_setSpaceDescription?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_setSpaceTitle?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_updatePackage?: Maybe<Scalars['Int']['output']>;
+  BuilderAccount_updateSocials?: Maybe<Scalars['Int']['output']>;
+  DocumentEditor_addDocumentType?: Maybe<Scalars['Int']['output']>;
+  DocumentEditor_createDocument?: Maybe<Scalars['String']['output']>;
+  DocumentEditor_removeDocumentType?: Maybe<Scalars['Int']['output']>;
+  DocumentEditor_setEditorName?: Maybe<Scalars['Int']['output']>;
+  DocumentEditor_setEditorStatus?: Maybe<Scalars['Int']['output']>;
+  ProcessorModule_addDocumentType?: Maybe<Scalars['Int']['output']>;
+  ProcessorModule_createDocument?: Maybe<Scalars['String']['output']>;
+  ProcessorModule_removeDocumentType?: Maybe<Scalars['Int']['output']>;
+  ProcessorModule_setProcessorName?: Maybe<Scalars['Int']['output']>;
+  ProcessorModule_setProcessorStatus?: Maybe<Scalars['Int']['output']>;
+  ProcessorModule_setProcessorType?: Maybe<Scalars['Int']['output']>;
+  SubgraphModule_createDocument?: Maybe<Scalars['String']['output']>;
+  SubgraphModule_setSubgraphName?: Maybe<Scalars['Int']['output']>;
+  SubgraphModule_setSubgraphStatus?: Maybe<Scalars['Int']['output']>;
+  VetraPackage_addPackageKeyword?: Maybe<Scalars['Int']['output']>;
+  VetraPackage_createDocument?: Maybe<Scalars['String']['output']>;
+  VetraPackage_removePackageKeyword?: Maybe<Scalars['Int']['output']>;
+  VetraPackage_setPackageAuthor?: Maybe<Scalars['Int']['output']>;
+  VetraPackage_setPackageAuthorName?: Maybe<Scalars['Int']['output']>;
+  VetraPackage_setPackageAuthorWebsite?: Maybe<Scalars['Int']['output']>;
+  VetraPackage_setPackageCategory?: Maybe<Scalars['Int']['output']>;
+  VetraPackage_setPackageDescription?: Maybe<Scalars['Int']['output']>;
+  VetraPackage_setPackageGithubUrl?: Maybe<Scalars['Int']['output']>;
+  VetraPackage_setPackageName?: Maybe<Scalars['Int']['output']>;
+  VetraPackage_setPackageNpmUrl?: Maybe<Scalars['Int']['output']>;
   addDrive?: Maybe<AddDriveResult>;
   deleteDrive?: Maybe<Scalars['Boolean']['output']>;
   setDriveIcon?: Maybe<Scalars['Boolean']['output']>;
@@ -1668,631 +944,393 @@ export type Mutation = {
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_AddContextDataArgs = {
+/** Mutations: AppModule */
+export type MutationAppModule_AddDocumentTypeArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasExploratory_AddContextDataInput>;
+  input?: InputMaybe<AppModule_AddDocumentTypeInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_AddTagsArgs = {
+/** Mutations: AppModule */
+export type MutationAppModule_CreateDocumentArgs = {
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+
+/** Mutations: AppModule */
+export type MutationAppModule_RemoveDocumentTypeArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasExploratory_AddTagsInput>;
+  input?: InputMaybe<AppModule_RemoveDocumentTypeInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_CreateDocumentArgs = {
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_RemoveContextDataArgs = {
+/** Mutations: AppModule */
+export type MutationAppModule_SetAppNameArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasExploratory_RemoveContextDataInput>;
+  input?: InputMaybe<AppModule_SetAppNameInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_RemoveTagsArgs = {
+/** Mutations: AppModule */
+export type MutationAppModule_SetAppStatusArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasExploratory_RemoveTagsInput>;
+  input?: InputMaybe<AppModule_SetAppStatusInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_ReplaceContextDataArgs = {
+/** Mutations: AppModule */
+export type MutationAppModule_SetDragAndDropEnabledArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasExploratory_ReplaceContextDataInput>;
+  input?: InputMaybe<AppModule_SetDragAndDropEnabledInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_SetAdditionalGuidanceArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_AddMemberArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasExploratory_SetAdditionalGuidanceInput>;
+  input?: InputMaybe<BuilderAccount_AddMemberInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_SetAtlasTypeArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_AddPackageArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasExploratory_SetAtlasTypeInput>;
+  input?: InputMaybe<BuilderAccount_AddPackageInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_SetContentArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_AddSpaceArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasExploratory_SetContentInput>;
+  input?: InputMaybe<BuilderAccount_AddSpaceInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_SetDocNumberArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_CreateDocumentArgs = {
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+
+/** Mutations: AppModule */
+export type MutationBuilderAccount_DeletePackageArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasExploratory_SetDocNumberInput>;
+  input?: InputMaybe<BuilderAccount_DeletePackageInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_SetExploratoryNameArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_DeleteSpaceArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasExploratory_SetExploratoryNameInput>;
+  input?: InputMaybe<BuilderAccount_DeleteSpaceInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_SetFindingsArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_RemoveMemberArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasExploratory_SetFindingsInput>;
+  input?: InputMaybe<BuilderAccount_RemoveMemberInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_SetMasterStatusArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_ReorderPackagesArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasExploratory_SetMasterStatusInput>;
+  input?: InputMaybe<BuilderAccount_ReorderPackagesInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_SetNotionIdArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_ReorderSpacesArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasExploratory_SetNotionIdInput>;
+  input?: InputMaybe<BuilderAccount_ReorderSpacesInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasExploratory_SetParentArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_SetLogoArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasExploratory_SetParentInput>;
+  input?: InputMaybe<BuilderAccount_SetLogoInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFeedbackIssues_AddNotionIdArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_SetPackageDriveIdArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFeedbackIssues_AddNotionIdInput>;
+  input?: InputMaybe<BuilderAccount_SetPackageDriveIdInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFeedbackIssues_CreateCommentArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_SetProfileDescriptionArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFeedbackIssues_CreateCommentInput>;
+  input?: InputMaybe<BuilderAccount_SetProfileDescriptionInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFeedbackIssues_CreateDocumentArgs = {
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFeedbackIssues_CreateIssueArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_SetProfileNameArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFeedbackIssues_CreateIssueInput>;
+  input?: InputMaybe<BuilderAccount_SetProfileNameInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFeedbackIssues_DeleteCommentArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_SetSlugArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFeedbackIssues_DeleteCommentInput>;
+  input?: InputMaybe<BuilderAccount_SetSlugInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFeedbackIssues_DeleteIssueArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_SetSpaceDescriptionArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFeedbackIssues_DeleteIssueInput>;
+  input?: InputMaybe<BuilderAccount_SetSpaceDescriptionInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFeedbackIssues_EditCommentArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_SetSpaceTitleArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFeedbackIssues_EditCommentInput>;
+  input?: InputMaybe<BuilderAccount_SetSpaceTitleInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFeedbackIssues_RemoveNotionIdArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_UpdatePackageArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFeedbackIssues_RemoveNotionIdInput>;
+  input?: InputMaybe<BuilderAccount_UpdatePackageInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFoundation_AddContextDataArgs = {
+/** Mutations: AppModule */
+export type MutationBuilderAccount_UpdateSocialsArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFoundation_AddContextDataInput>;
+  input?: InputMaybe<BuilderAccount_UpdateSocialsInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFoundation_AddTagsArgs = {
+/** Mutations: AppModule */
+export type MutationDocumentEditor_AddDocumentTypeArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFoundation_AddTagsInput>;
+  input?: InputMaybe<DocumentEditor_AddDocumentTypeInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFoundation_CreateDocumentArgs = {
+/** Mutations: AppModule */
+export type MutationDocumentEditor_CreateDocumentArgs = {
   driveId?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFoundation_RemoveContextDataArgs = {
+/** Mutations: AppModule */
+export type MutationDocumentEditor_RemoveDocumentTypeArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFoundation_RemoveContextDataInput>;
+  input?: InputMaybe<DocumentEditor_RemoveDocumentTypeInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFoundation_RemoveTagsArgs = {
+/** Mutations: AppModule */
+export type MutationDocumentEditor_SetEditorNameArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFoundation_RemoveTagsInput>;
+  input?: InputMaybe<DocumentEditor_SetEditorNameInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFoundation_ReplaceContextDataArgs = {
+/** Mutations: AppModule */
+export type MutationDocumentEditor_SetEditorStatusArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFoundation_ReplaceContextDataInput>;
+  input?: InputMaybe<DocumentEditor_SetEditorStatusInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFoundation_SetAtlasTypeArgs = {
+/** Mutations: AppModule */
+export type MutationProcessorModule_AddDocumentTypeArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFoundation_SetAtlasTypeInput>;
+  input?: InputMaybe<ProcessorModule_AddDocumentTypeInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFoundation_SetContentArgs = {
+/** Mutations: AppModule */
+export type MutationProcessorModule_CreateDocumentArgs = {
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+
+/** Mutations: AppModule */
+export type MutationProcessorModule_RemoveDocumentTypeArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFoundation_SetContentInput>;
+  input?: InputMaybe<ProcessorModule_RemoveDocumentTypeInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFoundation_SetDocNumberArgs = {
+/** Mutations: AppModule */
+export type MutationProcessorModule_SetProcessorNameArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFoundation_SetDocNumberInput>;
+  input?: InputMaybe<ProcessorModule_SetProcessorNameInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFoundation_SetFoundationNameArgs = {
+/** Mutations: AppModule */
+export type MutationProcessorModule_SetProcessorStatusArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFoundation_SetFoundationNameInput>;
+  input?: InputMaybe<ProcessorModule_SetProcessorStatusInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFoundation_SetMasterStatusArgs = {
+/** Mutations: AppModule */
+export type MutationProcessorModule_SetProcessorTypeArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFoundation_SetMasterStatusInput>;
+  input?: InputMaybe<ProcessorModule_SetProcessorTypeInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFoundation_SetNotionIdArgs = {
+/** Mutations: AppModule */
+export type MutationSubgraphModule_CreateDocumentArgs = {
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+
+/** Mutations: AppModule */
+export type MutationSubgraphModule_SetSubgraphNameArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFoundation_SetNotionIdInput>;
+  input?: InputMaybe<SubgraphModule_SetSubgraphNameInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasFoundation_SetParentArgs = {
+/** Mutations: AppModule */
+export type MutationSubgraphModule_SetSubgraphStatusArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasFoundation_SetParentInput>;
+  input?: InputMaybe<SubgraphModule_SetSubgraphStatusInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasGrounding_AddContextDataArgs = {
+/** Mutations: AppModule */
+export type MutationVetraPackage_AddPackageKeywordArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasGrounding_AddContextDataInput>;
+  input?: InputMaybe<VetraPackage_AddPackageKeywordInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasGrounding_AddTagsArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasGrounding_AddTagsInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasGrounding_CreateDocumentArgs = {
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasGrounding_RemoveContextDataArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasGrounding_RemoveContextDataInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasGrounding_RemoveTagsArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasGrounding_RemoveTagsInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasGrounding_ReplaceContextDataArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasGrounding_ReplaceContextDataInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasGrounding_SetAtlasTypeArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasGrounding_SetAtlasTypeInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasGrounding_SetContentArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasGrounding_SetContentInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasGrounding_SetDocNumberArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasGrounding_SetDocNumberInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasGrounding_SetGroundingNameArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasGrounding_SetGroundingNameInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasGrounding_SetMasterStatusArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasGrounding_SetMasterStatusInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasGrounding_SetNotionIdArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasGrounding_SetNotionIdInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasGrounding_SetParentArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasGrounding_SetParentInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasMultiParent_AddContextDataArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasMultiParent_AddContextDataInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasMultiParent_AddParentArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasMultiParent_AddParentInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasMultiParent_AddTagsArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasMultiParent_AddTagsInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasMultiParent_CreateDocumentArgs = {
+/** Mutations: AppModule */
+export type MutationVetraPackage_CreateDocumentArgs = {
   driveId?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasMultiParent_RemoveContextDataArgs = {
+/** Mutations: AppModule */
+export type MutationVetraPackage_RemovePackageKeywordArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasMultiParent_RemoveContextDataInput>;
+  input?: InputMaybe<VetraPackage_RemovePackageKeywordInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasMultiParent_RemoveParentArgs = {
+/** Mutations: AppModule */
+export type MutationVetraPackage_SetPackageAuthorArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasMultiParent_RemoveParentInput>;
+  input?: InputMaybe<VetraPackage_SetPackageAuthorInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasMultiParent_RemoveTagsArgs = {
+/** Mutations: AppModule */
+export type MutationVetraPackage_SetPackageAuthorNameArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasMultiParent_RemoveTagsInput>;
+  input?: InputMaybe<VetraPackage_SetPackageAuthorNameInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasMultiParent_ReplaceContextDataArgs = {
+/** Mutations: AppModule */
+export type MutationVetraPackage_SetPackageAuthorWebsiteArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasMultiParent_ReplaceContextDataInput>;
+  input?: InputMaybe<VetraPackage_SetPackageAuthorWebsiteInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasMultiParent_ReplaceParentArgs = {
+/** Mutations: AppModule */
+export type MutationVetraPackage_SetPackageCategoryArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasMultiParent_ReplaceParentInput>;
+  input?: InputMaybe<VetraPackage_SetPackageCategoryInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasMultiParent_SetAtlasTypeArgs = {
+/** Mutations: AppModule */
+export type MutationVetraPackage_SetPackageDescriptionArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasMultiParent_SetAtlasTypeInput>;
+  input?: InputMaybe<VetraPackage_SetPackageDescriptionInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasMultiParent_SetContentArgs = {
+/** Mutations: AppModule */
+export type MutationVetraPackage_SetPackageGithubUrlArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasMultiParent_SetContentInput>;
+  input?: InputMaybe<VetraPackage_SetPackageGithubUrlInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasMultiParent_SetExploratoryNameArgs = {
+/** Mutations: AppModule */
+export type MutationVetraPackage_SetPackageNameArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasMultiParent_SetExploratoryNameInput>;
+  input?: InputMaybe<VetraPackage_SetPackageNameInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasMultiParent_SetMasterStatusArgs = {
+/** Mutations: AppModule */
+export type MutationVetraPackage_SetPackageNpmUrlArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasMultiParent_SetMasterStatusInput>;
+  input?: InputMaybe<VetraPackage_SetPackageNpmUrlInput>;
 };
 
 
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasMultiParent_SetNotionIdArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasMultiParent_SetNotionIdInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasScope_AddContextDataArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasScope_AddContextDataInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasScope_AddTagsArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasScope_AddTagsInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasScope_CreateDocumentArgs = {
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasScope_RemoveContextDataArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasScope_RemoveContextDataInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasScope_RemoveTagsArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasScope_RemoveTagsInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasScope_ReplaceContextDataArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasScope_ReplaceContextDataInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasScope_SetContentArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasScope_SetContentInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasScope_SetDocNumberArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasScope_SetDocNumberInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasScope_SetMasterStatusArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasScope_SetMasterStatusInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasScope_SetNotionIdArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasScope_SetNotionIdInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasScope_SetScopeNameArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasScope_SetScopeNameInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasSet_CreateDocumentArgs = {
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasSet_SetNotionIdArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasSet_SetNotionIdInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasSet_SetSetNameArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasSet_SetSetNameInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationAtlasSet_SetSetParentArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<AtlasSet_SetSetParentInput>;
-};
-
-
-/** Mutations: AtlasMultiParent */
-export type MutationForkAtlasArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** Mutations: AtlasMultiParent */
+/** Mutations: AppModule */
 export type MutationAddDriveArgs = {
   icon?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -2302,20 +1340,20 @@ export type MutationAddDriveArgs = {
 };
 
 
-/** Mutations: AtlasMultiParent */
+/** Mutations: AppModule */
 export type MutationDeleteDriveArgs = {
   id: Scalars['String']['input'];
 };
 
 
-/** Mutations: AtlasMultiParent */
+/** Mutations: AppModule */
 export type MutationSetDriveIconArgs = {
   icon: Scalars['String']['input'];
   id: Scalars['String']['input'];
 };
 
 
-/** Mutations: AtlasMultiParent */
+/** Mutations: AppModule */
 export type MutationSetDriveNameArgs = {
   id: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -2330,7 +1368,7 @@ export type Operation = {
   index: Scalars['Int']['output'];
   inputText?: Maybe<Scalars['String']['output']>;
   skip?: Maybe<Scalars['Int']['output']>;
-  timestamp: Scalars['DateTime']['output'];
+  timestampUtcMs: Scalars['DateTime']['output'];
   type: Scalars['String']['output'];
 };
 
@@ -2339,18 +1377,109 @@ export type PhOperationContext = {
   signer?: Maybe<Signer>;
 };
 
+export type ProcessorModule = IDocument & {
+  __typename?: 'ProcessorModule';
+  createdAtUtcIso: Scalars['DateTime']['output'];
+  documentType: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  initialState: ProcessorModule_ProcessorModuleState;
+  lastModifiedAtUtcIso: Scalars['DateTime']['output'];
+  name: Scalars['String']['output'];
+  operations: Array<Operation>;
+  revision: Scalars['Int']['output'];
+  state: ProcessorModule_ProcessorModuleState;
+  stateJSON?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+
+export type ProcessorModuleOperationsArgs = {
+  first?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Queries: ProcessorModule */
+export type ProcessorModuleQueries = {
+  __typename?: 'ProcessorModuleQueries';
+  getDocument?: Maybe<ProcessorModule>;
+  getDocuments?: Maybe<Array<ProcessorModule>>;
+};
+
+
+/** Queries: ProcessorModule */
+export type ProcessorModuleQueriesGetDocumentArgs = {
+  docId: Scalars['PHID']['input'];
+  driveId?: InputMaybe<Scalars['PHID']['input']>;
+};
+
+
+/** Queries: ProcessorModule */
+export type ProcessorModuleQueriesGetDocumentsArgs = {
+  driveId: Scalars['String']['input'];
+};
+
+/** Subgraph definition for ProcessorModule (powerhouse/processor) */
+export type ProcessorModuleState = {
+  __typename?: 'ProcessorModuleState';
+  documentTypes: Array<DocumentTypeItem>;
+  name: Scalars['String']['output'];
+  status: StatusType;
+  type: Scalars['String']['output'];
+};
+
+export type ProcessorModule_AddDocumentTypeInput = {
+  documentType: Scalars['String']['input'];
+  id: Scalars['OID']['input'];
+};
+
+export type ProcessorModule_DocumentTypeItem = {
+  __typename?: 'ProcessorModule_DocumentTypeItem';
+  documentType: Scalars['String']['output'];
+  id: Scalars['OID']['output'];
+};
+
+export type ProcessorModule_ProcessorModuleState = {
+  __typename?: 'ProcessorModule_ProcessorModuleState';
+  documentTypes: Array<ProcessorModule_DocumentTypeItem>;
+  name: Scalars['String']['output'];
+  status: ProcessorModule_StatusType;
+  type: Scalars['String']['output'];
+};
+
+export type ProcessorModule_RemoveDocumentTypeInput = {
+  id: Scalars['OID']['input'];
+};
+
+/** Module: BaseOperations */
+export type ProcessorModule_SetProcessorNameInput = {
+  name: Scalars['String']['input'];
+};
+
+export type ProcessorModule_SetProcessorStatusInput = {
+  status: StatusType;
+};
+
+export type ProcessorModule_SetProcessorTypeInput = {
+  type: Scalars['String']['input'];
+};
+
+export enum ProcessorModule_StatusType {
+  Confirmed = 'CONFIRMED',
+  Draft = 'DRAFT'
+}
+
 export type Query = {
   __typename?: 'Query';
-  AtlasExploratory?: Maybe<AtlasExploratoryQueries>;
-  AtlasFeedbackIssues?: Maybe<AtlasFeedbackIssuesQueries>;
-  AtlasFoundation?: Maybe<AtlasFoundationQueries>;
-  AtlasGrounding?: Maybe<AtlasGroundingQueries>;
-  AtlasMultiParent?: Maybe<AtlasMultiParentQueries>;
-  AtlasScope?: Maybe<AtlasScopeQueries>;
-  AtlasSet?: Maybe<AtlasSetQueries>;
+  AppModule?: Maybe<AppModuleQueries>;
+  BuilderAccount?: Maybe<BuilderAccountQueries>;
+  DocumentEditor?: Maybe<DocumentEditorQueries>;
+  ProcessorModule?: Maybe<ProcessorModuleQueries>;
+  SubgraphModule?: Maybe<SubgraphModuleQueries>;
+  VetraPackage?: Maybe<VetraPackageQueries>;
   analytics?: Maybe<AnalyticsQuery>;
   driveIdBySlug?: Maybe<Scalars['String']['output']>;
   drives: Array<Scalars['String']['output']>;
+  fetchAllBuilderAccounts: Array<BuilderAccountType>;
+  fetchBuilderAccount?: Maybe<BuilderAccountType>;
 };
 
 
@@ -2358,12 +1487,16 @@ export type QueryDriveIdBySlugArgs = {
   slug: Scalars['String']['input'];
 };
 
-export type SetDocumentLink = {
-  __typename?: 'SetDocumentLink';
-  documentType?: Maybe<Scalars['String']['output']>;
-  icon?: Maybe<Scalars['String']['output']>;
-  id: Scalars['PHID']['output'];
-  title?: Maybe<Scalars['OLabel']['output']>;
+
+export type QueryFetchAllBuilderAccountsArgs = {
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryFetchBuilderAccountArgs = {
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
 };
 
 export type Signer = {
@@ -2386,13 +1519,77 @@ export type SignerUser = {
   networkId: Scalars['String']['output'];
 };
 
-export enum Status {
-  Approved = 'APPROVED',
-  Archived = 'ARCHIVED',
-  Deferred = 'DEFERRED',
-  Placeholder = 'PLACEHOLDER',
-  Provisional = 'PROVISIONAL'
+export enum StatusType {
+  Confirmed = 'CONFIRMED',
+  Draft = 'DRAFT'
 }
+
+export type SubgraphModule = IDocument & {
+  __typename?: 'SubgraphModule';
+  createdAtUtcIso: Scalars['DateTime']['output'];
+  documentType: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  initialState: SubgraphModule_SubgraphModuleState;
+  lastModifiedAtUtcIso: Scalars['DateTime']['output'];
+  name: Scalars['String']['output'];
+  operations: Array<Operation>;
+  revision: Scalars['Int']['output'];
+  state: SubgraphModule_SubgraphModuleState;
+  stateJSON?: Maybe<Scalars['JSONObject']['output']>;
+};
+
+
+export type SubgraphModuleOperationsArgs = {
+  first?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Queries: SubgraphModule */
+export type SubgraphModuleQueries = {
+  __typename?: 'SubgraphModuleQueries';
+  getDocument?: Maybe<SubgraphModule>;
+  getDocuments?: Maybe<Array<SubgraphModule>>;
+};
+
+
+/** Queries: SubgraphModule */
+export type SubgraphModuleQueriesGetDocumentArgs = {
+  docId: Scalars['PHID']['input'];
+  driveId?: InputMaybe<Scalars['PHID']['input']>;
+};
+
+
+/** Queries: SubgraphModule */
+export type SubgraphModuleQueriesGetDocumentsArgs = {
+  driveId: Scalars['String']['input'];
+};
+
+/** Subgraph definition for SubgraphModule (powerhouse/subgraph) */
+export type SubgraphModuleState = {
+  __typename?: 'SubgraphModuleState';
+  name: Scalars['String']['output'];
+  status: StatusType;
+};
+
+/** Module: BaseOperations */
+export type SubgraphModule_SetSubgraphNameInput = {
+  name: Scalars['String']['input'];
+};
+
+export type SubgraphModule_SetSubgraphStatusInput = {
+  status: StatusType;
+};
+
+export enum SubgraphModule_StatusType {
+  Confirmed = 'CONFIRMED',
+  Draft = 'DRAFT'
+}
+
+export type SubgraphModule_SubgraphModuleState = {
+  __typename?: 'SubgraphModule_SubgraphModuleState';
+  name: Scalars['String']['output'];
+  status: SubgraphModule_StatusType;
+};
 
 export type Value = {
   __typename?: 'Value';
@@ -2402,89 +1599,365 @@ export type Value = {
   path?: Maybe<Scalars['String']['output']>;
 };
 
-export type GetAtlasSetQueryVariables = Exact<{ [key: string]: never; }>;
+export type VetraBuilderPackage = {
+  __typename?: 'VetraBuilderPackage';
+  author: VetraBuilderPackageAuthor;
+  category?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  github?: Maybe<Scalars['URL']['output']>;
+  id: Scalars['OID']['output'];
+  keywords: Array<VetraBuilderPackageKeyword>;
+  name: Scalars['String']['output'];
+  npm?: Maybe<Scalars['URL']['output']>;
+  vetraDriveUrl?: Maybe<Scalars['URL']['output']>;
+};
+
+export type VetraBuilderPackageAuthor = {
+  __typename?: 'VetraBuilderPackageAuthor';
+  name: Scalars['String']['output'];
+  website?: Maybe<Scalars['URL']['output']>;
+};
+
+export type VetraBuilderPackageKeyword = {
+  __typename?: 'VetraBuilderPackageKeyword';
+  id: Scalars['OID']['output'];
+  label: Scalars['String']['output'];
+};
+
+export type VetraBuilderProfile = {
+  __typename?: 'VetraBuilderProfile';
+  description?: Maybe<Scalars['String']['output']>;
+  logo?: Maybe<Scalars['URL']['output']>;
+  name: Scalars['String']['output'];
+  slug: Scalars['String']['output'];
+  socials: VetraBuilderSocials;
+};
+
+export type VetraBuilderSocials = {
+  __typename?: 'VetraBuilderSocials';
+  github?: Maybe<Scalars['URL']['output']>;
+  website?: Maybe<Scalars['URL']['output']>;
+  xProfile?: Maybe<Scalars['URL']['output']>;
+};
+
+export type VetraBuilderSpace = {
+  __typename?: 'VetraBuilderSpace';
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['OID']['output'];
+  packages: Array<VetraBuilderPackage>;
+  title: Scalars['String']['output'];
+};
+
+export type VetraPackage = IDocument & {
+  __typename?: 'VetraPackage';
+  createdAtUtcIso: Scalars['DateTime']['output'];
+  documentType: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  initialState: VetraPackage_VetraPackageState;
+  lastModifiedAtUtcIso: Scalars['DateTime']['output'];
+  name: Scalars['String']['output'];
+  operations: Array<Operation>;
+  revision: Scalars['Int']['output'];
+  state: VetraPackage_VetraPackageState;
+  stateJSON?: Maybe<Scalars['JSONObject']['output']>;
+};
 
 
-export type GetAtlasSetQuery = { __typename?: 'Query', AtlasSet?: { __typename?: 'AtlasSetQueries', getDocuments?: Array<{ __typename?: 'AtlasSet', documentType: string, id: string, created: any, lastModified: any, name: string, revision: number, stateJSON?: any | null, initialState: { __typename?: 'AtlasSet_AtlasSetState', id: any, name: string }, operations: Array<{ __typename?: 'Operation', error?: string | null, hash: string, id: string, index: number, inputText?: string | null, skip?: number | null, timestamp: any, type: string }>, state: { __typename?: 'AtlasSet_AtlasSetState', id: any, name: string, notionId?: string | null, parent?: { __typename?: 'AtlasSet_SetDocumentLink', documentType?: string | null, icon?: string | null, id: any, title?: any | null } | null } }> | null } | null };
+export type VetraPackageOperationsArgs = {
+  first?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Queries: VetraPackage */
+export type VetraPackageQueries = {
+  __typename?: 'VetraPackageQueries';
+  getDocument?: Maybe<VetraPackage>;
+  getDocuments?: Maybe<Array<VetraPackage>>;
+};
+
+
+/** Queries: VetraPackage */
+export type VetraPackageQueriesGetDocumentArgs = {
+  docId?: InputMaybe<Scalars['PHID']['input']>;
+  driveId?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Subgraph definition for VetraPackage (powerhouse/package) */
+export type VetraPackageState = {
+  __typename?: 'VetraPackageState';
+  author: Author;
+  category?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  githubUrl?: Maybe<Scalars['URL']['output']>;
+  keywords: Array<Keyword>;
+  name?: Maybe<Scalars['String']['output']>;
+  npmUrl?: Maybe<Scalars['URL']['output']>;
+};
+
+export type VetraPackage_AddPackageKeywordInput = {
+  id: Scalars['String']['input'];
+  label: Scalars['String']['input'];
+};
+
+export type VetraPackage_Author = {
+  __typename?: 'VetraPackage_Author';
+  name?: Maybe<Scalars['String']['output']>;
+  website?: Maybe<Scalars['URL']['output']>;
+};
+
+export type VetraPackage_Keyword = {
+  __typename?: 'VetraPackage_Keyword';
+  id: Scalars['OID']['output'];
+  label: Scalars['String']['output'];
+};
+
+export type VetraPackage_RemovePackageKeywordInput = {
+  id: Scalars['String']['input'];
+};
+
+export type VetraPackage_SetPackageAuthorInput = {
+  name?: InputMaybe<Scalars['OID']['input']>;
+  website?: InputMaybe<Scalars['URL']['input']>;
+};
+
+export type VetraPackage_SetPackageAuthorNameInput = {
+  name: Scalars['String']['input'];
+};
+
+export type VetraPackage_SetPackageAuthorWebsiteInput = {
+  website: Scalars['URL']['input'];
+};
+
+export type VetraPackage_SetPackageCategoryInput = {
+  category: Scalars['String']['input'];
+};
+
+export type VetraPackage_SetPackageDescriptionInput = {
+  description: Scalars['String']['input'];
+};
+
+export type VetraPackage_SetPackageGithubUrlInput = {
+  url: Scalars['URL']['input'];
+};
+
+/** Module: BaseOperations */
+export type VetraPackage_SetPackageNameInput = {
+  name: Scalars['String']['input'];
+};
+
+export type VetraPackage_SetPackageNpmUrlInput = {
+  url: Scalars['URL']['input'];
+};
+
+export type VetraPackage_VetraPackageState = {
+  __typename?: 'VetraPackage_VetraPackageState';
+  author: VetraPackage_Author;
+  category?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  githubUrl?: Maybe<Scalars['URL']['output']>;
+  keywords: Array<VetraPackage_Keyword>;
+  name?: Maybe<Scalars['String']['output']>;
+  npmUrl?: Maybe<Scalars['URL']['output']>;
+};
+
+export type FetchBuilderAccountQueryVariables = Exact<{
+  fetchBuilderAccountId: Scalars['String']['input'];
+}>;
+
+
+export type FetchBuilderAccountQuery = { __typename?: 'Query', fetchBuilderAccount?: { __typename?: 'BuilderAccountType', id: string, profileName: string, profileSlug: string, profileLogo?: string | null, profileDescription?: string | null, profileSocialsX?: string | null, profileSocialsGithub?: string | null, profileSocialsWebsite?: string | null, createdAt: string, updatedAt: string, spaces: Array<{ __typename?: 'BuilderSpace', id: string, builderAccountId: string, title: string, description?: string | null, sortOrder: number, createdAt: string, updatedAt: string, packages: Array<{ __typename?: 'BuilderPackage', id: string, spaceId: string, name: string, description?: string | null, category?: string | null, authorName: string, authorWebsite?: string | null, githubUrl?: string | null, npmUrl?: string | null, vetraDriveUrl?: string | null, driveId?: string | null, sortOrder: number, createdAt: string, updatedAt: string, keywords: Array<{ __typename?: 'BuilderPackageKeyword', id: string, packageId: string, label: string, createdAt: string }> }> }>, members: Array<{ __typename?: 'BuilderAccountMember', id: string, builderAccountId: string, ethAddress: string, createdAt: string }> } | null };
+
+export type FetchAllBuilderAccountsQueryVariables = Exact<{
+  search?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type FetchAllBuilderAccountsQuery = { __typename?: 'Query', fetchAllBuilderAccounts: Array<{ __typename?: 'BuilderAccountType', id: string, profileName: string, profileSlug: string, profileLogo?: string | null, profileDescription?: string | null, profileSocialsX?: string | null, profileSocialsGithub?: string | null, profileSocialsWebsite?: string | null, createdAt: string, updatedAt: string, spaces: Array<{ __typename?: 'BuilderSpace', id: string, builderAccountId: string, title: string, description?: string | null, sortOrder: number, createdAt: string, updatedAt: string, packages: Array<{ __typename?: 'BuilderPackage', id: string, spaceId: string, name: string, description?: string | null, category?: string | null, authorName: string, authorWebsite?: string | null, githubUrl?: string | null, npmUrl?: string | null, vetraDriveUrl?: string | null, driveId?: string | null, sortOrder: number, createdAt: string, updatedAt: string, keywords: Array<{ __typename?: 'BuilderPackageKeyword', id: string, packageId: string, label: string, createdAt: string }> }> }>, members: Array<{ __typename?: 'BuilderAccountMember', id: string, builderAccountId: string, ethAddress: string, createdAt: string }> }> };
 
 
 
-export const GetAtlasSetDocument = `
-    query GetAtlasSet {
-  AtlasSet {
-    getDocuments {
-      documentType
+export const FetchBuilderAccountDocument = `
+    query fetchBuilderAccount($fetchBuilderAccountId: String!) {
+  fetchBuilderAccount(id: $fetchBuilderAccountId) {
+    id
+    profileName
+    profileSlug
+    profileLogo
+    profileDescription
+    profileSocialsX
+    profileSocialsGithub
+    profileSocialsWebsite
+    createdAt
+    updatedAt
+    spaces {
       id
-      created
-      initialState {
+      builderAccountId
+      title
+      description
+      sortOrder
+      createdAt
+      updatedAt
+      packages {
         id
+        spaceId
         name
-      }
-      lastModified
-      name
-      operations(first: 10) {
-        error
-        hash
-        id
-        index
-        inputText
-        skip
-        timestamp
-        type
-      }
-      revision
-      state {
-        id
-        name
-        notionId
-        parent {
-          documentType
-          icon
+        description
+        category
+        authorName
+        authorWebsite
+        githubUrl
+        npmUrl
+        vetraDriveUrl
+        driveId
+        sortOrder
+        createdAt
+        updatedAt
+        keywords {
           id
-          title
+          packageId
+          label
+          createdAt
         }
       }
-      stateJSON
+    }
+    members {
+      id
+      builderAccountId
+      ethAddress
+      createdAt
     }
   }
 }
     `;
 
-export const useGetAtlasSetQuery = <
-      TData = GetAtlasSetQuery,
+export const useFetchBuilderAccountQuery = <
+      TData = FetchBuilderAccountQuery,
       TError = unknown
     >(
-      variables?: GetAtlasSetQueryVariables,
-      options?: Omit<UseQueryOptions<GetAtlasSetQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<GetAtlasSetQuery, TError, TData>['queryKey'] }
+      variables: FetchBuilderAccountQueryVariables,
+      options?: Omit<UseQueryOptions<FetchBuilderAccountQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<FetchBuilderAccountQuery, TError, TData>['queryKey'] }
     ) => {
     
-    return useQuery<GetAtlasSetQuery, TError, TData>(
+    return useQuery<FetchBuilderAccountQuery, TError, TData>(
       {
-    queryKey: variables === undefined ? ['GetAtlasSet'] : ['GetAtlasSet', variables],
-    queryFn: fetcher<GetAtlasSetQuery, GetAtlasSetQueryVariables>(GetAtlasSetDocument, variables),
+    queryKey: ['fetchBuilderAccount', variables],
+    queryFn: fetcher<FetchBuilderAccountQuery, FetchBuilderAccountQueryVariables>(FetchBuilderAccountDocument, variables),
     ...options
   }
     )};
 
-useGetAtlasSetQuery.getKey = (variables?: GetAtlasSetQueryVariables) => variables === undefined ? ['GetAtlasSet'] : ['GetAtlasSet', variables];
+useFetchBuilderAccountQuery.getKey = (variables: FetchBuilderAccountQueryVariables) => ['fetchBuilderAccount', variables];
 
-export const useSuspenseGetAtlasSetQuery = <
-      TData = GetAtlasSetQuery,
+export const useSuspenseFetchBuilderAccountQuery = <
+      TData = FetchBuilderAccountQuery,
       TError = unknown
     >(
-      variables?: GetAtlasSetQueryVariables,
-      options?: Omit<UseSuspenseQueryOptions<GetAtlasSetQuery, TError, TData>, 'queryKey'> & { queryKey?: UseSuspenseQueryOptions<GetAtlasSetQuery, TError, TData>['queryKey'] }
+      variables: FetchBuilderAccountQueryVariables,
+      options?: Omit<UseSuspenseQueryOptions<FetchBuilderAccountQuery, TError, TData>, 'queryKey'> & { queryKey?: UseSuspenseQueryOptions<FetchBuilderAccountQuery, TError, TData>['queryKey'] }
     ) => {
     
-    return useSuspenseQuery<GetAtlasSetQuery, TError, TData>(
+    return useSuspenseQuery<FetchBuilderAccountQuery, TError, TData>(
       {
-    queryKey: variables === undefined ? ['GetAtlasSetSuspense'] : ['GetAtlasSetSuspense', variables],
-    queryFn: fetcher<GetAtlasSetQuery, GetAtlasSetQueryVariables>(GetAtlasSetDocument, variables),
+    queryKey: ['fetchBuilderAccountSuspense', variables],
+    queryFn: fetcher<FetchBuilderAccountQuery, FetchBuilderAccountQueryVariables>(FetchBuilderAccountDocument, variables),
     ...options
   }
     )};
 
-useSuspenseGetAtlasSetQuery.getKey = (variables?: GetAtlasSetQueryVariables) => variables === undefined ? ['GetAtlasSetSuspense'] : ['GetAtlasSetSuspense', variables];
+useSuspenseFetchBuilderAccountQuery.getKey = (variables: FetchBuilderAccountQueryVariables) => ['fetchBuilderAccountSuspense', variables];
 
 
-useGetAtlasSetQuery.fetcher = (variables?: GetAtlasSetQueryVariables, options?: RequestInit['headers']) => fetcher<GetAtlasSetQuery, GetAtlasSetQueryVariables>(GetAtlasSetDocument, variables, options);
+useFetchBuilderAccountQuery.fetcher = (variables: FetchBuilderAccountQueryVariables, options?: RequestInit['headers']) => fetcher<FetchBuilderAccountQuery, FetchBuilderAccountQueryVariables>(FetchBuilderAccountDocument, variables, options);
+
+export const FetchAllBuilderAccountsDocument = `
+    query fetchAllBuilderAccounts($search: String) {
+  fetchAllBuilderAccounts(search: $search) {
+    id
+    profileName
+    profileSlug
+    profileLogo
+    profileDescription
+    profileSocialsX
+    profileSocialsGithub
+    profileSocialsWebsite
+    createdAt
+    updatedAt
+    spaces {
+      id
+      builderAccountId
+      title
+      description
+      sortOrder
+      createdAt
+      updatedAt
+      packages {
+        id
+        spaceId
+        name
+        description
+        category
+        authorName
+        authorWebsite
+        githubUrl
+        npmUrl
+        vetraDriveUrl
+        driveId
+        sortOrder
+        createdAt
+        updatedAt
+        keywords {
+          id
+          packageId
+          label
+          createdAt
+        }
+      }
+    }
+    members {
+      id
+      builderAccountId
+      ethAddress
+      createdAt
+    }
+  }
+}
+    `;
+
+export const useFetchAllBuilderAccountsQuery = <
+      TData = FetchAllBuilderAccountsQuery,
+      TError = unknown
+    >(
+      variables?: FetchAllBuilderAccountsQueryVariables,
+      options?: Omit<UseQueryOptions<FetchAllBuilderAccountsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<FetchAllBuilderAccountsQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useQuery<FetchAllBuilderAccountsQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['fetchAllBuilderAccounts'] : ['fetchAllBuilderAccounts', variables],
+    queryFn: fetcher<FetchAllBuilderAccountsQuery, FetchAllBuilderAccountsQueryVariables>(FetchAllBuilderAccountsDocument, variables),
+    ...options
+  }
+    )};
+
+useFetchAllBuilderAccountsQuery.getKey = (variables?: FetchAllBuilderAccountsQueryVariables) => variables === undefined ? ['fetchAllBuilderAccounts'] : ['fetchAllBuilderAccounts', variables];
+
+export const useSuspenseFetchAllBuilderAccountsQuery = <
+      TData = FetchAllBuilderAccountsQuery,
+      TError = unknown
+    >(
+      variables?: FetchAllBuilderAccountsQueryVariables,
+      options?: Omit<UseSuspenseQueryOptions<FetchAllBuilderAccountsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseSuspenseQueryOptions<FetchAllBuilderAccountsQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useSuspenseQuery<FetchAllBuilderAccountsQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['fetchAllBuilderAccountsSuspense'] : ['fetchAllBuilderAccountsSuspense', variables],
+    queryFn: fetcher<FetchAllBuilderAccountsQuery, FetchAllBuilderAccountsQueryVariables>(FetchAllBuilderAccountsDocument, variables),
+    ...options
+  }
+    )};
+
+useSuspenseFetchAllBuilderAccountsQuery.getKey = (variables?: FetchAllBuilderAccountsQueryVariables) => variables === undefined ? ['fetchAllBuilderAccountsSuspense'] : ['fetchAllBuilderAccountsSuspense', variables];
+
+
+useFetchAllBuilderAccountsQuery.fetcher = (variables?: FetchAllBuilderAccountsQueryVariables, options?: RequestInit['headers']) => fetcher<FetchAllBuilderAccountsQuery, FetchAllBuilderAccountsQueryVariables>(FetchAllBuilderAccountsDocument, variables, options);

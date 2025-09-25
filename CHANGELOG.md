@@ -2,7 +2,7 @@
 
 ### Bug Fixes
 
-* removed achra stuff ([3727b69](https://github.com/powerhouse-inc/vetra.to/commit/3727b6914d7bd04622946a928c2c1b5d5245ab9b))
+- removed achra stuff ([3727b69](https://github.com/powerhouse-inc/vetra.to/commit/3727b6914d7bd04622946a928c2c1b5d5245ab9b))
 
 ## [1.3.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.2.0...v1.3.0) (2025-09-25)
 
