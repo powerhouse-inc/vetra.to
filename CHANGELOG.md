@@ -1,3 +1,13 @@
+## [1.4.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.3.1...v1.4.0) (2025-09-25)
+
+### Features
+
+* polish dark mode ([418e98f](https://github.com/powerhouse-inc/vetra.to/commit/418e98fde5777ccb78869d363685e7c46cf7949f))
+
+### Bug Fixes
+
+* graphql codegen ([79451cb](https://github.com/powerhouse-inc/vetra.to/commit/79451cbf0e6b6565402e3d3cc8801e1bf9120528))
+
 ## [1.3.1](https://github.com/powerhouse-inc/vetra.to/compare/v1.3.0...v1.3.1) (2025-09-25)
 
 ### Bug Fixes
