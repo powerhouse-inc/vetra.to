@@ -16,7 +16,7 @@ export default async function BuildersPage() {
 
   return (
     <BuildersPageClient initialBuilders={builderTeams}>
-      <main className="container mx-auto max-w-[var(--container-width)] space-y-8 p-8">
+      <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] space-y-8 p-8">
         {/* Header Section */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">

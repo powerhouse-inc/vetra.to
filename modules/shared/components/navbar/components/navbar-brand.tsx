@@ -31,18 +31,7 @@ export function NavbarBrand({
   )
 
   return (
-    <div className="flex items-center gap-4 md:gap-6">
-      <div className={logoContainerClasses}>
-        <a href="/" target="_self" className="cursor-pointer" aria-label="Achra homepage">
-          <MainLogoComponent
-            className={cn(
-              'h-9 sm:flex',
-              isAchraPage ? 'text-primary hidden w-42 sm:flex' : 'hover:text-primary/50 w-9',
-            )}
-          />
-          {isAchraPage && <AchraLogo className="text-primary h-9 w-9 sm:hidden" />}
-        </a>
-      </div>
+    <div className="flex items-center gap-4 p-4 md:gap-6">
       {showIsotype && logoHref && (
         <Link href={logoHref} className="cursor-pointer hover:opacity-80">
           <div className="flex items-center gap-2">

@@ -6,9 +6,18 @@ export const NAVBAR_CONFIGS: Record<string, NavbarConfig> = {
   '/vetra': {
     isotype: VetraLogotype,
     logotype: VetraIsoType,
+    logoHref: '/',
     navItems: [
-      { label: 'Packages', href: '/packages', isActive: () => true },
-      { label: 'Builders', href: '/builders', isActive: () => true },
+      {
+        label: 'Packages',
+        href: '/packages',
+        isActive: () => window.location.pathname.includes('/packages'),
+      },
+      {
+        label: 'Builders',
+        href: '/builders',
+        isActive: () => window.location.pathname.includes('/builders'),
+      },
       { label: 'Academy', href: 'https://staging.academy.vetra.to', isExternal: true },
       { label: 'Cloud', href: 'https://cloud.vetra.to', isExternal: true },
     ],

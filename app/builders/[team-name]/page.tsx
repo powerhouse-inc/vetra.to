@@ -69,7 +69,7 @@ export default async function TeamPage({ params }: TeamPageProps) {
   ).filter((expertise): expertise is string => expertise !== undefined)
 
   return (
-    <main className="container mx-auto max-w-[var(--container-width)] space-y-8 p-8">
+    <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] space-y-8 p-8">
       {/* Page Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">Builder Profile - {teamData.profileName}</h1>
