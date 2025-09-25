@@ -2,7 +2,7 @@
 
 ### Features
 
-* added open in connect button ([e36a44c](https://github.com/powerhouse-inc/vetra.to/commit/e36a44cd06903bc10225602bc32bc6733ffc49f1))
+- added open in connect button ([e36a44c](https://github.com/powerhouse-inc/vetra.to/commit/e36a44cd06903bc10225602bc32bc6733ffc49f1))
 
 ## [1.2.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.1.0...v1.2.0) (2025-09-23)
 
