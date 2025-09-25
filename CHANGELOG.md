@@ -2,11 +2,11 @@
 
 ### Features
 
-* improved footer ([35758b7](https://github.com/powerhouse-inc/vetra.to/commit/35758b76a23d8fdb77bda3971c37484b5b3f0c15))
+- improved footer ([35758b7](https://github.com/powerhouse-inc/vetra.to/commit/35758b76a23d8fdb77bda3971c37484b5b3f0c15))
 
 ### Bug Fixes
 
-* footer should stay same size ([26ceae1](https://github.com/powerhouse-inc/vetra.to/commit/26ceae1776ee6e5aa27407d858a385b4bdfedbea))
+- footer should stay same size ([26ceae1](https://github.com/powerhouse-inc/vetra.to/commit/26ceae1776ee6e5aa27407d858a385b4bdfedbea))
 
 ## [1.5.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.4.0...v1.5.0) (2025-09-25)
 
