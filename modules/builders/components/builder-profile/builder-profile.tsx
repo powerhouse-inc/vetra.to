@@ -82,7 +82,7 @@ const BuilderProfile: React.FC<BuilderProfileProps> = ({
                     >
                       <XLogo className="size-4" />
                       <span>{profileSocialsX}</span>
-                      <ExternalLink className="ml-auto size-3" />
+                      <ExternalLink className="size-3" />
                     </a>
                   )}
                   {profileSocialsGithub && (
@@ -94,7 +94,7 @@ const BuilderProfile: React.FC<BuilderProfileProps> = ({
                     >
                       <Github className="size-4" />
                       <span>{profileSocialsGithub}</span>
-                      <ExternalLink className="ml-auto size-3" />
+                      <ExternalLink className="size-3" />
                     </a>
                   )}
                   {profileSocialsWebsite && (
@@ -106,7 +106,7 @@ const BuilderProfile: React.FC<BuilderProfileProps> = ({
                     >
                       <Globe className="size-4" />
                       <span>{profileSocialsWebsite}</span>
-                      <ExternalLink className="ml-auto size-3" />
+                      <ExternalLink className="size-3" />
                     </a>
                   )}
                 </div>
