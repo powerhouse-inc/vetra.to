@@ -2,7 +2,7 @@
 
 ### Features
 
-* use new searchbar ([2645bc6](https://github.com/powerhouse-inc/vetra.to/commit/2645bc6a7ab6754cebbf9921f6bb3d7332c0e0fb))
+- use new searchbar ([2645bc6](https://github.com/powerhouse-inc/vetra.to/commit/2645bc6a7ab6754cebbf9921f6bb3d7332c0e0fb))
 
 ## [1.4.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.3.1...v1.4.0) (2025-09-25)
 

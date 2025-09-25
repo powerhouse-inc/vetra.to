@@ -1,5 +1,4 @@
 import { PowerhouseLogoIsotype } from '../svgs'
-import { ThemeToggle } from '../theme-toggle'
 
 export function Footer() {
   return (

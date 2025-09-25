@@ -31,10 +31,12 @@ export default function RootLayout({
 
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
           <QueryClientProvider>
-            <Navbar />
-            {children}
+            <div className="flex min-h-screen flex-col">
+              <Navbar />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
           </QueryClientProvider>
-          <Footer />
         </ThemeProvider>
       </body>
     </html>
