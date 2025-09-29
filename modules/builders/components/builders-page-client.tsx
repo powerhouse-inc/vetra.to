@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, createContext, useContext, ReactNode, useEffect } from 'react'
-import { BuilderAccount } from '../lib/server-data'
+import { useState, createContext, useContext, type ReactNode, useEffect } from 'react'
+import { type BuilderAccount } from '../lib/server-data'
 
 interface SearchContextType {
   searchTerm: string
@@ -58,15 +58,11 @@ export function BuildersPageClient({ children }: BuildersPageClientProps) {
     }
   }
 
-  // Initial load
-  useEffect(() => {
-    fetchBuilders('team') // Load team builders by default
-  }, [])
-
   // Search effect
   useEffect(() => {
+    // Skip if searchTerm is empty (initial state) - let the initial load effect handle it
     if (searchTerm.trim() === '') {
-      fetchBuilders('team')
+      fetchBuilders()
       return
     }
 

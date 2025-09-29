@@ -2,7 +2,7 @@
 
 ### Bug Fixes
 
-* academy link ([bcd3816](https://github.com/powerhouse-inc/vetra.to/commit/bcd38161232e7620a4f239c6146176374bfc8c76))
+- academy link ([bcd3816](https://github.com/powerhouse-inc/vetra.to/commit/bcd38161232e7620a4f239c6146176374bfc8c76))
 
 ## [1.6.2](https://github.com/powerhouse-inc/vetra.to/compare/v1.6.1...v1.6.2) (2025-09-29)
 
