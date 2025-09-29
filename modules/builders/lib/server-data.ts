@@ -128,8 +128,8 @@ const FETCH_BUILDER_ACCOUNT = gql`
 `
 
 const FETCH_ALL_BUILDER_ACCOUNTS = gql`
-  query fetchAllBuilderAccounts($search: String) {
-    fetchAllBuilderAccounts(search: $search) {
+  query fetchAllBuilderAccounts($search: String, $sortOrder: String) {
+    fetchAllBuilderAccounts(search: $search, sortOrder: $sortOrder) {
       id
       profileName
       profileSlug
@@ -208,11 +208,14 @@ export async function fetchBuilderAccount(accountId: string): Promise<BuilderAcc
   }
 }
 
-export async function fetchAllBuilderAccounts(search?: string): Promise<BuilderAccount[]> {
+export async function fetchAllBuilderAccounts(
+  search?: string,
+  sortOrder?: string,
+): Promise<BuilderAccount[]> {
   try {
     const response = await serverGraphqlRequest<FetchAllBuilderAccountsResponse>(
       FETCH_ALL_BUILDER_ACCOUNTS,
-      { search },
+      { search, sortOrder },
     )
     return response.fetchAllBuilderAccounts
   } catch (error) {

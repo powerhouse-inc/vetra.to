@@ -1,7 +1,6 @@
 import { BuilderList } from '@/modules/builders/components/builder-list'
 import { BuilderSearch } from '@/modules/builders/components/builder-search'
 import { BuildersPageClient } from '@/modules/builders/components/builders-page-client'
-import { fetchAllBuilderAccounts } from '@/modules/builders/lib/server-data'
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -11,11 +10,9 @@ import {
   BreadcrumbPage,
 } from '@/modules/shared/components/ui/breadcrumb'
 
-export default async function BuildersPage() {
-  const builderTeams = await fetchAllBuilderAccounts('team')
-
+export default function BuildersPage() {
   return (
-    <BuildersPageClient initialBuilders={builderTeams}>
+    <BuildersPageClient>
       <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] space-y-8 p-8">
         {/* Header Section */}
         <div className="space-y-2">
@@ -43,7 +40,7 @@ export default async function BuildersPage() {
 
         {/* Builder Teams List */}
         <div className="space-y-4">
-          <BuilderList initialBuilders={builderTeams} />
+          <BuilderList />
         </div>
       </main>
     </BuildersPageClient>

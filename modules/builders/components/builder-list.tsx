@@ -1,60 +1,31 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { type BuilderAccount } from '../lib/server-data'
 import { useSearch } from './builders-page-client'
 import { BuilderTeamCard } from './list-card'
 
-interface BuilderListProps {
-  initialBuilders: BuilderAccount[]
-}
-
-export function BuilderList({ initialBuilders }: BuilderListProps) {
-  const { searchTerm } = useSearch()
-  const [builders, setBuilders] = useState<BuilderAccount[]>(initialBuilders)
-  const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    if (searchTerm.trim() === '') {
-      setBuilders(initialBuilders)
-      return
-    }
-
-    setIsLoading(true)
-
-    const searchBuilders = async () => {
-      try {
-        const response = await fetch('/api/builders/search', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ search: searchTerm }),
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          setBuilders(data.builders)
-        } else {
-          console.error('Search failed')
-          setBuilders(initialBuilders)
-        }
-      } catch (error) {
-        console.error('Search error:', error)
-        setBuilders(initialBuilders)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    const timeoutId = setTimeout(searchBuilders, 300)
-    return () => clearTimeout(timeoutId)
-  }, [searchTerm, initialBuilders])
+export function BuilderList() {
+  const { builders, isLoading, error } = useSearch()
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="text-muted-foreground">Searching...</div>
+        <div className="text-muted-foreground">Loading builders...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="text-red-500">Error: {error}</div>
+      </div>
+    )
+  }
+
+  if (builders.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="text-muted-foreground">No builders found</div>
       </div>
     )
   }

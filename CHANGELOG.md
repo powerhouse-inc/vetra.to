@@ -2,7 +2,7 @@
 
 ### Bug Fixes
 
-* View Profile button ([a74c7a1](https://github.com/powerhouse-inc/vetra.to/commit/a74c7a16ec6852ff1d7abed9b9d74b07ad16ca81))
+- View Profile button ([a74c7a1](https://github.com/powerhouse-inc/vetra.to/commit/a74c7a16ec6852ff1d7abed9b9d74b07ad16ca81))
 
 ## [1.6.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.5.0...v1.6.0) (2025-09-25)
 
