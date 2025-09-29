@@ -2,7 +2,7 @@
 
 ### Bug Fixes
 
-* server side requests ([f5ba34d](https://github.com/powerhouse-inc/vetra.to/commit/f5ba34da53cad73a9fa32d4a1262eeb615d4d9fb))
+- server side requests ([f5ba34d](https://github.com/powerhouse-inc/vetra.to/commit/f5ba34da53cad73a9fa32d4a1262eeb615d4d9fb))
 
 ## [1.6.1](https://github.com/powerhouse-inc/vetra.to/compare/v1.6.0...v1.6.1) (2025-09-25)
 
