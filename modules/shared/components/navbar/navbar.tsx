@@ -9,15 +9,29 @@ import NavbarItemsDesk from './components/navbar-items-desk'
 import NavbarRightSide from './components/navbar-right-side'
 import { getNavbarConfig } from './navbar-config'
 import { hasBlurBackground } from './utils'
+import { useUser } from '../../hooks/use-user'
 
 function Navbar() {
   const pathname = usePathname()
-  const isLoggedIn = false
-  const user = {
-    username: 'John Doe',
-    avatar: 'https://github.com/shadcn.png',
+  const { user: renownUser, loginStatus, isLoading, login, logout, openRenown } = useUser()
+
+  const isLoggedIn = loginStatus === 'authorized'
+
+  // Transform Renown user to navbar user format
+  const user = renownUser
+    ? {
+        username: renownUser.ensName || renownUser.name || renownUser.did,
+        avatar: renownUser.ensAvatarUrl || `https://github.com/shadcn.png`, // Use ENS avatar if available, fallback to default
+      }
+    : undefined
+
+  const handleLogin = async () => {
+    try {
+      await openRenown()
+    } catch (error) {
+      console.error('Login failed:', error)
+    }
   }
-  const handleLoginClick = () => {}
 
   const {
     isotype: Isotype,
@@ -52,7 +66,7 @@ function Navbar() {
 
             <NavbarItemsDesk navItems={navItems} pathname={pathname} />
 
-            <NavbarRightSide isLoggedIn={isLoggedIn} user={user} onLoginClick={handleLoginClick} />
+            <NavbarRightSide isLoggedIn={isLoggedIn} user={user} onLoginClick={handleLogin} />
           </div>
         </header>
       </div>

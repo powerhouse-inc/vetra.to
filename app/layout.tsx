@@ -1,4 +1,5 @@
 import { Inter } from 'next/font/google'
+import { AuthProvider } from '@/modules/shared/providers/auth-provider'
 import { ThemeProvider } from '@/modules/shared/providers/theme-provider'
 import { Footer } from '@/shared/components/footer/footer'
 import Navbar from '@/shared/components/navbar/navbar'
@@ -31,11 +32,13 @@ export default function RootLayout({
 
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
           <QueryClientProvider>
-            <div className="flex min-h-screen flex-col">
-              <Navbar />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
+            <AuthProvider>
+              <div className="flex min-h-screen flex-col">
+                <Navbar />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+            </AuthProvider>
           </QueryClientProvider>
         </ThemeProvider>
       </body>
