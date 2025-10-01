@@ -1,3 +1,13 @@
+## [1.7.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.6.4...v1.7.0) (2025-10-01)
+
+### Features
+
+* added renown login flow with ens profile image fetcher ([7dd5a55](https://github.com/powerhouse-inc/vetra.to/commit/7dd5a55fc96892c1fee8354c5a97d1495a45f867))
+
+### Bug Fixes
+
+* format changeleg ([6569d61](https://github.com/powerhouse-inc/vetra.to/commit/6569d612c74c9f10cd216a729b4e262438ba0f95))
+
 ## [1.6.4](https://github.com/powerhouse-inc/vetra.to/compare/v1.6.3...v1.6.4) (2025-09-29)
 
 ### Bug Fixes
