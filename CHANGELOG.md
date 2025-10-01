@@ -2,7 +2,7 @@
 
 ### Bug Fixes
 
-* load builder accounts only once on pageload ([71e8814](https://github.com/powerhouse-inc/vetra.to/commit/71e8814a33427aab44da8e33fed66bb822758409))
+- load builder accounts only once on pageload ([71e8814](https://github.com/powerhouse-inc/vetra.to/commit/71e8814a33427aab44da8e33fed66bb822758409))
 
 ## [1.6.3](https://github.com/powerhouse-inc/vetra.to/compare/v1.6.2...v1.6.3) (2025-09-29)
 
