@@ -1,3 +1,14 @@
+## [1.9.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.8.3...v1.9.0) (2025-10-15)
+
+### Features
+
+- added packages and update design ([1463ebc](https://github.com/powerhouse-inc/vetra.to/commit/1463ebc423b224c77ddade901400475013d7c7d8))
+
+### Bug Fixes
+
+- build issues ([0177cc0](https://github.com/powerhouse-inc/vetra.to/commit/0177cc0cc8e891b24b91b4e2c7ab7403b41af3c7))
+- made renown logo better visible on dark mode ([8819df9](https://github.com/powerhouse-inc/vetra.to/commit/8819df9d900d17738dfc47d8c62489e13109f1f9))
+
 ## [1.8.3](https://github.com/powerhouse-inc/vetra.to/compare/v1.8.2...v1.8.3) (2025-10-15)
 
 ### Bug Fixes
