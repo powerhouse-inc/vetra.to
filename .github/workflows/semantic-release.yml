@@ -50,6 +50,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Get latest version tag
+        id: get_version
+        run: |
+          git fetch --tags
+          VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -n "$VERSION" ]; then
+            echo "version=${VERSION#v}" >> $GITHUB_OUTPUT
+            echo "Version: ${VERSION#v}"
+          else
+            echo "version=" >> $GITHUB_OUTPUT
+            echo "No version tag found"
+          fi
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -68,7 +81,8 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository }}:latest
             ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.ref_name }}
+            ${{ steps.get_version.outputs.version && format('{0}/{1}:{2}', env.REGISTRY, github.repository, steps.get_version.outputs.version) || '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            TAG=${{ github.ref_name }}
+            TAG=${{ steps.get_version.outputs.version || github.ref_name }}
