@@ -52,11 +52,11 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
     return member.ethAddress?.slice(2, 8) || member.id.slice(0, 6)
   }
 
-  // Generate email from name or eth address if not provided
-  const getDisplayEmail = (member: TeamMember) => {
-    if (member.email) return member.email
-    const username = member.name || member.ethAddress?.slice(2, 8) || member.id.slice(0, 6)
-    return `${username}-ph.eth`
+  // Format eth address to 0xABCD..XYZZ format
+  const getDisplayEthAddress = (member: TeamMember) => {
+    const address = member.ethAddress
+    if (!address || address.length < 10) return address
+    return `${address.slice(0, 6)}..${address.slice(-4)}`
   }
 
   // Copy to clipboard function
@@ -95,10 +95,10 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
 
                 {/* ETH Address with Copy Icon */}
                 <div className="flex items-center gap-2">
-                  <p className="text-sm text-gray-500">{getDisplayEmail(member)}</p>
+                  <p className="text-sm text-gray-500">{getDisplayEthAddress(member)}</p>
                   <Copy
                     className="size-4 cursor-pointer hover:text-gray-700"
-                    onClick={(e) => copyToClipboard(member.phid || member.id, e)}
+                    onClick={(e) => copyToClipboard(member.ethAddress, e)}
                   />
                 </div>
 
