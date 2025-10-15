@@ -1,18 +1,7 @@
-import { notFound } from 'next/navigation'
 import { ExternalLink, Github, Package as PackageIcon } from 'lucide-react'
-import React from 'react'
-import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 
 import { getVetraPackages } from '@/modules/packages/lib/server-data'
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/modules/shared/components/ui/breadcrumb'
-import { Button } from '@/modules/shared/components/ui/button'
 import {
   StripedCard,
   StripedCardContent,
@@ -20,6 +9,15 @@ import {
   StripedCardTitle,
 } from '@/modules/shared/components/striped-card'
 import ConnectSvg from '@/modules/shared/components/svgs/connect.svg'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/modules/shared/components/ui/breadcrumb'
+import { Button } from '@/modules/shared/components/ui/button'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,7 +27,7 @@ interface PackageDetailPageProps {
   }
 }
 
-export async function generateMetadata({ params }: PackageDetailPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PackageDetailPageProps): Promise<unknown> {
   try {
     const packageId = (await params).id
     const packages = await getVetraPackages()
@@ -76,7 +74,7 @@ export async function generateMetadata({ params }: PackageDetailPageProps): Prom
         canonical: url,
       },
     }
-  } catch (error) {
+  } catch {
     // Fallback metadata if fetch fails
     return {
       title: 'Vetra Package',

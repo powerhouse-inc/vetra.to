@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import { BuilderList } from '@/modules/builders/components/builder-list'
 import { BuilderSearch } from '@/modules/builders/components/builder-search'
 import { BuildersPageClient } from '@/modules/builders/components/builders-page-client'
@@ -14,7 +13,7 @@ import {
 // Force dynamic rendering to prevent build-time API requests
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
+export const metadata: unknown = {
   title: 'Vetra Builders',
   description:
     'Discover Vetra builders - officially affiliated teams of Powerhouse with expertise in the Powerhouse tech stack and proven ability to deliver solutions across any domain.',

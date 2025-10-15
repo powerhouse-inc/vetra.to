@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import type { Metadata } from 'next'
 import { BuilderProfile } from '@/modules/builders/components/builder-profile'
 import { BuilderSpaces } from '@/modules/builders/components/builder-spaces'
 import { TeamMembers } from '@/modules/builders/components/team-members'
@@ -22,7 +21,7 @@ interface TeamPageProps {
   }
 }
 
-export async function generateMetadata({ params }: TeamPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: TeamPageProps): Promise<unknown> {
   try {
     const teamSlug = (await params)['team-name']
     const teamData = await fetchBuilderTeamBySlug(teamSlug)
@@ -71,7 +70,7 @@ export async function generateMetadata({ params }: TeamPageProps): Promise<Metad
         canonical: url,
       },
     }
-  } catch (error) {
+  } catch {
     // Fallback metadata if fetch fails
     return {
       title: 'Vetra Builder',

@@ -1,12 +1,11 @@
 import React from 'react'
-import type { Metadata } from 'next'
 
 import { PackagesList } from '@/modules/packages/components/packages-list'
 import { getVetraPackages } from '@/modules/packages/lib/server-data'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
+export const metadata: unknown = {
   title: 'Vetra Packages',
   description:
     'Explore Vetra packages - a collection of document models, editors, and module resources providing solutions for specific domains and industries.',
