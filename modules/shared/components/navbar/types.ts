@@ -32,6 +32,7 @@ interface NavbarConfig {
 interface User {
   username: string
   avatar: string
+  ethAddress?: string
 }
 
 export type { NavbarConfig, NavItem, NavbarProps, User }

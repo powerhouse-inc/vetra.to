@@ -20,7 +20,6 @@ const config: CodegenConfig = {
         },
         'typescript',
         'typescript-operations',
-        'typescript-react-query',
         // Important! The "add" plugin will inject this into our generated file.
         // This extends RequestInit['Headers'] to include the Next.js extended "fetch"
         // options for caching. This will allow for fine grained cache control

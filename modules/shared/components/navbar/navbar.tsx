@@ -20,8 +20,9 @@ function Navbar() {
   // Transform Renown user to navbar user format
   const user = renownUser
     ? {
-        username: renownUser.ensName || renownUser.name || renownUser.did,
-        avatar: renownUser.ensAvatarUrl || `https://github.com/shadcn.png`, // Use ENS avatar if available, fallback to default
+        username: renownUser.name || renownUser.did,
+        avatar: renownUser.avatar || `https://github.com/shadcn.png`, // Use profile avatar if available, fallback to default
+        ethAddress: renownUser.ethAddress,
       }
     : undefined
 

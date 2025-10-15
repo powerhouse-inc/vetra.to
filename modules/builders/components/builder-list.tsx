@@ -9,7 +9,7 @@ export function BuilderList() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="text-muted-foreground">Loading builders...</div>
+        <div className="text-muted-foreground">Loading Builder Teams...</div>
       </div>
     )
   }
@@ -25,7 +25,7 @@ export function BuilderList() {
   if (builders.length === 0) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="text-muted-foreground">No builders found</div>
+        <div className="text-muted-foreground">No builder team found :(</div>
       </div>
     )
   }

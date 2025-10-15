@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import { BuilderProfile } from '@/modules/builders/components/builder-profile'
 import { BuilderSpaces } from '@/modules/builders/components/builder-spaces'
 import { TeamMembers } from '@/modules/builders/components/team-members'
-import { fetchBuilderAccount } from '@/modules/builders/lib/server-data'
+import { fetchBuilderTeam, type BuilderSpace } from '@/modules/builders/lib/server-data'
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -22,7 +22,7 @@ export default async function TeamPage({ params }: TeamPageProps) {
   const teamName = (await params)['team-name']
 
   // Fetch team data server-side
-  const teamData = await fetchBuilderAccount(teamName)
+  const teamData = await fetchBuilderTeam(teamName)
 
   // If no team data found, show 404
   if (!teamData) {
@@ -63,7 +63,9 @@ export default async function TeamPage({ params }: TeamPageProps) {
   const industryExpertise = Array.from(
     new Set(
       teamData.spaces
-        ?.flatMap((space) => space.packages?.map((pkg) => pkg.category).filter(Boolean) || [])
+        ?.flatMap(
+          (space: BuilderSpace) => space.packages?.map((pkg) => pkg.category).filter(Boolean) || [],
+        )
         .filter(Boolean) || [],
     ),
   ).filter((expertise): expertise is string => expertise !== undefined)

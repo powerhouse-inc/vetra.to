@@ -13,7 +13,14 @@ function LoginAvatar({ isLoggedIn, user, onLoginClick }: LoginAvatarProps) {
   if (isLoggedIn) {
     return (
       <div className="flex items-center gap-2">
-        <Avatar>
+        <Avatar
+          onClick={() => {
+            window.open(
+              `https://auth.renown.io/profile/${user?.ethAddress || user?.username}`,
+              '_blank',
+            )
+          }}
+        >
           <AvatarImage src={user?.avatar} alt="avatar" />
           <AvatarFallback>{user?.username.substring(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>

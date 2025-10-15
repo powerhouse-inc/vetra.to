@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { fetchAllBuilderAccounts } from '@/modules/builders/lib/server-data'
+import { fetchAllBuilderTeams } from '@/modules/builders/lib/server-data'
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || undefined
     const type = searchParams.get('type') || 'team'
 
-    const builders = await fetchAllBuilderAccounts(search)
+    const builders = await fetchAllBuilderTeams(search)
 
     // Filter by type if specified
     const filteredBuilders =
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   try {
     const { search } = await request.json()
 
-    const builders = await fetchAllBuilderAccounts(search)
+    const builders = await fetchAllBuilderTeams(search)
 
     return NextResponse.json({
       builders: builders,

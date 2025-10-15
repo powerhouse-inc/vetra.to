@@ -2,8 +2,20 @@ import type { IRenown } from '@renown/sdk'
 import type { IConnectCrypto } from '../crypto/index'
 import { RENOWN_CHAIN_ID, RENOWN_NETWORK_ID, RENOWN_URL } from './constants'
 import { SessionStorageManager } from '../session-storage'
-import { extractEthAddressFromDid, extractChainIdFromDid } from './did-parser'
-import { getEnsInfo } from './ens'
+import { extractEthAddressFromDid } from './did-parser'
+
+// Switchboard API configuration
+const SWITCHBOARD_API_URL =
+  process.env.NEXT_PUBLIC_SWITCHBOARD_URL || 'http://localhost:4001/graphql'
+
+interface RenownProfile {
+  documentId: string
+  username: string | null
+  ethAddress: string | null
+  userImage: string | null
+  createdAt: string
+  updatedAt: string
+}
 
 // Event types for user authentication state
 export type LoginStatus = 'initial' | 'checking' | 'authorized' | 'not-authorized'
@@ -13,30 +25,99 @@ export interface User {
   address: string
   name?: string
   email?: string
-  ensName?: string
-  ensAvatarUrl?: string
+  avatar?: string
+  ethAddress?: string
 }
 
-// Helper function to fetch ENS data for a user
-export async function fetchEnsDataForUser(user: User): Promise<User> {
+// Helper function to fetch user profile from switchboard API
+async function fetchUserProfileFromSwitchboard(ethAddress: string): Promise<RenownProfile | null> {
+  const query = `
+    query RenownProfilesRead($ethAddress: String!, $driveId: String!) {
+      Renown {
+        getProfile(ethAddress: $ethAddress, driveId: $driveId) {
+          documentId
+          userImage
+          ethAddress
+          username
+        }
+      }
+    }
+  `
+
+  try {
+    const response = await fetch(SWITCHBOARD_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        variables: {
+          ethAddress,
+          driveId: 'renown-profiles',
+        },
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const result = await response.json()
+
+    if (result.errors) {
+      throw new Error(result.errors[0]?.message || 'GraphQL error')
+    }
+
+    const profile = result.data?.Renown?.getProfile
+
+    if (profile) {
+      return {
+        documentId: profile.documentId,
+        username: profile.username,
+        ethAddress: profile.ethAddress,
+        userImage: profile.userImage,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+    }
+
+    return null
+  } catch (error) {
+    console.error('Error fetching user profile from switchboard:', error)
+    return null
+  }
+}
+
+// Helper function to fetch profile data for a user
+export async function fetchProfileDataForUser(user: User): Promise<User> {
   try {
     const ethAddress = extractEthAddressFromDid(user.did)
-    const chainId = extractChainIdFromDid(user.did)
 
-    if (!ethAddress || !chainId) {
-      console.warn('Could not extract ETH address or chain ID from DID:', user.did)
+    if (!ethAddress) {
+      console.warn('Could not extract ETH address from DID:', user.did)
       return user
     }
 
-    const ensInfo = await getEnsInfo(ethAddress, chainId)
+    // Get profile data from switchboard API
+    const profile = await fetchUserProfileFromSwitchboard(ethAddress)
 
+    if (profile) {
+      return {
+        ...user,
+        name: profile.username || undefined,
+        avatar: profile.userImage || undefined,
+        ethAddress: profile.ethAddress || undefined,
+      }
+    }
+
+    // If no profile found, return user with ethAddress
     return {
       ...user,
-      ensName: ensInfo.name,
-      ensAvatarUrl: ensInfo.avatarUrl,
+      ethAddress,
     }
   } catch (error) {
-    console.error('Failed to fetch ENS data for user:', error)
+    console.error('Failed to fetch profile data for user:', error)
     return user
   }
 }
@@ -118,20 +199,20 @@ export async function login(
     user = user instanceof Promise ? await user : user
 
     if (user?.did && (user.did === userDid || !userDid)) {
-      // Fetch ENS data for the user
-      const userWithEns = await fetchEnsDataForUser(user)
+      // Fetch profile data for the user
+      const userWithProfile = await fetchProfileDataForUser(user)
 
       // Set up JWT handler if reactor is available
 
       // Store user data in sessionStorage for persistence
       SessionStorageManager.setUserData({
-        user: userWithEns,
-        userDid: userWithEns.did,
+        user: userWithProfile,
+        userDid: userWithProfile.did,
         loginStatus: 'authorized',
         timestamp: Date.now(),
       })
 
-      return userWithEns
+      return userWithProfile
     }
 
     if (!userDid) {
@@ -141,19 +222,19 @@ export async function login(
     const newUser = await renown.login(userDid ?? '')
     if (newUser) {
       // Fetch ENS data for the user
-      const userWithEns = await fetchEnsDataForUser(newUser)
+      const userWithProfile = await fetchProfileDataForUser(newUser)
 
       // Set up JWT handler if reactor is available
 
       // Store user data in sessionStorage for persistence
       SessionStorageManager.setUserData({
-        user: userWithEns,
-        userDid: userWithEns.did,
+        user: userWithProfile,
+        userDid: userWithProfile.did,
         loginStatus: 'authorized',
         timestamp: Date.now(),
       })
 
-      return userWithEns
+      return userWithProfile
     }
   } catch (error) {
     console.error('Renown login error:', error)
@@ -196,8 +277,8 @@ export async function reauthenticateFromSession(): Promise<User | null> {
 
     if (currentUser) {
       // Fetch ENS data for the restored user
-      const userWithEns = await fetchEnsDataForUser(currentUser)
-      return userWithEns
+      const userWithProfile = await fetchProfileDataForUser(currentUser)
+      return userWithProfile
     }
 
     return null

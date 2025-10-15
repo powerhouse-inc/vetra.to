@@ -3,7 +3,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { IConnectCrypto } from '../lib/crypto/index'
 import type { LoginStatus, User } from '../lib/renown'
-import { login, logout, openRenown, handleRenownReturn, fetchEnsDataForUser } from '../lib/renown'
+import {
+  login,
+  logout,
+  openRenown,
+  handleRenownReturn,
+  fetchProfileDataForUser,
+} from '../lib/renown'
 import { SessionStorageManager } from '../lib/session-storage'
 
 /**
@@ -53,7 +59,7 @@ export function useUser(): UseUserReturn {
       const storedUserData = SessionStorageManager.getUserData()
       if (storedUserData && SessionStorageManager.isUserDataValid(storedUserData)) {
         // Fetch ENS data for the restored user
-        const userWithEns = await fetchEnsDataForUser(storedUserData.user)
+        const userWithEns = await fetchProfileDataForUser(storedUserData.user)
         setUser(userWithEns)
         setLoginStatus('authorized')
         setIsLoading(false)
@@ -75,7 +81,7 @@ export function useUser(): UseUserReturn {
 
           if (currentUser) {
             // Fetch ENS data for the current user
-            const userWithEns = await fetchEnsDataForUser(currentUser)
+            const userWithEns = await fetchProfileDataForUser(currentUser)
             setUser(userWithEns)
             setLoginStatus('authorized')
           } else {
@@ -115,7 +121,7 @@ export function useUser(): UseUserReturn {
       const loggedInUser = await login(did, renown, connectCrypto)
       if (loggedInUser) {
         // Fetch ENS data and update state
-        const userWithEns = await fetchEnsDataForUser(loggedInUser)
+        const userWithEns = await fetchProfileDataForUser(loggedInUser)
         setUser(userWithEns)
         setLoginStatus('authorized')
       } else {

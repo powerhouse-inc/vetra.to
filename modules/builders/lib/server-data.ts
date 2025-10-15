@@ -33,7 +33,7 @@ export interface BuilderPackage {
 
 export interface BuilderSpace {
   id: string
-  builderAccountId: string
+  builderTeamId: string
   title: string
   description?: string
   sortOrder: number
@@ -42,14 +42,14 @@ export interface BuilderSpace {
   packages: BuilderPackage[]
 }
 
-export interface BuilderAccountMember {
+export interface BuilderTeamMember {
   id: string
-  builderAccountId: string
+  builderTeamId: string
   ethAddress: string
   createdAt: string
 }
 
-export interface BuilderAccount {
+export interface BuilderTeam {
   id: string
   profileName: string
   profileSlug: string
@@ -61,21 +61,24 @@ export interface BuilderAccount {
   createdAt: string
   updatedAt: string
   spaces: BuilderSpace[]
-  members: BuilderAccountMember[]
+  members: BuilderTeamMember[]
 }
 
-export interface FetchBuilderAccountResponse {
-  fetchBuilderAccount: BuilderAccount
+// Alias for backward compatibility
+export type BuilderAccount = BuilderTeam
+
+export interface FetchBuilderTeamResponse {
+  fetchBuilderTeam: BuilderTeam
 }
 
-export interface FetchAllBuilderAccountsResponse {
-  fetchAllBuilderAccounts: BuilderAccount[]
+export interface FetchAllBuilderTeamsResponse {
+  fetchAllBuilderTeams: BuilderTeam[]
 }
 
 // GraphQL queries
-const FETCH_BUILDER_ACCOUNT = gql`
-  query fetchBuilderAccount($fetchBuilderAccountId: String!) {
-    fetchBuilderAccount(id: $fetchBuilderAccountId) {
+const FETCH_BUILDER_Team = gql`
+  query fetchBuilderTeam($fetchBuilderTeamId: String!) {
+    fetchBuilderTeam(id: $fetchBuilderTeamId) {
       id
       profileName
       profileSlug
@@ -91,7 +94,6 @@ const FETCH_BUILDER_ACCOUNT = gql`
         builderAccountId
         title
         description
-        sortOrder
         createdAt
         updatedAt
         packages {
@@ -99,22 +101,13 @@ const FETCH_BUILDER_ACCOUNT = gql`
           spaceId
           name
           description
-          category
-          authorName
-          authorWebsite
-          githubUrl
-          npmUrl
+          github
+          npm
           vetraDriveUrl
           driveId
           sortOrder
           createdAt
           updatedAt
-          keywords {
-            id
-            packageId
-            label
-            createdAt
-          }
         }
       }
       members {
@@ -127,9 +120,9 @@ const FETCH_BUILDER_ACCOUNT = gql`
   }
 `
 
-const FETCH_ALL_BUILDER_ACCOUNTS = gql`
-  query fetchAllBuilderAccounts($search: String, $sortOrder: String) {
-    fetchAllBuilderAccounts(search: $search, sortOrder: $sortOrder) {
+const FETCH_ALL_BUILDER_TeamS = gql`
+  query fetchAllBuilderTeams($search: String, $sortOrder: String) {
+    fetchAllBuilderTeams(search: $search, sortOrder: $sortOrder) {
       id
       profileName
       profileSlug
@@ -145,7 +138,6 @@ const FETCH_ALL_BUILDER_ACCOUNTS = gql`
         builderAccountId
         title
         description
-        sortOrder
         createdAt
         updatedAt
         packages {
@@ -153,22 +145,13 @@ const FETCH_ALL_BUILDER_ACCOUNTS = gql`
           spaceId
           name
           description
-          category
-          authorName
-          authorWebsite
-          githubUrl
-          npmUrl
+          github
+          npm
           vetraDriveUrl
           driveId
           sortOrder
           createdAt
           updatedAt
-          keywords {
-            id
-            packageId
-            label
-            createdAt
-          }
         }
       }
       members {
@@ -195,31 +178,31 @@ async function serverGraphqlRequest<T>(
 }
 
 // Server-side data fetching functions
-export async function fetchBuilderAccount(accountId: string): Promise<BuilderAccount | null> {
+export async function fetchBuilderTeam(TeamId: string): Promise<BuilderTeam | null> {
   try {
-    const response = await serverGraphqlRequest<FetchBuilderAccountResponse>(
-      FETCH_BUILDER_ACCOUNT,
-      { fetchBuilderAccountId: accountId },
-    )
-    return response.fetchBuilderAccount
+    const response = await serverGraphqlRequest<FetchBuilderTeamResponse>(FETCH_BUILDER_Team, {
+      fetchBuilderTeamId: TeamId,
+    })
+    console.log('response', response)
+    return response.fetchBuilderTeam
   } catch (error) {
-    console.error('Failed to fetch builder account:', error)
+    console.error('Failed to fetch builder Team:', error)
     return null
   }
 }
 
-export async function fetchAllBuilderAccounts(
+export async function fetchAllBuilderTeams(
   search?: string,
   sortOrder?: string,
-): Promise<BuilderAccount[]> {
+): Promise<BuilderTeam[]> {
   try {
-    const response = await serverGraphqlRequest<FetchAllBuilderAccountsResponse>(
-      FETCH_ALL_BUILDER_ACCOUNTS,
+    const response = await serverGraphqlRequest<FetchAllBuilderTeamsResponse>(
+      FETCH_ALL_BUILDER_TeamS,
       { search, sortOrder },
     )
-    return response.fetchAllBuilderAccounts
+    return response.fetchAllBuilderTeams
   } catch (error) {
-    console.error('Failed to fetch all builder accounts:', error)
+    console.error('Failed to fetch all builder Teams:', error)
     return []
   }
 }

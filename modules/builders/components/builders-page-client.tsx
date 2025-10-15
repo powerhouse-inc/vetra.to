@@ -36,7 +36,7 @@ export function BuildersPageClient({ children }: BuildersPageClientProps) {
       setIsLoading(true)
       setError(null)
 
-      const response = await fetch('/api/builder-accounts', {
+      const response = await fetch('/api/builder-teams', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
