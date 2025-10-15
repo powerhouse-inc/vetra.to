@@ -101,8 +101,8 @@ const FETCH_BUILDER_Team = gql`
           spaceId
           name
           description
-          github
-          npm
+          githubUrl: github
+          npmUrl: npm
           vetraDriveUrl
           driveId
           sortOrder
@@ -145,8 +145,8 @@ const FETCH_ALL_BUILDER_TeamS = gql`
           spaceId
           name
           description
-          github
-          npm
+          githubUrl: github
+          npmUrl: npm
           vetraDriveUrl
           driveId
           sortOrder

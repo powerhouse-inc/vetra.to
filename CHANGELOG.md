@@ -2,7 +2,7 @@
 
 ### Features
 
-* find builder team by slug ([5eb4fdd](https://github.com/powerhouse-inc/vetra.to/commit/5eb4fdda8e9854dd2a770b4cff8842741e70c227))
+- find builder team by slug ([5eb4fdd](https://github.com/powerhouse-inc/vetra.to/commit/5eb4fdda8e9854dd2a770b4cff8842741e70c227))
 
 ## [1.7.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.6.4...v1.7.0) (2025-10-01)
 
