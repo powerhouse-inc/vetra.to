@@ -9,7 +9,6 @@ import {
   StripedCardHeader,
   StripedCardTitle,
 } from '@/modules/shared/components/striped-card/striped-card'
-import ProfileSvg from '@/modules/shared/components/svgs/profile.svg'
 import RenownSvg from '@/modules/shared/components/svgs/renown.svg'
 import { Avatar, AvatarFallback, AvatarImage } from '@/modules/shared/components/ui/avatar'
 import { cn } from '@/modules/shared/lib/utils'
@@ -89,7 +88,7 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
                     <AvatarImage src={member.avatar} alt={getDisplayName(member)} />
                   )}
                   <AvatarFallback>
-                    <ProfileSvg className="size-16" />
+                    <User className="text-muted-foreground size-8" />
                   </AvatarFallback>
                 </Avatar>
 
@@ -115,7 +114,7 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
                       href={`https://renown-staging.vetra.io/profile/${member.phid}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 rounded px-4 py-2 transition-opacity hover:opacity-80"
+                      className="text-foreground flex items-center justify-center gap-2 rounded px-4 py-2 transition-opacity hover:opacity-80"
                     >
                       <RenownSvg className="" />
                     </a>

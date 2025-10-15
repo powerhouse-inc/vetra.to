@@ -1,7 +1,6 @@
-import { UserIcon } from 'lucide-react'
+import { UserIcon, MoreVertical } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import React from 'react'
-import KebabMenu from '@/shared/components/svgs/kebab-menu.svg'
 import { ThemeToggle } from '../../theme-toggle'
 import {
   DropdownMenu,
@@ -40,9 +39,9 @@ function NavbarRightSide({ isLoggedIn, user, onLoginClick }: NavbarRightSideProp
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="text-background rounded-md focus:ring-2 focus:ring-offset-2 focus:outline-none"
+              className="text-foreground rounded-md focus:ring-2 focus:ring-offset-2 focus:outline-none"
             >
-              <KebabMenu className="h-9 w-9" />
+              <MoreVertical className="h-6 w-6" />
               <span className="sr-only">Open menu</span>
             </button>
           </DropdownMenuTrigger>
