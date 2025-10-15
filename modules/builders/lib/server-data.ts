@@ -45,6 +45,9 @@ export interface BuilderSpace {
 export interface BuilderTeamMember {
   id: string
   builderTeamId: string
+  phid?: string
+  name?: string
+  profileImage?: string
   ethAddress: string
   createdAt: string
 }
@@ -113,6 +116,9 @@ const FETCH_BUILDER_Team = gql`
       members {
         id
         builderAccountId
+        phid
+        name
+        profileImage
         ethAddress
         createdAt
       }
@@ -157,6 +163,9 @@ const FETCH_ALL_BUILDER_TeamS = gql`
       members {
         id
         builderAccountId
+        phid
+        name
+        profileImage
         ethAddress
         createdAt
       }

@@ -53,13 +53,12 @@ export default async function TeamPage({ params }: TeamPageProps) {
   const teamMembers =
     teamData.members?.map((member) => ({
       id: member.id,
+      phid: member.phid,
       ethAddress: member.ethAddress,
-      // For now, we'll generate names from eth addresses
-      // In a real implementation, you might want to fetch additional member data
-      name: member.ethAddress.slice(2, 8),
-      email: `${member.ethAddress.slice(2, 8)}-ph.eth`,
+      name: member.name,
+      avatar: member.profileImage,
       role: 'Developer',
-      isRenown: true, // You might want to determine this based on some criteria
+      isRenown: !!member.phid, // Show renown link if phid exists
     })) || []
 
   // Generate industry expertise from package categories

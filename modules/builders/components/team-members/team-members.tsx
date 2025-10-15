@@ -16,6 +16,7 @@ import { cn } from '@/modules/shared/lib/utils'
 
 interface TeamMember {
   id: string
+  phid?: string
   ethAddress: string
   name?: string
   email?: string
@@ -41,20 +42,21 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
         .slice(0, 2)
     }
     // Fallback to first 2 characters of eth address
-    return member.ethAddress.slice(2, 4).toUpperCase()
+    return (member.ethAddress?.slice(2, 4) || member.id.slice(0, 2)).toUpperCase()
   }
 
   // Generate a name from eth address if not provided
   const getDisplayName = (member: TeamMember) => {
     if (member.name) return member.name
     // Use first part of eth address as display name
-    return member.ethAddress.slice(2, 8)
+    return member.ethAddress?.slice(2, 8) || member.id.slice(0, 6)
   }
 
-  // Generate email from eth address if not provided
+  // Generate email from name or eth address if not provided
   const getDisplayEmail = (member: TeamMember) => {
     if (member.email) return member.email
-    return `${member.ethAddress.slice(2, 8)}-ph.eth`
+    const username = member.name || member.ethAddress?.slice(2, 8) || member.id.slice(0, 6)
+    return `${username}-ph.eth`
   }
 
   // Copy to clipboard function
@@ -83,7 +85,12 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
               <StripedCardContent className="flex flex-col items-center space-y-4">
                 {/* Avatar */}
                 <Avatar className="size-16">
-                  <ProfileSvg className="size-16" />
+                  {member.avatar && (
+                    <AvatarImage src={member.avatar} alt={getDisplayName(member)} />
+                  )}
+                  <AvatarFallback>
+                    <ProfileSvg className="size-16" />
+                  </AvatarFallback>
                 </Avatar>
 
                 {/* ETH Address with Copy Icon */}
@@ -91,7 +98,7 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
                   <p className="text-sm text-gray-500">{getDisplayEmail(member)}</p>
                   <Copy
                     className="size-4 cursor-pointer hover:text-gray-700"
-                    onClick={(e) => copyToClipboard(member.id, e)}
+                    onClick={(e) => copyToClipboard(member.phid || member.id, e)}
                   />
                 </div>
 
@@ -102,10 +109,10 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
                 </div>
 
                 {/* Renown Button */}
-                {member.isRenown && (
+                {member.isRenown && member.phid && (
                   <div className="mt-2">
                     <a
-                      href={`https://renown-staging.vetra.io/profile/${member.id}`}
+                      href={`https://renown-staging.vetra.io/profile/${member.phid}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center justify-center gap-2 rounded px-4 py-2 transition-opacity hover:opacity-80"
