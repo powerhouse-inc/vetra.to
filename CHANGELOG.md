@@ -1,3 +1,9 @@
+## [1.8.3](https://github.com/powerhouse-inc/vetra.to/compare/v1.8.2...v1.8.3) (2025-10-15)
+
+### Bug Fixes
+
+- format team member card part 3 ([c481173](https://github.com/powerhouse-inc/vetra.to/commit/c481173b4dac0a3cd118da97a44898145c37c766))
+
 ## [1.8.2](https://github.com/powerhouse-inc/vetra.to/compare/v1.8.1...v1.8.2) (2025-10-15)
 
 ### Bug Fixes
