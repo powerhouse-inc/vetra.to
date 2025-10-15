@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import { BuilderProfile } from '@/modules/builders/components/builder-profile'
 import { BuilderSpaces } from '@/modules/builders/components/builder-spaces'
 import { TeamMembers } from '@/modules/builders/components/team-members'
@@ -18,6 +19,64 @@ export const dynamic = 'force-dynamic'
 interface TeamPageProps {
   params: {
     'team-name': string
+  }
+}
+
+export async function generateMetadata({ params }: TeamPageProps): Promise<Metadata> {
+  try {
+    const teamSlug = (await params)['team-name']
+    const teamData = await fetchBuilderTeamBySlug(teamSlug)
+
+    if (!teamData) {
+      return {
+        title: 'Builder Not Found',
+        description: 'The requested builder team could not be found.',
+      }
+    }
+
+    const title = `${teamData.profileName || teamSlug} | Vetra Builder`
+    const description =
+      teamData.profileDescription ||
+      `Explore ${teamData.profileName || teamSlug} builder profile on Vetra.`
+    const url = `https://staging.vetra.to/builders/${teamSlug}`
+    const ogImage = teamData.profileLogo || 'https://staging.vetra.to/vetra-logo.png'
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        url,
+        siteName: 'Vetra',
+        type: 'profile',
+        images: [
+          {
+            url: ogImage,
+            width: 1200,
+            height: 630,
+            alt: teamData.profileName || teamSlug,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [ogImage],
+        site: '@vetra',
+        creator: teamData.profileSocialsX,
+      },
+      alternates: {
+        canonical: url,
+      },
+    }
+  } catch (error) {
+    // Fallback metadata if fetch fails
+    return {
+      title: 'Vetra Builder',
+      description: 'Explore builder profiles on Vetra.',
+    }
   }
 }
 

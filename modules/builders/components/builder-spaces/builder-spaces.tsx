@@ -68,25 +68,26 @@ const BuilderSpaces: React.FC<BuilderSpacesProps> = ({
                 {space.packages.map((pkg, packageIndex) => (
                   <div
                     key={packageIndex}
-                    className="flex flex-row items-center gap-4 rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-sm"
+                    className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-sm md:flex-row"
                   >
-                    {/* Package Icon */}
-                    <div className="flex flex-shrink-0">
-                      <div className="flex size-10 items-center justify-center rounded-lg">
-                        <Package className="size-5" />
+                    {/* Package Icon and Info - Always horizontal */}
+                    <div className="flex w-full flex-1 flex-row items-center gap-4 md:w-auto">
+                      {/* Package Icon */}
+                      <div className="flex flex-shrink-0">
+                        <div className="flex size-10 items-center justify-center rounded-lg">
+                          <Package className="size-5" />
+                        </div>
+                      </div>
+
+                      {/* Package Info */}
+                      <div className="flex min-w-0 flex-1 flex-col md:flex-1">
+                        <h4 className="mb-1 text-sm font-semibold">{pkg.title}</h4>
+                        <p className="mb-3 text-xs leading-relaxed">{pkg.description}</p>
                       </div>
                     </div>
 
-                    {/* Package Info */}
-                    <div className="flex min-w-0 flex-1 flex-col">
-                      <h4 className="mb-1 text-sm font-semibold">{pkg.title}</h4>
-                      <p className="mb-3 text-xs leading-relaxed text-gray-600">
-                        {pkg.description}
-                      </p>
-                    </div>
-
                     {/* Action Buttons */}
-                    <div className="flex flex-shrink-0 items-center gap-2">
+                    <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:flex-shrink-0">
                       {pkg.githubUrl && (
                         <Button variant="ghost" size="sm" asChild>
                           <a

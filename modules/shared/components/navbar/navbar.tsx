@@ -47,29 +47,31 @@ function Navbar() {
   return (
     <div
       className={cn(
-        'fixed top-0 right-0 left-0 z-160 h-24 w-full pb-2',
+        'fixed top-0 right-0 left-0 z-160 h-24 w-full pt-2 pb-2',
         navBarWithBlurBackground ? 'md:backdrop-blur-[40px]' : 'md:bg-background',
       )}
     >
-      <div className="bg-muted/30 fixed top-0 right-0 left-0 z-150 rounded-3xl p-0 shadow-lg md:mx-6 md:p-2.5 md:shadow-none xl:container xl:px-2.5 2xl:mx-14 2xl:max-w-[calc(100%-108px)]">
-        <header className="bg-popover flex h-full flex-1 items-center justify-between rounded-none pr-4 md:rounded-2xl">
-          <div className="flex w-full items-center justify-between">
-            <div className="flex items-center gap-4">
-              <NavbarBrand
-                isAchraPage={false}
-                isotypeLogo={Isotype}
-                logotype={Logotype}
-                logotypeClassName={logotypeClassName}
-                logoHref={logoHref}
-              />
-              <NavbarItemMobile navItems={navItems} pathname={pathname} />
+      <div className="bg-muted/30 fixed top-0 right-0 left-0 z-150 rounded-3xl p-0 shadow-lg md:px-6 md:py-2.5 md:pt-4 md:shadow-none">
+        <div className="mx-auto max-w-[var(--container-width)]">
+          <header className="bg-popover flex h-full flex-1 items-center justify-between rounded-none pr-4 md:rounded-2xl">
+            <div className="flex w-full items-center justify-between">
+              <div className="flex items-center gap-4">
+                <NavbarBrand
+                  isAchraPage={false}
+                  isotypeLogo={Isotype}
+                  logotype={Logotype}
+                  logotypeClassName={logotypeClassName}
+                  logoHref={logoHref}
+                />
+                <NavbarItemMobile navItems={navItems} pathname={pathname} />
+              </div>
+
+              <NavbarItemsDesk navItems={navItems} pathname={pathname} />
+
+              <NavbarRightSide isLoggedIn={isLoggedIn} user={user} onLoginClick={handleLogin} />
             </div>
-
-            <NavbarItemsDesk navItems={navItems} pathname={pathname} />
-
-            <NavbarRightSide isLoggedIn={isLoggedIn} user={user} onLoginClick={handleLogin} />
-          </div>
-        </header>
+          </header>
+        </div>
       </div>
     </div>
   )

@@ -34,10 +34,12 @@ export function NavbarBrand({
     <div className="flex items-center gap-4 p-4 md:gap-6">
       {showIsotype && logoHref && (
         <Link href={logoHref} className="cursor-pointer hover:opacity-80">
-          <div className="flex items-center gap-2">
-            {typeof IsotypeLogo === 'function' && <IsotypeLogo className="h-8 w-8" />}
+          <div className="flex items-center">
+            {/* Show icon only on mobile */}
+            {typeof IsotypeLogo === 'function' && <IsotypeLogo className="h-8 w-8 md:hidden" />}
+            {/* Show full logo with text on desktop */}
             {typeof Logotype === 'function' && (
-              <Logotype className={cn('hidden h-8 md:flex', logotypeClassName)} />
+              <Logotype className={cn('hidden h-8 md:block', logotypeClassName)} />
             )}
           </div>
         </Link>

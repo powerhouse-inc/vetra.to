@@ -81,9 +81,9 @@ const BuilderTeamCard: React.FC<BuilderTeamCardProps> = ({
   }
 
   return (
-    <Card className={cn('w-full border border-gray-200 bg-white shadow-sm', className)}>
+    <Card className={cn('w-full shadow-sm', className)}>
       <CardContent>
-        <div className="flex items-start gap-6">
+        <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
           {/* Left Column - Avatar */}
           <div className="flex-shrink-0">
             <Avatar className="size-16">
@@ -97,18 +97,18 @@ const BuilderTeamCard: React.FC<BuilderTeamCardProps> = ({
           </div>
 
           {/* Middle Column - Information */}
-          <div className="min-w-0 flex-1">
-            <h3 className="mb-2 text-lg font-semibold text-gray-900">{teamName}</h3>
-            <p className="mb-4 text-sm leading-relaxed text-gray-600">{description}</p>
+          <div className="w-full min-w-0 flex-1 md:w-auto">
+            <h3 className="mb-2 text-lg font-semibold">{teamName}</h3>
+            <p className="mb-4 text-sm leading-relaxed">{description}</p>
 
             {/* Social Links */}
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               {xUrl && (
                 <a
                   href={xUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-sm text-gray-500 transition-colors hover:text-gray-700"
+                  className="text-muted-foreground flex items-center gap-1.5 text-sm transition-colors hover:text-gray-700"
                 >
                   <XLogo size={16} />
                   <span>@{extractUsername(xUrl, 'x')}</span>
@@ -119,7 +119,7 @@ const BuilderTeamCard: React.FC<BuilderTeamCardProps> = ({
                   href={githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-sm text-gray-500 transition-colors hover:text-gray-700"
+                  className="text-muted-foreground flex items-center gap-1.5 text-sm transition-colors hover:text-gray-700"
                 >
                   <Github className="size-4" />
                   <span>{extractUsername(githubUrl, 'github')}</span>
@@ -130,7 +130,7 @@ const BuilderTeamCard: React.FC<BuilderTeamCardProps> = ({
                   href={websiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-sm text-gray-500 transition-colors hover:text-gray-700"
+                  className="text-muted-foreground flex items-center gap-1.5 text-sm transition-colors hover:text-gray-700"
                 >
                   <ExternalLink className="size-4" />
                   <span>{extractUsername(websiteUrl, 'website')}</span>
@@ -140,10 +140,10 @@ const BuilderTeamCard: React.FC<BuilderTeamCardProps> = ({
           </div>
 
           {/* Right Column - Actions */}
-          <div className="flex-shrink-0">
+          <div className="w-full flex-shrink-0 md:w-auto">
             <div className="flex flex-col gap-2">
               {actions.map((action, index) => (
-                <Button key={index} variant="outline" size="sm" asChild className="border-gray-300">
+                <Button key={index} variant="outline" size="sm" asChild>
                   <a href={action.link} className="flex items-center gap-2">
                     <span className="font-bold">{action.title}</span>
                     <User className="size-4" />

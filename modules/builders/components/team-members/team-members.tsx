@@ -95,7 +95,7 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
 
                 {/* ETH Address with Copy Icon */}
                 <div className="flex items-center gap-2">
-                  <p className="text-sm text-gray-500">{getDisplayEthAddress(member)}</p>
+                  <p className="text-muted-foreground text-sm">{getDisplayEthAddress(member)}</p>
                   <Copy
                     className="size-4 cursor-pointer hover:text-gray-700"
                     onClick={(e) => copyToClipboard(member.ethAddress, e)}
@@ -104,8 +104,8 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
 
                 {/* Role with Icon */}
                 <div className="flex items-center gap-2">
-                  <User className="size-4 text-gray-500" />
-                  <p className="text-sm text-gray-600">{member.role || 'Developer'}</p>
+                  <User className="text-muted-foreground size-4" />
+                  <p className="text-sm">{member.role || 'Developer'}</p>
                 </div>
 
                 {/* Renown Button */}

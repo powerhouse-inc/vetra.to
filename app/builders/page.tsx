@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { BuilderList } from '@/modules/builders/components/builder-list'
 import { BuilderSearch } from '@/modules/builders/components/builder-search'
 import { BuildersPageClient } from '@/modules/builders/components/builders-page-client'
@@ -12,6 +13,39 @@ import {
 
 // Force dynamic rendering to prevent build-time API requests
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Vetra Builders',
+  description:
+    'Discover Vetra builders - officially affiliated teams of Powerhouse with expertise in the Powerhouse tech stack and proven ability to deliver solutions across any domain.',
+  openGraph: {
+    title: 'Vetra Builders',
+    description:
+      'Discover Vetra builders - officially affiliated teams of Powerhouse with expertise in the Powerhouse tech stack and proven ability to deliver solutions across any domain.',
+    url: 'https://staging.vetra.to/builders',
+    siteName: 'Vetra',
+    type: 'website',
+    images: [
+      {
+        url: 'https://staging.vetra.to/vetra-logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Vetra Builders',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Vetra Builders',
+    description:
+      'Discover Vetra builders - officially affiliated teams of Powerhouse with expertise in the Powerhouse tech stack and proven ability to deliver solutions across any domain.',
+    images: ['https://staging.vetra.to/vetra-logo.png'],
+    site: '@vetra',
+  },
+  alternates: {
+    canonical: 'https://staging.vetra.to/builders',
+  },
+}
 
 export default function BuildersPage() {
   return (

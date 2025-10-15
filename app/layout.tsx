@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${inter.variable} bg-muted/30 antialiased`}>
         {/* Background SVG - positioned at the highest level */}
         {/* <div className="fixed inset-0 -z-10">
           <BackgroundSvg className="h-full w-full object-cover" />

@@ -62,23 +62,23 @@ const BuilderProfile: React.FC<BuilderProfileProps> = ({
           {/* Right Column - Content */}
           <div className="flex-1 space-y-4">
             <div className="space-y-2">
-              <h3 className="text-xl font-bold text-gray-900">{profileName}</h3>
+              <h3 className="text-xl font-bold">{profileName}</h3>
               {profileDescription && (
-                <p className="text-sm leading-relaxed text-gray-600">{profileDescription}</p>
+                <p className="text-sm leading-relaxed">{profileDescription}</p>
               )}
             </div>
 
             {/* External Links */}
             {(profileSocialsX || profileSocialsGithub || profileSocialsWebsite) && (
               <div>
-                <h4 className="mb-3 text-sm font-medium text-gray-700">External Links</h4>
+                <h4 className="mb-3 text-sm font-medium">External Links</h4>
                 <div className="space-y-2">
                   {profileSocialsX && (
                     <a
                       href={`https://x.com/${profileSocialsX.replace('@', '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-gray-700 transition-colors hover:text-gray-900"
+                      className="flex items-center gap-2 text-sm transition-colors hover:text-gray-900"
                     >
                       <XLogo className="size-4" />
                       <span>{profileSocialsX}</span>
@@ -90,7 +90,7 @@ const BuilderProfile: React.FC<BuilderProfileProps> = ({
                       href={`https://github.com/${profileSocialsGithub}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-gray-700 transition-colors hover:text-gray-900"
+                      className="flex items-center gap-2 text-sm transition-colors hover:text-gray-900"
                     >
                       <Github className="size-4" />
                       <span>{profileSocialsGithub}</span>
@@ -102,7 +102,7 @@ const BuilderProfile: React.FC<BuilderProfileProps> = ({
                       href={profileSocialsWebsite}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-gray-700 transition-colors hover:text-gray-900"
+                      className="flex items-center gap-2 text-sm transition-colors hover:text-gray-900"
                     >
                       <Globe className="size-4" />
                       <span>{profileSocialsWebsite}</span>
@@ -116,14 +116,10 @@ const BuilderProfile: React.FC<BuilderProfileProps> = ({
             {/* Industry Expertise */}
             {industryExpertise.length > 0 && (
               <div>
-                <h4 className="mb-3 text-sm font-medium text-gray-700">Industry Expertise</h4>
+                <h4 className="mb-3 text-sm font-medium">Industry Expertise</h4>
                 <div className="flex flex-wrap gap-2">
                   {industryExpertise.map((expertise, index) => (
-                    <Badge
-                      key={index}
-                      variant="outline"
-                      className="border-blue-200 bg-white text-blue-800 hover:bg-blue-50"
-                    >
+                    <Badge key={index} variant="outline">
                       {expertise}
                     </Badge>
                   ))}

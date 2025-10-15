@@ -17,7 +17,7 @@ export function BuilderList() {
   if (error) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="text-red-500">Error: {error}</div>
+        <div className="text-destructive">Error: {error}</div>
       </div>
     )
   }
