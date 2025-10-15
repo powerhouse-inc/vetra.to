@@ -1,3 +1,9 @@
+## [1.8.1](https://github.com/powerhouse-inc/vetra.to/compare/v1.8.0...v1.8.1) (2025-10-15)
+
+### Bug Fixes
+
+* team member card ([d2ae91a](https://github.com/powerhouse-inc/vetra.to/commit/d2ae91a9c95c293626f7ab64bd3b90e4a4223566))
+
 ## [1.8.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.7.0...v1.8.0) (2025-10-15)
 
 ### Features
