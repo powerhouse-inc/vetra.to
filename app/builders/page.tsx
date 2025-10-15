@@ -10,6 +10,9 @@ import {
   BreadcrumbPage,
 } from '@/modules/shared/components/ui/breadcrumb'
 
+// Force dynamic rendering to prevent build-time API requests
+export const dynamic = 'force-dynamic'
+
 export default function BuildersPage() {
   return (
     <BuildersPageClient>
