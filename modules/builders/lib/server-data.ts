@@ -77,8 +77,8 @@ export interface FetchAllBuilderTeamsResponse {
 
 // GraphQL queries
 const FETCH_BUILDER_Team = gql`
-  query fetchBuilderTeam($fetchBuilderTeamId: String!) {
-    fetchBuilderTeam(id: $fetchBuilderTeamId) {
+  query fetchBuilderTeam($fetchBuilderTeamId: String, $fetchBuilderTeamSlug: String) {
+    fetchBuilderTeam(id: $fetchBuilderTeamId, slug: $fetchBuilderTeamSlug) {
       id
       profileName
       profileSlug
@@ -178,17 +178,27 @@ async function serverGraphqlRequest<T>(
 }
 
 // Server-side data fetching functions
-export async function fetchBuilderTeam(TeamId: string): Promise<BuilderTeam | null> {
+export async function fetchBuilderTeam(
+  idOrSlug: string,
+  isSlug: boolean = false,
+): Promise<BuilderTeam | null> {
   try {
-    const response = await serverGraphqlRequest<FetchBuilderTeamResponse>(FETCH_BUILDER_Team, {
-      fetchBuilderTeamId: TeamId,
-    })
+    const variables = isSlug ? { fetchBuilderTeamSlug: idOrSlug } : { fetchBuilderTeamId: idOrSlug }
+
+    const response = await serverGraphqlRequest<FetchBuilderTeamResponse>(
+      FETCH_BUILDER_Team,
+      variables,
+    )
     console.log('response', response)
     return response.fetchBuilderTeam
   } catch (error) {
     console.error('Failed to fetch builder Team:', error)
     return null
   }
+}
+
+export async function fetchBuilderTeamBySlug(slug: string): Promise<BuilderTeam | null> {
+  return fetchBuilderTeam(slug, true)
 }
 
 export async function fetchAllBuilderTeams(

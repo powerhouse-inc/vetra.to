@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import { BuilderProfile } from '@/modules/builders/components/builder-profile'
 import { BuilderSpaces } from '@/modules/builders/components/builder-spaces'
 import { TeamMembers } from '@/modules/builders/components/team-members'
-import { fetchBuilderTeam, type BuilderSpace } from '@/modules/builders/lib/server-data'
+import { fetchBuilderTeamBySlug, type BuilderSpace } from '@/modules/builders/lib/server-data'
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -12,6 +12,9 @@ import {
   BreadcrumbSeparator,
 } from '@/modules/shared/components/ui/breadcrumb'
 
+// Force dynamic rendering to prevent build-time API requests
+export const dynamic = 'force-dynamic'
+
 interface TeamPageProps {
   params: {
     'team-name': string
@@ -19,10 +22,10 @@ interface TeamPageProps {
 }
 
 export default async function TeamPage({ params }: TeamPageProps) {
-  const teamName = (await params)['team-name']
+  const teamSlug = (await params)['team-name']
 
-  // Fetch team data server-side
-  const teamData = await fetchBuilderTeam(teamName)
+  // Fetch team data by slug
+  const teamData = await fetchBuilderTeamBySlug(teamSlug)
 
   // If no team data found, show 404
   if (!teamData) {
@@ -105,7 +108,7 @@ export default async function TeamPage({ params }: TeamPageProps) {
       {/* Builder Spaces Section */}
       <BuilderSpaces
         spaces={spaces}
-        teamName={teamData.profileName || teamName}
+        teamName={teamData.profileName || teamSlug}
         discordUrl="https://discord.com/invite/powerhouse"
       />
     </main>

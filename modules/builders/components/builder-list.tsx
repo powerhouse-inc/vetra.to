@@ -40,10 +40,11 @@ export function BuilderList() {
             team.profileDescription ??
             'Officially affiliated team of Powerhouse.inc. Seasoned builder on the powerhouse techstack. Strong ability to explore a problem space in any domain and develop solutions.'
           }
+          profileLogo={team.profileLogo}
           xUrl={team.profileSocialsX ?? ''}
           githubUrl={team.profileSocialsGithub ?? ''}
           websiteUrl={team.profileSocialsWebsite ?? ''}
-          actions={[{ link: `/builders/${team.id}`, title: 'View Profile' }]}
+          actions={[{ link: `/builders/${team.profileSlug}`, title: 'View Profile' }]}
         />
       ))}
     </div>

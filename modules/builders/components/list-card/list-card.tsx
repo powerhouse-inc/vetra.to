@@ -2,7 +2,7 @@ import { ExternalLink, Github, User } from 'lucide-react'
 import React from 'react'
 
 import XLogo from '@/modules/shared/components/icons/x-logo'
-import { Avatar, AvatarFallback } from '@/modules/shared/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/modules/shared/components/ui/avatar'
 import { Button } from '@/modules/shared/components/ui/button'
 import { Card, CardContent } from '@/modules/shared/components/ui/card'
 import { cn } from '@/modules/shared/lib/utils'
@@ -15,6 +15,7 @@ interface Action {
 interface BuilderTeamCardProps {
   teamName: string
   description: string
+  profileLogo?: string
   xUrl?: string
   githubUrl?: string
   websiteUrl?: string
@@ -51,6 +52,7 @@ const extractUsername = (url: string, platform: 'x' | 'github' | 'website'): str
 const BuilderTeamCard: React.FC<BuilderTeamCardProps> = ({
   teamName,
   description,
+  profileLogo,
   xUrl,
   githubUrl,
   websiteUrl,
@@ -85,6 +87,7 @@ const BuilderTeamCard: React.FC<BuilderTeamCardProps> = ({
           {/* Left Column - Avatar */}
           <div className="flex-shrink-0">
             <Avatar className="size-16">
+              {profileLogo && <AvatarImage src={profileLogo} alt={teamName} />}
               <AvatarFallback
                 className={`${getAvatarBgColor(teamName)} text-lg font-bold text-white`}
               >
