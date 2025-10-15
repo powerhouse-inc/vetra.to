@@ -1,3 +1,5 @@
+'use client'
+
 import { Copy, Plus, User } from 'lucide-react'
 import React from 'react'
 
@@ -56,7 +58,8 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
   }
 
   // Copy to clipboard function
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (text: string, event: React.MouseEvent) => {
+    event.preventDefault()
     navigator.clipboard.writeText(text)
   }
 
@@ -86,7 +89,10 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
                 {/* ETH Address with Copy Icon */}
                 <div className="flex items-center gap-2">
                   <p className="text-sm text-gray-500">{getDisplayEmail(member)}</p>
-                  <Copy className="size-4" />
+                  <Copy
+                    className="size-4 cursor-pointer hover:text-gray-700"
+                    onClick={(e) => copyToClipboard(member.id, e)}
+                  />
                 </div>
 
                 {/* Role with Icon */}
@@ -98,9 +104,14 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
                 {/* Renown Button */}
                 {member.isRenown && (
                   <div className="mt-2">
-                    <div className="flex items-center justify-center gap-2 rounded px-4 py-2">
+                    <a
+                      href={`https://renown-staging.vetra.io/profile/${member.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 rounded px-4 py-2 transition-opacity hover:opacity-80"
+                    >
                       <RenownSvg className="" />
-                    </div>
+                    </a>
                   </div>
                 )}
               </StripedCardContent>
