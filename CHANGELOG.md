@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/powerhouse-inc/vetra.to/compare/v1.9.0...v1.9.1) (2025-10-20)
+
+### Bug Fixes
+
+- added vetra logo for meta tags ([1d324ca](https://github.com/powerhouse-inc/vetra.to/commit/1d324ca8b7e71c34632c3d9a60d994aeb674ad42))
+- updated queries to fetch users ([bc20203](https://github.com/powerhouse-inc/vetra.to/commit/bc202037ee62a1d34e4fc0e2559ff047ea3d8691))
+
 ## [1.9.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.8.3...v1.9.0) (2025-10-15)
 
 ### Features
