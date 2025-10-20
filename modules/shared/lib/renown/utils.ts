@@ -32,14 +32,12 @@ export interface User {
 // Helper function to fetch user profile from switchboard API
 async function fetchUserProfileFromSwitchboard(ethAddress: string): Promise<RenownProfile | null> {
   const query = `
-    query RenownProfilesRead($ethAddress: String!, $driveId: String!) {
-      Renown {
-        getProfile(ethAddress: $ethAddress, driveId: $driveId) {
-          documentId
-          userImage
-          ethAddress
-          username
-        }
+    query RenownProfilesRead($ethAddress: String!, $driveId: String) {
+      renownUser(input: { ethAddress: $ethAddress, driveId: $driveId }) {
+        documentId
+        userImage
+        ethAddress
+        username
       }
     }
   `
@@ -69,7 +67,7 @@ async function fetchUserProfileFromSwitchboard(ethAddress: string): Promise<Reno
       throw new Error(result.errors[0]?.message || 'GraphQL error')
     }
 
-    const profile = result.data?.Renown?.getProfile
+    const profile = result.data?.renownUser
 
     if (profile) {
       return {

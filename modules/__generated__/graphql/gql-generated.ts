@@ -1,7 +1,5 @@
 /* eslint-disable */
 // @ts-nocheck
-import { useQuery, useSuspenseQuery, UseQueryOptions, UseSuspenseQueryOptions } from '@tanstack/react-query';
-import { fetcher } from '@/shared/lib/fetcher';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -230,76 +228,105 @@ export type Author = {
   website?: Maybe<Scalars['URL']['output']>;
 };
 
-export type BuilderAccount = IDocument & {
-  __typename?: 'BuilderAccount';
+export type BuilderTeam = IDocument & {
+  __typename?: 'BuilderTeam';
   createdAtUtcIso: Scalars['DateTime']['output'];
   documentType: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  initialState: BuilderAccount_BuilderAccountState;
+  initialState: BuilderTeam_BuilderTeamState;
   lastModifiedAtUtcIso: Scalars['DateTime']['output'];
   name: Scalars['String']['output'];
   operations: Array<Operation>;
   revision: Scalars['Int']['output'];
-  state: BuilderAccount_BuilderAccountState;
+  state: BuilderTeam_BuilderTeamState;
   stateJSON?: Maybe<Scalars['JSONObject']['output']>;
 };
 
 
-export type BuilderAccountOperationsArgs = {
+export type BuilderTeamOperationsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
 };
 
-export type BuilderAccountFilter = {
-  __typename?: 'BuilderAccountFilter';
+export type BuilderTeamFilter = {
+  __typename?: 'BuilderTeamFilter';
   profileDescription?: Maybe<Scalars['String']['output']>;
   profileLogo?: Maybe<Scalars['String']['output']>;
   profileName?: Maybe<Scalars['String']['output']>;
   profileSlug?: Maybe<Scalars['String']['output']>;
 };
 
-export type BuilderAccountMember = {
-  __typename?: 'BuilderAccountMember';
+export type BuilderTeamMember = {
+  __typename?: 'BuilderTeamMember';
   builderAccountId: Scalars['String']['output'];
   createdAt: Scalars['String']['output'];
   ethAddress: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  phid?: Maybe<Scalars['String']['output']>;
+  profileImage?: Maybe<Scalars['String']['output']>;
 };
 
-/** Queries: BuilderAccount */
-export type BuilderAccountQueries = {
-  __typename?: 'BuilderAccountQueries';
-  getDocument?: Maybe<BuilderAccount>;
-  getDocuments?: Maybe<Array<BuilderAccount>>;
+export type BuilderTeamPackage = {
+  __typename?: 'BuilderTeamPackage';
+  createdAt: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  driveId?: Maybe<Scalars['String']['output']>;
+  github?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  npm?: Maybe<Scalars['String']['output']>;
+  sortOrder: Scalars['Int']['output'];
+  spaceId: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+  vetraDriveUrl?: Maybe<Scalars['String']['output']>;
+};
+
+/** Queries: BuilderTeam */
+export type BuilderTeamQueries = {
+  __typename?: 'BuilderTeamQueries';
+  getDocument?: Maybe<BuilderTeam>;
+  getDocuments?: Maybe<Array<BuilderTeam>>;
 };
 
 
-/** Queries: BuilderAccount */
-export type BuilderAccountQueriesGetDocumentArgs = {
+/** Queries: BuilderTeam */
+export type BuilderTeamQueriesGetDocumentArgs = {
   docId: Scalars['PHID']['input'];
   driveId?: InputMaybe<Scalars['PHID']['input']>;
 };
 
 
-/** Queries: BuilderAccount */
-export type BuilderAccountQueriesGetDocumentsArgs = {
+/** Queries: BuilderTeam */
+export type BuilderTeamQueriesGetDocumentsArgs = {
   driveId: Scalars['String']['input'];
 };
 
-/** Subgraph definition for BuilderAccount (powerhouse/vetra/builder-account) */
-export type BuilderAccountState = {
-  __typename?: 'BuilderAccountState';
-  members: Array<Scalars['EthereumAddress']['output']>;
+export type BuilderTeamSpace = {
+  __typename?: 'BuilderTeamSpace';
+  builderAccountId: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  packages: Array<BuilderTeamPackage>;
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
+/** Subgraph definition for BuilderTeam (powerhouse/builder-team) */
+export type BuilderTeamState = {
+  __typename?: 'BuilderTeamState';
+  members: Array<RenownProfileInfo>;
   profile: VetraBuilderProfile;
   spaces: Array<VetraBuilderSpace>;
 };
 
 /** Subgraph definition for Vetra Read Model */
-export type BuilderAccountType = {
-  __typename?: 'BuilderAccountType';
+export type BuilderTeamType = {
+  __typename?: 'BuilderTeamType';
   createdAt: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  members: Array<BuilderAccountMember>;
+  members: Array<BuilderTeamMember>;
   profileDescription?: Maybe<Scalars['String']['output']>;
   profileLogo?: Maybe<Scalars['String']['output']>;
   profileName: Scalars['String']['output'];
@@ -307,216 +334,146 @@ export type BuilderAccountType = {
   profileSocialsGithub?: Maybe<Scalars['String']['output']>;
   profileSocialsWebsite?: Maybe<Scalars['String']['output']>;
   profileSocialsX?: Maybe<Scalars['String']['output']>;
-  spaces: Array<BuilderSpace>;
+  spaces: Array<BuilderTeamSpace>;
   updatedAt: Scalars['String']['output'];
 };
 
-/** Module: Members */
-export type BuilderAccount_AddMemberInput = {
-  /** Add your inputs here */
-  ethAddress?: InputMaybe<Scalars['EthereumAddress']['input']>;
-};
-
-export type BuilderAccount_AddPackageInput = {
-  author?: InputMaybe<BuilderAccount_AuthorInput>;
-  category?: InputMaybe<Scalars['String']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  github?: InputMaybe<Scalars['URL']['input']>;
-  keywords?: InputMaybe<Array<Scalars['String']['input']>>;
-  name: Scalars['String']['input'];
-  npm?: InputMaybe<Scalars['URL']['input']>;
-  /** Add your inputs here */
-  spaceId: Scalars['OID']['input'];
-  vetraDriveUrl?: InputMaybe<Scalars['URL']['input']>;
-};
-
-/** Module: Spaces */
-export type BuilderAccount_AddSpaceInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  /** Add your inputs here */
-  title: Scalars['String']['input'];
+/** Module: Member */
+export type BuilderTeam_AddMemberInput = {
+  id: Scalars['OID']['input'];
 };
 
 /** Module: Packages */
-export type BuilderAccount_AuthorInput = {
-  name: Scalars['String']['input'];
-  website?: InputMaybe<Scalars['URL']['input']>;
-};
-
-export type BuilderAccount_BuilderAccountState = {
-  __typename?: 'BuilderAccount_BuilderAccountState';
-  members: Array<Scalars['EthereumAddress']['output']>;
-  profile: BuilderAccount_VetraBuilderProfile;
-  spaces: Array<BuilderAccount_VetraBuilderSpace>;
-};
-
-export type BuilderAccount_DeletePackageInput = {
-  /** Add your inputs here */
+export type BuilderTeam_AddPackageInput = {
   id: Scalars['OID']['input'];
-};
-
-export type BuilderAccount_DeleteSpaceInput = {
-  /** Add your inputs here */
-  id: Scalars['OID']['input'];
-};
-
-export type BuilderAccount_RemoveMemberInput = {
-  /** Add your inputs here */
-  ethAddress?: InputMaybe<Scalars['EthereumAddress']['input']>;
-};
-
-export type BuilderAccount_ReorderPackagesInput = {
-  ids: Array<Scalars['OID']['input']>;
-  insertAfter?: InputMaybe<Scalars['OID']['input']>;
-  /** Add your inputs here */
   spaceId: Scalars['OID']['input'];
 };
 
-export type BuilderAccount_ReorderSpacesInput = {
-  /** Add your inputs here */
-  ids: Array<Scalars['OID']['input']>;
-  insertAfter?: InputMaybe<Scalars['OID']['input']>;
+/** Module: Spaces */
+export type BuilderTeam_AddSpaceInput = {
+  id: Scalars['OID']['input'];
+};
+
+export type BuilderTeam_BuilderTeamState = {
+  __typename?: 'BuilderTeam_BuilderTeamState';
+  members: Array<BuilderTeam_RenownProfileInfo>;
+  profile: BuilderTeam_VetraBuilderProfile;
+  spaces: Array<BuilderTeam_VetraBuilderSpace>;
+};
+
+export type BuilderTeam_RemoveMemberInput = {
+  id: Scalars['OID']['input'];
+};
+
+export type BuilderTeam_RemovePackageInput = {
+  id: Scalars['OID']['input'];
+};
+
+export type BuilderTeam_RemoveSpaceInput = {
+  id: Scalars['OID']['input'];
+};
+
+export type BuilderTeam_RenownProfileInfo = {
+  __typename?: 'BuilderTeam_RenownProfileInfo';
+  ethAddress?: Maybe<Scalars['String']['output']>;
+  id: Scalars['OID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  phid?: Maybe<Scalars['PHID']['output']>;
+  profileImage?: Maybe<Scalars['String']['output']>;
+};
+
+export type BuilderTeam_ReorderPackagesInput = {
+  packageIds: Array<Scalars['OID']['input']>;
+  spaceId: Scalars['OID']['input'];
+  targetIndex: Scalars['Int']['input'];
+};
+
+export type BuilderTeam_ReorderSpacesInput = {
+  spaceIds: Array<Scalars['OID']['input']>;
+  targetIndex: Scalars['Int']['input'];
+};
+
+export type BuilderTeam_SetDescriptionInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Module: Profile */
-export type BuilderAccount_SetLogoInput = {
-  /** Add your inputs here */
-  logoUrl: Scalars['String']['input'];
+export type BuilderTeam_SetLogoInput = {
+  logo?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type BuilderAccount_SetPackageDriveIdInput = {
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  /** Add your inputs here */
-  packageId: Scalars['OID']['input'];
-};
-
-export type BuilderAccount_SetProfileDescriptionInput = {
-  /** Add your inputs here */
-  description?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type BuilderAccount_SetProfileNameInput = {
-  /** Add your inputs here */
-  name: Scalars['String']['input'];
-};
-
-export type BuilderAccount_SetSlugInput = {
-  /** Add your inputs here */
+export type BuilderTeam_SetSlugInput = {
   slug: Scalars['String']['input'];
 };
 
-export type BuilderAccount_SetSpaceDescriptionInput = {
-  description: Scalars['String']['input'];
-  /** Add your inputs here */
-  id: Scalars['OID']['input'];
+export type BuilderTeam_SetSocialsInput = {
+  github?: InputMaybe<Scalars['String']['input']>;
+  website?: InputMaybe<Scalars['String']['input']>;
+  xProfile?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type BuilderAccount_SetSpaceTitleInput = {
-  /** Add your inputs here */
-  id: Scalars['OID']['input'];
-  newTitle: Scalars['String']['input'];
+export type BuilderTeam_SetTeamNameInput = {
+  name: Scalars['String']['input'];
 };
 
-export type BuilderAccount_UpdatePackageInput = {
+export type BuilderTeam_UpdateMemberInfoInput = {
+  ethAddress?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['OID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  phid?: InputMaybe<Scalars['PHID']['input']>;
+  profileImage?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BuilderTeam_UpdatePackageInfoInput = {
   description?: InputMaybe<Scalars['String']['input']>;
-  /** Add your inputs here */
+  github?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['OID']['input'];
+  npm?: InputMaybe<Scalars['String']['input']>;
+  phid?: InputMaybe<Scalars['PHID']['input']>;
+  spaceId?: InputMaybe<Scalars['OID']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  vetraDriveUrl?: InputMaybe<Scalars['URL']['input']>;
+};
+
+export type BuilderTeam_UpdateSpaceInfoInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['OID']['input'];
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type BuilderAccount_UpdateSocialsInput = {
-  github?: InputMaybe<Scalars['URL']['input']>;
-  website?: InputMaybe<Scalars['URL']['input']>;
-  /** Add your inputs here */
-  x?: InputMaybe<Scalars['URL']['input']>;
-};
-
-export type BuilderAccount_VetraBuilderPackage = {
-  __typename?: 'BuilderAccount_VetraBuilderPackage';
-  author: BuilderAccount_VetraBuilderPackageAuthor;
-  category?: Maybe<Scalars['String']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  github?: Maybe<Scalars['URL']['output']>;
-  id: Scalars['OID']['output'];
-  keywords: Array<BuilderAccount_VetraBuilderPackageKeyword>;
-  name: Scalars['String']['output'];
-  npm?: Maybe<Scalars['URL']['output']>;
-  vetraDriveUrl?: Maybe<Scalars['URL']['output']>;
-};
-
-export type BuilderAccount_VetraBuilderPackageAuthor = {
-  __typename?: 'BuilderAccount_VetraBuilderPackageAuthor';
-  name: Scalars['String']['output'];
-  website?: Maybe<Scalars['URL']['output']>;
-};
-
-export type BuilderAccount_VetraBuilderPackageKeyword = {
-  __typename?: 'BuilderAccount_VetraBuilderPackageKeyword';
-  id: Scalars['OID']['output'];
-  label: Scalars['String']['output'];
-};
-
-export type BuilderAccount_VetraBuilderProfile = {
-  __typename?: 'BuilderAccount_VetraBuilderProfile';
+export type BuilderTeam_VetraBuilderProfile = {
+  __typename?: 'BuilderTeam_VetraBuilderProfile';
   description?: Maybe<Scalars['String']['output']>;
   logo?: Maybe<Scalars['URL']['output']>;
   name: Scalars['String']['output'];
   slug: Scalars['String']['output'];
-  socials: BuilderAccount_VetraBuilderSocials;
+  socials: BuilderTeam_VetraBuilderSocials;
 };
 
-export type BuilderAccount_VetraBuilderSocials = {
-  __typename?: 'BuilderAccount_VetraBuilderSocials';
+export type BuilderTeam_VetraBuilderSocials = {
+  __typename?: 'BuilderTeam_VetraBuilderSocials';
   github?: Maybe<Scalars['URL']['output']>;
   website?: Maybe<Scalars['URL']['output']>;
   xProfile?: Maybe<Scalars['URL']['output']>;
 };
 
-export type BuilderAccount_VetraBuilderSpace = {
-  __typename?: 'BuilderAccount_VetraBuilderSpace';
+export type BuilderTeam_VetraBuilderSpace = {
+  __typename?: 'BuilderTeam_VetraBuilderSpace';
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['OID']['output'];
-  packages: Array<BuilderAccount_VetraBuilderPackage>;
+  packages: Array<BuilderTeam_VetraPackageInfo>;
   title: Scalars['String']['output'];
 };
 
-export type BuilderPackage = {
-  __typename?: 'BuilderPackage';
-  authorName: Scalars['String']['output'];
-  authorWebsite?: Maybe<Scalars['String']['output']>;
-  category?: Maybe<Scalars['String']['output']>;
-  createdAt: Scalars['String']['output'];
+export type BuilderTeam_VetraPackageInfo = {
+  __typename?: 'BuilderTeam_VetraPackageInfo';
   description?: Maybe<Scalars['String']['output']>;
-  driveId?: Maybe<Scalars['String']['output']>;
-  githubUrl?: Maybe<Scalars['String']['output']>;
-  id: Scalars['String']['output'];
-  keywords: Array<BuilderPackageKeyword>;
-  name: Scalars['String']['output'];
-  npmUrl?: Maybe<Scalars['String']['output']>;
-  sortOrder: Scalars['Int']['output'];
-  spaceId: Scalars['String']['output'];
-  updatedAt: Scalars['String']['output'];
-  vetraDriveUrl?: Maybe<Scalars['String']['output']>;
-};
-
-export type BuilderPackageKeyword = {
-  __typename?: 'BuilderPackageKeyword';
-  createdAt: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  label: Scalars['String']['output'];
-  packageId: Scalars['String']['output'];
-};
-
-export type BuilderSpace = {
-  __typename?: 'BuilderSpace';
-  builderAccountId: Scalars['String']['output'];
-  createdAt: Scalars['String']['output'];
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['String']['output'];
-  packages: Array<BuilderPackage>;
-  sortOrder: Scalars['Int']['output'];
-  title: Scalars['String']['output'];
-  updatedAt: Scalars['String']['output'];
+  github?: Maybe<Scalars['String']['output']>;
+  id: Scalars['OID']['output'];
+  npm?: Maybe<Scalars['String']['output']>;
+  phid?: Maybe<Scalars['PHID']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+  vetraDriveUrl?: Maybe<Scalars['URL']['output']>;
 };
 
 export type CurrencyConversion = {
@@ -894,24 +851,23 @@ export type Mutation = {
   AppModule_setAppName?: Maybe<Scalars['Int']['output']>;
   AppModule_setAppStatus?: Maybe<Scalars['Int']['output']>;
   AppModule_setDragAndDropEnabled?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_addMember?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_addPackage?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_addSpace?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_createDocument?: Maybe<Scalars['String']['output']>;
-  BuilderAccount_deletePackage?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_deleteSpace?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_removeMember?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_reorderPackages?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_reorderSpaces?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_setLogo?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_setPackageDriveId?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_setProfileDescription?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_setProfileName?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_setSlug?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_setSpaceDescription?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_setSpaceTitle?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_updatePackage?: Maybe<Scalars['Int']['output']>;
-  BuilderAccount_updateSocials?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_addMember?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_addPackage?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_addSpace?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_createDocument?: Maybe<Scalars['String']['output']>;
+  BuilderTeam_removeMember?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_removePackage?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_removeSpace?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_reorderPackages?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_reorderSpaces?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_setDescription?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_setLogo?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_setSlug?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_setSocials?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_setTeamName?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_updateMemberInfo?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_updatePackageInfo?: Maybe<Scalars['Int']['output']>;
+  BuilderTeam_updateSpaceInfo?: Maybe<Scalars['Int']['output']>;
   DocumentEditor_addDocumentType?: Maybe<Scalars['Int']['output']>;
   DocumentEditor_createDocument?: Maybe<Scalars['String']['output']>;
   DocumentEditor_removeDocumentType?: Maybe<Scalars['Int']['output']>;
@@ -992,145 +948,137 @@ export type MutationAppModule_SetDragAndDropEnabledArgs = {
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_AddMemberArgs = {
+export type MutationBuilderTeam_AddMemberArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_AddMemberInput>;
+  input?: InputMaybe<BuilderTeam_AddMemberInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_AddPackageArgs = {
+export type MutationBuilderTeam_AddPackageArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_AddPackageInput>;
+  input?: InputMaybe<BuilderTeam_AddPackageInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_AddSpaceArgs = {
+export type MutationBuilderTeam_AddSpaceArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_AddSpaceInput>;
+  input?: InputMaybe<BuilderTeam_AddSpaceInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_CreateDocumentArgs = {
+export type MutationBuilderTeam_CreateDocumentArgs = {
   driveId?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_DeletePackageArgs = {
+export type MutationBuilderTeam_RemoveMemberArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_DeletePackageInput>;
+  input?: InputMaybe<BuilderTeam_RemoveMemberInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_DeleteSpaceArgs = {
+export type MutationBuilderTeam_RemovePackageArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_DeleteSpaceInput>;
+  input?: InputMaybe<BuilderTeam_RemovePackageInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_RemoveMemberArgs = {
+export type MutationBuilderTeam_RemoveSpaceArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_RemoveMemberInput>;
+  input?: InputMaybe<BuilderTeam_RemoveSpaceInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_ReorderPackagesArgs = {
+export type MutationBuilderTeam_ReorderPackagesArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_ReorderPackagesInput>;
+  input?: InputMaybe<BuilderTeam_ReorderPackagesInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_ReorderSpacesArgs = {
+export type MutationBuilderTeam_ReorderSpacesArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_ReorderSpacesInput>;
+  input?: InputMaybe<BuilderTeam_ReorderSpacesInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_SetLogoArgs = {
+export type MutationBuilderTeam_SetDescriptionArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_SetLogoInput>;
+  input?: InputMaybe<BuilderTeam_SetDescriptionInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_SetPackageDriveIdArgs = {
+export type MutationBuilderTeam_SetLogoArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_SetPackageDriveIdInput>;
+  input?: InputMaybe<BuilderTeam_SetLogoInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_SetProfileDescriptionArgs = {
+export type MutationBuilderTeam_SetSlugArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_SetProfileDescriptionInput>;
+  input?: InputMaybe<BuilderTeam_SetSlugInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_SetProfileNameArgs = {
+export type MutationBuilderTeam_SetSocialsArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_SetProfileNameInput>;
+  input?: InputMaybe<BuilderTeam_SetSocialsInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_SetSlugArgs = {
+export type MutationBuilderTeam_SetTeamNameArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_SetSlugInput>;
+  input?: InputMaybe<BuilderTeam_SetTeamNameInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_SetSpaceDescriptionArgs = {
+export type MutationBuilderTeam_UpdateMemberInfoArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_SetSpaceDescriptionInput>;
+  input?: InputMaybe<BuilderTeam_UpdateMemberInfoInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_SetSpaceTitleArgs = {
+export type MutationBuilderTeam_UpdatePackageInfoArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_SetSpaceTitleInput>;
+  input?: InputMaybe<BuilderTeam_UpdatePackageInfoInput>;
 };
 
 
 /** Mutations: AppModule */
-export type MutationBuilderAccount_UpdatePackageArgs = {
+export type MutationBuilderTeam_UpdateSpaceInfoArgs = {
   docId?: InputMaybe<Scalars['PHID']['input']>;
   driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_UpdatePackageInput>;
-};
-
-
-/** Mutations: AppModule */
-export type MutationBuilderAccount_UpdateSocialsArgs = {
-  docId?: InputMaybe<Scalars['PHID']['input']>;
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<BuilderAccount_UpdateSocialsInput>;
+  input?: InputMaybe<BuilderTeam_UpdateSpaceInfoInput>;
 };
 
 
@@ -1470,7 +1418,7 @@ export enum ProcessorModule_StatusType {
 export type Query = {
   __typename?: 'Query';
   AppModule?: Maybe<AppModuleQueries>;
-  BuilderAccount?: Maybe<BuilderAccountQueries>;
+  BuilderTeam?: Maybe<BuilderTeamQueries>;
   DocumentEditor?: Maybe<DocumentEditorQueries>;
   ProcessorModule?: Maybe<ProcessorModuleQueries>;
   SubgraphModule?: Maybe<SubgraphModuleQueries>;
@@ -1478,8 +1426,9 @@ export type Query = {
   analytics?: Maybe<AnalyticsQuery>;
   driveIdBySlug?: Maybe<Scalars['String']['output']>;
   drives: Array<Scalars['String']['output']>;
-  fetchAllBuilderAccounts: Array<BuilderAccountType>;
-  fetchBuilderAccount?: Maybe<BuilderAccountType>;
+  fetchAllBuilderTeams: Array<BuilderTeamType>;
+  fetchBuilderTeam?: Maybe<BuilderTeamType>;
+  vetraPackages: Array<VetraPackageItem>;
 };
 
 
@@ -1488,15 +1437,33 @@ export type QueryDriveIdBySlugArgs = {
 };
 
 
-export type QueryFetchAllBuilderAccountsArgs = {
+export type QueryFetchAllBuilderTeamsArgs = {
   driveId?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
 };
 
 
-export type QueryFetchBuilderAccountArgs = {
+export type QueryFetchBuilderTeamArgs = {
   driveId?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryVetraPackagesArgs = {
+  documentId_in?: InputMaybe<Array<Scalars['PHID']['input']>>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type RenownProfileInfo = {
+  __typename?: 'RenownProfileInfo';
+  ethAddress?: Maybe<Scalars['String']['output']>;
+  id: Scalars['OID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  phid?: Maybe<Scalars['PHID']['output']>;
+  profileImage?: Maybe<Scalars['String']['output']>;
 };
 
 export type Signer = {
@@ -1599,31 +1566,6 @@ export type Value = {
   path?: Maybe<Scalars['String']['output']>;
 };
 
-export type VetraBuilderPackage = {
-  __typename?: 'VetraBuilderPackage';
-  author: VetraBuilderPackageAuthor;
-  category?: Maybe<Scalars['String']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  github?: Maybe<Scalars['URL']['output']>;
-  id: Scalars['OID']['output'];
-  keywords: Array<VetraBuilderPackageKeyword>;
-  name: Scalars['String']['output'];
-  npm?: Maybe<Scalars['URL']['output']>;
-  vetraDriveUrl?: Maybe<Scalars['URL']['output']>;
-};
-
-export type VetraBuilderPackageAuthor = {
-  __typename?: 'VetraBuilderPackageAuthor';
-  name: Scalars['String']['output'];
-  website?: Maybe<Scalars['URL']['output']>;
-};
-
-export type VetraBuilderPackageKeyword = {
-  __typename?: 'VetraBuilderPackageKeyword';
-  id: Scalars['OID']['output'];
-  label: Scalars['String']['output'];
-};
-
 export type VetraBuilderProfile = {
   __typename?: 'VetraBuilderProfile';
   description?: Maybe<Scalars['String']['output']>;
@@ -1644,7 +1586,8 @@ export type VetraBuilderSpace = {
   __typename?: 'VetraBuilderSpace';
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['OID']['output'];
-  packages: Array<VetraBuilderPackage>;
+  packages: Array<VetraPackageInfo>;
+  sortOrder: Scalars['Int']['output'];
   title: Scalars['String']['output'];
 };
 
@@ -1666,6 +1609,32 @@ export type VetraPackage = IDocument & {
 export type VetraPackageOperationsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type VetraPackageInfo = {
+  __typename?: 'VetraPackageInfo';
+  description?: Maybe<Scalars['String']['output']>;
+  github?: Maybe<Scalars['String']['output']>;
+  id: Scalars['OID']['output'];
+  npm?: Maybe<Scalars['String']['output']>;
+  phid?: Maybe<Scalars['PHID']['output']>;
+  sortOrder: Scalars['Int']['output'];
+  title?: Maybe<Scalars['String']['output']>;
+  vetraDriveUrl?: Maybe<Scalars['URL']['output']>;
+};
+
+/** Subgraph definition */
+export type VetraPackageItem = {
+  __typename?: 'VetraPackageItem';
+  authorName?: Maybe<Scalars['String']['output']>;
+  authorWebsite?: Maybe<Scalars['String']['output']>;
+  category?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  documentId: Scalars['String']['output'];
+  driveId?: Maybe<Scalars['String']['output']>;
+  githubUrl?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  npmUrl?: Maybe<Scalars['String']['output']>;
 };
 
 /** Queries: VetraPackage */
@@ -1760,204 +1729,23 @@ export type VetraPackage_VetraPackageState = {
   npmUrl?: Maybe<Scalars['URL']['output']>;
 };
 
-export type FetchBuilderAccountQueryVariables = Exact<{
-  fetchBuilderAccountId: Scalars['String']['input'];
+export type FetchBuilderTeamQueryVariables = Exact<{
+  fetchBuilderTeamId?: InputMaybe<Scalars['String']['input']>;
+  fetchBuilderTeamSlug?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type FetchBuilderAccountQuery = { __typename?: 'Query', fetchBuilderAccount?: { __typename?: 'BuilderAccountType', id: string, profileName: string, profileSlug: string, profileLogo?: string | null, profileDescription?: string | null, profileSocialsX?: string | null, profileSocialsGithub?: string | null, profileSocialsWebsite?: string | null, createdAt: string, updatedAt: string, spaces: Array<{ __typename?: 'BuilderSpace', id: string, builderAccountId: string, title: string, description?: string | null, sortOrder: number, createdAt: string, updatedAt: string, packages: Array<{ __typename?: 'BuilderPackage', id: string, spaceId: string, name: string, description?: string | null, category?: string | null, authorName: string, authorWebsite?: string | null, githubUrl?: string | null, npmUrl?: string | null, vetraDriveUrl?: string | null, driveId?: string | null, sortOrder: number, createdAt: string, updatedAt: string, keywords: Array<{ __typename?: 'BuilderPackageKeyword', id: string, packageId: string, label: string, createdAt: string }> }> }>, members: Array<{ __typename?: 'BuilderAccountMember', id: string, builderAccountId: string, ethAddress: string, createdAt: string }> } | null };
+export type FetchBuilderTeamQuery = { __typename?: 'Query', fetchBuilderTeam?: { __typename?: 'BuilderTeamType', id: string, profileName: string, profileSlug: string, profileLogo?: string | null, profileDescription?: string | null, profileSocialsX?: string | null, profileSocialsGithub?: string | null, profileSocialsWebsite?: string | null, createdAt: string, updatedAt: string, spaces: Array<{ __typename?: 'BuilderTeamSpace', id: string, builderAccountId: string, title: string, description?: string | null, createdAt: string, updatedAt: string, packages: Array<{ __typename?: 'BuilderTeamPackage', id: string, spaceId: string, name: string, description?: string | null, vetraDriveUrl?: string | null, driveId?: string | null, sortOrder: number, createdAt: string, updatedAt: string, githubUrl?: string | null, npmUrl?: string | null }> }>, members: Array<{ __typename?: 'BuilderTeamMember', id: string, builderAccountId: string, phid?: string | null, name?: string | null, profileImage?: string | null, ethAddress: string, createdAt: string }> } | null };
 
-export type FetchAllBuilderAccountsQueryVariables = Exact<{
+export type FetchAllBuilderTeamsQueryVariables = Exact<{
   search?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type FetchAllBuilderAccountsQuery = { __typename?: 'Query', fetchAllBuilderAccounts: Array<{ __typename?: 'BuilderAccountType', id: string, profileName: string, profileSlug: string, profileLogo?: string | null, profileDescription?: string | null, profileSocialsX?: string | null, profileSocialsGithub?: string | null, profileSocialsWebsite?: string | null, createdAt: string, updatedAt: string, spaces: Array<{ __typename?: 'BuilderSpace', id: string, builderAccountId: string, title: string, description?: string | null, sortOrder: number, createdAt: string, updatedAt: string, packages: Array<{ __typename?: 'BuilderPackage', id: string, spaceId: string, name: string, description?: string | null, category?: string | null, authorName: string, authorWebsite?: string | null, githubUrl?: string | null, npmUrl?: string | null, vetraDriveUrl?: string | null, driveId?: string | null, sortOrder: number, createdAt: string, updatedAt: string, keywords: Array<{ __typename?: 'BuilderPackageKeyword', id: string, packageId: string, label: string, createdAt: string }> }> }>, members: Array<{ __typename?: 'BuilderAccountMember', id: string, builderAccountId: string, ethAddress: string, createdAt: string }> }> };
+export type FetchAllBuilderTeamsQuery = { __typename?: 'Query', fetchAllBuilderTeams: Array<{ __typename?: 'BuilderTeamType', id: string, profileName: string, profileSlug: string, profileLogo?: string | null, profileDescription?: string | null, profileSocialsX?: string | null, profileSocialsGithub?: string | null, profileSocialsWebsite?: string | null, createdAt: string, updatedAt: string, spaces: Array<{ __typename?: 'BuilderTeamSpace', id: string, builderAccountId: string, title: string, description?: string | null, createdAt: string, updatedAt: string, packages: Array<{ __typename?: 'BuilderTeamPackage', id: string, spaceId: string, name: string, description?: string | null, vetraDriveUrl?: string | null, driveId?: string | null, sortOrder: number, createdAt: string, updatedAt: string, githubUrl?: string | null, npmUrl?: string | null }> }>, members: Array<{ __typename?: 'BuilderTeamMember', id: string, builderAccountId: string, phid?: string | null, name?: string | null, profileImage?: string | null, ethAddress: string, createdAt: string }> }> };
+
+export type GetVetraPackagesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-
-export const FetchBuilderAccountDocument = `
-    query fetchBuilderAccount($fetchBuilderAccountId: String!) {
-  fetchBuilderAccount(id: $fetchBuilderAccountId) {
-    id
-    profileName
-    profileSlug
-    profileLogo
-    profileDescription
-    profileSocialsX
-    profileSocialsGithub
-    profileSocialsWebsite
-    createdAt
-    updatedAt
-    spaces {
-      id
-      builderAccountId
-      title
-      description
-      sortOrder
-      createdAt
-      updatedAt
-      packages {
-        id
-        spaceId
-        name
-        description
-        category
-        authorName
-        authorWebsite
-        githubUrl
-        npmUrl
-        vetraDriveUrl
-        driveId
-        sortOrder
-        createdAt
-        updatedAt
-        keywords {
-          id
-          packageId
-          label
-          createdAt
-        }
-      }
-    }
-    members {
-      id
-      builderAccountId
-      ethAddress
-      createdAt
-    }
-  }
-}
-    `;
-
-export const useFetchBuilderAccountQuery = <
-      TData = FetchBuilderAccountQuery,
-      TError = unknown
-    >(
-      variables: FetchBuilderAccountQueryVariables,
-      options?: Omit<UseQueryOptions<FetchBuilderAccountQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<FetchBuilderAccountQuery, TError, TData>['queryKey'] }
-    ) => {
-    
-    return useQuery<FetchBuilderAccountQuery, TError, TData>(
-      {
-    queryKey: ['fetchBuilderAccount', variables],
-    queryFn: fetcher<FetchBuilderAccountQuery, FetchBuilderAccountQueryVariables>(FetchBuilderAccountDocument, variables),
-    ...options
-  }
-    )};
-
-useFetchBuilderAccountQuery.getKey = (variables: FetchBuilderAccountQueryVariables) => ['fetchBuilderAccount', variables];
-
-export const useSuspenseFetchBuilderAccountQuery = <
-      TData = FetchBuilderAccountQuery,
-      TError = unknown
-    >(
-      variables: FetchBuilderAccountQueryVariables,
-      options?: Omit<UseSuspenseQueryOptions<FetchBuilderAccountQuery, TError, TData>, 'queryKey'> & { queryKey?: UseSuspenseQueryOptions<FetchBuilderAccountQuery, TError, TData>['queryKey'] }
-    ) => {
-    
-    return useSuspenseQuery<FetchBuilderAccountQuery, TError, TData>(
-      {
-    queryKey: ['fetchBuilderAccountSuspense', variables],
-    queryFn: fetcher<FetchBuilderAccountQuery, FetchBuilderAccountQueryVariables>(FetchBuilderAccountDocument, variables),
-    ...options
-  }
-    )};
-
-useSuspenseFetchBuilderAccountQuery.getKey = (variables: FetchBuilderAccountQueryVariables) => ['fetchBuilderAccountSuspense', variables];
-
-
-useFetchBuilderAccountQuery.fetcher = (variables: FetchBuilderAccountQueryVariables, options?: RequestInit['headers']) => fetcher<FetchBuilderAccountQuery, FetchBuilderAccountQueryVariables>(FetchBuilderAccountDocument, variables, options);
-
-export const FetchAllBuilderAccountsDocument = `
-    query fetchAllBuilderAccounts($search: String) {
-  fetchAllBuilderAccounts(search: $search) {
-    id
-    profileName
-    profileSlug
-    profileLogo
-    profileDescription
-    profileSocialsX
-    profileSocialsGithub
-    profileSocialsWebsite
-    createdAt
-    updatedAt
-    spaces {
-      id
-      builderAccountId
-      title
-      description
-      sortOrder
-      createdAt
-      updatedAt
-      packages {
-        id
-        spaceId
-        name
-        description
-        category
-        authorName
-        authorWebsite
-        githubUrl
-        npmUrl
-        vetraDriveUrl
-        driveId
-        sortOrder
-        createdAt
-        updatedAt
-        keywords {
-          id
-          packageId
-          label
-          createdAt
-        }
-      }
-    }
-    members {
-      id
-      builderAccountId
-      ethAddress
-      createdAt
-    }
-  }
-}
-    `;
-
-export const useFetchAllBuilderAccountsQuery = <
-      TData = FetchAllBuilderAccountsQuery,
-      TError = unknown
-    >(
-      variables?: FetchAllBuilderAccountsQueryVariables,
-      options?: Omit<UseQueryOptions<FetchAllBuilderAccountsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<FetchAllBuilderAccountsQuery, TError, TData>['queryKey'] }
-    ) => {
-    
-    return useQuery<FetchAllBuilderAccountsQuery, TError, TData>(
-      {
-    queryKey: variables === undefined ? ['fetchAllBuilderAccounts'] : ['fetchAllBuilderAccounts', variables],
-    queryFn: fetcher<FetchAllBuilderAccountsQuery, FetchAllBuilderAccountsQueryVariables>(FetchAllBuilderAccountsDocument, variables),
-    ...options
-  }
-    )};
-
-useFetchAllBuilderAccountsQuery.getKey = (variables?: FetchAllBuilderAccountsQueryVariables) => variables === undefined ? ['fetchAllBuilderAccounts'] : ['fetchAllBuilderAccounts', variables];
-
-export const useSuspenseFetchAllBuilderAccountsQuery = <
-      TData = FetchAllBuilderAccountsQuery,
-      TError = unknown
-    >(
-      variables?: FetchAllBuilderAccountsQueryVariables,
-      options?: Omit<UseSuspenseQueryOptions<FetchAllBuilderAccountsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseSuspenseQueryOptions<FetchAllBuilderAccountsQuery, TError, TData>['queryKey'] }
-    ) => {
-    
-    return useSuspenseQuery<FetchAllBuilderAccountsQuery, TError, TData>(
-      {
-    queryKey: variables === undefined ? ['fetchAllBuilderAccountsSuspense'] : ['fetchAllBuilderAccountsSuspense', variables],
-    queryFn: fetcher<FetchAllBuilderAccountsQuery, FetchAllBuilderAccountsQueryVariables>(FetchAllBuilderAccountsDocument, variables),
-    ...options
-  }
-    )};
-
-useSuspenseFetchAllBuilderAccountsQuery.getKey = (variables?: FetchAllBuilderAccountsQueryVariables) => variables === undefined ? ['fetchAllBuilderAccountsSuspense'] : ['fetchAllBuilderAccountsSuspense', variables];
-
-
-useFetchAllBuilderAccountsQuery.fetcher = (variables?: FetchAllBuilderAccountsQueryVariables, options?: RequestInit['headers']) => fetcher<FetchAllBuilderAccountsQuery, FetchAllBuilderAccountsQueryVariables>(FetchAllBuilderAccountsDocument, variables, options);
+export type GetVetraPackagesQuery = { __typename?: 'Query', vetraPackages: Array<{ __typename?: 'VetraPackageItem', documentId: string, name: string, description?: string | null, category?: string | null, authorName?: string | null, authorWebsite?: string | null, githubUrl?: string | null, npmUrl?: string | null, driveId?: string | null }> };
