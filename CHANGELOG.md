@@ -1,3 +1,9 @@
+## [1.10.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.9.1...v1.10.0) (2025-11-10)
+
+### Features
+
+- added explore repository button ([555524e](https://github.com/powerhouse-inc/vetra.to/commit/555524edae0cb623b388d8e99eb3e95ab0a2743a))
+
 ## [1.9.1](https://github.com/powerhouse-inc/vetra.to/compare/v1.9.0...v1.9.1) (2025-10-20)
 
 ### Bug Fixes
