@@ -1,6 +1,7 @@
 import { ExternalLink, Github, Package as PackageIcon } from 'lucide-react'
 import { notFound } from 'next/navigation'
 
+import { RepositoryActionButton } from '@/modules/packages/components/repository-action-button'
 import { getVetraPackages } from '@/modules/packages/lib/server-data'
 import {
   StripedCard,
@@ -184,9 +185,16 @@ export default async function PackageDetailPage({ params }: PackageDetailPagePro
                 )}
               </div>
 
-              {/* Open in Connect - Full Width */}
-              <div className="mt-4">
-                <Button variant="outline" size="sm" asChild className="flex w-full">
+              {/* Action Buttons */}
+              <div className="mt-4 flex flex-wrap gap-2">
+                {/* Repository Action Button */}
+                <RepositoryActionButton
+                  githubUrl={packageData.githubUrl}
+                  driveId={packageData.driveId}
+                />
+
+                {/* Open in Connect */}
+                <Button variant="outline" size="sm" asChild className="flex-1">
                   <a
                     className="flex p-5"
                     href={`${process.env.NEXT_PUBLIC_CONNECT_URL || 'https://connect.staging.vetra.io'}?driveUrl=${packageData.driveId ? `https://switchboard.staging.vetra.io/d/${packageData.driveId}` : 'https://switchboard.staging.vetra.io/d/61fff014-ff45-4270-aa16-5ca75429cc55'}`}

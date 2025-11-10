@@ -1,6 +1,7 @@
 import { ExternalLink, Github, MessageCircle, Package } from 'lucide-react'
 import React from 'react'
 
+import { RepositoryActionButton } from '@/modules/packages/components/repository-action-button'
 import {
   StripedCard,
   StripedCardContent,
@@ -116,26 +117,28 @@ const BuilderSpaces: React.FC<BuilderSpacesProps> = ({
                           </a>
                         </Button>
                       )}
-                      {
-                        <Button variant="outline" size="sm" asChild className="flex">
-                          <a
-                            className="flex p-5"
-                            href={`${process.env.NEXT_PUBLIC_CONNECT_URL || 'https://connect.staging.vetra.io'}?driveUrl=${pkg.vetraDriveUrl || 'https://switchboard.staging.vetra.io/d/61fff014-ff45-4270-aa16-5ca75429cc55'}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <div className="flex items-center justify-center">
-                              <ConnectSvg />
-                            </div>
-                            <div className="flex flex-col items-start">
-                              <span className="text-xs font-medium tracking-wide uppercase">
-                                Open in Connect
-                              </span>
-                              <span className="text-sm font-bold">Vetra Studio Drive</span>
-                            </div>
-                          </a>
-                        </Button>
-                      }
+                      <RepositoryActionButton
+                        githubUrl={pkg.githubUrl}
+                        driveId={pkg.vetraDriveUrl?.split('/d/')[1] || null}
+                      />
+                      <Button variant="outline" size="sm" asChild className="flex">
+                        <a
+                          className="flex p-5"
+                          href={`${process.env.NEXT_PUBLIC_CONNECT_URL || 'https://connect.staging.vetra.io'}?driveUrl=${pkg.vetraDriveUrl || 'https://switchboard.staging.vetra.io/d/61fff014-ff45-4270-aa16-5ca75429cc55'}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <div className="flex items-center justify-center">
+                            <ConnectSvg />
+                          </div>
+                          <div className="flex flex-col items-start">
+                            <span className="text-xs font-medium tracking-wide uppercase">
+                              Open in Connect
+                            </span>
+                            <span className="text-sm font-bold">Vetra Studio Drive</span>
+                          </div>
+                        </a>
+                      </Button>
                     </div>
                   </div>
                 ))}

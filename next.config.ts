@@ -9,12 +9,20 @@ const nextConfig: NextConfig = {
           source: '/',
           destination: process.env.HOMEPAGE_REMOTE_URL,
         },
+        {
+          source: '/cloud',
+          destination: 'https://understanding-assistant-316991.framer.app/cloud',
+        },
       ]
     } else {
       return [
         {
           source: '/',
           destination: 'https://understanding-assistant-316991.framer.app',
+        },
+        {
+          source: '/cloud',
+          destination: 'https://understanding-assistant-316991.framer.app/cloud',
         },
       ]
     }
