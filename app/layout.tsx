@@ -1,4 +1,5 @@
 import { Inter } from 'next/font/google'
+import Image from 'next/image'
 import { AuthProvider } from '@/modules/shared/providers/auth-provider'
 import { ThemeProvider } from '@/modules/shared/providers/theme-provider'
 import { Footer } from '@/shared/components/footer/footer'
@@ -29,13 +30,22 @@ export default function RootLayout({
         {/* <div className="fixed inset-0 -z-10">
           <BackgroundSvg className="h-full w-full object-cover" />
         </div> */}
-
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
           <QueryClientProvider>
             <AuthProvider>
-              <div className="flex min-h-screen flex-col">
+              <div className="items-right flex min-h-screen flex-col">
                 <Navbar />
-                <main className="flex-1">{children}</main>
+                <div className="pointer-events-none fixed top-[100px] right-0 z-0 h-[480px] w-full overflow-hidden">
+                  <Image
+                    src="/Vetra-background.png"
+                    alt=""
+                    width={1024}
+                    height={600}
+                    className="float-right h-auto w-[1024px]"
+                    priority
+                  />
+                </div>
+                <main className="z-10 flex-1">{children}</main>
                 <Footer />
               </div>
             </AuthProvider>
