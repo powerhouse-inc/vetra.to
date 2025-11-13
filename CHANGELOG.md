@@ -1,3 +1,9 @@
+## [1.11.2](https://github.com/powerhouse-inc/vetra.to/compare/v1.11.1...v1.11.2) (2025-11-13)
+
+### Bug Fixes
+
+- ph checkout command ([d72eaa8](https://github.com/powerhouse-inc/vetra.to/commit/d72eaa855f381fe28d1923afcbe5fe11f1914cf6))
+
 ## [1.11.1](https://github.com/powerhouse-inc/vetra.to/compare/v1.11.0...v1.11.1) (2025-11-13)
 
 ### Bug Fixes
