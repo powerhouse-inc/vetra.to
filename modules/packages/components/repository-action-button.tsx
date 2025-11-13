@@ -9,9 +9,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/modules/shared/compon
 interface RepositoryActionButtonProps {
   githubUrl?: string | null
   driveId?: string | null
+  packageName?: string | null
 }
 
-export function RepositoryActionButton({ githubUrl, driveId }: RepositoryActionButtonProps) {
+export function RepositoryActionButton({
+  githubUrl,
+  driveId,
+  packageName,
+}: RepositoryActionButtonProps) {
   const [open, setOpen] = useState(false)
   const [copiedCommand, setCopiedCommand] = useState<string | null>(null)
   const hasGithubUrl = !!githubUrl
@@ -26,14 +31,18 @@ export function RepositoryActionButton({ githubUrl, driveId }: RepositoryActionB
     }
   }
 
-  // Generate the ph init command
+  // Generate the drive URL
   const driveUrl = driveId
     ? `https://switchboard.staging.vetra.io/d/${driveId}`
     : 'https://switchboard.staging.vetra.io/d/61fff014-ff45-4270-aa16-5ca75429cc55'
-  const phInitCommand = `ph init --remote-drive ${driveUrl}`
 
-  // Generate the ph checkout command
-  const phCheckoutCommand = githubUrl ? `ph checkout ${githubUrl}` : ''
+  // Generate the ph init command with package name
+  const phInitCommand = packageName
+    ? `ph init ${packageName} --remote-drive ${driveUrl}`
+    : `ph init <package-name> --remote-drive ${driveUrl}`
+
+  // Generate the ph checkout command with remote drive
+  const phCheckoutCommand = githubUrl ? `ph checkout --remote-drive ${driveUrl} ${githubUrl}` : ''
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

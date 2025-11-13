@@ -191,6 +191,7 @@ export default async function PackageDetailPage({ params }: PackageDetailPagePro
                 <RepositoryActionButton
                   githubUrl={packageData.githubUrl}
                   driveId={packageData.driveId}
+                  packageName={packageData.name}
                 />
 
                 {/* Open in Connect */}

@@ -120,6 +120,7 @@ const BuilderSpaces: React.FC<BuilderSpacesProps> = ({
                       <RepositoryActionButton
                         githubUrl={pkg.githubUrl}
                         driveId={pkg.vetraDriveUrl?.split('/d/')[1] || null}
+                        packageName={pkg.title}
                       />
                       <Button variant="outline" size="sm" asChild className="flex">
                         <a
