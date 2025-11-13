@@ -36,13 +36,19 @@ export function RepositoryActionButton({
     ? `https://switchboard.staging.vetra.io/d/${driveId}`
     : 'https://switchboard.staging.vetra.io/d/61fff014-ff45-4270-aa16-5ca75429cc55'
 
+  // Convert package name to kebab-case
+  const kebabCaseName = packageName
+    ? packageName
+        .toLowerCase()
+        .replace(/[\s_]+/g, '-')
+        .replace(/[^a-z0-9-]/g, '')
+    : '<package-name>'
+
   // Generate the ph init command with package name
-  const phInitCommand = packageName
-    ? `ph init ${packageName} --remote-drive ${driveUrl}`
-    : `ph init <package-name> --remote-drive ${driveUrl}`
+  const phInitCommand = `ph init ${kebabCaseName} --remote-drive ${driveUrl}`
 
   // Generate the ph checkout command with remote drive
-  const phCheckoutCommand = githubUrl ? `ph checkout --remote-drive ${driveUrl} ${githubUrl}` : ''
+  const phCheckoutCommand = `ph checkout --remote-drive ${driveUrl}`
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
