@@ -1,3 +1,9 @@
+## [1.12.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.11.2...v1.12.0) (2025-11-13)
+
+### Features
+
+- added new background image ([f404302](https://github.com/powerhouse-inc/vetra.to/commit/f40430267b35d8a76e8690c967863b9802b521a9))
+
 ## [1.11.2](https://github.com/powerhouse-inc/vetra.to/compare/v1.11.1...v1.11.2) (2025-11-13)
 
 ### Bug Fixes
