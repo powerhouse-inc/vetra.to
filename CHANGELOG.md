@@ -1,3 +1,9 @@
+## [1.11.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.10.0...v1.11.0) (2025-11-13)
+
+### Features
+
+- added waitlist ([0838ec3](https://github.com/powerhouse-inc/vetra.to/commit/0838ec3642f5f584c69cbb8370a44fad08a41b78))
+
 ## [1.10.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.9.1...v1.10.0) (2025-11-10)
 
 ### Features
