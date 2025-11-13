@@ -1,3 +1,9 @@
+## [1.11.1](https://github.com/powerhouse-inc/vetra.to/compare/v1.11.0...v1.11.1) (2025-11-13)
+
+### Bug Fixes
+
+- vetra cloud link ([4e79e64](https://github.com/powerhouse-inc/vetra.to/commit/4e79e642091afe6b88b0d6cad27365de2317668e))
+
 ## [1.11.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.10.0...v1.11.0) (2025-11-13)
 
 ### Features
