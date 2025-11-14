@@ -1,3 +1,9 @@
+## [1.12.1](https://github.com/powerhouse-inc/vetra.to/compare/v1.12.0...v1.12.1) (2025-11-14)
+
+### Bug Fixes
+
+- vetra.to links ([a932556](https://github.com/powerhouse-inc/vetra.to/commit/a932556ecf3c2ff7a4e24907c55f4d849eff92dc))
+
 ## [1.12.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.11.2...v1.12.0) (2025-11-13)
 
 ### Features
