@@ -33,8 +33,8 @@ export function RepositoryActionButton({
 
   // Generate the drive URL
   const driveUrl = driveId
-    ? `https://switchboard.staging.vetra.io/d/${driveId}`
-    : 'https://switchboard.staging.vetra.io/d/61fff014-ff45-4270-aa16-5ca75429cc55'
+    ? `https://switchboard.vetra.io/d/${driveId}`
+    : 'https://switchboard.vetra.io/d/61fff014-ff45-4270-aa16-5ca75429cc55'
 
   // Convert package name to kebab-case
   const kebabCaseName = packageName

@@ -21,12 +21,12 @@ export const metadata: unknown = {
     title: 'Vetra Builders',
     description:
       'Discover Vetra builders - officially affiliated teams of Powerhouse with expertise in the Powerhouse tech stack and proven ability to deliver solutions across any domain.',
-    url: 'https://staging.vetra.to/builders',
+    url: 'https://vetra.to/builders',
     siteName: 'Vetra',
     type: 'website',
     images: [
       {
-        url: 'https://staging.vetra.to/vetra-logo.png',
+        url: 'https://vetra.to/vetra-logo.png',
         width: 1200,
         height: 630,
         alt: 'Vetra Builders',
@@ -38,11 +38,11 @@ export const metadata: unknown = {
     title: 'Vetra Builders',
     description:
       'Discover Vetra builders - officially affiliated teams of Powerhouse with expertise in the Powerhouse tech stack and proven ability to deliver solutions across any domain.',
-    images: ['https://staging.vetra.to/vetra-logo.png'],
+    images: ['https://vetra.to/vetra-logo.png'],
     site: '@vetra',
   },
   alternates: {
-    canonical: 'https://staging.vetra.to/builders',
+    canonical: 'https://vetra.to/builders',
   },
 }
 

@@ -43,8 +43,8 @@ export async function generateMetadata({ params }: PackageDetailPageProps): Prom
 
     const title = `${packageData.name} | Vetra Package`
     const description = packageData.description || `Explore ${packageData.name} package on Vetra.`
-    const url = `https://staging.vetra.to/packages/${packageId}`
-    const ogImage = 'https://staging.vetra.to/vetra-logo.png'
+    const url = `https://vetra.to/packages/${packageId}`
+    const ogImage = 'https://vetra.to/vetra-logo.png'
 
     return {
       title,

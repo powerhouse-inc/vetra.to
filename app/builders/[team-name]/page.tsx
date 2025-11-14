@@ -37,8 +37,8 @@ export async function generateMetadata({ params }: TeamPageProps): Promise<unkno
     const description =
       teamData.profileDescription ||
       `Explore ${teamData.profileName || teamSlug} builder profile on Vetra.`
-    const url = `https://staging.vetra.to/builders/${teamSlug}`
-    const ogImage = teamData.profileLogo || 'https://staging.vetra.to/vetra-logo.png'
+    const url = `https://vetra.to/builders/${teamSlug}`
+    const ogImage = teamData.profileLogo || 'https://vetra.to/vetra-logo.png'
 
     return {
       title,

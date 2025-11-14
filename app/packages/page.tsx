@@ -10,12 +10,12 @@ export const metadata: unknown = {
     title: 'Vetra Packages',
     description:
       'Explore Vetra packages - a collection of document models, editors, and module resources providing solutions for specific domains and industries.',
-    url: 'https://staging.vetra.to/packages',
+    url: 'https://vetra.to/packages',
     siteName: 'Vetra',
     type: 'website',
     images: [
       {
-        url: 'https://staging.vetra.to/vetra-logo.png',
+        url: 'https://vetra.to/vetra-logo.png',
         width: 1200,
         height: 630,
         alt: 'Vetra Packages',
@@ -27,11 +27,11 @@ export const metadata: unknown = {
     title: 'Vetra Packages',
     description:
       'Explore Vetra packages - a collection of document models, editors, and module resources providing solutions for specific domains and industries.',
-    images: ['https://staging.vetra.to/vetra-logo.png'],
+    images: ['https://vetra.to/vetra-logo.png'],
     site: '@vetra',
   },
   alternates: {
-    canonical: 'https://staging.vetra.to/packages',
+    canonical: 'https://vetra.to/packages',
   },
 }
 
