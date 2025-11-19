@@ -1,3 +1,9 @@
+## [1.12.2](https://github.com/powerhouse-inc/vetra.to/compare/v1.12.1...v1.12.2) (2025-11-19)
+
+### Bug Fixes
+
+- updated the space cards to match new design ([db4945b](https://github.com/powerhouse-inc/vetra.to/commit/db4945bb57ab5dad5f1d0964ffdbe86f6816d66f))
+
 ## [1.12.1](https://github.com/powerhouse-inc/vetra.to/compare/v1.12.0...v1.12.1) (2025-11-14)
 
 ### Bug Fixes
