@@ -1,5 +1,4 @@
 import React from 'react'
-import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
 import { Button } from '../../ui/button'
 import type { User } from '../types'
@@ -8,24 +7,30 @@ interface LoginAvatarProps {
   isLoggedIn: boolean
   user?: User
   onLoginClick?: () => void
+  onProfileClick?: () => void
 }
 
-function LoginAvatar({ isLoggedIn, user, onLoginClick }: LoginAvatarProps) {
+function LoginAvatar({ isLoggedIn, user, onLoginClick, onProfileClick }: LoginAvatarProps) {
   if (isLoggedIn && user) {
     return (
-      <Link
-        href={`https://renown-staging.vetra.io/profile/${user.ethAddress || user.username}`}
-        target="_blank"
-        rel="noopener noreferrer"
+      <div
+        onClick={onProfileClick}
+        className="flex cursor-pointer items-center gap-2"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onProfileClick?.()
+          }
+        }}
       >
-        <div className="flex items-center gap-2">
-          <Avatar className="cursor-pointer">
-            <AvatarImage src={user.avatar} alt="avatar" />
-            <AvatarFallback>{user.username.substring(0, 2).toUpperCase()}</AvatarFallback>
-          </Avatar>
-          <span className="flex text-sm font-medium md:hidden">{user.username}</span>
-        </div>
-      </Link>
+        <Avatar>
+          <AvatarImage src={user.avatar} alt="avatar" />
+          <AvatarFallback>{user.username.substring(0, 2).toUpperCase()}</AvatarFallback>
+        </Avatar>
+        <span className="flex text-sm font-medium md:hidden">{user.username}</span>
+      </div>
     )
   }
 

@@ -1,6 +1,10 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  transpilePackages: ['@renown/sdk'],
+  experimental: {
+    externalDir: true,
+  },
   async rewrites() {
     // Only apply rewrites if HOMEPAGE_REMOTE_URL is set (for production)
     if (process.env.HOMEPAGE_REMOTE_URL) {

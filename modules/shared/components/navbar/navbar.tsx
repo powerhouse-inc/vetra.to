@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import { useMemo } from 'react'
+import { RenownAuthButton } from '@renown/sdk'
 import { cn } from '../../lib/utils'
 import { NavbarBrand } from './components/navbar-brand'
 import NavbarItemMobile from './components/navbar-item-mobile'
@@ -9,30 +10,9 @@ import NavbarItemsDesk from './components/navbar-items-desk'
 import NavbarRightSide from './components/navbar-right-side'
 import { getNavbarConfig } from './navbar-config'
 import { hasBlurBackground } from './utils'
-import { useUser } from '../../hooks/use-user'
 
 function Navbar() {
   const pathname = usePathname()
-  const { user: renownUser, loginStatus, isLoading, login, logout, openRenown } = useUser()
-
-  const isLoggedIn = loginStatus === 'authorized'
-
-  // Transform Renown user to navbar user format
-  const user = renownUser
-    ? {
-        username: renownUser.name || renownUser.did,
-        avatar: renownUser.avatar || `https://github.com/shadcn.png`, // Use profile avatar if available, fallback to default
-        ethAddress: renownUser.ethAddress,
-      }
-    : undefined
-
-  const handleLogin = async () => {
-    try {
-      await openRenown()
-    } catch (error) {
-      console.error('Login failed:', error)
-    }
-  }
 
   const {
     isotype: Isotype,
@@ -68,7 +48,22 @@ function Navbar() {
 
               <NavbarItemsDesk navItems={navItems} pathname={pathname} />
 
-              <NavbarRightSide isLoggedIn={isLoggedIn} user={user} onLoginClick={handleLogin} />
+              <RenownAuthButton
+                renderAuthenticated={({ user, openProfile }) => (
+                  <NavbarRightSide
+                    isLoggedIn={true}
+                    user={{
+                      username: user.name || user.did,
+                      avatar: user.avatar || 'https://github.com/shadcn.png',
+                      ethAddress: user.ethAddress,
+                    }}
+                    onProfileClick={openProfile}
+                  />
+                )}
+                renderUnauthenticated={({ openRenown }) => (
+                  <NavbarRightSide isLoggedIn={false} onLoginClick={openRenown} />
+                )}
+              />
             </div>
           </header>
         </div>

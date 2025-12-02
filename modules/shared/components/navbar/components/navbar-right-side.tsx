@@ -17,9 +17,10 @@ interface NavbarRightSideProps {
   isLoggedIn: boolean
   user?: User
   onLoginClick?: () => void
+  onProfileClick?: () => void
 }
 
-function NavbarRightSide({ isLoggedIn, user, onLoginClick }: NavbarRightSideProps) {
+function NavbarRightSide({ isLoggedIn, user, onLoginClick, onProfileClick }: NavbarRightSideProps) {
   const { theme, setTheme } = useTheme()
 
   const handleThemeToggle = () => {
@@ -31,7 +32,12 @@ function NavbarRightSide({ isLoggedIn, user, onLoginClick }: NavbarRightSideProp
       <div className="hidden items-center md:flex">
         <ThemeToggle />
         <div className="bg-border mx-4 h-9 w-px" />
-        <LoginAvatar isLoggedIn={isLoggedIn} user={user} onLoginClick={onLoginClick} />
+        <LoginAvatar
+          isLoggedIn={isLoggedIn}
+          user={user}
+          onLoginClick={onLoginClick}
+          onProfileClick={onProfileClick}
+        />
       </div>
 
       <div className="flex items-center md:hidden">
@@ -48,7 +54,7 @@ function NavbarRightSide({ isLoggedIn, user, onLoginClick }: NavbarRightSideProp
           <DropdownMenuContent className="z-160 w-56" align="end">
             {isLoggedIn ? (
               <DropdownMenuItem>
-                <LoginAvatar isLoggedIn={isLoggedIn} user={user} />
+                <LoginAvatar isLoggedIn={isLoggedIn} user={user} onProfileClick={onProfileClick} />
               </DropdownMenuItem>
             ) : (
               <DropdownMenuItem onClick={onLoginClick} className="cursor-pointer">

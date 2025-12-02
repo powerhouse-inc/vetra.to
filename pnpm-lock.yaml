@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@renown/sdk': link:../powerhouse/packages/renown
+
 importers:
 
   .:
@@ -90,8 +93,8 @@ importers:
         specifier: ^1.2.7
         version: 1.2.8(@types/react-dom@19.1.9(@types/react@19.1.16))(@types/react@19.1.16)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@renown/sdk':
-        specifier: 5.0.0-staging.19
-        version: 5.0.0-staging.19(document-model@5.0.0-staging.19)(typescript@5.9.2)(zod@4.1.11)
+        specifier: 5.1.0-dev.3
+        version: 5.1.0-dev.3(document-model@5.1.0-dev.3)(react@19.1.0)(typescript@5.9.2)(zod@4.1.11)
       '@tanstack/react-query':
         specifier: ^5.85.0
         version: 5.90.2(react@19.1.0)
@@ -2520,10 +2523,14 @@ packages:
   '@radix-ui/rect@1.1.1':
     resolution: {integrity: sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==}
 
-  '@renown/sdk@5.0.0-staging.19':
-    resolution: {integrity: sha512-hMWkTa09TlnN8W7p5gNwUvHMHOAnI92BmaoyIHeCCbaebjiH4dDdFkchuDvM6pUKU3Hsy/piIY5qKbJhcaNDcw==}
+  '@renown/sdk@5.1.0-dev.3':
+    resolution: {integrity: sha512-XCDj4jZhFM5jEohuUnXKhmKrhGKWtbUlM/4y3PmSacDUUYncXVBZqNfh1ekwUmNxZTnTBeAvpV5+LH2LaeuvzQ==}
     peerDependencies:
-      document-model: 5.0.0-staging.19
+      document-model: 5.1.0-dev.3
+      react: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   '@repeaterjs/repeater@3.0.6':
     resolution: {integrity: sha512-Javneu5lsuhwNCryN+pXH93VPQ8g0dBX7wItHFgYiwQmzE1sVdg5tWHiOgHywzL2W21XQopa7IwIEnNbmeUJYA==}
@@ -3917,8 +3924,8 @@ packages:
     resolution: {integrity: sha512-roIFONhcxog0JSSWbvVAh3OocukmSgpqOH6YpMkCvav/ySIV3JKg4Dc8vYtQjYi/UxpNE36r/9v+VqTQqgkYmw==}
     engines: {node: '>=4'}
 
-  cborg@4.2.15:
-    resolution: {integrity: sha512-T+YVPemWyXcBVQdp0k61lQp2hJniRNmul0lAwTj2DTS/6dI4eCq/MRMucGqqvFqMBfmnD8tJ9aFtPu5dEGAbgw==}
+  cborg@4.3.1:
+    resolution: {integrity: sha512-zLyEPKHqdX08yiyMzm3A/QdurLDB1XVGB3RWJa8PykCXNpLxhlyWToM4g+0Vo+6Q6txrdvAOfdC0ZBaxG0qw2g==}
     hasBin: true
 
   chai@5.3.3:
@@ -4454,8 +4461,8 @@ packages:
     resolution: {integrity: sha512-yS+Q5i3hBf7GBkd4KG8a7eBNNWNGLTaEwwYWUijIYM7zrlYDM0BFXHjjPWlWZ1Rg7UaddZeIDmi9jF3HmqiQ2w==}
     engines: {node: '>=6.0.0'}
 
-  document-model@5.0.0-staging.19:
-    resolution: {integrity: sha512-SNLFbwgA2/gPlR69eLI43MwNyzIhvjN4BRF0wlnEt/4cFQwq0OKlsVhi4z3V/lx4eDj53/z1dE4B93gjm4YXsw==}
+  document-model@5.1.0-dev.3:
+    resolution: {integrity: sha512-VrA6OEUATzFhJMSru+UttWDahIqNw/14D+HiPQ6N9wgYoOzLVj99dPo30DgRdKMyWEKKq5YOBEiabl68p3+3Mw==}
 
   dom-accessibility-api@0.5.16:
     resolution: {integrity: sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==}
@@ -9803,7 +9810,7 @@ snapshots:
 
   '@ipld/dag-cbor@9.2.5':
     dependencies:
-      cborg: 4.2.15
+      cborg: 4.3.1
       multiformats: 13.4.1
 
   '@isaacs/cliui@8.0.2':
@@ -10679,14 +10686,18 @@ snapshots:
 
   '@radix-ui/rect@1.1.1': {}
 
-  '@renown/sdk@5.0.0-staging.19(document-model@5.0.0-staging.19)(typescript@5.9.2)(zod@4.1.11)':
+  '@renown/sdk@5.1.0-dev.3(document-model@5.1.0-dev.3)(react@19.1.0)(typescript@5.9.2)(zod@4.1.11)':
     dependencies:
       '@didtools/key-did': 1.0.0(typescript@5.9.2)(zod@4.1.11)
       did-jwt: 8.0.18
       did-jwt-vc: 4.0.16
+      did-key-creator: 1.2.0
       did-resolver: 4.1.0
-      document-model: 5.0.0-staging.19
+      document-model: 5.1.0-dev.3
       key-did-resolver: 4.0.0
+      uint8arrays: 5.1.0
+    optionalDependencies:
+      react: 19.1.0
     transitivePeerDependencies:
       - bufferutil
       - typescript
@@ -12317,7 +12328,7 @@ snapshots:
 
   case-sensitive-paths-webpack-plugin@2.4.0: {}
 
-  cborg@4.2.15: {}
+  cborg@4.3.1: {}
 
   chai@5.3.3:
     dependencies:
@@ -12897,7 +12908,7 @@ snapshots:
     dependencies:
       esutils: 2.0.3
 
-  document-model@5.0.0-staging.19:
+  document-model@5.1.0-dev.3:
     dependencies:
       change-case: 5.4.4
       jszip: 3.10.1
