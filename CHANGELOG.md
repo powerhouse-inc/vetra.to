@@ -1,3 +1,9 @@
+## [1.12.3](https://github.com/powerhouse-inc/vetra.to/compare/v1.12.2...v1.12.3) (2025-12-02)
+
+### Bug Fixes
+
+- update lockfile ([af3853f](https://github.com/powerhouse-inc/vetra.to/commit/af3853f00afcbd4910da0ed0cfef166f8567b8af))
+
 ## [1.12.2](https://github.com/powerhouse-inc/vetra.to/compare/v1.12.1...v1.12.2) (2025-11-19)
 
 ### Bug Fixes
