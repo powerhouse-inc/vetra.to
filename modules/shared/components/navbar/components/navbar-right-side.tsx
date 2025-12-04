@@ -1,4 +1,7 @@
-import { UserIcon, MoreVertical } from 'lucide-react'
+'use client'
+
+import { RenownLoginButton, RenownUserButton, useUser } from '@renown/sdk'
+import { MoreVertical } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import React from 'react'
 import { ThemeToggle } from '../../theme-toggle'
@@ -9,35 +12,36 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../../ui/dropdown-menu'
-import LoginAvatar from './login-avatar'
 import ThemeIconLabel from './toogle-theme-label'
-import type { User } from '../types'
 
-interface NavbarRightSideProps {
-  isLoggedIn: boolean
-  user?: User
-  onLoginClick?: () => void
-  onProfileClick?: () => void
-}
-
-function NavbarRightSide({ isLoggedIn, user, onLoginClick, onProfileClick }: NavbarRightSideProps) {
+function NavbarRightSide() {
   const { theme, setTheme } = useTheme()
+  const { user, openRenown, logout } = useUser()
 
   const handleThemeToggle = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark')
   }
+
+  const profileUrl = user?.ethAddress
+    ? `https://www.renown.id/profile/${user.ethAddress}`
+    : 'https://www.renown.id'
 
   return (
     <>
       <div className="hidden items-center md:flex">
         <ThemeToggle />
         <div className="bg-border mx-4 h-9 w-px" />
-        <LoginAvatar
-          isLoggedIn={isLoggedIn}
-          user={user}
-          onLoginClick={onLoginClick}
-          onProfileClick={onProfileClick}
-        />
+        {user ? (
+          <RenownUserButton
+            address={user.ethAddress || user.did}
+            username={user.name}
+            avatarUrl={user.avatar}
+            profileUrl={profileUrl}
+            onDisconnect={logout}
+          />
+        ) : (
+          <RenownLoginButton onLogin={openRenown} />
+        )}
       </div>
 
       <div className="flex items-center md:hidden">
@@ -52,16 +56,19 @@ function NavbarRightSide({ isLoggedIn, user, onLoginClick, onProfileClick }: Nav
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="z-160 w-56" align="end">
-            {isLoggedIn ? (
-              <DropdownMenuItem>
-                <LoginAvatar isLoggedIn={isLoggedIn} user={user} onProfileClick={onProfileClick} />
-              </DropdownMenuItem>
-            ) : (
-              <DropdownMenuItem onClick={onLoginClick} className="cursor-pointer">
-                <UserIcon className="mr-2 h-4 w-4" />
-                <span>Login</span>
-              </DropdownMenuItem>
-            )}
+            <DropdownMenuItem className="p-0">
+              {user ? (
+                <RenownUserButton
+                  address={user.ethAddress || user.did}
+                  username={user.name}
+                  avatarUrl={user.avatar}
+                  profileUrl={profileUrl}
+                  onDisconnect={logout}
+                />
+              ) : (
+                <RenownLoginButton onLogin={openRenown} />
+              )}
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleThemeToggle} className="cursor-pointer">
               <ThemeIconLabel theme={theme} />

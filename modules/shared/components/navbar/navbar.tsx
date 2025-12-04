@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation'
 import { useMemo } from 'react'
-import { RenownAuthButton } from '@renown/sdk'
 import { cn } from '../../lib/utils'
 import { NavbarBrand } from './components/navbar-brand'
 import NavbarItemMobile from './components/navbar-item-mobile'
@@ -48,22 +47,7 @@ function Navbar() {
 
               <NavbarItemsDesk navItems={navItems} pathname={pathname} />
 
-              <RenownAuthButton
-                renderAuthenticated={({ user, openProfile }) => (
-                  <NavbarRightSide
-                    isLoggedIn={true}
-                    user={{
-                      username: user.name || user.did,
-                      avatar: user.avatar || 'https://github.com/shadcn.png',
-                      ethAddress: user.ethAddress,
-                    }}
-                    onProfileClick={openProfile}
-                  />
-                )}
-                renderUnauthenticated={({ openRenown }) => (
-                  <NavbarRightSide isLoggedIn={false} onLoginClick={openRenown} />
-                )}
-              />
+              <NavbarRightSide />
             </div>
           </header>
         </div>
