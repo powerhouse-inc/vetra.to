@@ -1,3 +1,9 @@
+## [1.13.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.12.3...v1.13.0) (2025-12-04)
+
+### Features
+
+- use new renown sdk components ([5cb10b1](https://github.com/powerhouse-inc/vetra.to/commit/5cb10b15f7aae803ac98a47d1096ac638b2345a1))
+
 ## [1.12.3](https://github.com/powerhouse-inc/vetra.to/compare/v1.12.2...v1.12.3) (2025-12-02)
 
 ### Bug Fixes
