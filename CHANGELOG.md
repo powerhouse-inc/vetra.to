@@ -1,3 +1,9 @@
+## [1.14.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.13.0...v1.14.0) (2025-12-05)
+
+### Features
+
+- use custom renown login button ([56f77c8](https://github.com/powerhouse-inc/vetra.to/commit/56f77c87eb2e4485204ed7a8486b85d2af4e98ff))
+
 ## [1.13.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.12.3...v1.13.0) (2025-12-04)
 
 ### Features
