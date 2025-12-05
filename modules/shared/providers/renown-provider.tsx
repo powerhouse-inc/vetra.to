@@ -1,6 +1,6 @@
 'use client'
 
-import { UserProvider } from '@renown/sdk'
+import { RenownUserProvider } from '@renown/sdk'
 
 interface RenownProviderProps {
   children: React.ReactNode
@@ -9,7 +9,7 @@ interface RenownProviderProps {
 
 export function RenownProvider({ children, renownUrl }: RenownProviderProps) {
   return (
-    <UserProvider
+    <RenownUserProvider
       renownUrl={renownUrl}
       loadingComponent={
         <div className="flex min-h-screen items-center justify-center">
@@ -19,7 +19,7 @@ export function RenownProvider({ children, renownUrl }: RenownProviderProps) {
           </div>
         </div>
       }
-      errorComponent={(error, retry) => (
+      errorComponent={(error: Error, retry: () => void) => (
         <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">
             <h2 className="mb-2 text-lg font-semibold text-red-600">
@@ -37,6 +37,6 @@ export function RenownProvider({ children, renownUrl }: RenownProviderProps) {
       )}
     >
       {children}
-    </UserProvider>
+    </RenownUserProvider>
   )
 }

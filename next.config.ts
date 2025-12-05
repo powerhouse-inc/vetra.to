@@ -2,6 +2,22 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@renown/sdk'],
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'euc.li',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.ipfs.w3s.link',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ipfs.io',
+      },
+    ],
+  },
   experimental: {
     externalDir: true,
   },

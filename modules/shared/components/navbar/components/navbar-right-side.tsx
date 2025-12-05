@@ -1,9 +1,7 @@
 'use client'
 
-import { RenownLoginButton, RenownUserButton, useUser } from '@renown/sdk'
 import { MoreVertical } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import React from 'react'
 import { ThemeToggle } from '../../theme-toggle'
 import {
   DropdownMenu,
@@ -12,36 +10,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../../ui/dropdown-menu'
+import { RenownLoginButton } from '../../renown-login-button'
 import ThemeIconLabel from './toogle-theme-label'
 
 function NavbarRightSide() {
   const { theme, setTheme } = useTheme()
-  const { user, openRenown, logout } = useUser()
 
   const handleThemeToggle = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark')
   }
-
-  const profileUrl = user?.ethAddress
-    ? `https://www.renown.id/profile/${user.ethAddress}`
-    : 'https://www.renown.id'
 
   return (
     <>
       <div className="hidden items-center md:flex">
         <ThemeToggle />
         <div className="bg-border mx-4 h-9 w-px" />
-        {user ? (
-          <RenownUserButton
-            address={user.ethAddress || user.did}
-            username={user.name}
-            avatarUrl={user.avatar}
-            profileUrl={profileUrl}
-            onDisconnect={logout}
-          />
-        ) : (
-          <RenownLoginButton onLogin={openRenown} />
-        )}
+        <RenownLoginButton />
       </div>
 
       <div className="flex items-center md:hidden">
@@ -57,17 +41,7 @@ function NavbarRightSide() {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="z-160 w-56" align="end">
             <DropdownMenuItem className="p-0">
-              {user ? (
-                <RenownUserButton
-                  address={user.ethAddress || user.did}
-                  username={user.name}
-                  avatarUrl={user.avatar}
-                  profileUrl={profileUrl}
-                  onDisconnect={logout}
-                />
-              ) : (
-                <RenownLoginButton onLogin={openRenown} />
-              )}
+              <RenownLoginButton />
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleThemeToggle} className="cursor-pointer">

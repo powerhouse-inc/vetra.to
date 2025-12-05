@@ -90,8 +90,8 @@ importers:
         specifier: ^1.2.7
         version: 1.2.8(@types/react-dom@19.1.9(@types/react@19.1.16))(@types/react@19.1.16)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@renown/sdk':
-        specifier: 5.1.0-dev.7
-        version: 5.1.0-dev.7(document-model@5.1.0-dev.3)(react@19.1.0)(typescript@5.9.2)(zod@4.1.11)
+        specifier: 5.1.0-dev.9
+        version: 5.1.0-dev.9(document-model@5.1.0-dev.9)(react@19.1.0)(typescript@5.9.2)(zod@4.1.11)
       '@tanstack/react-query':
         specifier: ^5.85.0
         version: 5.90.2(react@19.1.0)
@@ -2520,10 +2520,10 @@ packages:
   '@radix-ui/rect@1.1.1':
     resolution: {integrity: sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==}
 
-  '@renown/sdk@5.1.0-dev.7':
-    resolution: {integrity: sha512-elIEHiyFheuO0USykJGS0Zxk5ovKj9j9J46U7dtAgh2tlz+bs9G0rK79pf2kD+g4hjEOjGtk+O2NsCybK2Zykw==}
+  '@renown/sdk@5.1.0-dev.9':
+    resolution: {integrity: sha512-zk3KX4yHkWa5l68sze8rjUUbALxhBXUkQPUF1LnHeP629hKGT6FW3AVCtggMidSL4lEOEkVmobQsybs/E53qoQ==}
     peerDependencies:
-      document-model: 5.1.0-dev.7
+      document-model: 5.1.0-dev.9
       react: ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
       react:
@@ -3921,8 +3921,8 @@ packages:
     resolution: {integrity: sha512-roIFONhcxog0JSSWbvVAh3OocukmSgpqOH6YpMkCvav/ySIV3JKg4Dc8vYtQjYi/UxpNE36r/9v+VqTQqgkYmw==}
     engines: {node: '>=4'}
 
-  cborg@4.3.1:
-    resolution: {integrity: sha512-zLyEPKHqdX08yiyMzm3A/QdurLDB1XVGB3RWJa8PykCXNpLxhlyWToM4g+0Vo+6Q6txrdvAOfdC0ZBaxG0qw2g==}
+  cborg@4.3.2:
+    resolution: {integrity: sha512-l+QzebEAG0vb09YKkaOrMi2zmm80UNjmbvocMIeW5hO7JOXWdrQ/H49yOKfYX0MBgrj/KWgatBnEgRXyNyKD+A==}
     hasBin: true
 
   chai@5.3.3:
@@ -4458,8 +4458,8 @@ packages:
     resolution: {integrity: sha512-yS+Q5i3hBf7GBkd4KG8a7eBNNWNGLTaEwwYWUijIYM7zrlYDM0BFXHjjPWlWZ1Rg7UaddZeIDmi9jF3HmqiQ2w==}
     engines: {node: '>=6.0.0'}
 
-  document-model@5.1.0-dev.3:
-    resolution: {integrity: sha512-VrA6OEUATzFhJMSru+UttWDahIqNw/14D+HiPQ6N9wgYoOzLVj99dPo30DgRdKMyWEKKq5YOBEiabl68p3+3Mw==}
+  document-model@5.1.0-dev.9:
+    resolution: {integrity: sha512-s580tIcm/O7hMr42FnbteEvRGRIi0u+SHo8ujIRAxqPvNXHIIrezUS0GpCkykmIrTld9MvGq+i3p0mk3Y+RCVw==}
 
   dom-accessibility-api@0.5.16:
     resolution: {integrity: sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==}
@@ -9807,7 +9807,7 @@ snapshots:
 
   '@ipld/dag-cbor@9.2.5':
     dependencies:
-      cborg: 4.3.1
+      cborg: 4.3.2
       multiformats: 13.4.1
 
   '@isaacs/cliui@8.0.2':
@@ -10683,14 +10683,14 @@ snapshots:
 
   '@radix-ui/rect@1.1.1': {}
 
-  '@renown/sdk@5.1.0-dev.7(document-model@5.1.0-dev.3)(react@19.1.0)(typescript@5.9.2)(zod@4.1.11)':
+  '@renown/sdk@5.1.0-dev.9(document-model@5.1.0-dev.9)(react@19.1.0)(typescript@5.9.2)(zod@4.1.11)':
     dependencies:
       '@didtools/key-did': 1.0.0(typescript@5.9.2)(zod@4.1.11)
       did-jwt: 8.0.18
       did-jwt-vc: 4.0.16
       did-key-creator: 1.2.0
       did-resolver: 4.1.0
-      document-model: 5.1.0-dev.3
+      document-model: 5.1.0-dev.9
       key-did-resolver: 4.0.0
       uint8arrays: 5.1.0
     optionalDependencies:
@@ -12325,7 +12325,7 @@ snapshots:
 
   case-sensitive-paths-webpack-plugin@2.4.0: {}
 
-  cborg@4.3.1: {}
+  cborg@4.3.2: {}
 
   chai@5.3.3:
     dependencies:
@@ -12905,7 +12905,7 @@ snapshots:
     dependencies:
       esutils: 2.0.3
 
-  document-model@5.1.0-dev.3:
+  document-model@5.1.0-dev.9:
     dependencies:
       change-case: 5.4.4
       jszip: 3.10.1
