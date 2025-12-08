@@ -1,3 +1,9 @@
+## [1.14.1](https://github.com/powerhouse-inc/vetra.to/compare/v1.14.0...v1.14.1) (2025-12-08)
+
+### Bug Fixes
+
+- upgrade next because of CVE-2025-66478 ([01618de](https://github.com/powerhouse-inc/vetra.to/commit/01618de72e1d3c6755c229762c79377d3d15b626))
+
 ## [1.14.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.13.0...v1.14.0) (2025-12-05)
 
 ### Features
