@@ -9,6 +9,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  HARBOR_REGISTRY: cr.vetra.io
+  HARBOR_IMAGE: cr.vetra.io/vetra/vetra-to
 
 jobs:
   vetra-to:
@@ -22,12 +24,19 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to the Container registry
+      - name: Log in to GitHub Container registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.PATNAME }}
+
+      - name: Log in to Harbor Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.HARBOR_REGISTRY }}
+          username: ${{ secrets.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_PASSWORD }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -36,6 +45,7 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.ref_name }}
+            ${{ env.HARBOR_IMAGE }}:${{ github.ref_name }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
