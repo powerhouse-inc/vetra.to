@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next'
 
+/** Next.js configuration for Vetra application */
 const nextConfig: NextConfig = {
   transpilePackages: ['@renown/sdk'],
   images: {
