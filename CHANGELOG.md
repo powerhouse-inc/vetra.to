@@ -1,3 +1,9 @@
+## [1.14.2](https://github.com/powerhouse-inc/vetra.to/compare/v1.14.1...v1.14.2) (2026-01-28)
+
+### Bug Fixes
+
+- add config documentation comment ([c3d70dc](https://github.com/powerhouse-inc/vetra.to/commit/c3d70dc8fa794e2141b9d9c208e1eaedc60cadc1))
+
 ## [1.14.1](https://github.com/powerhouse-inc/vetra.to/compare/v1.14.0...v1.14.1) (2025-12-08)
 
 ### Bug Fixes
