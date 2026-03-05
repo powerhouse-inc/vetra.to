@@ -75,13 +75,13 @@ export default function CloudPage({ params }: PageProps) {
           </div>
         </div>
       </div>
-
+      <h1 className="text-4xl font-bold">Project details</h1>
       {projectData && (
         <section>
           <NewProjectForm projectId={projectData.id} />
         </section>
       )}
-
+      <h1 className="text-4xl font-bold">Environments</h1>
       <Table>
         <TableHeader>
           <TableRow>
