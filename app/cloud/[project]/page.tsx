@@ -9,6 +9,16 @@ import {
 
 import { getProject } from '../data'
 import { NewProjectForm } from '@/app/cloud/new-project-form'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/modules/shared/components/ui/table'
+import { Edit, Trash } from 'lucide-react'
+import { Button } from '@/modules/shared/components/ui/button'
 
 type PageProps = {
   params: {
@@ -62,6 +72,38 @@ export default function CloudPage({ params }: PageProps) {
           <NewProjectForm projectId={projectData.id} />
         </section>
       )}
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Address</TableHead>
+            <TableHead>Packages</TableHead>
+            <TableHead>Resources</TableHead>
+            <TableHead>Label</TableHead>
+            <TableHead>Admin</TableHead>
+            <TableHead>Backup</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {projectData?.environments.map((environment) => (
+            <TableRow key={environment.id}>
+              <TableCell>{environment.address}</TableCell>
+              <TableCell>{environment.packages}</TableCell>
+              <TableCell>{environment.resources}</TableCell>
+              <TableCell>{environment.label}</TableCell>
+              <TableCell>{environment.admin}</TableCell>
+              <TableCell>{environment.backup ? 'Yes' : 'No'}</TableCell>
+              <TableCell>
+                <Button variant="outline">
+                  <Trash className="h-4 w-4" />
+                  Delete
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </main>
   )
 }

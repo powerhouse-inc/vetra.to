@@ -51,7 +51,6 @@ export function NewProjectForm({ projectId, initialValues, onSubmit }: NewProjec
         onSubmit={form.handleSubmit((values) => {
           onSubmit?.(values)
         })}
-        style={{ padding: '20px', top: '10px' }}
       >
         <div className="space-y-4">
           <FormField
