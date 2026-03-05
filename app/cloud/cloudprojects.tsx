@@ -8,42 +8,18 @@ import {
   CardDescription,
 } from '@/modules/shared/components/ui/card'
 
-type CloudProject = {
+import { CloudProject } from './types'
+import { getProjects } from './data'
+
+const CLOUD_PROJECTS: CloudProject[] = getProjects()
+
+type CloudProjectCardProps = {
   id: string
   title: string
   description: string
 }
 
-const CLOUD_PROJECTS: CloudProject[] = [
-  {
-    id: 'default',
-    title: 'Frontend',
-    description: 'Our server instances for frontends',
-  },
-  {
-    id: 'eth-1',
-    title: 'Ethereum nodes',
-    description: 'Our running mainnet nodes for Ethereum.',
-  },
-  {
-    id: 'sol-1',
-    title: 'Solana nodes',
-    description: 'Our running mainnet nodes for Solana.',
-  },
-  {
-    id: 'indexer-1',
-    title: 'Ethereum indexer',
-    description: 'Web crawler indexing ethereum',
-  },
-]
-
-type CloudProjectCardProps = {
-  title: string
-  description: string
-  onCreate?: () => void
-}
-
-function CloudProjectCard({ title, description, onCreate }: CloudProjectCardProps) {
+function CloudProjectCard({ id, title, description }: CloudProjectCardProps) {
   return (
     <div className="p-2">
       <Card style={{ width: 320 }}>
@@ -52,7 +28,14 @@ function CloudProjectCard({ title, description, onCreate }: CloudProjectCardProp
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardFooter>
-          <Button>Open Project</Button>
+          <div className="space-x-5">
+            <Button>
+              <a href={`/cloud/${id}`}>Open project</a>
+            </Button>
+            <Button>
+              <a href={`/cloud/new/server/${id}`}>New Environment</a>
+            </Button>
+          </div>
         </CardFooter>
       </Card>
     </div>
@@ -63,14 +46,7 @@ export function CloudProjects() {
   return (
     <div className="flex flex-wrap">
       {CLOUD_PROJECTS.map((project) => (
-        <CloudProjectCard
-          key={project.id}
-          title={project.title}
-          description={project.description}
-          onCreate={() => {
-            console.log('Create server for', project.id)
-          }}
-        />
+        <CloudProjectCard id={project.id} title={project.title} description={project.description} />
       ))}
     </div>
   )

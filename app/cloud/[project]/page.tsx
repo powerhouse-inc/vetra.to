@@ -8,8 +8,13 @@ import {
 } from '@/modules/shared/components/ui/breadcrumb'
 
 import { Button } from '@/modules/shared/components/ui/button'
+import { getProject } from '../data'
 
-import { CloudProjects } from './cloudprojects'
+type PageProps = {
+  params: {
+    project: string
+  }
+}
 
 // Force dynamic rendering to prevent build-time API requests
 export const dynamic = 'force-dynamic'
@@ -19,14 +24,16 @@ export const metadata: unknown = {
   description: 'The Cloud for Powerhouse!',
 }
 
-export default function CloudPage() {
+export default function CloudPage({ params }: PageProps) {
+  const { project } = params
+  const projectData = getProject(project)
+
   return (
     <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] space-y-8 p-8">
       {/* Header Section */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold">Cloud</h1>
             {/* Breadcrumbs */}
             <Breadcrumb>
               <BreadcrumbList>
@@ -35,17 +42,17 @@ export default function CloudPage() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Overview</BreadcrumbPage>
+                  <BreadcrumbPage>Project</BreadcrumbPage>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{projectData?.title}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          <Button>
-            <a href="/cloud/new/project">New Project</a>
-          </Button>
         </div>
       </div>
-      <CloudProjects></CloudProjects>
     </main>
   )
 }
