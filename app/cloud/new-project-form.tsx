@@ -61,7 +61,7 @@ export function NewProjectForm({ projectId, initialValues, onSubmit }: NewProjec
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input placeholder="Enter title" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -74,7 +74,7 @@ export function NewProjectForm({ projectId, initialValues, onSubmit }: NewProjec
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input placeholder="Enter description" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
