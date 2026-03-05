@@ -5,90 +5,92 @@ import { request } from 'graphql-request'
 // GraphQL endpoint - use environment variable or default to localhost
 const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || 'http://localhost:4001/graphql'
 
-// Global driveId constant
+// Global drive identifier
 const DRIVE_ID = 'powerhouse'
+
+// Shared fragment for document fields
+const ENVIRONMENT_FIELDS = `
+  id
+  name
+  documentType
+  revisionsList {
+    revision
+  }
+  createdAtUtcIso
+  lastModifiedAtUtcIso
+  state {
+    document {
+      isDeleted
+    }
+    global {
+      name
+      services
+      packages {
+        name
+        version
+      }
+      status
+    }
+  }
+`
 
 // GraphQL mutation for VetraCloudEnvironment_createDocument
 const CREATE_ENVIRONMENT_MUTATION = gql`
-  mutation VetraCloudEnvironment_createDocument($name: String!, $driveId: String) {
-    VetraCloudEnvironment_createDocument(name: $name, driveId: $driveId)
+  mutation VetraCloudEnvironment_createDocument($name: String!, $parentIdentifier: String) {
+    VetraCloudEnvironment_createDocument(name: $name, parentIdentifier: $parentIdentifier) {
+      id
+    }
   }
 `
 
 // GraphQL mutation for VetraCloudEnvironment_setEnvironmentName
 const SET_ENVIRONMENT_NAME_MUTATION = gql`
   mutation VetraCloudEnvironment_setEnvironmentName(
-    $driveId: String
     $docId: PHID!
     $input: VetraCloudEnvironment_SetEnvironmentNameInput!
   ) {
-    VetraCloudEnvironment_setEnvironmentName(driveId: $driveId, docId: $docId, input: $input)
+    VetraCloudEnvironment_setEnvironmentName(docId: $docId, input: $input) {
+      id
+    }
   }
 `
 
 // GraphQL mutation for deleteDocument
 const DELETE_DOCUMENT_MUTATION = gql`
-  mutation deleteDocument($id: PHID!) {
-    deleteDocument(id: $id)
+  mutation deleteDocument($identifier: String!) {
+    deleteDocument(identifier: $identifier)
   }
 `
 
 // GraphQL mutation for VetraCloudEnvironment_addPackage
 const ADD_PACKAGE_MUTATION = gql`
   mutation VetraCloudEnvironment_addPackage(
-    $driveId: String
     $docId: PHID!
     $input: VetraCloudEnvironment_AddPackageInput!
   ) {
-    VetraCloudEnvironment_addPackage(driveId: $driveId, docId: $docId, input: $input)
+    VetraCloudEnvironment_addPackage(docId: $docId, input: $input) {
+      id
+    }
   }
 `
 
-// GraphQL query for VetraCloudEnvironment getDocuments
+// GraphQL query for finding all VetraCloudEnvironment documents
 const GET_ENVIRONMENTS_QUERY = gql`
-  query GetEnvironments($driveId: String!) {
-    VetraCloudEnvironment {
-      getDocuments(driveId: $driveId) {
-        id
-        name
-        documentType
-        revision
-        createdAtUtcIso
-        lastModifiedAtUtcIso
-        state {
-          name
-          services
-          packages {
-            name
-            version
-          }
-          status
-        }
+  query GetEnvironments($parentId: String) {
+    VetraCloudEnvironment_findDocuments(search: { parentId: $parentId }) {
+      items {
+        ${ENVIRONMENT_FIELDS}
       }
     }
   }
 `
 
-// GraphQL query for VetraCloudEnvironment getDocument
+// GraphQL query for a single VetraCloudEnvironment document
 const GET_ENVIRONMENT_QUERY = gql`
-  query GetEnvironment($docId: PHID!, $driveId: PHID) {
-    VetraCloudEnvironment {
-      getDocument(docId: $docId, driveId: $driveId) {
-        id
-        name
-        documentType
-        revision
-        createdAtUtcIso
-        lastModifiedAtUtcIso
-        state {
-          name
-          services
-          packages {
-            name
-            version
-          }
-          status
-        }
+  query GetEnvironment($identifier: String!) {
+    VetraCloudEnvironment_document(identifier: $identifier) {
+      document {
+        ${ENVIRONMENT_FIELDS}
       }
     }
   }
@@ -111,6 +113,39 @@ async function serverGraphqlRequest<T>(
       }
     }
     throw error instanceof Error ? error : new Error('Unknown GraphQL error')
+  }
+}
+
+// Transform v6 document shape to the flat shape the frontend expects
+function transformDocument(doc: V6Document) {
+  return {
+    id: doc.id,
+    name: doc.name,
+    documentType: doc.documentType,
+    revision: doc.revisionsList?.at(-1)?.revision ?? 0,
+    createdAtUtcIso: doc.createdAtUtcIso,
+    lastModifiedAtUtcIso: doc.lastModifiedAtUtcIso,
+    state: doc.state.global,
+  }
+}
+
+type V6Document = {
+  id: string
+  name: string
+  documentType: string
+  revisionsList: Array<{ revision: number }>
+  createdAtUtcIso: string
+  lastModifiedAtUtcIso: string
+  state: {
+    document: {
+      isDeleted: boolean | null
+    }
+    global: {
+      name: string | null
+      services: string[]
+      packages: Array<{ name: string; version: string | null }> | null
+      status: string
+    }
   }
 }
 
@@ -137,16 +172,15 @@ export async function POST(request: NextRequest) {
         }
 
         const mutationResponse = await serverGraphqlRequest<{
-          VetraCloudEnvironment_createDocument: string
+          VetraCloudEnvironment_createDocument: { id: string }
         }>(CREATE_ENVIRONMENT_MUTATION, {
           name,
-          driveId: DRIVE_ID,
+          parentIdentifier: DRIVE_ID,
         })
 
         resultData = {
-          id: mutationResponse.VetraCloudEnvironment_createDocument,
+          id: mutationResponse.VetraCloudEnvironment_createDocument.id,
           name,
-          driveId: DRIVE_ID,
         }
         break
       }
@@ -161,10 +195,9 @@ export async function POST(request: NextRequest) {
         }
 
         await serverGraphqlRequest<{
-          VetraCloudEnvironment_setEnvironmentName: number
+          VetraCloudEnvironment_setEnvironmentName: { id: string }
         }>(SET_ENVIRONMENT_NAME_MUTATION, {
           docId,
-          driveId: DRIVE_ID,
           input: { name },
         })
 
@@ -187,7 +220,7 @@ export async function POST(request: NextRequest) {
         await serverGraphqlRequest<{
           deleteDocument: boolean
         }>(DELETE_DOCUMENT_MUTATION, {
-          id: docId,
+          identifier: docId,
         })
 
         resultData = {
@@ -207,10 +240,9 @@ export async function POST(request: NextRequest) {
         }
 
         await serverGraphqlRequest<{
-          VetraCloudEnvironment_addPackage: number
+          VetraCloudEnvironment_addPackage: { id: string }
         }>(ADD_PACKAGE_MUTATION, {
           docId,
-          driveId: DRIVE_ID,
           input: { packageName, version: version || undefined },
         })
 
@@ -262,30 +294,18 @@ export async function GET(request: NextRequest) {
     // If docId is provided, fetch a single environment
     if (docId) {
       const response = await serverGraphqlRequest<{
-        VetraCloudEnvironment: {
-          getDocument: {
-            id: string
-            name: string
-            documentType: string
-            revision: number
-            createdAtUtcIso: string
-            lastModifiedAtUtcIso: string
-            state: {
-              name: string | null
-              services: string[]
-              packages: Array<{ name: string; version: string | null }> | null
-              status: string
-            }
-          } | null
-        }
+        VetraCloudEnvironment_document: {
+          document: V6Document
+        } | null
       }>(GET_ENVIRONMENT_QUERY, {
-        docId,
-        driveId: DRIVE_ID,
+        identifier: docId,
       })
 
+      const doc = response.VetraCloudEnvironment_document?.document
+      const isDeleted = doc?.state.document.isDeleted
       const result = NextResponse.json({
         success: true,
-        data: response.VetraCloudEnvironment.getDocument,
+        data: doc && !isDeleted ? transformDocument(doc) : null,
       })
 
       result.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
@@ -297,29 +317,20 @@ export async function GET(request: NextRequest) {
 
     // Otherwise, fetch all environments
     const response = await serverGraphqlRequest<{
-      VetraCloudEnvironment: {
-        getDocuments: Array<{
-          id: string
-          name: string
-          documentType: string
-          revision: number
-          createdAtUtcIso: string
-          lastModifiedAtUtcIso: string
-          state: {
-            name: string | null
-            services: string[]
-            packages: Array<{ name: string; version: string | null }> | null
-            status: string
-          }
-        }>
+      VetraCloudEnvironment_findDocuments: {
+        items: V6Document[]
       }
     }>(GET_ENVIRONMENTS_QUERY, {
-      driveId: DRIVE_ID,
+      parentId: DRIVE_ID,
     })
+
+    const items = response.VetraCloudEnvironment_findDocuments.items
+      .filter((doc) => !doc.state.document.isDeleted)
+      .map(transformDocument)
 
     const result = NextResponse.json({
       success: true,
-      data: response.VetraCloudEnvironment.getDocuments,
+      data: items,
     })
 
     result.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')

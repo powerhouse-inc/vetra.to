@@ -74,7 +74,7 @@ export async function createEnvironment(
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.error || 'Failed to create environment')
+    throw new Error(error.details || error.error || 'Failed to create environment')
   }
 
   return response.json()
@@ -98,7 +98,7 @@ export async function setEnvironmentName(
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.error || 'Failed to update environment name')
+    throw new Error(error.details || error.error || 'Failed to update environment name')
   }
 
   return response.json()
@@ -121,7 +121,7 @@ export async function deleteDocument(
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.error || 'Failed to delete document')
+    throw new Error(error.details || error.error || 'Failed to delete document')
   }
 
   return response.json()
@@ -144,7 +144,7 @@ export async function addPackage(params: AddPackageParams): Promise<AddPackageRe
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.error || 'Failed to add package')
+    throw new Error(error.details || error.error || 'Failed to add package')
   }
 
   return response.json()
