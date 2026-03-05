@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { fetchHostingQueries, fetchProjectEnvironments } from './lib/api'
+import { fetchEnvironments } from './lib/api'
 import { getEnvironmentFormValues } from './mock-data'
-import type { CloudProject, CloudEnvironment, CloudEnvironmentFormValues } from './types'
+import type { CloudEnvironment, CloudEnvironmentFormValues } from './types'
 
 /**
  * Hook to get all Predefined form values
@@ -13,162 +13,64 @@ export function useCloudEnvironmentFormValues(): CloudEnvironmentFormValues {
 }
 
 /**
- * Hook to get all cloud projects from the API
+ * Hook to get all cloud environments from the API
  */
-export function useProjects(): CloudProject[] {
-  const [projects, setProjects] = useState<CloudProject[]>([])
+export function useEnvironments(): CloudEnvironment[] {
+  const [environments, setEnvironments] = useState<CloudEnvironment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true)
         setError(null)
-        const response = await fetchHostingQueries()
-
-        // Transform the GraphQL response to CloudProject[]
-        const data = response.data as {
-          projects?: Array<{
-            id: string
-            documentId: string
-            driveId: string
-            name: string
-            description: string | null
-            createdAt: string
-            updatedAt: string
-            environments?: Array<{
-              id: string
-              documentId: string
-              driveId: string
-              name: string
-              username: string
-              status: string
-              connectEnabled: boolean
-              switchboardEnabled: boolean
-              appDockerImage: string | null
-              appTag: string | null
-              appPort: number | null
-              databaseEnabled: boolean
-              backupsEnabled: boolean
-              createdAt: string
-              updatedAt: string
-            }>
-          }>
-        }
-
-        if (data?.projects) {
-          // Transform GraphQL DbProject to CloudProject
-          console.log('Transformed projects:', data?.projects)
-
-          // Fetch environments for each project
-          const projectsWithEnvironments = await Promise.all(
-            data.projects.map(async (project) => {
-              let environments: CloudEnvironment[] = []
-
-              // Fetch environments for this project using projectDocumentId
-              if (project.documentId) {
-                try {
-                  const envResponse = await fetchProjectEnvironments(project.documentId)
-                  environments = (envResponse.data || []).map((env) => ({
-                    id: env.id,
-                    projectId: project.id,
-                    address: env.name || '',
-                    packages: '', // Will be set by additional queries if needed
-                    resources: '',
-                    label: '',
-                    admin: '',
-                    backup: false,
-                  }))
-                } catch (err) {
-                  console.warn(`Failed to fetch environments for project ${project.id}:`, err)
-                  // Continue with empty environments array
-                }
-              }
-
-              return {
-                id: project.id,
-                title: project.name,
-                description: project.description || '',
-                environments,
-              }
-            }),
-          )
-
-          setProjects(projectsWithEnvironments)
-        } else {
-          console.warn('Unexpected API response structure:', data)
-          setProjects([])
-        }
+        const response = await fetchEnvironments()
+        setEnvironments(response.data || [])
       } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to fetch projects'))
-        console.error('Failed to fetch projects:', err)
-        setProjects([])
+        setError(err instanceof Error ? err : new Error('Failed to fetch environments'))
+        console.error('Failed to fetch environments:', err)
+        setEnvironments([])
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchProjects()
+    fetchData()
 
-    // Listen for refresh events
     const handleRefresh = () => {
       setRefreshTrigger((prev) => prev + 1)
     }
 
-    window.addEventListener('refresh-projects', handleRefresh)
+    window.addEventListener('refresh-environments', handleRefresh)
     return () => {
-      window.removeEventListener('refresh-projects', handleRefresh)
+      window.removeEventListener('refresh-environments', handleRefresh)
     }
   }, [refreshTrigger])
 
-  // Return empty array while loading or on error to prevent breaking the UI
   if (isLoading || error) {
     return []
   }
 
-  return projects
+  return environments
 }
 
 /**
- * Hook to refresh projects list
+ * Hook to refresh environments list
  */
-export function useRefreshProjects(): () => void {
+export function useRefreshEnvironments(): () => void {
   return () => {
-    window.dispatchEvent(new CustomEvent('refresh-projects'))
+    window.dispatchEvent(new CustomEvent('refresh-environments'))
   }
 }
 
 /**
- * Hook to get a single cloud project by ID
+ * Hook to get a single environment by ID
  */
-export function useProject(id: string): CloudProject | undefined {
-  const projects = useProjects()
+export function useEnvironment(id: string): CloudEnvironment | undefined {
+  const environments = useEnvironments()
   return useMemo(() => {
-    return projects.find((project) => project.id === id)
-  }, [projects, id])
-}
-
-/**
- * Hook to get a specific environment from a project
- */
-export function useEnvironment(
-  projectId: string,
-  environmentId: string,
-): CloudEnvironment | undefined {
-  const project = useProject(projectId)
-  return useMemo(() => {
-    return project?.environments.find((env) => env.id === environmentId)
-  }, [project, environmentId])
-}
-
-/**
- * Hook to get all environments for a project
- */
-export function useProjectEnvironments(projectId: string): CloudEnvironment[] {
-  const project = useProject(projectId)
-  return useMemo(() => {
-    return project?.environments ?? []
-  }, [project])
+    return environments.find((env) => env.id === id)
+  }, [environments, id])
 }

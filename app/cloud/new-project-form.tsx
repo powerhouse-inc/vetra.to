@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -16,95 +16,66 @@ import {
 } from '@/modules/shared/components/ui//form'
 import { Input } from '@/modules/shared/components/ui/input'
 
-import { createProjectDocument, setProjectName, setProjectDescription } from './lib/api'
-import { useProject } from './use-cloud-data'
+import { createEnvironment, setEnvironmentName } from './lib/api'
+import { useRefreshEnvironments } from './use-cloud-data'
 
 const schema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  description: z.string().optional(),
+  name: z.string().min(1, 'Name is required'),
 })
 
-export type ProjectFormValues = z.infer<typeof schema>
+export type EnvironmentFormValues = z.infer<typeof schema>
 
-type NewProjectFormProps = {
-  projectId?: string
-  initialValues?: Partial<ProjectFormValues>
-  onSubmit?: (values: ProjectFormValues) => void
+type NewEnvironmentFormProps = {
+  environmentId?: string
+  initialName?: string
+  onSubmit?: (values: EnvironmentFormValues) => void
   onSuccess?: () => void
 }
 
-export function NewProjectForm({
-  projectId,
-  initialValues,
+export function NewEnvironmentForm({
+  environmentId,
+  initialName,
   onSubmit,
   onSuccess,
-}: NewProjectFormProps) {
+}: NewEnvironmentFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const refreshEnvironments = useRefreshEnvironments()
 
-  // Load project data when in update mode
-  // Always call the hook to comply with React rules (hooks must be called unconditionally)
-  const loadedProject = useProject(projectId || '')
-  const project = projectId ? loadedProject : undefined
-
-  const form = useForm<ProjectFormValues>({
+  const form = useForm<EnvironmentFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      title: initialValues?.title ?? project?.title ?? '',
-      description: initialValues?.description ?? project?.description ?? '',
+      name: initialName ?? '',
     },
   })
 
-  // Update form values when project is loaded
-  useEffect(() => {
-    if (project) {
-      form.reset({
-        title: initialValues?.title ?? project.title ?? '',
-        description: initialValues?.description ?? project.description ?? '',
-      })
-    }
-  }, [project, form, initialValues])
-
-  const handleSubmit = async (values: ProjectFormValues) => {
+  const handleSubmit = async (values: EnvironmentFormValues) => {
     try {
       setIsSubmitting(true)
       setError(null)
       setSuccess(false)
 
-      let currentProjectId = projectId
-
-      // Step 1: Create document (only for new projects)
-      if (!currentProjectId) {
-        const createResult = await createProjectDocument({
-          name: values.title,
+      if (environmentId) {
+        await setEnvironmentName({
+          docId: environmentId,
+          name: values.name,
         })
-        currentProjectId = createResult.data.id
-      }
-
-      // Step 2: Set name
-      await setProjectName({
-        docId: currentProjectId,
-        name: values.title,
-      })
-
-      // Step 3: Set description (if provided)
-      if (values.description) {
-        await setProjectDescription({
-          docId: currentProjectId,
-          description: values.description,
+      } else {
+        await createEnvironment({
+          name: values.name,
         })
       }
 
       setSuccess(true)
+      refreshEnvironments()
       onSubmit?.(values)
-      // Close modal on successful creation (only for new projects)
-      if (!projectId) {
+      if (!environmentId) {
         onSuccess?.()
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save project')
-      console.error('Failed to save project:', err)
+      setError(err instanceof Error ? err.message : 'Failed to save environment')
+      console.error('Failed to save environment:', err)
     } finally {
       setIsSubmitting(false)
     }
@@ -118,25 +89,12 @@ export function NewProjectForm({
         <div className="space-y-4">
           <FormField
             control={form.control}
-            name="title"
+            name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter title" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter description" {...field} />
+                  <Input placeholder="Enter environment name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -145,11 +103,13 @@ export function NewProjectForm({
         </div>
         {error && <div className="text-destructive mt-2 text-sm">{error}</div>}
         {success && (
-          <div className="mt-2 text-sm text-green-600">Project updated successfully!</div>
+          <div className="mt-2 text-sm text-green-600">
+            Environment {environmentId ? 'updated' : 'created'} successfully!
+          </div>
         )}
-        <div style={{ marginTop: 12 }}>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : projectId ? 'Update Project' : 'Create Project'}
+        <div className="mt-4">
+          <Button type="submit" disabled={isSubmitting} size="sm">
+            {isSubmitting ? 'Saving...' : environmentId ? 'Update Name' : 'Create Environment'}
           </Button>
         </div>
       </form>

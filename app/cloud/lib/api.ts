@@ -2,35 +2,28 @@
  * API client functions for cloud operations
  */
 
-export interface CreateProjectDocumentParams {
+import type { CloudEnvironment } from '../types'
+
+export interface CreateEnvironmentParams {
   name: string
 }
 
-export interface SetProjectNameParams {
+export interface SetEnvironmentNameParams {
   docId: string
   name: string
 }
 
-export interface SetProjectDescriptionParams {
-  docId: string
-  description: string
-}
-
-export interface DeleteProjectDocumentParams {
+export interface DeleteDocumentParams {
   docId: string
 }
 
-export interface CreateEnvironmentDocumentParams {
-  name: string
+export interface AddPackageParams {
+  docId: string
+  packageName: string
+  version?: string
 }
 
-export interface AddEnvironmentParams {
-  projectId: string
-  environmentPHID: string
-  name: string
-}
-
-export interface CreateProjectDocumentResponse {
+export interface CreateEnvironmentResponse {
   success: boolean
   data: {
     id: string
@@ -39,7 +32,7 @@ export interface CreateProjectDocumentResponse {
   }
 }
 
-export interface SetProjectNameResponse {
+export interface SetEnvironmentNameResponse {
   success: boolean
   data: {
     id: string
@@ -47,15 +40,7 @@ export interface SetProjectNameResponse {
   }
 }
 
-export interface SetProjectDescriptionResponse {
-  success: boolean
-  data: {
-    id: string
-    description: string
-  }
-}
-
-export interface DeleteProjectDocumentResponse {
+export interface DeleteDocumentResponse {
   success: boolean
   data: {
     id: string
@@ -63,66 +48,49 @@ export interface DeleteProjectDocumentResponse {
   }
 }
 
-export interface CreateEnvironmentDocumentResponse {
+export interface AddPackageResponse {
   success: boolean
   data: {
     id: string
-    name: string
+    packageName: string
+    version?: string
   }
-}
-
-export interface AddEnvironmentResponse {
-  success: boolean
-  data: {
-    id: string
-    environmentId: string
-    name: string
-  }
-}
-
-export interface HostingDbQueriesResponse {
-  success: boolean
-  data: unknown
 }
 
 /**
- * Create a new project document using Project_createDocument mutation
+ * Create a new environment document
  */
-export async function createProjectDocument(
-  params: CreateProjectDocumentParams,
-): Promise<CreateProjectDocumentResponse> {
+export async function createEnvironment(
+  params: CreateEnvironmentParams,
+): Promise<CreateEnvironmentResponse> {
   const response = await fetch('/api/cloud', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      operation: 'createDocument',
+      operation: 'createEnvironment',
       name: params.name,
     }),
   })
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.error || 'Failed to create project document')
+    throw new Error(error.error || 'Failed to create environment')
   }
 
   return response.json()
 }
 
 /**
- * Update project name using the Project_setProjectName mutation
+ * Update environment name
  */
-export async function setProjectName(
-  params: SetProjectNameParams,
-): Promise<SetProjectNameResponse> {
+export async function setEnvironmentName(
+  params: SetEnvironmentNameParams,
+): Promise<SetEnvironmentNameResponse> {
   const response = await fetch('/api/cloud', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      operation: 'setProjectName',
+      operation: 'setEnvironmentName',
       docId: params.docId,
       name: params.name,
     }),
@@ -130,49 +98,21 @@ export async function setProjectName(
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.error || 'Failed to update project name')
+    throw new Error(error.error || 'Failed to update environment name')
   }
 
   return response.json()
 }
 
 /**
- * Update project description using the Project_setProjectDescription mutation
+ * Delete a document
  */
-export async function setProjectDescription(
-  params: SetProjectDescriptionParams,
-): Promise<SetProjectDescriptionResponse> {
+export async function deleteDocument(
+  params: DeleteDocumentParams,
+): Promise<DeleteDocumentResponse> {
   const response = await fetch('/api/cloud', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      operation: 'setProjectDescription',
-      docId: params.docId,
-      description: params.description,
-    }),
-  })
-
-  if (!response.ok) {
-    const error = await response.json()
-    throw new Error(error.error || 'Failed to update project description')
-  }
-
-  return response.json()
-}
-
-/**
- * Delete a project document using Project_deleteDocument mutation
- */
-export async function deleteProjectDocument(
-  params: DeleteProjectDocumentParams,
-): Promise<DeleteProjectDocumentResponse> {
-  const response = await fetch('/api/cloud', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       operation: 'deleteDocument',
       docId: params.docId,
@@ -181,102 +121,70 @@ export async function deleteProjectDocument(
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.error || 'Failed to delete project document')
+    throw new Error(error.error || 'Failed to delete document')
   }
 
   return response.json()
 }
 
 /**
- * Create an environment document using Environment_createDocument mutation
+ * Add a package to an environment
  */
-export async function createEnvironmentDocument(
-  params: CreateEnvironmentDocumentParams,
-): Promise<CreateEnvironmentDocumentResponse> {
+export async function addPackage(params: AddPackageParams): Promise<AddPackageResponse> {
   const response = await fetch('/api/cloud', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      operation: 'createEnvironmentDocument',
-      name: params.name,
+      operation: 'addPackage',
+      docId: params.docId,
+      packageName: params.packageName,
+      version: params.version,
     }),
   })
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.error || 'Failed to create environment document')
+    throw new Error(error.error || 'Failed to add package')
   }
 
   return response.json()
 }
 
 /**
- * Add an environment to a project using Project_addEnvironment mutation
+ * Fetch all environments
  */
-export async function addEnvironment(
-  params: AddEnvironmentParams,
-): Promise<AddEnvironmentResponse> {
-  const response = await fetch('/api/cloud', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      operation: 'addEnvironment',
-      projectId: params.projectId,
-      environmentPHID: params.environmentPHID,
-      name: params.name,
-    }),
-  })
-
-  if (!response.ok) {
-    const error = await response.json()
-    throw new Error(error.error || 'Failed to add environment')
-  }
-
-  return response.json()
-}
-
-/**
- * Fetch hosting data using HostingDbQueries
- */
-export async function fetchHostingQueries(): Promise<HostingDbQueriesResponse> {
+export async function fetchEnvironments(): Promise<{
+  success: boolean
+  data: CloudEnvironment[]
+}> {
   const response = await fetch('/api/cloud', {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
   })
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.error || 'Failed to fetch hosting data')
+    throw new Error(error.error || 'Failed to fetch environments')
   }
 
   return response.json()
 }
 
 /**
- * Fetch environments for a specific project using ProjectEnvironments query
+ * Fetch a single environment by docId
  */
-export async function fetchProjectEnvironments(
-  projectDocumentId: string,
-): Promise<{ success: boolean; data: Array<{ id: string; name: string }> }> {
-  const response = await fetch(
-    `/api/cloud?projectDocumentId=${encodeURIComponent(projectDocumentId)}`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
-  )
+export async function fetchEnvironment(docId: string): Promise<{
+  success: boolean
+  data: CloudEnvironment | null
+}> {
+  const response = await fetch(`/api/cloud?docId=${encodeURIComponent(docId)}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  })
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.error || 'Failed to fetch project environments')
+    throw new Error(error.error || 'Failed to fetch environment')
   }
 
   return response.json()

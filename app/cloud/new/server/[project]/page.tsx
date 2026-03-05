@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { Package } from 'lucide-react'
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -11,8 +12,14 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from '@/modules/shared/components/ui/breadcrumb'
+import {
+  StripedCard,
+  StripedCardContent,
+  StripedCardHeader,
+  StripedCardTitle,
+} from '@/modules/shared/components/striped-card'
 
-import { useCloudEnvironmentFormValues, useProject } from '../../../use-cloud-data'
+import { useEnvironment } from '../../../use-cloud-data'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
@@ -26,252 +33,143 @@ import {
   FormMessage,
 } from '@/modules/shared/components/ui//form'
 import { Input } from '@/modules/shared/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/modules/shared/components/ui/select'
-import { Switch } from '@/modules/shared/components/ui/switch'
 import { useForm } from 'react-hook-form'
-import { createEnvironmentDocument, addEnvironment } from '../../../lib/api'
+import { addPackage } from '../../../lib/api'
 
 type PageProps = {
-  params: {
+  params: Promise<{
     project: string
-  }
+  }>
 }
 
 const schema = z.object({
-  address: z.string().min(1, 'Address is required'),
-  packages: z.string().min(1, 'Packages is required'),
-  resources: z.string().min(1, 'Resources is required'),
-  label: z.string().min(1, 'Label is required'),
-  admin: z.string().min(1, 'Admin is required'),
-  backup: z.boolean(),
+  packageName: z.string().min(1, 'Package name is required'),
+  version: z.string().optional(),
 })
 
-export type ProjectFormValues = z.infer<typeof schema>
+export type AddPackageFormValues = z.infer<typeof schema>
 
-export default function NewEnvironmentPage({ params }: PageProps) {
-  const { project } = params
-  const projectData = useProject(project)
-  const cloudOptions = useCloudEnvironmentFormValues()
+export default function AddPackagePage({ params }: PageProps) {
+  const { project } = use(params)
+  const environment = useEnvironment(project)
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const form = useForm<ProjectFormValues>({
+  const form = useForm<AddPackageFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      address: '',
-      packages: '',
-      resources: '',
-      label: '',
-      admin: '',
-      backup: true,
+      packageName: '',
+      version: '',
     },
   })
 
-  const handleSubmit = async (values: ProjectFormValues) => {
-    if (!projectData) {
-      toast.error('Project not found')
+  const handleSubmit = async (values: AddPackageFormValues) => {
+    if (!environment) {
+      toast.error('Environment not found')
       return
     }
 
     try {
       setIsSubmitting(true)
 
-      // Step 1: Create environment document
-      const createResult = await createEnvironmentDocument({
-        name: values.address,
-      })
-      const environmentPHID = createResult.data.id
-
-      // Step 2: Set required fields (if needed)
-      // Note: Additional fields like status, username, appDockerImage, backupsEnabled
-      // might need to be set using separate mutations if required by the schema
-      // For now, we'll proceed to step 3
-
-      // Step 3: Link environment to project
-      await addEnvironment({
-        projectId: projectData.id,
-        environmentPHID: environmentPHID,
-        name: values.address,
+      await addPackage({
+        docId: environment.id,
+        packageName: values.packageName,
+        version: values.version || undefined,
       })
 
-      toast.success('Environment created successfully')
+      toast.success('Package added successfully')
       router.push(`/cloud/${project}`)
     } catch (error) {
-      console.error('Failed to create environment:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to create environment')
+      console.error('Failed to add package:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to add package')
     } finally {
       setIsSubmitting(false)
     }
   }
+
+  const displayName = environment?.state.name || environment?.name || 'Loading...'
+
   return (
     <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] space-y-8 p-8">
-      {/* Header Section */}
+      {/* Header */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold">New environment</h1>
-            {/* Breadcrumbs */}
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="/cloud">Cloud</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>New</BreadcrumbPage>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Environment</BreadcrumbPage>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{projectData?.title}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </div>
+        <h1 className="text-3xl font-bold">Add Package</h1>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/cloud">Cloud</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`/cloud/${project}`}>{displayName}</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Add Package</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
-      <Form {...form}>
-        {/* keeping it as it comes from shadcn */}
-        {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-        <form onSubmit={form.handleSubmit(handleSubmit)} style={{ padding: '20px', top: '10px' }}>
-          <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Address</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter address" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="label"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Label</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a label" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {cloudOptions.label.map((option) => (
-                        <SelectItem key={option[0]} value={option[0]}>
-                          {option[1]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="packages"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Packages</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a package" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {cloudOptions.packages.map((option) => (
-                        <SelectItem key={option[0]} value={option[0]}>
-                          {option[1]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="resources"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Resources</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a resource" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {cloudOptions.resources.map((option) => (
-                        <SelectItem key={option[0]} value={option[0]}>
-                          {option[1]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="admin"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Admin</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select an admin" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {cloudOptions.admin.map((option) => (
-                        <SelectItem key={option[0]} value={option[0]}>
-                          {option[1]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="backup"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Backup</FormLabel>
-                  <Switch onCheckedChange={field.onChange} checked={field.value} />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div style={{ marginTop: 12 }}>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Creating...' : 'Create Environment'}
-            </Button>
-          </div>
-        </form>
-      </Form>
+
+      <div className="mx-auto max-w-xl">
+        <StripedCard>
+          <StripedCardHeader>
+            <StripedCardTitle className="flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              New Package
+            </StripedCardTitle>
+          </StripedCardHeader>
+          <StripedCardContent className="p-4">
+            <Form {...form}>
+              {/* keeping it as it comes from shadcn */}
+              {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+              <form onSubmit={form.handleSubmit(handleSubmit)}>
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="packageName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Package Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. @powerhouse/my-package" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="version"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Version (optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. 1.0.0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="mt-6 flex gap-2">
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Adding...' : 'Add Package'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => router.push(`/cloud/${project}`)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </StripedCardContent>
+        </StripedCard>
+      </div>
     </main>
   )
 }

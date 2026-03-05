@@ -1,22 +1,19 @@
-export type CloudProject = {
+export type CloudEnvironment = {
   id: string
-  title: string
-  description: string
-  environments: CloudEnvironment[]
+  name: string
+  documentType: string
+  revision: number
+  createdAtUtcIso: string
+  lastModifiedAtUtcIso: string
+  state: {
+    name: string | null
+    services: string[]
+    packages: Array<{ name: string; version: string | null }> | null
+    status: string
+  }
 }
 
 export type OptionValue = [value: string, label: string]
-
-export type CloudEnvironment = {
-  id: string
-  projectId: string
-  address: string
-  packages: string
-  resources: string
-  label: string
-  admin: string
-  backup: boolean
-}
 
 export type CloudEnvironmentFormValues = {
   address: string
