@@ -15,7 +15,7 @@ import {
 } from '@/modules/shared/components/ui//form'
 import { Input } from '@/modules/shared/components/ui/input'
 
-import { getProject } from './data'
+import { getProject } from './mock-data'
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),

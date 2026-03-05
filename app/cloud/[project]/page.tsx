@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -7,7 +9,7 @@ import {
   BreadcrumbPage,
 } from '@/modules/shared/components/ui/breadcrumb'
 
-import { getProject } from '../data'
+import { useCloudEnvironmentFormValues, useProject } from '../use-cloud-data'
 import { NewProjectForm } from '@/app/cloud/new-project-form'
 import {
   Table,
@@ -26,20 +28,27 @@ type PageProps = {
   }
 }
 
-// Force dynamic rendering to prevent build-time API requests
-export const dynamic = 'force-dynamic'
-
-export const metadata: unknown = {
-  title: 'Vetra Cloud',
-  description: 'The Cloud for Powerhouse!',
-}
-
 export default function CloudPage({ params }: PageProps) {
   const { project } = params
-  const projectData = getProject(project)
+  const projectData = useProject(project)
+  const cloudOptions = useCloudEnvironmentFormValues()
 
-  const { project } = params
-  const projectData = getProject(project)
+  // Helper functions to get display labels from form values
+  const getPackageLabel = (value: string) => {
+    return cloudOptions.packages.find((option) => option[0] === value)?.[1] ?? value
+  }
+
+  const getResourceLabel = (value: string) => {
+    return cloudOptions.resources.find((option) => option[0] === value)?.[1] ?? value
+  }
+
+  const getLabelLabel = (value: string) => {
+    return cloudOptions.label.find((option) => option[0] === value)?.[1] ?? value
+  }
+
+  const getAdminLabel = (value: string) => {
+    return cloudOptions.admin.find((option) => option[0] === value)?.[1] ?? value
+  }
 
   return (
     <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] space-y-8 p-8">
@@ -89,10 +98,10 @@ export default function CloudPage({ params }: PageProps) {
           {projectData?.environments.map((environment) => (
             <TableRow key={environment.id}>
               <TableCell>{environment.address}</TableCell>
-              <TableCell>{environment.packages}</TableCell>
-              <TableCell>{environment.resources}</TableCell>
-              <TableCell>{environment.label}</TableCell>
-              <TableCell>{environment.admin}</TableCell>
+              <TableCell>{getPackageLabel(environment.packages)}</TableCell>
+              <TableCell>{getResourceLabel(environment.resources)}</TableCell>
+              <TableCell>{getLabelLabel(environment.label)}</TableCell>
+              <TableCell>{getAdminLabel(environment.admin)}</TableCell>
               <TableCell>{environment.backup ? 'Yes' : 'No'}</TableCell>
               <TableCell>
                 <Button variant="outline">

@@ -9,7 +9,7 @@ import {
   BreadcrumbPage,
 } from '@/modules/shared/components/ui/breadcrumb'
 
-import { getProject } from '../../../data'
+import { useCloudEnvironmentFormValues, useProject } from '../../../use-cloud-data'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
@@ -33,9 +33,6 @@ import {
 import { Switch } from '@/modules/shared/components/ui/switch'
 import { useForm } from 'react-hook-form'
 
-// Force dynamic rendering to prevent build-time API requests
-export const dynamic = 'force-dynamic'
-
 type PageProps = {
   params: {
     project: string
@@ -55,7 +52,8 @@ export type ProjectFormValues = z.infer<typeof schema>
 
 export default function NewEnvironmentPage({ params }: PageProps) {
   const { project } = params
-  const projectData = getProject(project)
+  const projectData = useProject(project)
+  const cloudOptions = useCloudEnvironmentFormValues()
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(schema),
@@ -134,9 +132,11 @@ export default function NewEnvironmentPage({ params }: PageProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="label-1">Label 1</SelectItem>
-                      <SelectItem value="label-2">Label 2</SelectItem>
-                      <SelectItem value="label-3">Label 3</SelectItem>
+                      {cloudOptions.label.map((option) => (
+                        <SelectItem key={option[0]} value={option[0]}>
+                          {option[1]}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -156,9 +156,11 @@ export default function NewEnvironmentPage({ params }: PageProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="package-1">Package 1</SelectItem>
-                      <SelectItem value="package-2">Package 2</SelectItem>
-                      <SelectItem value="package-3">Package 3</SelectItem>
+                      {cloudOptions.packages.map((option) => (
+                        <SelectItem key={option[0]} value={option[0]}>
+                          {option[1]}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -178,9 +180,11 @@ export default function NewEnvironmentPage({ params }: PageProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="resource-1">Resource 1</SelectItem>
-                      <SelectItem value="resource-2">Resource 2</SelectItem>
-                      <SelectItem value="resource-3">Resource 3</SelectItem>
+                      {cloudOptions.resources.map((option) => (
+                        <SelectItem key={option[0]} value={option[0]}>
+                          {option[1]}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -196,13 +200,15 @@ export default function NewEnvironmentPage({ params }: PageProps) {
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a admin" />
+                        <SelectValue placeholder="Select an admin" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="admin-1">Admin 1</SelectItem>
-                      <SelectItem value="admin-2">Admin 2</SelectItem>
-                      <SelectItem value="admin-3">Admin 3</SelectItem>
+                      {cloudOptions.admin.map((option) => (
+                        <SelectItem key={option[0]} value={option[0]}>
+                          {option[1]}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

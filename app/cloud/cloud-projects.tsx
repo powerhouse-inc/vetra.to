@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from '@/modules/shared/components/ui/button'
 import { FolderOpen, Plus } from 'lucide-react'
 import Link from 'next/link'
@@ -10,10 +12,7 @@ import {
   CardDescription,
 } from '@/modules/shared/components/ui/card'
 
-import { CloudProject } from './types'
-import { getProjects } from './data'
-
-const CLOUD_PROJECTS: CloudProject[] = getProjects()
+import { useProjects } from './use-cloud-data'
 
 type CloudProjectCardProps = {
   id: string
@@ -52,9 +51,11 @@ function CloudProjectCard({ id, title, description }: CloudProjectCardProps) {
 }
 
 export function CloudProjects() {
+  const projects = useProjects()
+
   return (
     <div className="flex flex-wrap">
-      {CLOUD_PROJECTS.map((project) => (
+      {projects.map((project) => (
         <CloudProjectCard
           key={project.id}
           id={project.id}
