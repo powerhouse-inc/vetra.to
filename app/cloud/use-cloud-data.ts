@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { fetchHostingQueries } from './lib/api'
+import { fetchHostingQueries, fetchProjectEnvironments } from './lib/api'
 import { getEnvironmentFormValues } from './mock-data'
 import type { CloudProject, CloudEnvironment, CloudEnvironmentFormValues } from './types'
 
@@ -27,7 +27,6 @@ export function useProjects(): CloudProject[] {
         setIsLoading(true)
         setError(null)
         const response = await fetchHostingQueries()
-        console.log('Hosting queries fetched:', response)
 
         // Transform the GraphQL response to CloudProject[]
         const data = response.data as {
@@ -62,22 +61,42 @@ export function useProjects(): CloudProject[] {
         if (data?.projects) {
           // Transform GraphQL DbProject to CloudProject
           console.log('Transformed projects:', data?.projects)
-          const transformedProjects: CloudProject[] = data.projects.map((project) => ({
-            id: project.id,
-            title: project.name, // Map name to title
-            description: project.description || '',
-            environments: (project.environments || []).map((env) => ({
-              id: env.id,
-              projectId: project.id,
-              address: env.name || '', // Map name to address (or use appropriate field)
-              packages: env.appDockerImage || '', // Map appDockerImage to packages
-              resources: '', // Not available in GraphQL schema, set empty
-              label: env.status || '', // Map status to label
-              admin: env.username || '', // Map username to admin
-              backup: env.backupsEnabled, // Map backupsEnabled to backup
-            })),
-          }))
-          setProjects(transformedProjects)
+
+          // Fetch environments for each project
+          const projectsWithEnvironments = await Promise.all(
+            data.projects.map(async (project) => {
+              let environments: CloudEnvironment[] = []
+
+              // Fetch environments for this project using projectDocumentId
+              if (project.documentId) {
+                try {
+                  const envResponse = await fetchProjectEnvironments(project.documentId)
+                  environments = (envResponse.data || []).map((env) => ({
+                    id: env.id,
+                    projectId: project.id,
+                    address: env.name || '',
+                    packages: '', // Will be set by additional queries if needed
+                    resources: '',
+                    label: '',
+                    admin: '',
+                    backup: false,
+                  }))
+                } catch (err) {
+                  console.warn(`Failed to fetch environments for project ${project.id}:`, err)
+                  // Continue with empty environments array
+                }
+              }
+
+              return {
+                id: project.id,
+                title: project.name,
+                description: project.description || '',
+                environments,
+              }
+            }),
+          )
+
+          setProjects(projectsWithEnvironments)
         } else {
           console.warn('Unexpected API response structure:', data)
           setProjects([])

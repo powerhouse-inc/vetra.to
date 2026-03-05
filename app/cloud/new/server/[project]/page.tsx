@@ -1,5 +1,8 @@
 'use client'
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -32,6 +35,7 @@ import {
 } from '@/modules/shared/components/ui/select'
 import { Switch } from '@/modules/shared/components/ui/switch'
 import { useForm } from 'react-hook-form'
+import { createEnvironmentDocument, addEnvironment } from '../../../lib/api'
 
 type PageProps = {
   params: {
@@ -54,6 +58,8 @@ export default function NewEnvironmentPage({ params }: PageProps) {
   const { project } = params
   const projectData = useProject(project)
   const cloudOptions = useCloudEnvironmentFormValues()
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(schema),
@@ -66,6 +72,43 @@ export default function NewEnvironmentPage({ params }: PageProps) {
       backup: true,
     },
   })
+
+  const handleSubmit = async (values: ProjectFormValues) => {
+    if (!projectData) {
+      toast.error('Project not found')
+      return
+    }
+
+    try {
+      setIsSubmitting(true)
+
+      // Step 1: Create environment document
+      const createResult = await createEnvironmentDocument({
+        name: values.address,
+      })
+      const environmentPHID = createResult.data.id
+
+      // Step 2: Set required fields (if needed)
+      // Note: Additional fields like status, username, appDockerImage, backupsEnabled
+      // might need to be set using separate mutations if required by the schema
+      // For now, we'll proceed to step 3
+
+      // Step 3: Link environment to project
+      await addEnvironment({
+        projectId: projectData.id,
+        environmentPHID: environmentPHID,
+        name: values.address,
+      })
+
+      toast.success('Environment created successfully')
+      router.push(`/cloud/${project}`)
+    } catch (error) {
+      console.error('Failed to create environment:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to create environment')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
   return (
     <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] space-y-8 p-8">
       {/* Header Section */}
@@ -99,12 +142,7 @@ export default function NewEnvironmentPage({ params }: PageProps) {
       <Form {...form}>
         {/* keeping it as it comes from shadcn */}
         {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-        <form
-          onSubmit={form.handleSubmit((values) => {
-            console.log(values)
-          })}
-          style={{ padding: '20px', top: '10px' }}
-        >
+        <form onSubmit={form.handleSubmit(handleSubmit)} style={{ padding: '20px', top: '10px' }}>
           <div className="space-y-4">
             <FormField
               control={form.control}
@@ -228,7 +266,9 @@ export default function NewEnvironmentPage({ params }: PageProps) {
             />
           </div>
           <div style={{ marginTop: 12 }}>
-            <Button type="submit">Create Environment</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Creating...' : 'Create Environment'}
+            </Button>
           </div>
         </form>
       </Form>

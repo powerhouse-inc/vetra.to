@@ -44,6 +44,20 @@ const DELETE_PROJECT_DOCUMENT_MUTATION = gql`
   }
 `
 
+// GraphQL mutation for Environment_createDocument
+const CREATE_ENVIRONMENT_DOCUMENT_MUTATION = gql`
+  mutation Environment_createDocument($name: String!) {
+    Environment_createDocument(name: $name)
+  }
+`
+
+// GraphQL mutation for Project_addEnvironment
+const ADD_ENVIRONMENT_MUTATION = gql`
+  mutation Project_addEnvironment($docId: PHID!, $driveId: String!, $input: Project_AddEnvironmentInput!) {
+    Project_addEnvironment(docId: $docId, driveId: $driveId, input: $input)
+  }
+`
+
 // GraphQL query for HostingDb
 const HOSTING_DB_QUERIES = gql`
   query HostingDbQueries {
@@ -56,6 +70,18 @@ const HOSTING_DB_QUERIES = gql`
         description
         createdAt
         updatedAt
+      }
+    }
+  }
+`
+
+// GraphQL query for ProjectEnvironments
+const PROJECT_ENVIRONMENTS_QUERY = gql`
+  query ProjectEnvironments($driveId: String!, $projectDocumentId: String!) {
+    HostingDb {
+      projectEnvironments(driveId: $driveId, projectDocumentId: $projectDocumentId) {
+        id
+        name
       }
     }
   }
@@ -95,14 +121,167 @@ export async function POST(request: NextRequest) {
     let response: unknown
     let resultData: unknown
 
-    switch (operation) {
-      case 'createDocument': {
-        const { name } = params
-        if (!name) {
-          return NextResponse.json(
-            { error: 'name is required for createDocument' },
-            { status: 400 },
-          )
+        switch (operation) {
+            case 'createDocument': {
+                const { name } = params
+                if (!name) {
+                    return NextResponse.json(
+                        { error: 'name is required for createDocument' },
+                        { status: 400 },
+                    )
+                }
+
+                const mutationResponse = await serverGraphqlRequest<{
+                    Project_createDocument: string
+                }>(CREATE_PROJECT_DOCUMENT_MUTATION, {
+                    name,
+                    driveId: DRIVE_ID,
+                })
+
+                // The mutation returns just the ID as a string
+                resultData = {
+                    id: mutationResponse.Project_createDocument,
+                    name,
+                    driveId: DRIVE_ID,
+                }
+                break
+            }
+
+            case 'setProjectName': {
+                const { docId, name } = params
+                if (!docId || !name) {
+                    return NextResponse.json(
+                        { error: 'docId and name are required for setProjectName' },
+                        { status: 400 },
+                    )
+                }
+
+                const mutationResponse = await serverGraphqlRequest<{
+                    Project_setProjectName: number
+                }>(SET_PROJECT_NAME_MUTATION, {
+                    docId,
+                    driveId: DRIVE_ID,
+                    input: { name },
+                })
+
+                // The mutation returns an Int (likely a version number or status code)
+                // Construct the response with the provided docId and name
+                resultData = {
+                    id: docId,
+                    name,
+                }
+                break
+            }
+
+            case 'setProjectDescription': {
+                const { docId, description } = params
+                if (!docId || !description) {
+                    return NextResponse.json(
+                        { error: 'docId and description are required for setProjectDescription' },
+                        { status: 400 },
+                    )
+                }
+
+                const mutationResponse = await serverGraphqlRequest<{
+                    Project_setProjectDescription: number
+                }>(SET_PROJECT_DESCRIPTION_MUTATION, {
+                    docId,
+                    driveId: DRIVE_ID,
+                    input: { description },
+                })
+
+                // The mutation returns an Int (likely a version number or status code)
+                // Construct the response with the provided docId and description
+                resultData = {
+                    id: docId,
+                    description,
+                }
+                break
+            }
+
+            case 'deleteDocument': {
+                const { docId } = params
+                if (!docId) {
+                    return NextResponse.json(
+                        { error: 'docId is required for deleteDocument' },
+                        { status: 400 },
+                    )
+                }
+
+                const mutationResponse = await serverGraphqlRequest<{
+                    deleteDocument: number | boolean
+                }>(DELETE_PROJECT_DOCUMENT_MUTATION, {
+                    identifier: docId,
+                })
+
+                // The mutation returns an Int or Boolean (likely a status code)
+                resultData = {
+                    id: docId,
+                    success: true,
+                }
+                break
+            }
+
+            case 'createEnvironmentDocument': {
+                const { name } = params
+                if (!name) {
+                    return NextResponse.json(
+                        { error: 'name is required for createEnvironmentDocument' },
+                        { status: 400 },
+                    )
+                }
+
+                const mutationResponse = await serverGraphqlRequest<{
+                    Environment_createDocument: string
+                }>(CREATE_ENVIRONMENT_DOCUMENT_MUTATION, {
+                    name,
+                })
+
+                // The mutation returns the PHID as a string
+                resultData = {
+                    id: mutationResponse.Environment_createDocument,
+                    name,
+                }
+                break
+            }
+
+            case 'addEnvironment': {
+                const { projectId, environmentPHID, name } = params
+                if (!projectId || !environmentPHID || !name) {
+                    return NextResponse.json(
+                        { error: 'projectId, environmentPHID, and name are required for addEnvironment' },
+                        { status: 400 },
+                    )
+                }
+
+                // The id field might be the same as environmentPHID or might need to be extracted
+                // Using environmentPHID for both - may need adjustment based on actual API
+                const mutationResponse = await serverGraphqlRequest<{
+                    Project_addEnvironment: number
+                }>(ADD_ENVIRONMENT_MUTATION, {
+                    docId: projectId,
+                    driveId: DRIVE_ID,
+                    input: {
+                        environmentPHID,
+                        id: environmentPHID, // Using PHID as ID - may need adjustment
+                        name,
+                    },
+                })
+
+                // The mutation returns an Int (likely a version number or status code)
+                resultData = {
+                    id: projectId,
+                    environmentId: environmentPHID,
+                    name,
+                }
+                break
+            }
+
+            default:
+                return NextResponse.json(
+                    { error: `Unknown operation: ${operation}. Supported operations: createDocument, setProjectName, setProjectDescription, deleteDocument, createEnvironmentDocument, addEnvironment` },
+                    { status: 400 },
+                )
         }
 
         const mutationResponse = await serverGraphqlRequest<{
@@ -230,14 +409,40 @@ export async function POST(request: NextRequest) {
 
 // GET endpoint for HostingDbQueries query
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    // You can add query parameters here if needed
-    // const filter = searchParams.get('filter') || undefined
+    try {
+        const { searchParams } = new URL(request.url)
+        const projectDocumentId = searchParams.get('projectDocumentId')
 
-    const response = await serverGraphqlRequest<{
-      HostingDb: unknown
-    }>(HOSTING_DB_QUERIES)
+        // If projectDocumentId is provided, fetch environments for that project
+        if (projectDocumentId) {
+            const response = await serverGraphqlRequest<{
+                HostingDb: {
+                    projectEnvironments?: Array<{
+                        id: string
+                        name: string
+                    }>
+                }
+            }>(PROJECT_ENVIRONMENTS_QUERY, {
+                driveId: DRIVE_ID,
+                projectDocumentId,
+            })
+
+            const result = NextResponse.json({
+                success: true,
+                data: response.HostingDb.projectEnvironments || [],
+            })
+
+            result.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+            result.headers.set('Pragma', 'no-cache')
+            result.headers.set('Expires', '0')
+
+            return result
+        }
+
+        // Otherwise, fetch all projects
+        const response = await serverGraphqlRequest<{
+            HostingDb: unknown
+        }>(HOSTING_DB_QUERIES)
 
     const result = NextResponse.json({
       success: true,
