@@ -7,7 +7,7 @@ import {
   BreadcrumbPage,
 } from '@/modules/shared/components/ui/breadcrumb'
 
-import { CloudProjects } from './cloudprojects'
+import { CloudProjects } from './cloud-projects'
 import { NewProjectModalButton } from './new-project-modal-button'
 
 // Force dynamic rendering to prevent build-time API requests
