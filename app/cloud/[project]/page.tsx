@@ -7,8 +7,8 @@ import {
   BreadcrumbPage,
 } from '@/modules/shared/components/ui/breadcrumb'
 
-import { Button } from '@/modules/shared/components/ui/button'
 import { getProject } from '../data'
+import { NewProjectForm } from '@/app/cloud/new-project-form'
 
 type PageProps = {
   params: {
@@ -25,6 +25,9 @@ export const metadata: unknown = {
 }
 
 export default function CloudPage({ params }: PageProps) {
+  const { project } = params
+  const projectData = getProject(project)
+
   const { project } = params
   const projectData = getProject(project)
 
@@ -53,6 +56,12 @@ export default function CloudPage({ params }: PageProps) {
           </div>
         </div>
       </div>
+
+      {projectData && (
+        <section>
+          <NewProjectForm projectId={projectData.id} />
+        </section>
+      )}
     </main>
   )
 }

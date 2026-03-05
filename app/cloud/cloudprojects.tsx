@@ -1,4 +1,6 @@
 import { Button } from '@/modules/shared/components/ui/button'
+import { FolderOpen, Plus } from 'lucide-react'
+import Link from 'next/link'
 
 import {
   Card,
@@ -27,15 +29,22 @@ function CloudProjectCard({ id, title, description }: CloudProjectCardProps) {
           <CardTitle>{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
-        <CardFooter>
-          <div className="space-x-5">
-            <Button>
-              <a href={`/cloud/${id}`}>Open project</a>
-            </Button>
-            <Button>
-              <a href={`/cloud/new/server/${id}`}>New Environment</a>
-            </Button>
-          </div>
+        <CardFooter className="flex flex-col gap-2">
+          <Button variant="default" asChild className="w-full">
+            <Link href={`/cloud/${id}`} className="flex items-center justify-center gap-2">
+              <FolderOpen className="h-4 w-4" />
+              Open project
+            </Link>
+          </Button>
+          <Button variant="outline" asChild className="w-full">
+            <Link
+              href={`/cloud/new/server/${id}`}
+              className="flex items-center justify-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              New Environment
+            </Link>
+          </Button>
         </CardFooter>
       </Card>
     </div>
@@ -46,7 +55,12 @@ export function CloudProjects() {
   return (
     <div className="flex flex-wrap">
       {CLOUD_PROJECTS.map((project) => (
-        <CloudProjectCard id={project.id} title={project.title} description={project.description} />
+        <CloudProjectCard
+          key={project.id}
+          id={project.id}
+          title={project.title}
+          description={project.description}
+        />
       ))}
     </div>
   )

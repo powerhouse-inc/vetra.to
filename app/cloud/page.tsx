@@ -7,9 +7,8 @@ import {
   BreadcrumbPage,
 } from '@/modules/shared/components/ui/breadcrumb'
 
-import { Button } from '@/modules/shared/components/ui/button'
-
 import { CloudProjects } from './cloudprojects'
+import { NewProjectModalButton } from './new-project-modal-button'
 
 // Force dynamic rendering to prevent build-time API requests
 export const dynamic = 'force-dynamic'
@@ -40,9 +39,7 @@ export default function CloudPage() {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          <Button>
-            <a href="/cloud/new/project">New Project</a>
-          </Button>
+          <NewProjectModalButton />
         </div>
       </div>
       <CloudProjects></CloudProjects>
