@@ -1,3 +1,16 @@
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from '@/modules/shared/components/ui/breadcrumb'
+
+import { Button } from '@/modules/shared/components/ui/button'
+
+import { CloudProjects } from './cloudprojects'
+
 // Force dynamic rendering to prevent build-time API requests
 export const dynamic = 'force-dynamic'
 
@@ -13,16 +26,24 @@ export default function CloudPage() {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold">Page goes here</h1>
+            <h1 className="text-4xl font-bold">Cloud</h1>
             {/* Breadcrumbs */}
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/cloud">Cloud</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Overview</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
           </div>
-
-          {/* Search Bar */}
+          <Button>New Project</Button>
         </div>
       </div>
-
-      {/* Builder Teams List */}
-      <div className="space-y-4"></div>
+      <CloudProjects></CloudProjects>
     </main>
   )
 }
