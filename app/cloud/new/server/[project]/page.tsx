@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+import { useEnvironmentController } from '@/modules/cloud/hooks/use-environment-controller'
 import {
   StripedCard,
   StripedCardContent,
@@ -22,6 +23,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from '@/modules/shared/components/ui/breadcrumb'
+
 import { Button } from '@/modules/shared/components/ui/button'
 import {
   Form,
@@ -32,9 +34,6 @@ import {
   FormMessage,
 } from '@/modules/shared/components/ui/form'
 import { Input } from '@/modules/shared/components/ui/input'
-
-import { addPackage } from '../../../lib/api'
-import { useEnvironment } from '../../../use-cloud-data'
 
 type PageProps = {
   params: Promise<{
@@ -51,7 +50,7 @@ export type AddPackageFormValues = z.infer<typeof schema>
 
 export default function AddPackagePage({ params }: PageProps) {
   const { project } = use(params)
-  const environment = useEnvironment(project)
+  const { controller, state, isLoading, push } = useEnvironmentController(project)
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -64,20 +63,18 @@ export default function AddPackagePage({ params }: PageProps) {
   })
 
   const handleSubmit = async (values: AddPackageFormValues) => {
-    if (!environment) {
-      toast.error('Environment not found')
+    if (!controller) {
+      toast.error('Environment not loaded')
       return
     }
 
     try {
       setIsSubmitting(true)
-
-      await addPackage({
-        docId: environment.id,
+      controller.addPackage({
         packageName: values.packageName,
-        version: values.version || undefined,
+        version: values.version || null,
       })
-
+      await push()
       toast.success('Package added successfully')
       router.push(`/cloud/${project}`)
     } catch (error) {
@@ -88,7 +85,15 @@ export default function AddPackagePage({ params }: PageProps) {
     }
   }
 
-  const displayName = environment?.state.name || environment?.name || 'Loading...'
+  const displayName = state?.name || controller?.header.name || 'Loading...'
+
+  if (isLoading) {
+    return (
+      <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] p-8">
+        <p className="text-muted-foreground">Loading environment...</p>
+      </main>
+    )
+  }
 
   return (
     <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] space-y-8 p-8">

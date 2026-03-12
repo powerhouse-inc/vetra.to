@@ -8,6 +8,8 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { NewEnvironmentForm } from '@/app/cloud/new-project-form'
+import type { EnvironmentController } from '@/modules/cloud/controller'
+import { useEnvironmentController } from '@/modules/cloud/hooks/use-environment-controller'
 import {
   StripedCard,
   StripedCardContent,
@@ -49,9 +51,6 @@ import {
   TableRow,
 } from '@/modules/shared/components/ui/table'
 
-import { addPackage } from '../lib/api'
-import { useEnvironment, useRefreshEnvironments } from '../use-cloud-data'
-
 const addPackageSchema = z.object({
   packageName: z.string().min(1, 'Package name is required'),
   version: z.string().optional(),
@@ -59,10 +58,15 @@ const addPackageSchema = z.object({
 
 type AddPackageFormValues = z.infer<typeof addPackageSchema>
 
-function AddPackageModal({ environmentId }: { environmentId: string }) {
+function AddPackageModal({
+  controller,
+  onPush,
+}: {
+  controller: EnvironmentController
+  onPush: () => Promise<void>
+}) {
   const [open, setOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const refreshEnvironments = useRefreshEnvironments()
 
   const form = useForm<AddPackageFormValues>({
     resolver: zodResolver(addPackageSchema),
@@ -72,13 +76,12 @@ function AddPackageModal({ environmentId }: { environmentId: string }) {
   const handleSubmit = async (values: AddPackageFormValues) => {
     try {
       setIsSubmitting(true)
-      await addPackage({
-        docId: environmentId,
+      controller.addPackage({
         packageName: values.packageName,
-        version: values.version || undefined,
+        version: values.version || null,
       })
+      await onPush()
       toast.success('Package added successfully')
-      refreshEnvironments()
       form.reset()
       setOpen(false)
     } catch (error) {
@@ -154,10 +157,19 @@ type PageProps = {
 
 export default function EnvironmentDetailPage({ params }: PageProps) {
   const { project } = use(params)
-  const environment = useEnvironment(project)
+  const { controller, state, isLoading, push } = useEnvironmentController(project)
 
-  const displayName = environment?.state.name || environment?.name || 'Loading...'
-  const isRunning = environment?.state.status === 'STARTED'
+  const header = controller?.header
+  const displayName = state?.name || header?.name || 'Loading...'
+  const isRunning = state?.status === 'STARTED'
+
+  if (isLoading) {
+    return (
+      <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] p-8">
+        <p className="text-muted-foreground">Loading environment...</p>
+      </main>
+    )
+  }
 
   return (
     <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] space-y-8 p-8">
@@ -177,7 +189,7 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
         </Breadcrumb>
       </div>
 
-      {environment && (
+      {controller && state && (
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Main Content */}
           <div className="space-y-6 lg:col-span-2">
@@ -191,11 +203,9 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
               </StripedCardHeader>
               <StripedCardContent className="p-4">
                 <div className="flex flex-wrap items-center gap-3">
-                  <Badge variant={isRunning ? 'default' : 'secondary'}>
-                    {environment.state.status}
-                  </Badge>
-                  {environment.state.services.length > 0 ? (
-                    environment.state.services.map((service) => (
+                  <Badge variant={isRunning ? 'default' : 'secondary'}>{state.status}</Badge>
+                  {state.services.length > 0 ? (
+                    state.services.map((service) => (
                       <Badge key={service} variant="outline">
                         {service}
                       </Badge>
@@ -214,10 +224,10 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
                   <Package className="h-4 w-4" />
                   Packages
                 </StripedCardTitle>
-                <AddPackageModal environmentId={environment.id} />
+                <AddPackageModal controller={controller} onPush={push} />
               </StripedCardHeader>
               <StripedCardContent className="p-0">
-                {environment.state.packages && environment.state.packages.length > 0 ? (
+                {state.packages && state.packages.length > 0 ? (
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -226,11 +236,11 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {environment.state.packages.map((pkg) => (
+                      {state.packages.map((pkg) => (
                         <TableRow key={pkg.name}>
                           <TableCell className="font-medium">{pkg.name}</TableCell>
                           <TableCell className="text-muted-foreground font-mono text-sm">
-                            {pkg.version || '—'}
+                            {pkg.version || '\u2014'}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -240,7 +250,7 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
                   <div className="flex flex-col items-center justify-center gap-2 py-8">
                     <Package className="text-muted-foreground h-8 w-8" />
                     <p className="text-muted-foreground text-sm">No packages installed</p>
-                    <AddPackageModal environmentId={environment.id} />
+                    <AddPackageModal controller={controller} onPush={push} />
                   </div>
                 )}
               </StripedCardContent>
@@ -259,8 +269,9 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
               </StripedCardHeader>
               <StripedCardContent className="p-4">
                 <NewEnvironmentForm
-                  environmentId={environment.id}
-                  initialName={environment.state.name || ''}
+                  controller={controller}
+                  onPush={push}
+                  initialName={state.name || ''}
                 />
               </StripedCardContent>
             </StripedCard>
@@ -274,30 +285,34 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
                 </StripedCardTitle>
               </StripedCardHeader>
               <StripedCardContent className="space-y-3 p-4">
-                <div>
-                  <dt className="text-muted-foreground text-xs font-medium">Document ID</dt>
-                  <dd className="mt-0.5 font-mono text-xs break-all">{environment.id}</dd>
-                </div>
-                <div>
-                  <dt className="text-muted-foreground text-xs font-medium">Type</dt>
-                  <dd className="mt-0.5 text-sm">{environment.documentType}</dd>
-                </div>
-                <div>
-                  <dt className="text-muted-foreground text-xs font-medium">Revision</dt>
-                  <dd className="mt-0.5 text-sm">{environment.revision}</dd>
-                </div>
-                <div>
-                  <dt className="text-muted-foreground text-xs font-medium">Created</dt>
-                  <dd className="mt-0.5 text-sm">
-                    {new Date(environment.createdAtUtcIso).toLocaleDateString()}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-muted-foreground text-xs font-medium">Last Modified</dt>
-                  <dd className="mt-0.5 text-sm">
-                    {new Date(environment.lastModifiedAtUtcIso).toLocaleDateString()}
-                  </dd>
-                </div>
+                {header && (
+                  <>
+                    <div>
+                      <dt className="text-muted-foreground text-xs font-medium">Document ID</dt>
+                      <dd className="mt-0.5 font-mono text-xs break-all">{header.id}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-muted-foreground text-xs font-medium">Type</dt>
+                      <dd className="mt-0.5 text-sm">{header.documentType}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-muted-foreground text-xs font-medium">Revision</dt>
+                      <dd className="mt-0.5 text-sm">{header.revision.global ?? 0}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-muted-foreground text-xs font-medium">Created</dt>
+                      <dd className="mt-0.5 text-sm">
+                        {new Date(header.createdAtUtcIso).toLocaleDateString()}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-muted-foreground text-xs font-medium">Last Modified</dt>
+                      <dd className="mt-0.5 text-sm">
+                        {new Date(header.lastModifiedAtUtcIso).toLocaleDateString()}
+                      </dd>
+                    </div>
+                  </>
+                )}
               </StripedCardContent>
             </StripedCard>
           </div>

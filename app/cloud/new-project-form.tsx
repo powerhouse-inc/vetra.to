@@ -1,10 +1,13 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+import type { EnvironmentController } from '@/modules/cloud/controller'
+import { createEnvironmentController } from '@/modules/cloud/controller'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
   Form,
@@ -16,9 +19,6 @@ import {
 } from '@/modules/shared/components/ui/form'
 import { Input } from '@/modules/shared/components/ui/input'
 
-import { createEnvironment, setEnvironmentName } from './lib/api'
-import { useRefreshEnvironments } from './use-cloud-data'
-
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
 })
@@ -26,22 +26,24 @@ const schema = z.object({
 export type EnvironmentFormValues = z.infer<typeof schema>
 
 type NewEnvironmentFormProps = {
-  environmentId?: string
+  controller?: EnvironmentController
+  onPush?: () => Promise<void>
   initialName?: string
-  onSubmit?: (values: EnvironmentFormValues) => void
+  onCreated?: (id: string) => void
   onSuccess?: () => void
 }
 
 export function NewEnvironmentForm({
-  environmentId,
+  controller,
+  onPush,
   initialName,
-  onSubmit,
+  onCreated,
   onSuccess,
 }: NewEnvironmentFormProps) {
+  const renown = useRenown()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const refreshEnvironments = useRefreshEnvironments()
 
   const form = useForm<EnvironmentFormValues>({
     resolver: zodResolver(schema),
@@ -50,29 +52,26 @@ export function NewEnvironmentForm({
     },
   })
 
+  const isRenameMode = !!controller
+
   const handleSubmit = async (values: EnvironmentFormValues) => {
     try {
       setIsSubmitting(true)
       setError(null)
       setSuccess(false)
 
-      if (environmentId) {
-        await setEnvironmentName({
-          docId: environmentId,
-          name: values.name,
-        })
+      if (controller) {
+        controller.setEnvironmentName({ name: values.name })
+        await onPush?.()
       } else {
-        await createEnvironment({
-          name: values.name,
-        })
+        const ctrl = await createEnvironmentController({ signer: renown?.signer })
+        ctrl.setEnvironmentName({ name: values.name })
+        const result = await ctrl.push()
+        onCreated?.(result.remoteDocument.id)
       }
 
       setSuccess(true)
-      refreshEnvironments()
-      onSubmit?.(values)
-      if (!environmentId) {
-        onSuccess?.()
-      }
+      onSuccess?.()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save environment')
       console.error('Failed to save environment:', err)
@@ -103,12 +102,12 @@ export function NewEnvironmentForm({
         {error && <div className="text-destructive mt-2 text-sm">{error}</div>}
         {success && (
           <div className="mt-2 text-sm text-green-600">
-            Environment {environmentId ? 'updated' : 'created'} successfully!
+            Environment {isRenameMode ? 'updated' : 'created'} successfully!
           </div>
         )}
         <div className="mt-4">
           <Button type="submit" disabled={isSubmitting} size="sm">
-            {isSubmitting ? 'Saving...' : environmentId ? 'Update Name' : 'Create Environment'}
+            {isSubmitting ? 'Saving...' : isRenameMode ? 'Update Name' : 'Create Environment'}
           </Button>
         </div>
       </form>

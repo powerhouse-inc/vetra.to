@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react'
 import { useState } from 'react'
 
 import { NewEnvironmentForm } from '@/app/cloud/new-project-form'
+import { useRefreshEnvironments } from '@/modules/cloud/hooks/use-environment'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
   Dialog,
@@ -12,8 +13,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/modules/shared/components/ui/dialog'
-
-import { useRefreshEnvironments } from './use-cloud-data'
 
 export function NewEnvironmentModalButton() {
   const [open, setOpen] = useState(false)
@@ -36,7 +35,7 @@ export function NewEnvironmentModalButton() {
         <DialogHeader>
           <DialogTitle>Create new environment</DialogTitle>
         </DialogHeader>
-        <NewEnvironmentForm onSuccess={handleSuccess} />
+        <NewEnvironmentForm onCreated={() => handleSuccess()} onSuccess={handleSuccess} />
       </DialogContent>
     </Dialog>
   )
