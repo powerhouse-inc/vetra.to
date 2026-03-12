@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
+import { deleteDocument } from '@/modules/cloud/api'
+import { useEnvironments, useRefreshEnvironments } from '@/modules/cloud/hooks/use-environment'
 import {
   StripedCard,
   StripedCardContent,
@@ -23,9 +25,6 @@ import {
 } from '@/modules/shared/components/ui/alert-dialog'
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
-
-import { deleteDocument } from './lib/api'
-import { useEnvironments, useRefreshEnvironments } from './use-cloud-data'
 
 import type { CloudEnvironment } from './types'
 
@@ -49,7 +48,7 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await deleteDocument({ docId: env.id })
+      await deleteDocument(env.id)
       toast.success('Environment deleted successfully')
       refreshEnvironments()
       setShowDeleteDialog(false)

@@ -1,7 +1,7 @@
 import { Inter } from 'next/font/google'
 import Image from 'next/image'
-import { Toaster } from '@/modules/shared/components/ui/sonner'
 import { Renown } from '@/modules/shared/components/renown'
+import { Toaster } from '@/modules/shared/components/ui/sonner'
 import { ThemeProvider } from '@/modules/shared/providers/theme-provider'
 import { Footer } from '@/shared/components/footer/footer'
 import Navbar from '@/shared/components/navbar/navbar'

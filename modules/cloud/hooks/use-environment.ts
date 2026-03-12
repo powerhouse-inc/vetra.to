@@ -1,16 +1,8 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { fetchEnvironments } from './lib/api'
-import { getEnvironmentFormValues } from './mock-data'
-import type { CloudEnvironment, CloudEnvironmentFormValues } from './types'
-
-/**
- * Hook to get all Predefined form values
- */
-export function useCloudEnvironmentFormValues(): CloudEnvironmentFormValues {
-  return useMemo(() => getEnvironmentFormValues(), [])
-}
+import { fetchEnvironments } from '../api'
+import type { CloudEnvironment } from '../types'
 
 /**
  * Hook to get all cloud environments from the API
@@ -26,8 +18,8 @@ export function useEnvironments(): CloudEnvironment[] {
       try {
         setIsLoading(true)
         setError(null)
-        const response = await fetchEnvironments()
-        setEnvironments(response.data || [])
+        const data = await fetchEnvironments()
+        setEnvironments(data)
       } catch (err) {
         setError(err instanceof Error ? err : new Error('Failed to fetch environments'))
         console.error('Failed to fetch environments:', err)
