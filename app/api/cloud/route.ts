@@ -1,6 +1,5 @@
+import { gql, request } from 'graphql-request'
 import { type NextRequest, NextResponse } from 'next/server'
-import { gql } from 'graphql-request'
-import { request } from 'graphql-request'
 
 // GraphQL endpoint - use environment variable or default to localhost
 const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || 'http://localhost:4001/graphql'

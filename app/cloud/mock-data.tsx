@@ -1,4 +1,4 @@
-import { OptionValue } from './types'
+import type { OptionValue } from './types'
 
 const CLOUD_ENVIRONMENTS_PACKAGES: OptionValue[] = [
   ['nginx', 'Nginx'],

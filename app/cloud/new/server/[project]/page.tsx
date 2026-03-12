@@ -1,9 +1,19 @@
 'use client'
 
-import { useState, use } from 'react'
-import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Package } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState, use } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
+
+import {
+  StripedCard,
+  StripedCardContent,
+  StripedCardHeader,
+  StripedCardTitle,
+} from '@/modules/shared/components/striped-card'
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -12,17 +22,6 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from '@/modules/shared/components/ui/breadcrumb'
-import {
-  StripedCard,
-  StripedCardContent,
-  StripedCardHeader,
-  StripedCardTitle,
-} from '@/modules/shared/components/striped-card'
-
-import { useEnvironment } from '../../../use-cloud-data'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-
 import { Button } from '@/modules/shared/components/ui/button'
 import {
   Form,
@@ -31,10 +30,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/modules/shared/components/ui//form'
+} from '@/modules/shared/components/ui/form'
 import { Input } from '@/modules/shared/components/ui/input'
-import { useForm } from 'react-hook-form'
+
 import { addPackage } from '../../../lib/api'
+import { useEnvironment } from '../../../use-cloud-data'
 
 type PageProps = {
   params: Promise<{
@@ -122,8 +122,6 @@ export default function AddPackagePage({ params }: PageProps) {
           </StripedCardHeader>
           <StripedCardContent className="p-4">
             <Form {...form}>
-              {/* keeping it as it comes from shadcn */}
-              {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
               <form onSubmit={form.handleSubmit(handleSubmit)}>
                 <div className="space-y-4">
                   <FormField

@@ -1,12 +1,15 @@
 import { Inter } from 'next/font/google'
 import Image from 'next/image'
+
+import { Toaster } from '@/modules/shared/components/ui/sonner'
 import { RenownProvider } from '@/modules/shared/providers/renown-provider'
 import { ThemeProvider } from '@/modules/shared/providers/theme-provider'
 import { Footer } from '@/shared/components/footer/footer'
 import Navbar from '@/shared/components/navbar/navbar'
 import { QueryClientProvider } from '@/shared/providers/query-client'
-import { Toaster } from '@/modules/shared/components/ui/sonner'
+
 import type { Metadata } from 'next'
+
 import './globals.css'
 
 const inter = Inter({

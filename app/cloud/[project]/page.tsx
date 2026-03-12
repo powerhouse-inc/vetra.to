@@ -1,13 +1,20 @@
 'use client'
 
-import { useState, use } from 'react'
-import { Activity, Package, Server, Settings, Plus } from 'lucide-react'
-import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Activity, Package, Server, Settings, Plus } from 'lucide-react'
+import { useState, use } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
+import { NewEnvironmentForm } from '@/app/cloud/new-project-form'
+import {
+  StripedCard,
+  StripedCardContent,
+  StripedCardHeader,
+  StripedCardTitle,
+} from '@/modules/shared/components/striped-card'
+import { Badge } from '@/modules/shared/components/ui/badge'
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -16,7 +23,6 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from '@/modules/shared/components/ui/breadcrumb'
-import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
   Dialog,
@@ -32,14 +38,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/modules/shared/components/ui//form'
+} from '@/modules/shared/components/ui/form'
 import { Input } from '@/modules/shared/components/ui/input'
-import {
-  StripedCard,
-  StripedCardContent,
-  StripedCardHeader,
-  StripedCardTitle,
-} from '@/modules/shared/components/striped-card'
 import {
   Table,
   TableBody,
@@ -49,9 +49,8 @@ import {
   TableRow,
 } from '@/modules/shared/components/ui/table'
 
-import { useEnvironment, useRefreshEnvironments } from '../use-cloud-data'
 import { addPackage } from '../lib/api'
-import { NewEnvironmentForm } from '@/app/cloud/new-project-form'
+import { useEnvironment, useRefreshEnvironments } from '../use-cloud-data'
 
 const addPackageSchema = z.object({
   packageName: z.string().min(1, 'Package name is required'),
@@ -103,7 +102,6 @@ function AddPackageModal({ environmentId }: { environmentId: string }) {
           <DialogTitle>Add Package</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
           <form onSubmit={form.handleSubmit(handleSubmit)}>
             <div className="space-y-4">
               <FormField

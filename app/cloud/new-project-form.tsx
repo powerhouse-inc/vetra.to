@@ -1,8 +1,8 @@
 'use client'
 
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
 import { Button } from '@/modules/shared/components/ui/button'
@@ -13,7 +13,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/modules/shared/components/ui//form'
+} from '@/modules/shared/components/ui/form'
 import { Input } from '@/modules/shared/components/ui/input'
 
 import { createEnvironment, setEnvironmentName } from './lib/api'
@@ -84,7 +84,6 @@ export function NewEnvironmentForm({
   return (
     <Form {...form}>
       {/* keeping it as it comes from shadcn */}
-      {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
       <form onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="space-y-4">
           <FormField

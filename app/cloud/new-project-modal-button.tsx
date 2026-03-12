@@ -1,6 +1,8 @@
 'use client'
 
+import { Plus } from 'lucide-react'
 import { useState } from 'react'
+
 import { NewEnvironmentForm } from '@/app/cloud/new-project-form'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
@@ -10,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/modules/shared/components/ui/dialog'
-import { Plus } from 'lucide-react'
+
 import { useRefreshEnvironments } from './use-cloud-data'
 
 export function NewEnvironmentModalButton() {

@@ -1,11 +1,16 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from '@/modules/shared/components/ui/button'
 import { Trash2, Server, Package, Activity } from 'lucide-react'
 import Link from 'next/link'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
+import {
+  StripedCard,
+  StripedCardContent,
+  StripedCardHeader,
+  StripedCardTitle,
+} from '@/modules/shared/components/striped-card'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,15 +22,11 @@ import {
   AlertDialogTitle,
 } from '@/modules/shared/components/ui/alert-dialog'
 import { Badge } from '@/modules/shared/components/ui/badge'
-import {
-  StripedCard,
-  StripedCardContent,
-  StripedCardHeader,
-  StripedCardTitle,
-} from '@/modules/shared/components/striped-card'
+import { Button } from '@/modules/shared/components/ui/button'
 
-import { useEnvironments, useRefreshEnvironments } from './use-cloud-data'
 import { deleteDocument } from './lib/api'
+import { useEnvironments, useRefreshEnvironments } from './use-cloud-data'
+
 import type { CloudEnvironment } from './types'
 
 function StatusBadge({ status }: { status: string }) {
