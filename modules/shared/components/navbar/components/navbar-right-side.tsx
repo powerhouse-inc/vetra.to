@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../../ui/dropdown-menu'
-import { RenownLoginButton } from '../../renown-login-button'
+import { RenownLoginButton } from '../../renown'
 import ThemeIconLabel from './toogle-theme-label'
 
 function NavbarRightSide() {
