@@ -1,6 +1,6 @@
 import { Inter } from 'next/font/google'
 import Image from 'next/image'
-import { RenownProvider } from '@/modules/shared/providers/renown-provider'
+import { Renown } from '@/modules/shared/components/renown'
 import { ThemeProvider } from '@/modules/shared/providers/theme-provider'
 import { Footer } from '@/shared/components/footer/footer'
 import Navbar from '@/shared/components/navbar/navbar'
@@ -33,24 +33,23 @@ export default function RootLayout({
         </div> */}
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
           <QueryClientProvider>
-            <RenownProvider renownUrl={process.env.NEXT_PUBLIC_RENOWN_URL}>
-              <div className="items-right flex min-h-screen flex-col">
-                <Navbar />
-                <div className="pointer-events-none fixed top-[100px] right-0 z-0 h-[480px] w-full overflow-hidden">
-                  <Image
-                    src="/Vetra-background.png"
-                    alt=""
-                    width={1024}
-                    height={600}
-                    className="float-right h-auto w-[1024px]"
-                    priority
-                  />
-                </div>
-                <main className="z-10 flex-1">{children}</main>
-                <Footer />
+            <Renown appName="vetra" url={process.env.NEXT_PUBLIC_RENOWN_URL} />
+            <div className="items-right flex min-h-screen flex-col">
+              <Navbar />
+              <div className="pointer-events-none fixed top-[100px] right-0 z-0 h-[480px] w-full overflow-hidden">
+                <Image
+                  src="/Vetra-background.png"
+                  alt=""
+                  width={1024}
+                  height={600}
+                  className="float-right h-auto w-[1024px]"
+                  priority
+                />
               </div>
-              <Toaster />
-            </RenownProvider>
+              <main className="z-10 flex-1">{children}</main>
+              <Footer />
+            </div>
+            <Toaster />
           </QueryClientProvider>
         </ThemeProvider>
       </body>
