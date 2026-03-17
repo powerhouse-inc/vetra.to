@@ -1,6 +1,7 @@
 'use client'
 
 import { MoreVertical } from 'lucide-react'
+import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { ThemeToggle } from '../../theme-toggle'
 import {
@@ -23,6 +24,14 @@ function NavbarRightSide() {
   return (
     <>
       <div className="hidden items-center md:flex">
+        <Link
+          href="https://gmail.us21.list-manage.com/subscribe/post?u=a65ca7e437961008f5f5c1bad&id=c8ea339c46&f_id=00fda7e6f0"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-semibold transition-colors"
+        >
+          Join Waitlist
+        </Link>
         <ThemeToggle />
         <div className="bg-border mx-4 h-9 w-px" />
         <RenownLoginButton />

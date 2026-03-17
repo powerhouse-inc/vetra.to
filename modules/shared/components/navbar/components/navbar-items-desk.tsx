@@ -27,8 +27,8 @@ function NavbarItemsDesk({ navItems, pathname }: NavbarCenterProps) {
               href={item.href}
               target={item.isExternal ? '_blank' : '_self'}
               className={cn(
-                'text-foreground hover:text-foreground/50 flex items-center gap-1 text-base font-semibold',
-                !item.isExternal && item.isActive(pathname) && 'text-primary hover:text-primary',
+                'text-foreground/70 hover:text-foreground flex items-center gap-1 text-base font-semibold transition-colors',
+                !item.isExternal && item.isActive(pathname) && 'text-foreground',
               )}
             >
               {item.label}

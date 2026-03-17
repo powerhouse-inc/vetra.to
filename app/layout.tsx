@@ -1,5 +1,4 @@
 import { Inter } from 'next/font/google'
-import Image from 'next/image'
 import { Renown } from '@/modules/shared/components/renown'
 import { Toaster } from '@/modules/shared/components/ui/sonner'
 import { ThemeProvider } from '@/modules/shared/providers/theme-provider'
@@ -38,17 +37,7 @@ export default function RootLayout({
             <Renown appName="vetra" url={process.env.NEXT_PUBLIC_RENOWN_URL} />
             <div className="items-right flex min-h-screen flex-col">
               <Navbar />
-              <div className="pointer-events-none fixed top-[100px] right-0 z-0 h-[480px] w-full overflow-hidden">
-                <Image
-                  src="/Vetra-background.png"
-                  alt=""
-                  width={1024}
-                  height={600}
-                  className="float-right h-auto w-[1024px]"
-                  priority
-                />
-              </div>
-              <main className="z-10 flex-1">{children}</main>
+              <main className="flex-1">{children}</main>
               <Footer />
             </div>
             <Toaster />
