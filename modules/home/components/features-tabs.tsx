@@ -1,35 +1,44 @@
 'use client'
 
+import { FileText, GitBranch, Layers, Radio, RefreshCcw, Workflow } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/shared/components/ui/tabs'
 
-const rdaFeatures = [
+const rdaFeatures: { title: string; description: string; icon: LucideIcon }[] = [
   {
     title: 'Reactive',
     description: 'Realtime, responsive, message driven. With an elastic scalable architecture.',
+    icon: Radio,
   },
   {
     title: 'Document',
     description:
       'Documents as a local first, self contained data structure and node in a decentralized network.',
+    icon: FileText,
   },
   {
     title: 'Architecture',
     description: 'EDA / CQRS inspired with read models for data aggregation and scalability.',
+    icon: Layers,
   },
   {
     title: 'Git-like',
     description:
       'State of the art editing UX that offers history branching, merging, and commenting.',
+    icon: GitBranch,
   },
   {
     title: 'Stateful',
     description:
       "Documents with a document history and well-defined operations as state transitions become mini-api's.",
+    icon: RefreshCcw,
   },
   {
     title: 'Sagas',
     description:
       'Workflow sagas are the orchestration layer that combine multiple documents into a process with specific stage gates.',
+    icon: Workflow,
   },
 ]
 
@@ -49,6 +58,7 @@ export function FeaturesTabs() {
                 key={feature.title}
                 className="border-border hover:bg-accent rounded-xl border p-6 transition-colors"
               >
+                <feature.icon className="text-primary mb-2 h-6 w-6" />
                 <h3 className="text-foreground mb-2 text-base font-bold">{feature.title}</h3>
                 <p className="text-foreground-70 text-sm leading-relaxed">{feature.description}</p>
               </div>
