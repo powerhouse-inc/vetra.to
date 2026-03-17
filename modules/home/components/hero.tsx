@@ -39,10 +39,10 @@ export function Hero() {
     <section className="px-6 py-20 text-center md:py-28">
       <div className="mx-auto max-w-[var(--container-width)]">
         <div className="bg-primary-30 text-primary mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold">
-          Local-first. Built to Scale.
+          Local-first!
         </div>
         <h1 className="mx-auto mb-1 max-w-3xl text-[clamp(40px,5vw,64px)] leading-[1.1] font-bold tracking-tight">
-          Local first. Built to scale.
+          Built to scale.
         </h1>
         <p className="text-muted-foreground mx-auto mb-5 h-12 max-w-3xl text-[clamp(24px,3vw,40px)] leading-[1.2] font-bold">
           {displayText}
@@ -97,7 +97,7 @@ export function Hero() {
               <div className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/20">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110">
                   <svg
-                    className="text-foreground ml-1 h-6 w-6"
+                    className="ml-1 h-6 w-6 text-gray-900"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >

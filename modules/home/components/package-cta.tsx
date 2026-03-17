@@ -14,12 +14,12 @@ export function PackageCta() {
           Browse community-built packages, document models, and extensions ready to use in your
           projects.
         </p>
-        <div className="border-border mx-auto mb-8 max-w-3xl overflow-hidden rounded-lg border shadow-md">
+        <div className="mx-auto mb-8 max-w-5xl">
           <Image
             src="/images/home/package-library.png"
             alt="Vetra Package Library"
-            width={960}
-            height={540}
+            width={1596}
+            height={829}
             className="h-auto w-full"
           />
         </div>

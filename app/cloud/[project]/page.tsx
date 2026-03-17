@@ -1,9 +1,18 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Activity, Package, Server, Settings, Plus, ArrowLeft } from 'lucide-react'
+import {
+  Package,
+  Server,
+  Settings,
+  Plus,
+  ArrowLeft,
+  Globe,
+  MoreHorizontal,
+  Search,
+} from 'lucide-react'
 import Link from 'next/link'
-import { useState, use } from 'react'
+import { useState, use, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -12,16 +21,9 @@ import { NewEnvironmentForm } from '@/app/cloud/new-project-form'
 import type { EnvironmentController } from '@/modules/cloud/controller'
 import { useEnvironmentController } from '@/modules/cloud/hooks/use-environment-controller'
 import { Badge } from '@/modules/shared/components/ui/badge'
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbPage,
-} from '@/modules/shared/components/ui/breadcrumb'
 import { Button } from '@/modules/shared/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
+import { Checkbox } from '@/modules/shared/components/ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -29,6 +31,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/modules/shared/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/modules/shared/components/ui/dropdown-menu'
 import {
   Form,
   FormControl,
@@ -38,6 +46,7 @@ import {
   FormMessage,
 } from '@/modules/shared/components/ui/form'
 import { Input } from '@/modules/shared/components/ui/input'
+import { Switch } from '@/modules/shared/components/ui/switch'
 import {
   Table,
   TableBody,
@@ -55,19 +64,22 @@ const addPackageSchema = z.object({
 
 type AddPackageFormValues = z.infer<typeof addPackageSchema>
 
-function StatusDot({ status }: { status: string }) {
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+function StatusDot({ status }: { status: 'STARTED' | 'STOPPED' | string }) {
   const colorClass =
     status === 'STARTED'
-      ? 'bg-success'
+      ? 'bg-emerald-500'
       : status === 'DEPLOYING'
-        ? 'bg-warning'
+        ? 'bg-yellow-500'
         : 'bg-muted-foreground'
 
-  return (
-    <span className="flex items-center gap-1.5">
-      <span className={`inline-block h-2 w-2 rounded-full ${colorClass}`} />
-    </span>
-  )
+  return <span className={`inline-block h-2 w-2 rounded-full ${colorClass}`} />
 }
 
 function AddPackageModal({
@@ -161,6 +173,140 @@ function AddPackageModal({
   )
 }
 
+function PackageRow({
+  pkg,
+  controller,
+  onPush,
+}: {
+  pkg: { name: string; version: string | null | undefined }
+  controller: EnvironmentController
+  onPush: () => Promise<void>
+}) {
+  const [isRemoving, setIsRemoving] = useState(false)
+
+  const handleUninstall = async () => {
+    try {
+      setIsRemoving(true)
+      controller.removePackage({ packageName: pkg.name })
+      await onPush()
+      toast.success(`Uninstalled ${pkg.name}`)
+    } catch (error) {
+      console.error('Failed to remove package:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to remove package')
+    } finally {
+      setIsRemoving(false)
+    }
+  }
+
+  return (
+    <TableRow>
+      <TableCell>
+        <div className="flex items-center gap-2">
+          <Package className="text-muted-foreground h-4 w-4 shrink-0" />
+          <span className="font-medium">{pkg.name}</span>
+        </div>
+      </TableCell>
+      <TableCell>
+        {pkg.version ? (
+          <Badge variant="secondary" className="font-mono text-xs">
+            {pkg.version}
+          </Badge>
+        ) : (
+          <span className="text-muted-foreground text-sm">&mdash;</span>
+        )}
+      </TableCell>
+      <TableCell className="text-right">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" disabled={isRemoving}>
+              <MoreHorizontal className="h-4 w-4" />
+              <span className="sr-only">Actions</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem disabled>Upgrade to version...</DropdownMenuItem>
+            <DropdownMenuItem variant="destructive" onClick={handleUninstall}>
+              Uninstall
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </TableCell>
+    </TableRow>
+  )
+}
+
+type ServiceName = 'CONNECT' | 'SWITCHBOARD'
+
+function ServiceRow({
+  serviceName,
+  label,
+  icon: Icon,
+  nameSlug,
+  isEnabled,
+  controller,
+  onPush,
+}: {
+  serviceName: ServiceName
+  label: string
+  icon: React.ComponentType<{ className?: string }>
+  nameSlug: string
+  isEnabled: boolean
+  controller: EnvironmentController
+  onPush: () => Promise<void>
+}) {
+  const [isToggling, setIsToggling] = useState(false)
+  const subdomain = serviceName === 'CONNECT' ? 'connect' : 'switchboard'
+  const serviceUrl = nameSlug ? `${subdomain}.${nameSlug}.vetra.io` : `${subdomain}.<name>.vetra.io`
+
+  const handleToggle = async (checked: boolean) => {
+    try {
+      setIsToggling(true)
+      if (checked) {
+        controller.enableService({ serviceName })
+      } else {
+        controller.disableService({ serviceName })
+      }
+      await onPush()
+      toast.success(`${label} ${checked ? 'enabled' : 'disabled'}`)
+    } catch (error) {
+      console.error(`Failed to toggle ${label}:`, error)
+      toast.error(error instanceof Error ? error.message : `Failed to toggle ${label}`)
+    } finally {
+      setIsToggling(false)
+    }
+  }
+
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
+      <div className="flex items-center gap-3">
+        <div className="bg-muted flex h-9 w-9 items-center justify-center rounded-md">
+          <Icon className="text-muted-foreground h-5 w-5" />
+        </div>
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">{label}</span>
+            <StatusDot status={isEnabled ? 'STARTED' : 'STOPPED'} />
+          </div>
+          <a
+            href={`https://${serviceUrl}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:text-primary/80 truncate font-mono text-xs underline underline-offset-2"
+          >
+            https://{serviceUrl}
+          </a>
+        </div>
+      </div>
+      <Switch
+        checked={isEnabled}
+        onCheckedChange={handleToggle}
+        disabled={isToggling}
+        aria-label={`Toggle ${label}`}
+      />
+    </div>
+  )
+}
+
 type PageProps = {
   params: Promise<{
     project: string
@@ -174,7 +320,13 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
   const header = controller?.header
   const displayName = state?.name || header?.name || 'Loading...'
   const isRunning = state?.status === 'STARTED'
-  const packageCount = state?.packages?.length ?? 0
+
+  const nameSlug = useMemo(() => {
+    const name = state?.name || header?.name
+    return name ? slugify(name) : ''
+  }, [state?.name, header?.name])
+
+  const genericDomain = nameSlug ? `${nameSlug}.vetra.io` : '<name>.vetra.io'
 
   if (isLoading) {
     return (
@@ -207,122 +359,143 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
             </Badge>
           )}
         </div>
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/cloud">Cloud</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{displayName}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
       </div>
 
       {controller && state && (
         <Tabs defaultValue="overview">
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="packages">Packages</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6 pt-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <Card>
-                <CardContent className="px-4 py-3">
-                  <p className="text-muted-foreground text-xs font-medium">Packages</p>
-                  <p className="text-2xl font-bold">{packageCount}</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="px-4 py-3">
-                  <p className="text-muted-foreground text-xs font-medium">Services</p>
-                  <p className="text-2xl font-bold">{state.services.length}</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="px-4 py-3">
-                  <p className="text-muted-foreground text-xs font-medium">Revision</p>
-                  <p className="text-2xl font-bold">{header?.revision.global ?? 0}</p>
-                </CardContent>
-              </Card>
-            </div>
-
+            {/* Domain Configuration */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Activity className="h-4 w-4" />
-                  Status
+                  <Globe className="h-4 w-4" />
+                  Domain Configuration
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex flex-wrap items-center gap-3">
-                  <Badge variant={isRunning ? 'default' : 'secondary'} className="gap-1.5">
-                    <StatusDot status={state.status} />
-                    {state.status}
-                  </Badge>
-                  {state.services.length > 0 ? (
-                    state.services.map((service) => (
-                      <Badge key={service} variant="outline">
-                        {service}
-                      </Badge>
-                    ))
-                  ) : (
-                    <span className="text-muted-foreground text-sm">No services enabled</span>
-                  )}
+              <CardContent className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-muted-foreground text-sm font-medium">
+                    Generic Domain:
+                  </label>
+                  <Input value={genericDomain} readOnly className="bg-muted font-mono text-sm" />
                 </div>
-                {header && (
-                  <div className="pt-2">
-                    <dt className="text-muted-foreground text-xs font-medium">Document ID</dt>
-                    <dd className="mt-0.5 max-w-md truncate font-mono text-xs">{header.id}</dd>
+
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Checkbox id="custom-domain" disabled />
+                    <label
+                      htmlFor="custom-domain"
+                      className="text-muted-foreground text-sm font-medium"
+                    >
+                      Custom Domain
+                    </label>
+                    <Badge variant="outline" className="text-xs">
+                      Coming soon
+                    </Badge>
                   </div>
-                )}
+                  <Input
+                    placeholder="e.g. my-app.example.com"
+                    disabled
+                    className="font-mono text-sm"
+                  />
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  <h4 className="text-muted-foreground text-sm font-medium">DNS Records</h4>
+                  <div className="bg-muted/50 rounded-md border p-4">
+                    <p className="text-muted-foreground text-sm">
+                      Will be available when custom domain is set
+                    </p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-          </TabsContent>
 
-          {/* Packages Tab */}
-          <TabsContent value="packages" className="space-y-4 pt-4">
-            <div className="flex items-center justify-between">
-              <h3 className="flex items-center gap-2 text-lg font-semibold">
-                <Package className="h-5 w-5" />
-                Packages
-              </h3>
-              <AddPackageModal controller={controller} onPush={push} />
-            </div>
-            {state.packages && state.packages.length > 0 ? (
-              <Card>
-                <CardContent className="p-0">
+            {/* Reactor Modules */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Package className="h-4 w-4" />
+                    Reactor Modules
+                  </CardTitle>
+                  <AddPackageModal controller={controller} onPush={push} />
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="relative">
+                  <Search className="text-muted-foreground absolute top-2.5 left-3 h-4 w-4" />
+                  <Input
+                    placeholder="Search registry coming soon"
+                    disabled
+                    className="pl-9 text-sm"
+                  />
+                </div>
+
+                {state.packages && state.packages.length > 0 ? (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Name</TableHead>
+                        <TableHead>Package</TableHead>
                         <TableHead>Version</TableHead>
+                        <TableHead className="w-12 text-right" />
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {state.packages.map((pkg) => (
-                        <TableRow key={pkg.name}>
-                          <TableCell className="font-medium">{pkg.name}</TableCell>
-                          <TableCell className="text-muted-foreground font-mono text-sm">
-                            {pkg.version || '\u2014'}
-                          </TableCell>
-                        </TableRow>
+                        <PackageRow
+                          key={pkg.name}
+                          pkg={pkg}
+                          controller={controller}
+                          onPush={push}
+                        />
                       ))}
                     </TableBody>
                   </Table>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="flex flex-col items-center justify-center gap-2 py-12">
-                <Package className="text-muted-foreground h-8 w-8" />
-                <p className="text-muted-foreground text-sm">No packages installed</p>
-                <AddPackageModal controller={controller} onPush={push} />
-              </div>
-            )}
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-2 py-8">
+                    <Package className="text-muted-foreground h-8 w-8" />
+                    <p className="text-muted-foreground text-sm">No packages installed</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Services */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Server className="h-4 w-4" />
+                  Services
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <ServiceRow
+                  serviceName="CONNECT"
+                  label="Powerhouse Connect"
+                  icon={Globe}
+                  nameSlug={nameSlug}
+                  isEnabled={state.services.includes('CONNECT')}
+                  controller={controller}
+                  onPush={push}
+                />
+                <ServiceRow
+                  serviceName="SWITCHBOARD"
+                  label="Powerhouse Switchboard"
+                  icon={Server}
+                  nameSlug={nameSlug}
+                  isEnabled={state.services.includes('SWITCHBOARD')}
+                  controller={controller}
+                  onPush={push}
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Settings Tab */}

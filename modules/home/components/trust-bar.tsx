@@ -1,5 +1,7 @@
 import Image from 'next/image'
 
+import { DotLottiePlayer } from '@/shared/components/ui/dotlottie-player'
+
 export function TrustBar() {
   return (
     <section className="border-border border-y">
@@ -11,17 +13,11 @@ export function TrustBar() {
           Structured document models powered by modern tooling
         </p>
 
-        {/* Animated connection dots */}
-        <div className="my-8 flex items-center justify-center gap-3">
-          <div className="bg-primary/40 h-2 w-2 animate-pulse rounded-full" />
-          <div className="bg-border h-px w-8" />
-          <div className="bg-primary h-3 w-3 animate-pulse rounded-full [animation-delay:200ms]" />
-          <div className="bg-border h-px w-8" />
-          <div className="bg-primary/60 h-2.5 w-2.5 animate-pulse rounded-full [animation-delay:400ms]" />
-          <div className="bg-border h-px w-8" />
-          <div className="bg-primary h-3 w-3 animate-pulse rounded-full [animation-delay:600ms]" />
-          <div className="bg-border h-px w-8" />
-          <div className="bg-primary/40 h-2 w-2 animate-pulse rounded-full [animation-delay:800ms]" />
+        <div className="my-8 flex items-center justify-center">
+          <DotLottiePlayer
+            src="https://cdn.lottielab.com/l/9XUKpHqvBQ2jGy.json"
+            className="h-[28rem] w-full max-w-5xl"
+          />
         </div>
 
         <div className="mt-6 flex items-center justify-center gap-12">

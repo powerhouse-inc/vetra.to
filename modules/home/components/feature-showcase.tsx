@@ -1,5 +1,7 @@
 import Image from 'next/image'
 
+import { DotLottiePlayer } from '@/shared/components/ui/dotlottie-player'
+
 const features = [
   {
     title: 'Rapid Application Development',
@@ -11,19 +13,19 @@ const features = [
     title: 'Build Reactive Apps',
     description:
       "Create interfaces that react in real time. Vetra's push architecture integrates with React, putting user intent at the center and making reusable design patterns part of your workflow.",
-    image: '/images/home/feature-reactive.png',
+    lottie: 'https://cdn.lottielab.com/l/E6XFYWdFhnNvBH.json',
   },
   {
     title: 'Collaborative User Experiences',
     description:
       "Built 'Git-like' user experiences with branching merging & pull-requests. Applications built with Vetra are collaborative by default.",
-    image: '/images/home/feature-collaborative.svg',
+    image: '/images/home/feature-reactive.jpg',
   },
   {
     title: 'Ready to Scale',
     description:
       "Grow from a single node to millions of users. Vetra's CQRS- and EDA-inspired architecture distributes workloads across sharded document storage.",
-    image: '/images/home/feature-scale.png',
+    image: '/images/home/feature-collaborative.svg',
   },
   {
     title: 'Web3 Built In',
@@ -45,21 +47,25 @@ export function FeatureShowcase() {
           <div
             key={feature.title}
             className={`flex flex-col items-center gap-10 md:flex-row ${
-              i % 2 === 1 ? 'md:flex-row-reverse' : ''
+              i % 2 === 0 ? 'md:flex-row-reverse' : ''
             }`}
           >
             <div className="flex-1">
               <h3 className="text-foreground mb-4 text-2xl font-bold">{feature.title}</h3>
               <p className="text-foreground-70 leading-relaxed">{feature.description}</p>
             </div>
-            <div className="bg-accent flex-1 overflow-hidden rounded-xl">
-              <Image
-                src={feature.image}
-                alt={feature.title}
-                width={600}
-                height={400}
-                className="h-auto w-full object-cover"
-              />
+            <div className="flex-1 overflow-hidden rounded-xl">
+              {'lottie' in feature && feature.lottie ? (
+                <DotLottiePlayer src={feature.lottie} className="h-[400px] w-full" />
+              ) : (
+                <Image
+                  src={feature.image!}
+                  alt={feature.title}
+                  width={600}
+                  height={400}
+                  className="h-auto w-full object-cover"
+                />
+              )}
             </div>
           </div>
         ))}

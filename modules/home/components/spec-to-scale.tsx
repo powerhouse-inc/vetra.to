@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -14,7 +15,7 @@ const steps = [
   {
     label: 'Build',
     description:
-      'Turn specifications into working code with spec-driven AI. Generate scaffolding, reuse modular components, and tap into the builder community.',
+      'Build applications with reusable components and a \u2018batteries-included\u2019 framework for auth, chat, and encryption. Package your workflows so others can install and extend them.',
   },
   {
     label: 'Launch',
@@ -38,20 +39,18 @@ export function SpecToScale() {
 
   return (
     <section className="mx-auto max-w-[var(--container-width)] px-6 py-20">
-      <h2 className="text-foreground mb-4 text-center text-3xl font-bold">From Spec to Scale</h2>
-      <p className="text-foreground-70 mx-auto mb-12 max-w-xl text-center">
-        A five-step workflow that takes you from specification to global deployment.
-      </p>
+      <h2 className="text-foreground mb-10 text-center text-4xl font-bold">From spec to scale.</h2>
 
-      <div className="mb-8 flex flex-wrap items-center justify-center gap-2">
+      {/* Pill tab bar */}
+      <div className="border-border/60 mx-auto mb-8 flex w-fit items-center rounded-full border p-1">
         {steps.map((step, i) => (
           <button
             key={step.label}
             onClick={() => setActiveStep(i)}
-            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+            className={`rounded-full px-6 py-2.5 text-sm font-medium transition-all ${
               i === activeStep
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                ? 'border-primary/50 text-foreground border bg-transparent shadow-sm'
+                : 'text-foreground-70 hover:text-foreground border border-transparent'
             }`}
           >
             {step.label}
@@ -59,29 +58,33 @@ export function SpecToScale() {
         ))}
       </div>
 
-      <div className="bg-accent mx-auto max-w-2xl rounded-xl p-8 text-center">
-        <h3 className="text-foreground mb-3 text-xl font-semibold">{steps[activeStep].label}</h3>
-        <p className="text-foreground-70 leading-relaxed">{steps[activeStep].description}</p>
+      {/* Tab content */}
+      <p
+        key={activeStep}
+        className="text-foreground-70 mx-auto mb-16 max-w-2xl text-center text-base leading-relaxed"
+      >
+        {steps[activeStep].description}
+      </p>
+
+      {/* Get started section */}
+      <div className="mb-10 text-center">
+        <p className="text-foreground text-3xl font-bold">Get started with Vetra</p>
+        <p className="text-foreground-70 mt-2 text-2xl">The minimal stack that scales</p>
       </div>
 
-      <div className="bg-accent mt-16 rounded-xl p-8 text-center">
-        <p className="text-foreground mb-6 text-lg font-semibold">
-          Get started with Vetra — The minimal stack that scales
-        </p>
-        <div className="text-foreground-70 mb-8 flex flex-wrap items-center justify-center gap-6 text-sm font-medium">
-          <span>GraphQL</span>
-          <span>TypeScript</span>
-          <span>React</span>
-          <span>Node.js</span>
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <Button asChild variant="secondary" size="lg">
-            <Link href="https://academy.vetra.io/">Explore Academy</Link>
-          </Button>
-          <Button asChild size="lg">
-            <Link href="/cloud">Explore Open Cloud</Link>
-          </Button>
-        </div>
+      <div className="mb-10 flex items-center justify-center gap-12">
+        <Image src="/images/home/graphql.svg" alt="GraphQL" width={56} height={56} />
+        <Image src="/images/home/typescript.svg" alt="TypeScript" width={56} height={56} />
+        <Image src="/images/home/react.svg" alt="React" width={56} height={56} />
+      </div>
+
+      <div className="flex items-center justify-center gap-4">
+        <Button asChild size="lg">
+          <Link href="https://academy.vetra.io/">Explore Academy</Link>
+        </Button>
+        <Button asChild size="lg">
+          <Link href="/cloud">Explore Open Cloud</Link>
+        </Button>
       </div>
     </section>
   )

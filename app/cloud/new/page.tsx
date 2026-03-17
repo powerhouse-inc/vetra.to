@@ -1,9 +1,14 @@
+'use client'
+
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 import { NewEnvironmentForm } from '@/app/cloud/new-project-form'
 
 export default function CreateEnvironmentPage() {
+  const router = useRouter()
+
   return (
     <main className="mx-auto mt-20 max-w-lg px-6 py-8">
       <Link
@@ -17,7 +22,7 @@ export default function CreateEnvironmentPage() {
       <p className="text-muted-foreground mb-8 text-sm">
         Set up a new cloud environment to host your Powerhouse applications.
       </p>
-      <NewEnvironmentForm />
+      <NewEnvironmentForm onCreated={(id) => router.push(`/cloud/${id}`)} />
     </main>
   )
 }

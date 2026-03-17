@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
+    "@lottiefiles/dotlottie-react": "^0.18.7",
     "@powerhousedao/reactor": "6.0.0-dev.88",
     "@powerhousedao/reactor-browser": "6.0.0-dev.88",
     "@radix-ui/react-accordion": "^1.2.11",
