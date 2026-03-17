@@ -1,11 +1,65 @@
 'use client'
 
-import { FileText, GitBranch, Layers, Radio, RefreshCcw, Workflow } from 'lucide-react'
+import {
+  BookOpen,
+  Code,
+  Database,
+  FileText,
+  FlaskConical,
+  GitBranch,
+  Layers,
+  Lightbulb,
+  Radio,
+  RefreshCcw,
+  ShieldCheck,
+  Workflow,
+} from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/shared/components/ui/tabs'
 
-const rdaFeatures: { title: string; description: string; icon: LucideIcon }[] = [
+type Feature = { title: string; description: string; icon: LucideIcon }
+
+const specAiFeatures: Feature[] = [
+  {
+    title: 'Code Generation',
+    description:
+      'Generate document model scaffolding, reducers, and type-safe APIs from your specifications automatically.',
+    icon: Code,
+  },
+  {
+    title: 'Schema Validation',
+    description:
+      'AI validates your document models against best practices and catches issues before deployment.',
+    icon: ShieldCheck,
+  },
+  {
+    title: 'Smart Suggestions',
+    description:
+      'Get intelligent suggestions for operations, state transitions, and workflow optimizations.',
+    icon: Lightbulb,
+  },
+  {
+    title: 'Domain Modeling',
+    description:
+      'AI understands your domain and helps structure document models that match your business logic.',
+    icon: Database,
+  },
+  {
+    title: 'Test Generation',
+    description:
+      'Automatically generate comprehensive test suites for your document models and reducers.',
+    icon: FlaskConical,
+  },
+  {
+    title: 'Documentation',
+    description:
+      'AI generates clear documentation from your specifications, keeping docs in sync with code.',
+    icon: BookOpen,
+  },
+]
+
+const rdaFeatures: Feature[] = [
   {
     title: 'Reactive',
     description: 'Realtime, responsive, message driven. With an elastic scalable architecture.',
@@ -68,27 +122,16 @@ export function FeaturesTabs() {
 
         <TabsContent value="spec-ai">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="border-border hover:bg-accent rounded-xl border p-6 transition-colors">
-              <h3 className="text-foreground mb-2 text-base font-bold">Spec-Driven Generation</h3>
-              <p className="text-foreground-70 text-sm leading-relaxed">
-                Turn document model specifications into working code. AI understands your schema and
-                generates scaffolding automatically.
-              </p>
-            </div>
-            <div className="border-border hover:bg-accent rounded-xl border p-6 transition-colors">
-              <h3 className="text-foreground mb-2 text-base font-bold">Context-Aware Tooling</h3>
-              <p className="text-foreground-70 text-sm leading-relaxed">
-                AI tools that understand your document models, operations, and workflows to provide
-                relevant suggestions and completions.
-              </p>
-            </div>
-            <div className="border-border hover:bg-accent rounded-xl border p-6 transition-colors">
-              <h3 className="text-foreground mb-2 text-base font-bold">Community Patterns</h3>
-              <p className="text-foreground-70 text-sm leading-relaxed">
-                Leverage patterns and components from the builder community. Reuse proven
-                specifications to accelerate development.
-              </p>
-            </div>
+            {specAiFeatures.map((feature) => (
+              <div
+                key={feature.title}
+                className="border-border hover:bg-accent rounded-xl border p-6 transition-colors"
+              >
+                <feature.icon className="text-primary mb-2 h-6 w-6" />
+                <h3 className="text-foreground mb-2 text-base font-bold">{feature.title}</h3>
+                <p className="text-foreground-70 text-sm leading-relaxed">{feature.description}</p>
+              </div>
+            ))}
           </div>
         </TabsContent>
       </Tabs>

@@ -1,11 +1,39 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
+const phrases = ['Specification driven AI.', 'Web3 enabled features.', '100% open source.']
+
 export function Hero() {
   const [isPlaying, setIsPlaying] = useState(false)
+  const [displayText, setDisplayText] = useState('')
+  const [phraseIndex, setPhraseIndex] = useState(0)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  useEffect(() => {
+    const currentPhrase = phrases[phraseIndex]
+    const timeout = setTimeout(
+      () => {
+        if (!isDeleting) {
+          setDisplayText(currentPhrase.substring(0, displayText.length + 1))
+          if (displayText.length === currentPhrase.length) {
+            setTimeout(() => setIsDeleting(true), 2000)
+            return
+          }
+        } else {
+          setDisplayText(currentPhrase.substring(0, displayText.length - 1))
+          if (displayText.length === 0) {
+            setIsDeleting(false)
+            setPhraseIndex((prev) => (prev + 1) % phrases.length)
+          }
+        }
+      },
+      isDeleting ? 40 : 80,
+    )
+    return () => clearTimeout(timeout)
+  }, [displayText, isDeleting, phraseIndex])
 
   return (
     <section className="px-6 py-20 text-center md:py-28">
@@ -13,9 +41,13 @@ export function Hero() {
         <div className="bg-primary-30 text-primary mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold">
           Local-first. Built to Scale.
         </div>
-        <h1 className="mx-auto mb-5 max-w-3xl text-[clamp(40px,5vw,64px)] leading-[1.1] font-bold tracking-tight">
+        <h1 className="mx-auto mb-1 max-w-3xl text-[clamp(40px,5vw,64px)] leading-[1.1] font-bold tracking-tight">
           Local first. Built to scale.
         </h1>
+        <p className="text-muted-foreground mx-auto mb-5 h-12 max-w-3xl text-[clamp(24px,3vw,40px)] leading-[1.2] font-bold">
+          {displayText}
+          <span className="border-primary ml-0.5 inline-block h-[1em] w-[2px] translate-y-[0.1em] animate-pulse border-l-2" />
+        </p>
         <p className="text-foreground-70 mx-auto mb-9 max-w-xl text-lg leading-relaxed">
           Vetra helps you build any type of web application, ERP, CMS, or SaaS Backend on a reactive
           document architecture. Define workflows once, deploy them globally, and co-own the
