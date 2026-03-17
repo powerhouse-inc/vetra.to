@@ -1,18 +1,13 @@
 'use client'
 
-import { Trash2, Server, Package, Activity } from 'lucide-react'
+import { Trash2, Server, Package } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { deleteDocument } from '@/modules/cloud/api'
 import { useEnvironments, useRefreshEnvironments } from '@/modules/cloud/hooks/use-environment'
-import {
-  StripedCard,
-  StripedCardContent,
-  StripedCardHeader,
-  StripedCardTitle,
-} from '@/modules/shared/components/striped-card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,18 +18,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/modules/shared/components/ui/alert-dialog'
-import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 
 import type { CloudEnvironment } from './types'
 
-function StatusBadge({ status }: { status: string }) {
-  const isRunning = status === 'STARTED'
+function StatusDot({ status }: { status: string }) {
+  const colorClass =
+    status === 'STARTED'
+      ? 'bg-success'
+      : status === 'DEPLOYING'
+        ? 'bg-warning'
+        : 'bg-muted-foreground'
+
   return (
-    <Badge variant={isRunning ? 'default' : 'secondary'}>
-      <Activity className="h-3 w-3" />
+    <span className="flex items-center gap-1.5 text-xs font-medium">
+      <span className={`inline-block h-2 w-2 rounded-full ${colorClass}`} />
       {status}
-    </Badge>
+    </span>
   )
 }
 
@@ -61,15 +61,15 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
   }
 
   return (
-    <StripedCard className="w-full transition-shadow hover:shadow-md sm:w-[340px]">
-      <StripedCardHeader className="flex-row items-center justify-between">
-        <StripedCardTitle className="flex items-center gap-2">
+    <Card className="transition-shadow hover:shadow-md">
+      <CardHeader className="flex-row items-center justify-between pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
           <Server className="h-4 w-4" />
           {displayName}
-        </StripedCardTitle>
-        <StatusBadge status={env.state.status} />
-      </StripedCardHeader>
-      <StripedCardContent className="space-y-4 p-4">
+        </CardTitle>
+        <StatusDot status={env.state.status} />
+      </CardHeader>
+      <CardContent className="space-y-4 pt-0">
         <div className="flex items-center gap-4 text-sm">
           <div className="text-muted-foreground flex items-center gap-1.5">
             <Package className="h-3.5 w-3.5" />
@@ -115,8 +115,8 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
             </AlertDialogContent>
           </AlertDialog>
         </div>
-      </StripedCardContent>
-    </StripedCard>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -138,7 +138,7 @@ export function CloudEnvironments() {
   }
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {environments.map((env) => (
         <CloudEnvironmentCard key={env.id} env={env} />
       ))}
