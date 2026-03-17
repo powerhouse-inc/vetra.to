@@ -1,7 +1,8 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Activity, Package, Server, Settings, Plus } from 'lucide-react'
+import { Activity, Package, Server, Settings, Plus, ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 import { useState, use } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -10,12 +11,6 @@ import { z } from 'zod'
 import { NewEnvironmentForm } from '@/app/cloud/new-project-form'
 import type { EnvironmentController } from '@/modules/cloud/controller'
 import { useEnvironmentController } from '@/modules/cloud/hooks/use-environment-controller'
-import {
-  StripedCard,
-  StripedCardContent,
-  StripedCardHeader,
-  StripedCardTitle,
-} from '@/modules/shared/components/striped-card'
 import { Badge } from '@/modules/shared/components/ui/badge'
 import {
   Breadcrumb,
@@ -26,6 +21,7 @@ import {
   BreadcrumbPage,
 } from '@/modules/shared/components/ui/breadcrumb'
 import { Button } from '@/modules/shared/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -50,6 +46,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/modules/shared/components/ui/table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/shared/components/ui/tabs'
 
 const addPackageSchema = z.object({
   packageName: z.string().min(1, 'Package name is required'),
@@ -57,6 +54,21 @@ const addPackageSchema = z.object({
 })
 
 type AddPackageFormValues = z.infer<typeof addPackageSchema>
+
+function StatusDot({ status }: { status: string }) {
+  const colorClass =
+    status === 'STARTED'
+      ? 'bg-success'
+      : status === 'DEPLOYING'
+        ? 'bg-warning'
+        : 'bg-muted-foreground'
+
+  return (
+    <span className="flex items-center gap-1.5">
+      <span className={`inline-block h-2 w-2 rounded-full ${colorClass}`} />
+    </span>
+  )
+}
 
 function AddPackageModal({
   controller,
@@ -162,20 +174,39 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
   const header = controller?.header
   const displayName = state?.name || header?.name || 'Loading...'
   const isRunning = state?.status === 'STARTED'
+  const packageCount = state?.packages?.length ?? 0
 
   if (isLoading) {
     return (
-      <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] p-8">
+      <main className="mx-auto mt-20 max-w-[var(--container-width)] px-6 py-8">
         <p className="text-muted-foreground">Loading environment...</p>
       </main>
     )
   }
 
   return (
-    <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] space-y-8 p-8">
+    <main className="mx-auto mt-20 max-w-[var(--container-width)] space-y-8 px-6 py-8">
       {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">{displayName}</h1>
+      <div className="space-y-3">
+        <Link
+          href="/cloud"
+          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Cloud
+        </Link>
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold">{displayName}</h2>
+          {state && (
+            <Badge
+              variant={isRunning ? 'default' : 'secondary'}
+              className="flex items-center gap-1.5"
+            >
+              <StatusDot status={state.status} />
+              {state.status}
+            </Badge>
+          )}
+        </div>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -190,20 +221,49 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
       </div>
 
       {controller && state && (
-        <div className="grid gap-8 lg:grid-cols-3">
-          {/* Main Content */}
-          <div className="space-y-6 lg:col-span-2">
-            {/* Status Overview */}
-            <StripedCard>
-              <StripedCardHeader>
-                <StripedCardTitle className="flex items-center gap-2">
+        <Tabs defaultValue="overview">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="packages">Packages</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+          </TabsList>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6 pt-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <Card>
+                <CardContent className="px-4 py-3">
+                  <p className="text-muted-foreground text-xs font-medium">Packages</p>
+                  <p className="text-2xl font-bold">{packageCount}</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="px-4 py-3">
+                  <p className="text-muted-foreground text-xs font-medium">Services</p>
+                  <p className="text-2xl font-bold">{state.services.length}</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="px-4 py-3">
+                  <p className="text-muted-foreground text-xs font-medium">Revision</p>
+                  <p className="text-2xl font-bold">{header?.revision.global ?? 0}</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
                   <Activity className="h-4 w-4" />
                   Status
-                </StripedCardTitle>
-              </StripedCardHeader>
-              <StripedCardContent className="p-4">
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
                 <div className="flex flex-wrap items-center gap-3">
-                  <Badge variant={isRunning ? 'default' : 'secondary'}>{state.status}</Badge>
+                  <Badge variant={isRunning ? 'default' : 'secondary'} className="gap-1.5">
+                    <StatusDot status={state.status} />
+                    {state.status}
+                  </Badge>
                   {state.services.length > 0 ? (
                     state.services.map((service) => (
                       <Badge key={service} variant="outline">
@@ -214,20 +274,28 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
                     <span className="text-muted-foreground text-sm">No services enabled</span>
                   )}
                 </div>
-              </StripedCardContent>
-            </StripedCard>
+                {header && (
+                  <div className="pt-2">
+                    <dt className="text-muted-foreground text-xs font-medium">Document ID</dt>
+                    <dd className="mt-0.5 max-w-md truncate font-mono text-xs">{header.id}</dd>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-            {/* Packages */}
-            <StripedCard>
-              <StripedCardHeader className="flex-row items-center justify-between">
-                <StripedCardTitle className="flex items-center gap-2">
-                  <Package className="h-4 w-4" />
-                  Packages
-                </StripedCardTitle>
-                <AddPackageModal controller={controller} onPush={push} />
-              </StripedCardHeader>
-              <StripedCardContent className="p-0">
-                {state.packages && state.packages.length > 0 ? (
+          {/* Packages Tab */}
+          <TabsContent value="packages" className="space-y-4 pt-4">
+            <div className="flex items-center justify-between">
+              <h3 className="flex items-center gap-2 text-lg font-semibold">
+                <Package className="h-5 w-5" />
+                Packages
+              </h3>
+              <AddPackageModal controller={controller} onPush={push} />
+            </div>
+            {state.packages && state.packages.length > 0 ? (
+              <Card>
+                <CardContent className="p-0">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -246,77 +314,73 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
                       ))}
                     </TableBody>
                   </Table>
-                ) : (
-                  <div className="flex flex-col items-center justify-center gap-2 py-8">
-                    <Package className="text-muted-foreground h-8 w-8" />
-                    <p className="text-muted-foreground text-sm">No packages installed</p>
-                    <AddPackageModal controller={controller} onPush={push} />
-                  </div>
-                )}
-              </StripedCardContent>
-            </StripedCard>
-          </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="flex flex-col items-center justify-center gap-2 py-12">
+                <Package className="text-muted-foreground h-8 w-8" />
+                <p className="text-muted-foreground text-sm">No packages installed</p>
+                <AddPackageModal controller={controller} onPush={push} />
+              </div>
+            )}
+          </TabsContent>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Settings */}
-            <StripedCard>
-              <StripedCardHeader>
-                <StripedCardTitle className="flex items-center gap-2">
+          {/* Settings Tab */}
+          <TabsContent value="settings" className="space-y-6 pt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
                   <Settings className="h-4 w-4" />
-                  Settings
-                </StripedCardTitle>
-              </StripedCardHeader>
-              <StripedCardContent className="p-4">
+                  Rename Environment
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <NewEnvironmentForm
                   controller={controller}
                   onPush={push}
                   initialName={state.name || ''}
                 />
-              </StripedCardContent>
-            </StripedCard>
+              </CardContent>
+            </Card>
 
-            {/* Metadata */}
-            <StripedCard>
-              <StripedCardHeader>
-                <StripedCardTitle className="flex items-center gap-2">
-                  <Server className="h-4 w-4" />
-                  Info
-                </StripedCardTitle>
-              </StripedCardHeader>
-              <StripedCardContent className="space-y-3 p-4">
-                {header && (
-                  <>
-                    <div>
-                      <dt className="text-muted-foreground text-xs font-medium">Document ID</dt>
-                      <dd className="mt-0.5 font-mono text-xs break-all">{header.id}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-muted-foreground text-xs font-medium">Type</dt>
-                      <dd className="mt-0.5 text-sm">{header.documentType}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-muted-foreground text-xs font-medium">Revision</dt>
-                      <dd className="mt-0.5 text-sm">{header.revision.global ?? 0}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-muted-foreground text-xs font-medium">Created</dt>
-                      <dd className="mt-0.5 text-sm">
-                        {new Date(header.createdAtUtcIso).toLocaleDateString()}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-muted-foreground text-xs font-medium">Last Modified</dt>
-                      <dd className="mt-0.5 text-sm">
-                        {new Date(header.lastModifiedAtUtcIso).toLocaleDateString()}
-                      </dd>
-                    </div>
-                  </>
-                )}
-              </StripedCardContent>
-            </StripedCard>
-          </div>
-        </div>
+            {header && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Server className="h-4 w-4" />
+                    Metadata
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <dt className="text-muted-foreground text-xs font-medium">Document ID</dt>
+                    <dd className="mt-0.5 font-mono text-xs break-all">{header.id}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground text-xs font-medium">Type</dt>
+                    <dd className="mt-0.5 text-sm">{header.documentType}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground text-xs font-medium">Revision</dt>
+                    <dd className="mt-0.5 text-sm">{header.revision.global ?? 0}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground text-xs font-medium">Created</dt>
+                    <dd className="mt-0.5 text-sm">
+                      {new Date(header.createdAtUtcIso).toLocaleDateString()}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground text-xs font-medium">Last Modified</dt>
+                    <dd className="mt-0.5 text-sm">
+                      {new Date(header.lastModifiedAtUtcIso).toLocaleDateString()}
+                    </dd>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
       )}
     </main>
   )
