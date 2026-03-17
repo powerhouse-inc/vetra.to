@@ -2,7 +2,7 @@ import { gql } from 'graphql-request'
 import { request } from 'graphql-request'
 
 // GraphQL endpoint - use server-side environment variable
-const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || 'https://switchboard.vetra.io/graphql'
+const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT || 'http://localhost:4001/graphql'
 
 // Types for the GraphQL responses
 export interface BuilderPackageKeyword {

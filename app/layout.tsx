@@ -13,6 +13,7 @@ import './globals.css'
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
 })
 
 export const metadata: Metadata = {
@@ -27,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} bg-muted/30 antialiased`}>
+      <body className={`${inter.variable} bg-background antialiased`}>
         {/* Background SVG - positioned at the highest level */}
         {/* <div className="fixed inset-0 -z-10">
           <BackgroundSvg className="h-full w-full object-cover" />
