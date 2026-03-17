@@ -11,9 +11,9 @@ import { Badge } from '@/modules/shared/components/ui/badge'
 export const dynamic = 'force-dynamic'
 
 interface TeamPageProps {
-  params: {
+  params: Promise<{
     'team-name': string
-  }
+  }>
 }
 
 export async function generateMetadata({ params }: TeamPageProps): Promise<unknown> {

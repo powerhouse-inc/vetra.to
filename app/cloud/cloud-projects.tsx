@@ -7,7 +7,6 @@ import { toast } from 'sonner'
 
 import { deleteDocument } from '@/modules/cloud/api'
 import { useEnvironments, useRefreshEnvironments } from '@/modules/cloud/hooks/use-environment'
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +18,7 @@ import {
   AlertDialogTitle,
 } from '@/modules/shared/components/ui/alert-dialog'
 import { Button } from '@/modules/shared/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
 
 import type { CloudEnvironment } from './types'
 

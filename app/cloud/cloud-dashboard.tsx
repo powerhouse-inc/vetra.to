@@ -1,8 +1,9 @@
 'use client'
 
-import Link from 'next/link'
 import { Plus } from 'lucide-react'
+import Link from 'next/link'
 
+import { useEnvironments } from '@/modules/cloud/hooks/use-environment'
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -12,7 +13,6 @@ import {
   BreadcrumbPage,
 } from '@/modules/shared/components/ui/breadcrumb'
 import { Button } from '@/modules/shared/components/ui/button'
-import { useEnvironments } from '@/modules/cloud/hooks/use-environment'
 import { CloudEnvironments } from './cloud-projects'
 
 export function CloudDashboard() {
