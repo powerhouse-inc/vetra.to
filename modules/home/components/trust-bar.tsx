@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 export function TrustBar() {
   return (
     <section className="border-border border-y">
@@ -9,10 +11,10 @@ export function TrustBar() {
           Structured document models powered by modern tooling
         </p>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-12">
-          <span className="text-foreground text-lg font-medium tracking-wide">GraphQL</span>
-          <span className="text-foreground text-lg font-medium tracking-wide">TypeScript</span>
-          <span className="text-foreground text-lg font-medium tracking-wide">React</span>
+        <div className="mt-6 flex items-center justify-center gap-12">
+          <Image src="/images/home/graphql.svg" alt="GraphQL" width={40} height={40} />
+          <Image src="/images/home/typescript.svg" alt="TypeScript" width={40} height={40} />
+          <Image src="/images/home/react.svg" alt="React" width={40} height={40} />
         </div>
       </div>
     </section>

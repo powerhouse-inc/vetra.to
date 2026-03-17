@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { Button } from '@/modules/shared/components/ui/button'
@@ -17,6 +18,15 @@ export function PowerhouseStack() {
         <p className="text-foreground mx-auto mb-8 max-w-2xl font-medium">
           Start your organization. Hire your operator. Find your builder.
         </p>
+        <div className="mx-auto mb-8 max-w-3xl overflow-hidden rounded-xl">
+          <Image
+            src="/images/home/powerhouse-stack.png"
+            alt="Powerhouse Ecosystem"
+            width={960}
+            height={540}
+            className="h-auto w-full"
+          />
+        </div>
         <Button asChild variant="outline" size="lg">
           <Link href="https://powerhouse.inc">Visit Powerhouse</Link>
         </Button>

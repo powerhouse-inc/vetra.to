@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { Button } from '@/modules/shared/components/ui/button'
@@ -14,6 +15,15 @@ export function CloudCta() {
         <p className="text-foreground mb-8 font-semibold">
           Documents as code, code as infrastructure.
         </p>
+        <div className="border-border mx-auto mb-8 max-w-4xl overflow-hidden rounded-xl border shadow-lg">
+          <Image
+            src="/images/home/cloud-preview.png"
+            alt="Vetra Cloud Preview"
+            width={1280}
+            height={720}
+            className="h-auto w-full"
+          />
+        </div>
         <Button asChild size="lg">
           <Link href="/cloud">Explore Open Cloud</Link>
         </Button>

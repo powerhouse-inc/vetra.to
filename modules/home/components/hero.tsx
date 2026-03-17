@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { Button } from '@/modules/shared/components/ui/button'
@@ -26,6 +27,17 @@ export function Hero() {
         <Button asChild variant="secondary" size="lg">
           <Link href="https://academy.vetra.io/">Explore Academy</Link>
         </Button>
+      </div>
+
+      <div className="border-border mx-auto mt-12 max-w-4xl overflow-hidden rounded-xl border shadow-lg">
+        <Image
+          src="/images/home/hero-video-thumb.webp"
+          alt="Vetra Platform Preview"
+          width={1280}
+          height={720}
+          className="h-auto w-full"
+          priority
+        />
       </div>
     </section>
   )

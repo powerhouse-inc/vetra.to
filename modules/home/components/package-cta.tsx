@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { Button } from '@/modules/shared/components/ui/button'
@@ -13,6 +14,15 @@ export function PackageCta() {
           Browse community-built packages, document models, and extensions ready to use in your
           projects.
         </p>
+        <div className="border-border mx-auto mb-8 max-w-3xl overflow-hidden rounded-lg border shadow-md">
+          <Image
+            src="/images/home/package-library.png"
+            alt="Vetra Package Library"
+            width={960}
+            height={540}
+            className="h-auto w-full"
+          />
+        </div>
         <Button asChild size="lg">
           <Link href="/packages">Browse Packages</Link>
         </Button>

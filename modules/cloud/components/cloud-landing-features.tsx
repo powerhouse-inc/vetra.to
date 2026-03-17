@@ -1,5 +1,6 @@
+import Image from 'next/image'
 import Link from 'next/link'
-import { Database, Globe, Shield, Layers } from 'lucide-react'
+import { Database, Globe, Shield } from 'lucide-react'
 
 function Principle({
   icon: Icon,
@@ -25,11 +26,13 @@ function FeatureSection({
   title,
   subtitle,
   description,
+  image,
   reversed,
 }: {
   title: string
   subtitle: string
   description: string
+  image: string
   reversed?: boolean
 }) {
   return (
@@ -41,8 +44,14 @@ function FeatureSection({
         <h3 className="text-2xl leading-tight font-bold">{title}</h3>
         <p className="text-foreground-70 leading-relaxed">{description}</p>
       </div>
-      <div className="bg-accent flex h-48 w-full flex-1 items-center justify-center rounded-2xl md:h-64">
-        <div className="text-foreground-30 text-sm font-medium">Visual placeholder</div>
+      <div className="bg-accent flex w-full flex-1 items-center justify-center overflow-hidden rounded-2xl">
+        <Image
+          src={image}
+          alt={title}
+          width={600}
+          height={400}
+          className="h-auto w-full object-cover"
+        />
       </div>
     </div>
   )
@@ -56,9 +65,13 @@ export function CloudLandingFeatures() {
         <div className="mx-auto max-w-[var(--container-width)] text-center">
           <p className="text-foreground-70 mb-4 text-sm font-medium">Vetra Open Cloud runs on</p>
           <div className="flex flex-wrap items-center justify-center gap-8">
-            <span className="text-lg font-semibold">Hetzner</span>
-            <span className="text-foreground-30">+</span>
-            <span className="text-lg font-semibold">OpenStack</span>
+            <Image
+              src="/images/cloud/hetzner-openstack.png"
+              alt="Hetzner + OpenStack"
+              width={280}
+              height={60}
+              className="h-auto max-h-12 w-auto"
+            />
           </div>
         </div>
       </section>
@@ -94,17 +107,20 @@ export function CloudLandingFeatures() {
             subtitle="Ownership"
             title="Open cloud. Clear sky."
             description="Full data ownership with a clear self-hosting path. No black boxes, no proprietary APIs. Run Vetra Cloud managed or bring it to your own infrastructure."
+            image="/images/cloud/cloud-layers.svg"
           />
           <FeatureSection
             subtitle="Freedom"
             title="Cloud without Captivity."
             description="A pluggable anchoring layer that is storage-agnostic by design. Switch between storage backends, anchoring providers, and sync protocols without rewriting your application."
+            image="/images/cloud/cloud-architecture.png"
             reversed
           />
           <FeatureSection
             subtitle="Performance"
             title="Integrated RAD support"
             description="Purpose-built for the Reactive Document Architecture. Optimized for document sync, real-time collaboration, and event-driven workflows out of the box."
+            image="/images/cloud/cloud-studio.png"
           />
         </div>
       </section>
