@@ -1,15 +1,10 @@
-import { ExternalLink, Github, MessageCircle, Package } from 'lucide-react'
+import { ExternalLink, Github, Package } from 'lucide-react'
 import React from 'react'
 
 import { RepositoryActionButton } from '@/modules/packages/components/repository-action-button'
-import {
-  StripedCard,
-  StripedCardContent,
-  StripedCardHeader,
-  StripedCardTitle,
-} from '@/modules/shared/components/striped-card'
 import ConnectSvg from '@/modules/shared/components/svgs/connect.svg'
 import { Button } from '@/modules/shared/components/ui/button'
+import { Card, CardContent } from '@/modules/shared/components/ui/card'
 import { cn } from '@/modules/shared/lib/utils'
 
 interface Package {
@@ -39,116 +34,112 @@ const BuilderSpaces: React.FC<BuilderSpacesProps> = ({
   discordUrl,
   className,
 }) => {
+  // Flatten all packages if there's only one space
+  const allPackages = spaces.length === 1 ? spaces[0].packages : null
+
   return (
-    <div className={cn('container space-y-8', className)}>
-      {/* Header Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold md:text-4xl">Builder Spaces</h1>
-            <p className="mt-2">
-              Builder spaces collect all the packages under a specific category, industry or
-              use-case
-            </p>
-          </div>
+    <div className={cn('space-y-6', className)}>
+      {allPackages ? (
+        // Single space: render flat grid of packages
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {allPackages.map((pkg, index) => (
+            <PackageCard key={index} pkg={pkg} />
+          ))}
         </div>
-      </div>
+      ) : (
+        // Multiple spaces: render with space headers
+        spaces.map((space, spaceIndex) => (
+          <div key={spaceIndex} className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold">{space.title}</h3>
+              {space.description && (
+                <p className="text-foreground-70 mt-1 text-sm">{space.description}</p>
+              )}
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {space.packages.map((pkg, packageIndex) => (
+                <PackageCard key={packageIndex} pkg={pkg} />
+              ))}
+            </div>
+          </div>
+        ))
+      )}
 
-      {/* Builder Spaces */}
-      <div className="space-y-6">
-        {spaces.map((space, spaceIndex) => (
-          <StripedCard key={spaceIndex} className="w-full">
-            <StripedCardHeader>
-              <StripedCardTitle>
-                <span className="font-bold">{space.title}</span>
-                <span className="font-normal">{space.description && `: ${space.description}`}</span>
-              </StripedCardTitle>
-            </StripedCardHeader>
-            <StripedCardContent>
-              <div className="space-y-4">
-                {space.packages.map((pkg, packageIndex) => (
-                  <div
-                    key={packageIndex}
-                    className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-sm md:flex-row"
-                  >
-                    {/* Package Icon and Info - Always horizontal */}
-                    <div className="flex w-full flex-1 flex-row items-center gap-4 md:w-auto">
-                      {/* Package Icon */}
-                      <div className="flex flex-shrink-0">
-                        <div className="flex size-10 items-center justify-center rounded-lg">
-                          <Package className="size-5" />
-                        </div>
-                      </div>
-
-                      {/* Package Info */}
-                      <div className="flex min-w-0 flex-1 flex-col md:flex-1">
-                        <h4 className="mb-1 text-sm font-semibold">{pkg.title}</h4>
-                        <p className="mb-3 text-xs leading-relaxed">{pkg.description}</p>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:flex-shrink-0">
-                      <Button variant="outline" size="sm" asChild className="flex">
-                        <a
-                          className="flex p-5"
-                          href={`${process.env.NEXT_PUBLIC_CONNECT_URL || 'https://connect.staging.vetra.io'}?driveUrl=${pkg.vetraDriveUrl || 'https://switchboard.staging.vetra.io/d/61fff014-ff45-4270-aa16-5ca75429cc55'}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <div className="flex items-center justify-center">
-                            <ConnectSvg />
-                          </div>
-                          <div className="flex flex-col items-start">
-                            <span className="text-xs font-medium tracking-wide uppercase">
-                              Open in Connect
-                            </span>
-                            <span className="text-sm font-bold">Vetra Studio Drive</span>
-                          </div>
-                        </a>
-                      </Button>
-                      <RepositoryActionButton
-                        githubUrl={pkg.githubUrl}
-                        driveId={pkg.vetraDriveUrl?.split('/d/')[1] || null}
-                        packageName={pkg.title}
-                      />
-                      {pkg.githubUrl && (
-                        <Button variant="ghost" size="sm" asChild>
-                          <a
-                            href={pkg.githubUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1.5"
-                          >
-                            <Github className="size-3" />
-                            <span>Github</span>
-                            <ExternalLink className="size-3" />
-                          </a>
-                        </Button>
-                      )}
-                      {pkg.npmUrl && (
-                        <Button variant="ghost" size="sm" asChild>
-                          <a
-                            href={pkg.npmUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1.5"
-                          >
-                            <Package className="size-3" />
-                            <span>NPM</span>
-                            <ExternalLink className="size-3" />
-                          </a>
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </StripedCardContent>
-          </StripedCard>
-        ))}
-      </div>
+      {spaces.length === 0 && (
+        <p className="text-foreground-70 py-8 text-center">No packages published yet.</p>
+      )}
     </div>
+  )
+}
+
+function PackageCard({ pkg }: { pkg: Package }) {
+  return (
+    <Card className="flex flex-col transition-shadow hover:shadow-md">
+      <CardContent className="flex flex-1 flex-col gap-3 p-5">
+        {/* Package Icon and Name */}
+        <div className="flex items-center gap-3">
+          <div className="bg-accent flex size-9 items-center justify-center rounded-lg">
+            <Package className="size-4" />
+          </div>
+          <h4 className="text-sm font-semibold">{pkg.title}</h4>
+        </div>
+
+        {/* Description */}
+        <p className="text-foreground-70 line-clamp-2 flex-1 text-xs leading-relaxed">
+          {pkg.description}
+        </p>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" asChild className="flex-1">
+            <a
+              className="flex items-center justify-center gap-1.5"
+              href={`${process.env.NEXT_PUBLIC_CONNECT_URL || 'https://connect.staging.vetra.io'}?driveUrl=${pkg.vetraDriveUrl || 'https://switchboard.staging.vetra.io/d/61fff014-ff45-4270-aa16-5ca75429cc55'}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ConnectSvg />
+              <span className="text-xs font-medium">Open in Connect</span>
+            </a>
+          </Button>
+          <RepositoryActionButton
+            githubUrl={pkg.githubUrl}
+            driveId={pkg.vetraDriveUrl?.split('/d/')[1] || null}
+            packageName={pkg.title}
+          />
+        </div>
+
+        {/* Secondary Links */}
+        <div className="flex items-center gap-2">
+          {pkg.githubUrl && (
+            <Button variant="ghost" size="sm" asChild>
+              <a
+                href={pkg.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-foreground-70 flex items-center gap-1"
+              >
+                <Github className="size-3" />
+                <span className="text-xs">Github</span>
+              </a>
+            </Button>
+          )}
+          {pkg.npmUrl && (
+            <Button variant="ghost" size="sm" asChild>
+              <a
+                href={pkg.npmUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-foreground-70 flex items-center gap-1"
+              >
+                <Package className="size-3" />
+                <span className="text-xs">NPM</span>
+              </a>
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 

@@ -1,15 +1,10 @@
-import { ExternalLink, Github, Globe, Twitter } from 'lucide-react'
+import { ExternalLink, Github, Globe } from 'lucide-react'
 import React from 'react'
 
 import XLogo from '@/modules/shared/components/icons/x-logo'
-import {
-  StripedCard,
-  StripedCardContent,
-  StripedCardHeader,
-} from '@/modules/shared/components/striped-card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/modules/shared/components/ui/avatar'
 import { Badge } from '@/modules/shared/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
+import { Button } from '@/modules/shared/components/ui/button'
 import { cn } from '@/modules/shared/lib/utils'
 
 interface BuilderProfileProps {
@@ -44,92 +39,79 @@ const BuilderProfile: React.FC<BuilderProfileProps> = ({
   }
 
   return (
-    <StripedCard className={cn('w-full', className)}>
-      <StripedCardHeader className={cn('text-center font-bold')}>Builder Profile</StripedCardHeader>
-      <StripedCardContent className="p-6">
-        {/* Profile Info */}
-        <div className="mb-6 flex items-start gap-6">
-          {/* Left Column - Avatar */}
-          <div className="flex-shrink-0">
-            <Avatar className="size-20">
-              <AvatarImage src={profileLogo} alt={profileName} />
-              <AvatarFallback className="bg-gray-800 text-lg font-semibold text-white">
-                {getInitials(profileName)}
-              </AvatarFallback>
-            </Avatar>
-          </div>
+    <div className={cn('w-full', className)}>
+      <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
+        {/* Large Avatar */}
+        <Avatar className="size-20 flex-shrink-0">
+          <AvatarImage src={profileLogo} alt={profileName} />
+          <AvatarFallback className="bg-gray-800 text-xl font-semibold text-white">
+            {getInitials(profileName)}
+          </AvatarFallback>
+        </Avatar>
 
-          {/* Right Column - Content */}
-          <div className="flex-1 space-y-4">
-            <div className="space-y-2">
-              <h3 className="text-xl font-bold">{profileName}</h3>
-              {profileDescription && (
-                <p className="text-sm leading-relaxed">{profileDescription}</p>
+        {/* Profile Info */}
+        <div className="flex-1 space-y-3">
+          <h2 className="text-3xl font-bold">{profileName}</h2>
+
+          {profileDescription && (
+            <p className="text-foreground-70 max-w-3xl leading-relaxed">{profileDescription}</p>
+          )}
+
+          {/* Social Links */}
+          {(profileSocialsX || profileSocialsGithub || profileSocialsWebsite) && (
+            <div className="flex items-center gap-2">
+              {profileSocialsX && (
+                <Button variant="ghost" size="sm" asChild>
+                  <a
+                    href={`https://x.com/${profileSocialsX.replace('@', '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground-70 hover:text-foreground"
+                  >
+                    <XLogo className="size-4" />
+                  </a>
+                </Button>
+              )}
+              {profileSocialsGithub && (
+                <Button variant="ghost" size="sm" asChild>
+                  <a
+                    href={`https://github.com/${profileSocialsGithub}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground-70 hover:text-foreground"
+                  >
+                    <Github className="size-4" />
+                  </a>
+                </Button>
+              )}
+              {profileSocialsWebsite && (
+                <Button variant="ghost" size="sm" asChild>
+                  <a
+                    href={profileSocialsWebsite}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground-70 hover:text-foreground"
+                  >
+                    <Globe className="size-4" />
+                  </a>
+                </Button>
               )}
             </div>
+          )}
 
-            {/* External Links */}
-            {(profileSocialsX || profileSocialsGithub || profileSocialsWebsite) && (
-              <div>
-                <h4 className="mb-3 text-sm font-medium">External Links</h4>
-                <div className="space-y-2">
-                  {profileSocialsX && (
-                    <a
-                      href={`https://x.com/${profileSocialsX.replace('@', '')}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm transition-colors hover:text-gray-900"
-                    >
-                      <XLogo className="size-4" />
-                      <span>{profileSocialsX}</span>
-                      <ExternalLink className="size-3" />
-                    </a>
-                  )}
-                  {profileSocialsGithub && (
-                    <a
-                      href={`https://github.com/${profileSocialsGithub}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm transition-colors hover:text-gray-900"
-                    >
-                      <Github className="size-4" />
-                      <span>{profileSocialsGithub}</span>
-                      <ExternalLink className="size-3" />
-                    </a>
-                  )}
-                  {profileSocialsWebsite && (
-                    <a
-                      href={profileSocialsWebsite}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm transition-colors hover:text-gray-900"
-                    >
-                      <Globe className="size-4" />
-                      <span>{profileSocialsWebsite}</span>
-                      <ExternalLink className="size-3" />
-                    </a>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Industry Expertise */}
-            {industryExpertise.length > 0 && (
-              <div>
-                <h4 className="mb-3 text-sm font-medium">Industry Expertise</h4>
-                <div className="flex flex-wrap gap-2">
-                  {industryExpertise.map((expertise, index) => (
-                    <Badge key={index} variant="outline">
-                      {expertise}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          {/* Expertise Badges */}
+          {industryExpertise.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {industryExpertise.map((expertise, index) => (
+                <Badge key={index} className="bg-primary-30 text-primary">
+                  {expertise}
+                </Badge>
+              ))}
+            </div>
+          )}
         </div>
-      </StripedCardContent>
-    </StripedCard>
+      </div>
+    </div>
   )
 }
 
