@@ -1,9 +1,9 @@
 import { Inter } from 'next/font/google'
-import { Renown } from '@/modules/shared/components/renown'
+import NavbarDynamic from '@/modules/shared/components/navbar/navbar-dynamic'
+import { RenownProvider } from '@/modules/shared/components/renown/renown-provider'
 import { Toaster } from '@/modules/shared/components/ui/sonner'
 import { ThemeProvider } from '@/modules/shared/providers/theme-provider'
 import { Footer } from '@/shared/components/footer/footer'
-import Navbar from '@/shared/components/navbar/navbar'
 import { QueryClientProvider } from '@/shared/providers/query-client'
 import type { Metadata } from 'next'
 
@@ -28,15 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} bg-background antialiased`}>
-        {/* Background SVG - positioned at the highest level */}
-        {/* <div className="fixed inset-0 -z-10">
-          <BackgroundSvg className="h-full w-full object-cover" />
-        </div> */}
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
           <QueryClientProvider>
-            <Renown appName="vetra" url={process.env.NEXT_PUBLIC_RENOWN_URL} />
+            <RenownProvider appName="vetra" url={process.env.NEXT_PUBLIC_RENOWN_URL} />
             <div className="items-right flex min-h-screen flex-col">
-              <Navbar />
+              <NavbarDynamic />
               <main className="flex-1">{children}</main>
               <Footer />
             </div>
