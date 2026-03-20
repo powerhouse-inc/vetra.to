@@ -1,8 +1,10 @@
 'use client'
 
+import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState, useEffect, useCallback } from 'react'
 import type { CloudEnvironment, CloudEnvironmentService } from '../types'
 import {
+  getAuthToken,
   fetchEnvironment,
   setEnvironmentName as gqlSetName,
   setSubdomain as gqlSetSubdomain,
@@ -15,6 +17,7 @@ import {
 } from '../graphql'
 
 export function useEnvironmentDetail(documentId: string) {
+  const renown = useRenown()
   const [environment, setEnvironment] = useState<CloudEnvironment | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
@@ -25,7 +28,8 @@ export function useEnvironmentDetail(documentId: string) {
       try {
         setIsLoading(true)
         setError(null)
-        const env = await fetchEnvironment(documentId)
+        const token = await getAuthToken(renown)
+        const env = await fetchEnvironment(documentId, token)
         if (!cancelled) setEnvironment(env)
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err : new Error('Failed to load'))
@@ -37,39 +41,43 @@ export function useEnvironmentDetail(documentId: string) {
     return () => {
       cancelled = true
     }
-  }, [documentId])
+  }, [documentId, renown])
 
-  const mutate = useCallback(async (fn: () => Promise<CloudEnvironment>) => {
-    const updated = await fn()
-    setEnvironment(updated)
-  }, [])
+  const mutate = useCallback(
+    async (fn: (token: string | null) => Promise<CloudEnvironment>) => {
+      const token = await getAuthToken(renown)
+      const updated = await fn(token)
+      setEnvironment(updated)
+    },
+    [renown],
+  )
 
   const setName = useCallback(
-    (name: string) => mutate(() => gqlSetName(documentId, name)),
+    (name: string) => mutate((t) => gqlSetName(documentId, name, t)),
     [documentId, mutate],
   )
   const setSubdomain = useCallback(
-    (subdomain: string) => mutate(() => gqlSetSubdomain(documentId, subdomain)),
+    (subdomain: string) => mutate((t) => gqlSetSubdomain(documentId, subdomain, t)),
     [documentId, mutate],
   )
   const enableService = useCallback(
-    (service: CloudEnvironmentService) => mutate(() => gqlEnableService(documentId, service)),
+    (service: CloudEnvironmentService) => mutate((t) => gqlEnableService(documentId, service, t)),
     [documentId, mutate],
   )
   const disableService = useCallback(
-    (service: CloudEnvironmentService) => mutate(() => gqlDisableService(documentId, service)),
+    (service: CloudEnvironmentService) => mutate((t) => gqlDisableService(documentId, service, t)),
     [documentId, mutate],
   )
   const addPackage = useCallback(
-    (name: string, version?: string) => mutate(() => gqlAddPackage(documentId, name, version)),
+    (name: string, version?: string) => mutate((t) => gqlAddPackage(documentId, name, version, t)),
     [documentId, mutate],
   )
   const removePackage = useCallback(
-    (name: string) => mutate(() => gqlRemovePackage(documentId, name)),
+    (name: string) => mutate((t) => gqlRemovePackage(documentId, name, t)),
     [documentId, mutate],
   )
-  const start = useCallback(() => mutate(() => gqlStart(documentId)), [documentId, mutate])
-  const stop = useCallback(() => mutate(() => gqlStop(documentId)), [documentId, mutate])
+  const start = useCallback(() => mutate((t) => gqlStart(documentId, t)), [documentId, mutate])
+  const stop = useCallback(() => mutate((t) => gqlStop(documentId, t)), [documentId, mutate])
 
   return {
     environment,

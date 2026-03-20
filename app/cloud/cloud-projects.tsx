@@ -1,11 +1,12 @@
 'use client'
 
+import { useRenown } from '@powerhousedao/reactor-browser'
 import { Trash2, Server, Package } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { deleteEnvironment } from '@/modules/cloud/graphql'
+import { getAuthToken, deleteEnvironment } from '@/modules/cloud/graphql'
 import { useEnvironments, useRefreshEnvironments } from '@/modules/cloud/hooks/use-environment'
 import {
   AlertDialog,
@@ -39,6 +40,7 @@ function StatusDot({ status }: { status: string }) {
 }
 
 function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
+  const renown = useRenown()
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const refreshEnvironments = useRefreshEnvironments()
@@ -48,7 +50,8 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await deleteEnvironment(env.id)
+      const token = await getAuthToken(renown)
+      await deleteEnvironment(env.id, token)
       toast.success('Environment deleted successfully')
       refreshEnvironments()
       setShowDeleteDialog(false)

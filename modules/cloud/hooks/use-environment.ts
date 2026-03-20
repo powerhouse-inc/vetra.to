@@ -1,13 +1,15 @@
 'use client'
 
+import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState, useEffect, useMemo } from 'react'
-import { fetchEnvironments } from '../graphql'
+import { getAuthToken, fetchEnvironments } from '../graphql'
 import type { CloudEnvironment } from '../types'
 
 /**
  * Hook to get all cloud environments from the API
  */
 export function useEnvironments(): CloudEnvironment[] {
+  const renown = useRenown()
   const [environments, setEnvironments] = useState<CloudEnvironment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
@@ -18,7 +20,8 @@ export function useEnvironments(): CloudEnvironment[] {
       try {
         setIsLoading(true)
         setError(null)
-        const data = await fetchEnvironments()
+        const token = await getAuthToken(renown)
+        const data = await fetchEnvironments(token)
         setEnvironments(data)
       } catch (err) {
         setError(err instanceof Error ? err : new Error('Failed to fetch environments'))
@@ -39,7 +42,7 @@ export function useEnvironments(): CloudEnvironment[] {
     return () => {
       window.removeEventListener('refresh-environments', handleRefresh)
     }
-  }, [refreshTrigger])
+  }, [refreshTrigger, renown])
 
   if (isLoading || error) {
     return []

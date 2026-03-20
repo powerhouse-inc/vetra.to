@@ -1,11 +1,17 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { createEnvironment, setEnvironmentName, setSubdomain } from '@/modules/cloud/graphql'
+import {
+  getAuthToken,
+  createEnvironment,
+  setEnvironmentName,
+  setSubdomain,
+} from '@/modules/cloud/graphql'
 import { generateSubdomain } from '@/modules/cloud/subdomain'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
@@ -37,6 +43,7 @@ export function NewEnvironmentForm({
   onCreated,
   onSuccess,
 }: NewEnvironmentFormProps) {
+  const renown = useRenown()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -56,11 +63,13 @@ export function NewEnvironmentForm({
       setError(null)
       setSuccess(false)
 
+      const token = await getAuthToken(renown)
+
       if (docId) {
-        await setEnvironmentName(docId, values.name)
+        await setEnvironmentName(docId, values.name, token)
       } else {
-        const env = await createEnvironment(values.name)
-        await setSubdomain(env.id, generateSubdomain(env.id))
+        const env = await createEnvironment(values.name, token)
+        await setSubdomain(env.id, generateSubdomain(env.id), token)
         onCreated?.(env.id)
       }
 
