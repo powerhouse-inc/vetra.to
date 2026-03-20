@@ -1,12 +1,10 @@
 'use client'
 
-import { TanStackDevtools } from '@tanstack/react-devtools'
 import {
   isServer,
   QueryClient,
   QueryClientProvider as TanstackQueryClientProvider,
 } from '@tanstack/react-query'
-import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import type { ReactNode } from 'react'
 
 function makeQueryClient() {
@@ -44,17 +42,5 @@ export default function QueryClientProvider({ children }: { children: ReactNode 
   //       render if it suspends and there is no boundary
   const queryClient = getQueryClient()
 
-  return (
-    <TanstackQueryClientProvider client={queryClient}>
-      {children}
-      <TanStackDevtools
-        plugins={[
-          {
-            name: 'TanStack Query',
-            render: <ReactQueryDevtoolsPanel />,
-          },
-        ]}
-      />
-    </TanstackQueryClientProvider>
-  )
+  return <TanstackQueryClientProvider client={queryClient}>{children}</TanstackQueryClientProvider>
 }
