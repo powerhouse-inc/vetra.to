@@ -1,15 +1,25 @@
 import type { CloudEnvironment, CloudEnvironmentService } from './types'
 
+// Read env vars from window.__ENV (injected at runtime by the server layout)
+// with fallback to process.env (inlined at build time by Next.js).
+function env(key: string): string {
+  if (typeof window !== 'undefined') {
+    const windowEnv = (window as unknown as { __ENV?: Record<string, string> }).__ENV
+    if (windowEnv?.[key]) return windowEnv[key]
+  }
+  return process.env[key] ?? ''
+}
+
 function getEndpoint() {
   return (
-    process.env.NEXT_PUBLIC_CLOUD_SWITCHBOARD_URL ||
-    process.env.NEXT_PUBLIC_SWITCHBOARD_URL ||
+    env('NEXT_PUBLIC_CLOUD_SWITCHBOARD_URL') ||
+    env('NEXT_PUBLIC_SWITCHBOARD_URL') ||
     'https://switchboard.vetra.io/graphql'
   )
 }
 
 function getDriveId() {
-  return process.env.NEXT_PUBLIC_CLOUD_DRIVE_ID || 'powerhouse'
+  return env('NEXT_PUBLIC_CLOUD_DRIVE_ID') || 'powerhouse'
 }
 
 // ---------------------------------------------------------------------------
