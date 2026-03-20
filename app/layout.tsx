@@ -31,11 +31,21 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `window.__ENV=${JSON.stringify({
-              NEXT_PUBLIC_SWITCHBOARD_URL: process.env.NEXT_PUBLIC_SWITCHBOARD_URL ?? '',
+              NEXT_PUBLIC_SWITCHBOARD_URL:
+                process.env.SWITCHBOARD_URL ||
+                process.env.GRAPHQL_ENDPOINT ||
+                process.env.NEXT_PUBLIC_SWITCHBOARD_URL ||
+                '',
               NEXT_PUBLIC_CLOUD_SWITCHBOARD_URL:
-                process.env.NEXT_PUBLIC_CLOUD_SWITCHBOARD_URL ?? '',
-              NEXT_PUBLIC_CLOUD_DRIVE_ID: process.env.NEXT_PUBLIC_CLOUD_DRIVE_ID ?? '',
-              NEXT_PUBLIC_RENOWN_URL: process.env.NEXT_PUBLIC_RENOWN_URL ?? '',
+                process.env.CLOUD_SWITCHBOARD_URL ||
+                process.env.SWITCHBOARD_URL ||
+                process.env.GRAPHQL_ENDPOINT ||
+                process.env.NEXT_PUBLIC_CLOUD_SWITCHBOARD_URL ||
+                '',
+              NEXT_PUBLIC_CLOUD_DRIVE_ID:
+                process.env.CLOUD_DRIVE_ID || process.env.NEXT_PUBLIC_CLOUD_DRIVE_ID || '',
+              NEXT_PUBLIC_RENOWN_URL:
+                process.env.RENOWN_URL || process.env.NEXT_PUBLIC_RENOWN_URL || '',
             })}`,
           }}
         />
