@@ -1,6 +1,6 @@
 'use client'
 
-import dynamic from 'next/dynamic'
+import { useRenownAuth } from '@powerhousedao/reactor-browser'
 import { LogIn, Loader2, MoreVertical, User } from 'lucide-react'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
@@ -14,42 +14,33 @@ import {
 } from '../../ui/dropdown-menu'
 import ThemeIconLabel from './toogle-theme-label'
 
-const RenownLoginButton = dynamic(
-  () => import('../../renown').then((mod) => mod.RenownLoginButton),
-  { ssr: false },
-)
-
 const btnSecondary =
   'bg-accent text-foreground hover:bg-muted inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all cursor-pointer'
 
 function RenownButton() {
+  const auth = useRenownAuth()
+
+  if (auth.status === 'loading' || auth.status === 'checking') {
+    return (
+      <span className={btnSecondary}>
+        <Loader2 className="h-4 w-4 animate-spin" />
+        Loading
+      </span>
+    )
+  }
+  if (auth.status === 'authorized') {
+    return (
+      <button type="button" onClick={auth.openProfile} className={btnSecondary}>
+        <User className="h-4 w-4" />
+        {auth.displayName ?? auth.displayAddress ?? 'Account'}
+      </button>
+    )
+  }
   return (
-    <RenownLoginButton>
-      {(auth) => {
-        if (auth.status === 'loading' || auth.status === 'checking') {
-          return (
-            <span className={btnSecondary}>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Loading
-            </span>
-          )
-        }
-        if (auth.status === 'authorized') {
-          return (
-            <button type="button" onClick={auth.openProfile} className={btnSecondary}>
-              <User className="h-4 w-4" />
-              {auth.displayName ?? auth.displayAddress ?? 'Account'}
-            </button>
-          )
-        }
-        return (
-          <button type="button" onClick={auth.login} className={btnSecondary}>
-            <LogIn className="h-4 w-4" />
-            Log in
-          </button>
-        )
-      }}
-    </RenownLoginButton>
+    <button type="button" onClick={auth.login} className={btnSecondary}>
+      <LogIn className="h-4 w-4" />
+      Log in
+    </button>
   )
 }
 
