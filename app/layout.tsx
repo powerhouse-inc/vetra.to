@@ -1,9 +1,9 @@
 import { Inter } from 'next/font/google'
-import NavbarDynamic from '@/modules/shared/components/navbar/navbar-dynamic'
 import { RenownProvider } from '@/modules/shared/components/renown/renown-provider'
 import { Toaster } from '@/modules/shared/components/ui/sonner'
 import { ThemeProvider } from '@/modules/shared/providers/theme-provider'
 import { Footer } from '@/shared/components/footer/footer'
+import Navbar from '@/shared/components/navbar/navbar'
 import { QueryClientProvider } from '@/shared/providers/query-client'
 import type { Metadata } from 'next'
 
@@ -32,7 +32,7 @@ export default function RootLayout({
           <QueryClientProvider>
             <RenownProvider appName="vetra" url={process.env.NEXT_PUBLIC_RENOWN_URL} />
             <div className="items-right flex min-h-screen flex-col">
-              <NavbarDynamic />
+              <Navbar />
               <main className="flex-1">{children}</main>
               <Footer />
             </div>

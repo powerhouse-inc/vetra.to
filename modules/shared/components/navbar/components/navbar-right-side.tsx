@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { LogIn, Loader2, MoreVertical, User } from 'lucide-react'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
@@ -11,8 +12,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../../ui/dropdown-menu'
-import { RenownLoginButton } from '../../renown'
 import ThemeIconLabel from './toogle-theme-label'
+
+const RenownLoginButton = dynamic(
+  () => import('../../renown').then((mod) => mod.RenownLoginButton),
+  { ssr: false },
+)
 
 const btnSecondary =
   'bg-accent text-foreground hover:bg-muted inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all cursor-pointer'
