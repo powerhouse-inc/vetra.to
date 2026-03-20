@@ -1,4 +1,5 @@
 import { Inter } from 'next/font/google'
+import { headers } from 'next/headers'
 import { RenownProvider } from '@/modules/shared/components/renown/renown-provider'
 import { Toaster } from '@/modules/shared/components/ui/sonner'
 import { ThemeProvider } from '@/modules/shared/providers/theme-provider'
@@ -20,11 +21,15 @@ export const metadata: Metadata = {
   description: 'Vetra',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Calling headers() opts this layout into dynamic rendering,
+  // ensuring process.env is read at request time, not build time.
+  await headers()
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
