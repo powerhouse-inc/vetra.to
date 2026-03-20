@@ -25,6 +25,13 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED=1
 
+# Next.js inlines NEXT_PUBLIC_* env vars at build time.
+# These must be set as build args so they're baked into the bundle.
+ARG NEXT_PUBLIC_SWITCHBOARD_URL
+ARG NEXT_PUBLIC_CLOUD_SWITCHBOARD_URL
+ARG NEXT_PUBLIC_CLOUD_DRIVE_ID
+ARG NEXT_PUBLIC_RENOWN_URL
+
 RUN  corepack enable pnpm && pnpm run build
 
 # Production image, copy all the files and run next

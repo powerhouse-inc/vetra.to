@@ -65,6 +65,10 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             TAG=${{ github.ref_name }}
+            NEXT_PUBLIC_SWITCHBOARD_URL=${{ vars.NEXT_PUBLIC_SWITCHBOARD_URL || 'https://switchboard.staging.vetra.io/graphql' }}
+            NEXT_PUBLIC_CLOUD_SWITCHBOARD_URL=${{ vars.NEXT_PUBLIC_CLOUD_SWITCHBOARD_URL || 'https://switchboard.staging.vetra.io/graphql' }}
+            NEXT_PUBLIC_CLOUD_DRIVE_ID=${{ vars.NEXT_PUBLIC_CLOUD_DRIVE_ID || 'powerhouse' }}
+            NEXT_PUBLIC_RENOWN_URL=${{ vars.NEXT_PUBLIC_RENOWN_URL || '' }}
 
   update-k8s:
     needs: vetra-to
