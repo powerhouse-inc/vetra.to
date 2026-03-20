@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { deleteDocument } from '@/modules/cloud/api'
+import { deleteEnvironment } from '@/modules/cloud/graphql'
 import { useEnvironments, useRefreshEnvironments } from '@/modules/cloud/hooks/use-environment'
 import {
   AlertDialog,
@@ -48,7 +48,7 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await deleteDocument(env.id)
+      await deleteEnvironment(env.id)
       toast.success('Environment deleted successfully')
       refreshEnvironments()
       setShowDeleteDialog(false)

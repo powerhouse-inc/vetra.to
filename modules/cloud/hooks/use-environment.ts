@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { fetchEnvironments } from '../api'
+import { fetchEnvironments } from '../graphql'
 import type { CloudEnvironment } from '../types'
 
 /**

@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
-import { useEnvironmentController } from '@/modules/cloud/hooks/use-environment-controller'
+import { useEnvironmentDetail } from '@/modules/cloud/hooks/use-environment-detail'
 import {
   StripedCard,
   StripedCardContent,
@@ -50,7 +50,7 @@ export type AddPackageFormValues = z.infer<typeof schema>
 
 export default function AddPackagePage({ params }: PageProps) {
   const { project } = use(params)
-  const { controller, state, isLoading, push } = useEnvironmentController(project)
+  const { environment, isLoading, addPackage } = useEnvironmentDetail(project)
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -63,18 +63,9 @@ export default function AddPackagePage({ params }: PageProps) {
   })
 
   const handleSubmit = async (values: AddPackageFormValues) => {
-    if (!controller) {
-      toast.error('Environment not loaded')
-      return
-    }
-
     try {
       setIsSubmitting(true)
-      controller.addPackage({
-        packageName: values.packageName,
-        version: values.version || null,
-      })
-      await push()
+      await addPackage(values.packageName, values.version || undefined)
       toast.success('Package added successfully')
       router.push(`/cloud/${project}`)
     } catch (error) {
@@ -85,7 +76,7 @@ export default function AddPackagePage({ params }: PageProps) {
     }
   }
 
-  const displayName = state?.name || controller?.header.name || 'Loading...'
+  const displayName = environment?.state.name || environment?.name || 'Loading...'
 
   if (isLoading) {
     return (

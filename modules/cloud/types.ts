@@ -1,14 +1,26 @@
+export type CloudEnvironmentService = 'CONNECT' | 'SWITCHBOARD'
+export type CloudEnvironmentStatus = 'STARTED' | 'STOPPED' | 'DEPLOYING'
+
+export type CloudPackage = {
+  name: string
+  version: string | null
+}
+
+export type CloudEnvironmentState = {
+  name: string | null
+  subdomain: string | null
+  customDomain: string | null
+  services: CloudEnvironmentService[]
+  packages: CloudPackage[] | null
+  status: CloudEnvironmentStatus
+}
+
 export type CloudEnvironment = {
   id: string
   name: string
   documentType: string
-  revision: number
   createdAtUtcIso: string
   lastModifiedAtUtcIso: string
-  state: {
-    name: string | null
-    services: string[]
-    packages: Array<{ name: string; version: string | null }> | null
-    status: string
-  }
+  revision: number
+  state: CloudEnvironmentState
 }

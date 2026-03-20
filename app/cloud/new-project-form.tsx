@@ -1,13 +1,12 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import type { EnvironmentController } from '@/modules/cloud/controller'
-import { createEnvironmentController } from '@/modules/cloud/controller'
+import { createEnvironment, setEnvironmentName, setSubdomain } from '@/modules/cloud/graphql'
+import { generateSubdomain } from '@/modules/cloud/subdomain'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
   Form,
@@ -26,21 +25,18 @@ const schema = z.object({
 export type EnvironmentFormValues = z.infer<typeof schema>
 
 type NewEnvironmentFormProps = {
-  controller?: EnvironmentController
-  onPush?: () => Promise<void>
+  docId?: string
   initialName?: string
   onCreated?: (id: string) => void
   onSuccess?: () => void
 }
 
 export function NewEnvironmentForm({
-  controller,
-  onPush,
+  docId,
   initialName,
   onCreated,
   onSuccess,
 }: NewEnvironmentFormProps) {
-  const renown = useRenown()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -52,7 +48,7 @@ export function NewEnvironmentForm({
     },
   })
 
-  const isRenameMode = !!controller
+  const isRenameMode = !!docId
 
   const handleSubmit = async (values: EnvironmentFormValues) => {
     try {
@@ -60,14 +56,12 @@ export function NewEnvironmentForm({
       setError(null)
       setSuccess(false)
 
-      if (controller) {
-        controller.setEnvironmentName({ name: values.name })
-        await onPush?.()
+      if (docId) {
+        await setEnvironmentName(docId, values.name)
       } else {
-        const ctrl = await createEnvironmentController({ signer: renown?.signer })
-        ctrl.setEnvironmentName({ name: values.name })
-        const result = await ctrl.push()
-        onCreated?.(result.remoteDocument.id)
+        const env = await createEnvironment(values.name)
+        await setSubdomain(env.id, generateSubdomain(env.id))
+        onCreated?.(env.id)
       }
 
       setSuccess(true)
@@ -82,7 +76,6 @@ export function NewEnvironmentForm({
 
   return (
     <Form {...form}>
-      {/* keeping it as it comes from shadcn */}
       <form onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="space-y-4">
           <FormField

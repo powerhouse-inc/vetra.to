@@ -10,16 +10,19 @@ import {
   Globe,
   MoreHorizontal,
   Search,
+  Play,
+  Square,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useState, use, useMemo } from 'react'
+import { useState, use, useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { NewEnvironmentForm } from '@/app/cloud/new-project-form'
-import type { EnvironmentController } from '@/modules/cloud/controller'
-import { useEnvironmentController } from '@/modules/cloud/hooks/use-environment-controller'
+import { useEnvironmentDetail } from '@/modules/cloud/hooks/use-environment-detail'
+import { generateSubdomain } from '@/modules/cloud/subdomain'
+import type { CloudEnvironmentService } from '@/modules/cloud/types'
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
@@ -64,14 +67,7 @@ const addPackageSchema = z.object({
 
 type AddPackageFormValues = z.infer<typeof addPackageSchema>
 
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-}
-
-function StatusDot({ status }: { status: 'STARTED' | 'STOPPED' | string }) {
+function StatusDot({ status }: { status: string }) {
   const colorClass =
     status === 'STARTED'
       ? 'bg-emerald-500'
@@ -83,11 +79,9 @@ function StatusDot({ status }: { status: 'STARTED' | 'STOPPED' | string }) {
 }
 
 function AddPackageModal({
-  controller,
-  onPush,
+  onAdd,
 }: {
-  controller: EnvironmentController
-  onPush: () => Promise<void>
+  onAdd: (packageName: string, version?: string) => Promise<void>
 }) {
   const [open, setOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -100,11 +94,7 @@ function AddPackageModal({
   const handleSubmit = async (values: AddPackageFormValues) => {
     try {
       setIsSubmitting(true)
-      controller.addPackage({
-        packageName: values.packageName,
-        version: values.version || null,
-      })
-      await onPush()
+      await onAdd(values.packageName, values.version || undefined)
       toast.success('Package added successfully')
       form.reset()
       setOpen(false)
@@ -175,20 +165,17 @@ function AddPackageModal({
 
 function PackageRow({
   pkg,
-  controller,
-  onPush,
+  onRemove,
 }: {
   pkg: { name: string; version: string | null | undefined }
-  controller: EnvironmentController
-  onPush: () => Promise<void>
+  onRemove: (name: string) => Promise<void>
 }) {
   const [isRemoving, setIsRemoving] = useState(false)
 
   const handleUninstall = async () => {
     try {
       setIsRemoving(true)
-      controller.removePackage({ packageName: pkg.name })
-      await onPush()
+      await onRemove(pkg.name)
       toast.success(`Uninstalled ${pkg.name}`)
     } catch (error) {
       console.error('Failed to remove package:', error)
@@ -235,38 +222,31 @@ function PackageRow({
   )
 }
 
-type ServiceName = 'CONNECT' | 'SWITCHBOARD'
-
 function ServiceRow({
   serviceName,
   label,
   icon: Icon,
-  nameSlug,
+  subdomain,
   isEnabled,
-  controller,
-  onPush,
+  onToggle,
 }: {
-  serviceName: ServiceName
+  serviceName: CloudEnvironmentService
   label: string
   icon: React.ComponentType<{ className?: string }>
-  nameSlug: string
+  subdomain: string | null
   isEnabled: boolean
-  controller: EnvironmentController
-  onPush: () => Promise<void>
+  onToggle: (enabled: boolean) => Promise<void>
 }) {
   const [isToggling, setIsToggling] = useState(false)
-  const subdomain = serviceName === 'CONNECT' ? 'connect' : 'switchboard'
-  const serviceUrl = nameSlug ? `${subdomain}.${nameSlug}.vetra.io` : `${subdomain}.<name>.vetra.io`
+  const prefix = serviceName === 'CONNECT' ? 'connect' : 'switchboard'
+  const serviceUrl = subdomain
+    ? `${prefix}.${subdomain}.vetra.io`
+    : `${prefix}.<subdomain>.vetra.io`
 
   const handleToggle = async (checked: boolean) => {
     try {
       setIsToggling(true)
-      if (checked) {
-        controller.enableService({ serviceName })
-      } else {
-        controller.disableService({ serviceName })
-      }
-      await onPush()
+      await onToggle(checked)
       toast.success(`${label} ${checked ? 'enabled' : 'disabled'}`)
     } catch (error) {
       console.error(`Failed to toggle ${label}:`, error)
@@ -307,6 +287,57 @@ function ServiceRow({
   )
 }
 
+function StartStopButton({
+  isRunning,
+  onStart,
+  onStop,
+}: {
+  isRunning: boolean
+  onStart: () => Promise<void>
+  onStop: () => Promise<void>
+}) {
+  const [isToggling, setIsToggling] = useState(false)
+
+  const handleToggle = async () => {
+    try {
+      setIsToggling(true)
+      if (isRunning) {
+        await onStop()
+      } else {
+        await onStart()
+      }
+      toast.success(`Environment ${isRunning ? 'stopped' : 'started'}`)
+    } catch (error) {
+      console.error('Failed to toggle environment:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to toggle environment')
+    } finally {
+      setIsToggling(false)
+    }
+  }
+
+  return (
+    <Button
+      variant={isRunning ? 'outline' : 'default'}
+      size="sm"
+      onClick={handleToggle}
+      disabled={isToggling}
+      className="flex items-center gap-1.5"
+    >
+      {isRunning ? (
+        <>
+          <Square className="h-3.5 w-3.5" />
+          {isToggling ? 'Stopping...' : 'Stop'}
+        </>
+      ) : (
+        <>
+          <Play className="h-3.5 w-3.5" />
+          {isToggling ? 'Starting...' : 'Start'}
+        </>
+      )}
+    </Button>
+  )
+}
+
 type PageProps = {
   params: Promise<{
     project: string
@@ -315,18 +346,34 @@ type PageProps = {
 
 export default function EnvironmentDetailPage({ params }: PageProps) {
   const { project } = use(params)
-  const { controller, state, isLoading, push } = useEnvironmentController(project)
+  const {
+    environment,
+    isLoading,
+    setSubdomain,
+    enableService,
+    disableService,
+    addPackage,
+    removePackage,
+    start,
+    stop,
+  } = useEnvironmentDetail(project)
 
-  const header = controller?.header
-  const displayName = state?.name || header?.name || 'Loading...'
+  const state = environment?.state
+  const displayName = state?.name || environment?.name || 'Loading...'
   const isRunning = state?.status === 'STARTED'
+  const subdomain = state?.subdomain ?? null
 
-  const nameSlug = useMemo(() => {
-    const name = state?.name || header?.name
-    return name ? slugify(name) : ''
-  }, [state?.name, header?.name])
+  // Auto-heal: set subdomain if missing
+  const subdomainHealedRef = useRef(false)
+  useEffect(() => {
+    if (!environment || subdomainHealedRef.current) return
+    if (environment.state.subdomain === null) {
+      subdomainHealedRef.current = true
+      setSubdomain(generateSubdomain(environment.id))
+    }
+  }, [environment, setSubdomain])
 
-  const genericDomain = nameSlug ? `${nameSlug}.vetra.io` : '<name>.vetra.io'
+  const genericDomain = subdomain ? `${subdomain}.vetra.io` : '<subdomain>.vetra.io'
 
   if (isLoading) {
     return (
@@ -358,10 +405,11 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
               {state.status}
             </Badge>
           )}
+          {state && <StartStopButton isRunning={isRunning} onStart={start} onStop={stop} />}
         </div>
       </div>
 
-      {controller && state && (
+      {state && (
         <Tabs defaultValue="overview">
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -425,7 +473,7 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
                     <Package className="h-4 w-4" />
                     Reactor Modules
                   </CardTitle>
-                  <AddPackageModal controller={controller} onPush={push} />
+                  <AddPackageModal onAdd={addPackage} />
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -449,12 +497,7 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
                     </TableHeader>
                     <TableBody>
                       {state.packages.map((pkg) => (
-                        <PackageRow
-                          key={pkg.name}
-                          pkg={pkg}
-                          controller={controller}
-                          onPush={push}
-                        />
+                        <PackageRow key={pkg.name} pkg={pkg} onRemove={removePackage} />
                       ))}
                     </TableBody>
                   </Table>
@@ -480,19 +523,21 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
                   serviceName="CONNECT"
                   label="Powerhouse Connect"
                   icon={Globe}
-                  nameSlug={nameSlug}
+                  subdomain={subdomain}
                   isEnabled={state.services.includes('CONNECT')}
-                  controller={controller}
-                  onPush={push}
+                  onToggle={(enabled) =>
+                    enabled ? enableService('CONNECT') : disableService('CONNECT')
+                  }
                 />
                 <ServiceRow
                   serviceName="SWITCHBOARD"
                   label="Powerhouse Switchboard"
                   icon={Server}
-                  nameSlug={nameSlug}
+                  subdomain={subdomain}
                   isEnabled={state.services.includes('SWITCHBOARD')}
-                  controller={controller}
-                  onPush={push}
+                  onToggle={(enabled) =>
+                    enabled ? enableService('SWITCHBOARD') : disableService('SWITCHBOARD')
+                  }
                 />
               </CardContent>
             </Card>
@@ -508,15 +553,11 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <NewEnvironmentForm
-                  controller={controller}
-                  onPush={push}
-                  initialName={state.name || ''}
-                />
+                <NewEnvironmentForm docId={environment!.id} initialName={state.name || ''} />
               </CardContent>
             </Card>
 
-            {header && (
+            {environment && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-base">
@@ -527,26 +568,30 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
                 <CardContent className="space-y-3">
                   <div>
                     <dt className="text-muted-foreground text-xs font-medium">Document ID</dt>
-                    <dd className="mt-0.5 font-mono text-xs break-all">{header.id}</dd>
+                    <dd className="mt-0.5 font-mono text-xs break-all">{environment.id}</dd>
                   </div>
                   <div>
                     <dt className="text-muted-foreground text-xs font-medium">Type</dt>
-                    <dd className="mt-0.5 text-sm">{header.documentType}</dd>
+                    <dd className="mt-0.5 text-sm">{environment.documentType}</dd>
                   </div>
                   <div>
                     <dt className="text-muted-foreground text-xs font-medium">Revision</dt>
-                    <dd className="mt-0.5 text-sm">{header.revision.global ?? 0}</dd>
+                    <dd className="mt-0.5 text-sm">{environment.revision}</dd>
                   </div>
                   <div>
                     <dt className="text-muted-foreground text-xs font-medium">Created</dt>
                     <dd className="mt-0.5 text-sm">
-                      {new Date(header.createdAtUtcIso).toLocaleDateString()}
+                      {environment.createdAtUtcIso
+                        ? new Date(environment.createdAtUtcIso).toLocaleDateString()
+                        : '—'}
                     </dd>
                   </div>
                   <div>
                     <dt className="text-muted-foreground text-xs font-medium">Last Modified</dt>
                     <dd className="mt-0.5 text-sm">
-                      {new Date(header.lastModifiedAtUtcIso).toLocaleDateString()}
+                      {environment.lastModifiedAtUtcIso
+                        ? new Date(environment.lastModifiedAtUtcIso).toLocaleDateString()
+                        : '—'}
                     </dd>
                   </div>
                 </CardContent>
