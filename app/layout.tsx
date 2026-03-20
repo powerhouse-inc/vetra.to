@@ -38,8 +38,6 @@ export default function RootLayout({
                 '',
               NEXT_PUBLIC_CLOUD_SWITCHBOARD_URL:
                 process.env.CLOUD_SWITCHBOARD_URL ||
-                process.env.SWITCHBOARD_URL ||
-                process.env.GRAPHQL_ENDPOINT ||
                 process.env.NEXT_PUBLIC_CLOUD_SWITCHBOARD_URL ||
                 '',
               NEXT_PUBLIC_CLOUD_DRIVE_ID:
