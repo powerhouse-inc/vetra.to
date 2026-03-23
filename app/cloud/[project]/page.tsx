@@ -1,291 +1,34 @@
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Package,
-  Server,
-  Settings,
-  Plus,
-  ArrowLeft,
-  Globe,
-  MoreHorizontal,
-  Search,
-  Play,
-  Square,
-} from 'lucide-react'
+import { ArrowLeft, ExternalLink, Play, Square } from 'lucide-react'
 import Link from 'next/link'
-import { useState, use, useEffect, useRef } from 'react'
-import { useForm } from 'react-hook-form'
+import { Suspense, use, useEffect, useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
-import { NewEnvironmentForm } from '@/app/cloud/new-project-form'
 import { useEnvironmentDetail } from '@/modules/cloud/hooks/use-environment-detail'
+import { useEnvironmentStatus } from '@/modules/cloud/hooks/use-environment-status'
 import { generateSubdomain } from '@/modules/cloud/subdomain'
-import type { CloudEnvironmentService } from '@/modules/cloud/types'
-import { Badge } from '@/modules/shared/components/ui/badge'
+import { getTenantId } from '@/modules/cloud/tenant-id'
+import { StatusBadge } from '@/modules/cloud/components/status-badge'
 import { Button } from '@/modules/shared/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
-import { Checkbox } from '@/modules/shared/components/ui/checkbox'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/modules/shared/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/modules/shared/components/ui/dropdown-menu'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/modules/shared/components/ui/form'
-import { Input } from '@/modules/shared/components/ui/input'
-import { Switch } from '@/modules/shared/components/ui/switch'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/modules/shared/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/shared/components/ui/tabs'
 
-const addPackageSchema = z.object({
-  packageName: z.string().min(1, 'Package name is required'),
-  version: z.string().optional(),
-})
+import { DeploymentsTab } from './tabs/deployments'
+import { LogsTab } from './tabs/logs'
+import { MetricsTab } from './tabs/metrics'
+import { OverviewTab } from './tabs/overview'
+import { SettingsTab } from './tabs/settings'
 
-type AddPackageFormValues = z.infer<typeof addPackageSchema>
-
-function StatusDot({ status }: { status: string }) {
-  const colorClass =
-    status === 'STARTED'
-      ? 'bg-emerald-500'
-      : status === 'DEPLOYING'
-        ? 'bg-yellow-500'
-        : 'bg-muted-foreground'
-
-  return <span className={`inline-block h-2 w-2 rounded-full ${colorClass}`} />
-}
-
-function AddPackageModal({
-  onAdd,
-}: {
-  onAdd: (packageName: string, version?: string) => Promise<void>
-}) {
-  const [open, setOpen] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const form = useForm<AddPackageFormValues>({
-    resolver: zodResolver(addPackageSchema),
-    defaultValues: { packageName: '', version: '' },
-  })
-
-  const handleSubmit = async (values: AddPackageFormValues) => {
-    try {
-      setIsSubmitting(true)
-      await onAdd(values.packageName, values.version || undefined)
-      toast.success('Package added successfully')
-      form.reset()
-      setOpen(false)
-    } catch (error) {
-      console.error('Failed to add package:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to add package')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="flex items-center gap-1">
-          <Plus className="h-3 w-3" />
-          Add
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add Package</DialogTitle>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)}>
-            <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="packageName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Package Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. @powerhouse/my-package" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="version"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Version (optional)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. 1.0.0" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="mt-6 flex gap-2">
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Adding...' : 'Add Package'}
-              </Button>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-function PackageRow({
-  pkg,
-  onRemove,
-}: {
-  pkg: { name: string; version: string | null | undefined }
-  onRemove: (name: string) => Promise<void>
-}) {
-  const [isRemoving, setIsRemoving] = useState(false)
-
-  const handleUninstall = async () => {
-    try {
-      setIsRemoving(true)
-      await onRemove(pkg.name)
-      toast.success(`Uninstalled ${pkg.name}`)
-    } catch (error) {
-      console.error('Failed to remove package:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to remove package')
-    } finally {
-      setIsRemoving(false)
-    }
-  }
-
-  return (
-    <TableRow>
-      <TableCell>
-        <div className="flex items-center gap-2">
-          <Package className="text-muted-foreground h-4 w-4 shrink-0" />
-          <span className="font-medium">{pkg.name}</span>
-        </div>
-      </TableCell>
-      <TableCell>
-        {pkg.version ? (
-          <Badge variant="secondary" className="font-mono text-xs">
-            {pkg.version}
-          </Badge>
-        ) : (
-          <span className="text-muted-foreground text-sm">&mdash;</span>
-        )}
-      </TableCell>
-      <TableCell className="text-right">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" disabled={isRemoving}>
-              <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">Actions</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem disabled>Upgrade to version...</DropdownMenuItem>
-            <DropdownMenuItem variant="destructive" onClick={handleUninstall}>
-              Uninstall
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </TableCell>
-    </TableRow>
-  )
-}
-
-function ServiceRow({
-  serviceName,
-  label,
-  icon: Icon,
-  subdomain,
-  isEnabled,
-  onToggle,
-}: {
-  serviceName: CloudEnvironmentService
-  label: string
-  icon: React.ComponentType<{ className?: string }>
-  subdomain: string | null
-  isEnabled: boolean
-  onToggle: (enabled: boolean) => Promise<void>
-}) {
-  const [isToggling, setIsToggling] = useState(false)
-  const prefix = serviceName === 'CONNECT' ? 'connect' : 'switchboard'
-  const serviceUrl = subdomain
-    ? `${prefix}.${subdomain}.vetra.io`
-    : `${prefix}.<subdomain>.vetra.io`
-
-  const handleToggle = async (checked: boolean) => {
-    try {
-      setIsToggling(true)
-      await onToggle(checked)
-      toast.success(`${label} ${checked ? 'enabled' : 'disabled'}`)
-    } catch (error) {
-      console.error(`Failed to toggle ${label}:`, error)
-      toast.error(error instanceof Error ? error.message : `Failed to toggle ${label}`)
-    } finally {
-      setIsToggling(false)
-    }
-  }
-
-  return (
-    <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
-      <div className="flex items-center gap-3">
-        <div className="bg-muted flex h-9 w-9 items-center justify-center rounded-md">
-          <Icon className="text-muted-foreground h-5 w-5" />
-        </div>
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">{label}</span>
-            <StatusDot status={isEnabled ? 'STARTED' : 'STOPPED'} />
-          </div>
-          <a
-            href={`https://${serviceUrl}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:text-primary/80 truncate font-mono text-xs underline underline-offset-2"
-          >
-            https://{serviceUrl}
-          </a>
-        </div>
-      </div>
-      <Switch
-        checked={isEnabled}
-        onCheckedChange={handleToggle}
-        disabled={isToggling}
-        aria-label={`Toggle ${label}`}
-      />
-    </div>
-  )
-}
+// ---------------------------------------------------------------------------
+// StartStopButton
+// ---------------------------------------------------------------------------
 
 function StartStopButton({
   isRunning,
@@ -338,30 +81,26 @@ function StartStopButton({
   )
 }
 
-type PageProps = {
-  params: Promise<{
-    project: string
-  }>
-}
+// ---------------------------------------------------------------------------
+// EnvironmentDetail — inner component that uses useSearchParams
+// (must be wrapped in <Suspense> per Next.js 15 requirements)
+// ---------------------------------------------------------------------------
 
-export default function EnvironmentDetailPage({ params }: PageProps) {
-  const { project } = use(params)
-  const {
-    environment,
-    isLoading,
-    setSubdomain,
-    enableService,
-    disableService,
-    addPackage,
-    removePackage,
-    start,
-    stop,
-  } = useEnvironmentDetail(project)
+function EnvironmentDetail({ documentId }: { documentId: string }) {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const activeTab = searchParams.get('tab') ?? 'overview'
+
+  const detail = useEnvironmentDetail(documentId)
+  const { environment, isLoading } = detail
 
   const state = environment?.state
-  const displayName = state?.name || environment?.name || 'Loading...'
-  const isRunning = state?.status === 'STARTED'
   const subdomain = state?.subdomain ?? null
+  const tenantId = subdomain && environment ? getTenantId(subdomain, environment.id) : null
+  const isRunning = state?.status === 'STARTED'
+  const isStopped = state?.status !== 'STARTED'
+
+  const { status: envStatus, isLoading: statusLoading } = useEnvironmentStatus(subdomain, tenantId)
 
   // Auto-heal: set subdomain if missing
   const subdomainHealedRef = useRef(false)
@@ -369,22 +108,26 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
     if (!environment || subdomainHealedRef.current) return
     if (environment.state.subdomain === null) {
       subdomainHealedRef.current = true
-      setSubdomain(generateSubdomain(environment.id))
+      detail.setSubdomain(generateSubdomain(environment.id))
     }
-  }, [environment, setSubdomain])
+  }, [environment, detail.setSubdomain])
 
-  const genericDomain = subdomain ? `${subdomain}.vetra.io` : '<subdomain>.vetra.io'
-
-  if (isLoading) {
-    return (
-      <main className="mx-auto mt-20 max-w-[var(--container-width)] px-6 py-8">
-        <p className="text-muted-foreground">Loading environment...</p>
-      </main>
-    )
+  const handleTabChange = (tab: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('tab', tab)
+    router.replace(`?${params.toString()}`, { scroll: false })
   }
 
+  if (isLoading) {
+    return <p className="text-muted-foreground">Loading environment...</p>
+  }
+
+  const displayName = state?.name || environment?.name || 'Environment'
+  const connectUrl = subdomain ? `https://connect.${subdomain}.vetra.io` : null
+  const switchboardUrl = subdomain ? `https://switchboard.${subdomain}.vetra.io` : null
+
   return (
-    <main className="mx-auto mt-20 max-w-[var(--container-width)] space-y-8 px-6 py-8">
+    <>
       {/* Header */}
       <div className="space-y-3">
         <Link
@@ -397,209 +140,104 @@ export default function EnvironmentDetailPage({ params }: PageProps) {
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold">{displayName}</h2>
           {state && (
-            <Badge
-              variant={isRunning ? 'default' : 'secondary'}
-              className="flex items-center gap-1.5"
-            >
-              <StatusDot status={state.status} />
-              {state.status}
-            </Badge>
+            <StatusBadge
+              environmentStatus={state.status}
+              argoHealthStatus={envStatus?.argoHealthStatus}
+              argoSyncStatus={envStatus?.argoSyncStatus}
+              isLoading={statusLoading && !envStatus}
+            />
           )}
-          {state && <StartStopButton isRunning={isRunning} onStart={start} onStop={stop} />}
+          {state && (
+            <StartStopButton isRunning={isRunning} onStart={detail.start} onStop={detail.stop} />
+          )}
+
+          {/* Visit dropdown */}
+          {subdomain && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center gap-1.5">
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Visit
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {connectUrl && (
+                  <DropdownMenuItem asChild>
+                    <a href={connectUrl} target="_blank" rel="noopener noreferrer">
+                      Connect
+                    </a>
+                  </DropdownMenuItem>
+                )}
+                {switchboardUrl && (
+                  <DropdownMenuItem asChild>
+                    <a href={switchboardUrl} target="_blank" rel="noopener noreferrer">
+                      Switchboard
+                    </a>
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
 
-      {state && (
-        <Tabs defaultValue="overview">
+      {/* Tabs */}
+      {state && environment && (
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="deployments">Deployments</TabsTrigger>
+            <TabsTrigger value="logs">Logs</TabsTrigger>
+            <TabsTrigger value="metrics">Metrics</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
-
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6 pt-4">
-            {/* Domain Configuration */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Globe className="h-4 w-4" />
-                  Domain Configuration
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-1">
-                  <label className="text-muted-foreground text-sm font-medium">
-                    Generic Domain:
-                  </label>
-                  <Input value={genericDomain} readOnly className="bg-muted font-mono text-sm" />
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Checkbox id="custom-domain" disabled />
-                    <label
-                      htmlFor="custom-domain"
-                      className="text-muted-foreground text-sm font-medium"
-                    >
-                      Custom Domain
-                    </label>
-                    <Badge variant="outline" className="text-xs">
-                      Coming soon
-                    </Badge>
-                  </div>
-                  <Input
-                    placeholder="e.g. my-app.example.com"
-                    disabled
-                    className="font-mono text-sm"
-                  />
-                </div>
-
-                <div className="space-y-2 pt-2">
-                  <h4 className="text-muted-foreground text-sm font-medium">DNS Records</h4>
-                  <div className="bg-muted/50 rounded-md border p-4">
-                    <p className="text-muted-foreground text-sm">
-                      Will be available when custom domain is set
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Reactor Modules */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Package className="h-4 w-4" />
-                    Reactor Modules
-                  </CardTitle>
-                  <AddPackageModal onAdd={addPackage} />
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="relative">
-                  <Search className="text-muted-foreground absolute top-2.5 left-3 h-4 w-4" />
-                  <Input
-                    placeholder="Search registry coming soon"
-                    disabled
-                    className="pl-9 text-sm"
-                  />
-                </div>
-
-                {state.packages && state.packages.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Package</TableHead>
-                        <TableHead>Version</TableHead>
-                        <TableHead className="w-12 text-right" />
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {state.packages.map((pkg) => (
-                        <PackageRow key={pkg.name} pkg={pkg} onRemove={removePackage} />
-                      ))}
-                    </TableBody>
-                  </Table>
-                ) : (
-                  <div className="flex flex-col items-center justify-center gap-2 py-8">
-                    <Package className="text-muted-foreground h-8 w-8" />
-                    <p className="text-muted-foreground text-sm">No packages installed</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Services */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Server className="h-4 w-4" />
-                  Services
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <ServiceRow
-                  serviceName="CONNECT"
-                  label="Powerhouse Connect"
-                  icon={Globe}
-                  subdomain={subdomain}
-                  isEnabled={state.services.includes('CONNECT')}
-                  onToggle={(enabled) =>
-                    enabled ? enableService('CONNECT') : disableService('CONNECT')
-                  }
-                />
-                <ServiceRow
-                  serviceName="SWITCHBOARD"
-                  label="Powerhouse Switchboard"
-                  icon={Server}
-                  subdomain={subdomain}
-                  isEnabled={state.services.includes('SWITCHBOARD')}
-                  onToggle={(enabled) =>
-                    enabled ? enableService('SWITCHBOARD') : disableService('SWITCHBOARD')
-                  }
-                />
-              </CardContent>
-            </Card>
+          <TabsContent value="overview" className="pt-4">
+            <OverviewTab
+              subdomain={subdomain}
+              tenantId={tenantId}
+              environment={environment}
+              onTabChange={handleTabChange}
+            />
           </TabsContent>
-
-          {/* Settings Tab */}
-          <TabsContent value="settings" className="space-y-6 pt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Settings className="h-4 w-4" />
-                  Rename Environment
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <NewEnvironmentForm docId={environment!.id} initialName={state.name || ''} />
-              </CardContent>
-            </Card>
-
-            {environment && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Server className="h-4 w-4" />
-                    Metadata
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <dt className="text-muted-foreground text-xs font-medium">Document ID</dt>
-                    <dd className="mt-0.5 font-mono text-xs break-all">{environment.id}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-muted-foreground text-xs font-medium">Type</dt>
-                    <dd className="mt-0.5 text-sm">{environment.documentType}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-muted-foreground text-xs font-medium">Revision</dt>
-                    <dd className="mt-0.5 text-sm">{environment.revision}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-muted-foreground text-xs font-medium">Created</dt>
-                    <dd className="mt-0.5 text-sm">
-                      {environment.createdAtUtcIso
-                        ? new Date(environment.createdAtUtcIso).toLocaleDateString()
-                        : '—'}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-muted-foreground text-xs font-medium">Last Modified</dt>
-                    <dd className="mt-0.5 text-sm">
-                      {environment.lastModifiedAtUtcIso
-                        ? new Date(environment.lastModifiedAtUtcIso).toLocaleDateString()
-                        : '—'}
-                    </dd>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+          <TabsContent value="deployments" className="pt-4">
+            <DeploymentsTab subdomain={subdomain} tenantId={tenantId} />
+          </TabsContent>
+          <TabsContent value="logs" className="pt-4">
+            <LogsTab subdomain={subdomain} tenantId={tenantId} isStopped={isStopped} />
+          </TabsContent>
+          <TabsContent value="metrics" className="pt-4">
+            <MetricsTab subdomain={subdomain} tenantId={tenantId} isStopped={isStopped} />
+          </TabsContent>
+          <TabsContent value="settings" className="pt-4">
+            <SettingsTab
+              environment={environment}
+              enableService={detail.enableService}
+              disableService={detail.disableService}
+              addPackage={detail.addPackage}
+              removePackage={detail.removePackage}
+            />
           </TabsContent>
         </Tabs>
       )}
+    </>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Page — wraps EnvironmentDetail in Suspense for useSearchParams
+// ---------------------------------------------------------------------------
+
+type PageProps = {
+  params: Promise<{ project: string }>
+}
+
+export default function EnvironmentDetailPage({ params }: PageProps) {
+  const { project } = use(params)
+  return (
+    <main className="mx-auto mt-20 max-w-[var(--container-width)] space-y-8 px-6 py-8">
+      <Suspense fallback={<p className="text-muted-foreground">Loading...</p>}>
+        <EnvironmentDetail documentId={project} />
+      </Suspense>
     </main>
   )
 }
