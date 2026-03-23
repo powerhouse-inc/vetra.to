@@ -1,4 +1,14 @@
-import type { CloudEnvironment, CloudEnvironmentService } from './types'
+import type {
+  CloudEnvironment,
+  CloudEnvironmentService,
+  EnvironmentStatus,
+  Pod,
+  KubeEvent,
+  MetricSeries,
+  LogEntry,
+  MetricRange,
+  TenantService,
+} from './types'
 
 // Read env vars from window.__ENV (injected at runtime by the server layout)
 // with fallback to process.env (inlined at build time by Next.js).
@@ -353,4 +363,170 @@ export async function deleteEnvironment(docId: string, token?: string | null): P
     { identifier: docId },
     token,
   )
+}
+
+// ---------------------------------------------------------------------------
+// Observability endpoint (per-tenant Switchboard)
+// ---------------------------------------------------------------------------
+
+function getObservabilityEndpoint(subdomain: string): string {
+  return `https://switchboard.${subdomain}.vetra.io/graphql`
+}
+
+async function gqlObservability<T>(
+  subdomain: string,
+  query: string,
+  variables?: Record<string, unknown>,
+  token?: string | null,
+): Promise<T> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+
+  const res = await fetch(getObservabilityEndpoint(subdomain), {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ query, variables }),
+  })
+
+  const json = await res.json()
+
+  if (json.errors?.length) {
+    throw new Error(json.errors[0].message)
+  }
+
+  return json.data as T
+}
+
+// ---------------------------------------------------------------------------
+// Observability queries
+// ---------------------------------------------------------------------------
+
+export async function fetchEnvironmentStatus(
+  subdomain: string,
+  tenantId: string,
+  token?: string | null,
+): Promise<EnvironmentStatus | null> {
+  const data = await gqlObservability<{ environmentStatus: EnvironmentStatus | null }>(
+    subdomain,
+    `query ($tenantId: String!) {
+      environmentStatus(tenantId: $tenantId) {
+        tenantId argoSyncStatus argoHealthStatus argoLastSyncedAt
+        argoMessage configDriftDetected tlsCertValid tlsCertExpiresAt
+        domainResolves updatedAt
+      }
+    }`,
+    { tenantId },
+    token,
+  )
+  return data.environmentStatus
+}
+
+export async function fetchEnvironmentPods(
+  subdomain: string,
+  tenantId: string,
+  token?: string | null,
+): Promise<Pod[]> {
+  const data = await gqlObservability<{ environmentPods: Pod[] }>(
+    subdomain,
+    `query ($tenantId: String!) {
+      environmentPods(tenantId: $tenantId) {
+        name service phase ready restartCount updatedAt
+      }
+    }`,
+    { tenantId },
+    token,
+  )
+  return data.environmentPods
+}
+
+export async function fetchEnvironmentEvents(
+  subdomain: string,
+  tenantId: string,
+  limit?: number,
+  token?: string | null,
+): Promise<KubeEvent[]> {
+  const data = await gqlObservability<{ environmentEvents: KubeEvent[] }>(
+    subdomain,
+    `query ($tenantId: String!, $limit: Int) {
+      environmentEvents(tenantId: $tenantId, limit: $limit) {
+        type reason message involvedObject timestamp
+      }
+    }`,
+    { tenantId, limit },
+    token,
+  )
+  return data.environmentEvents
+}
+
+export async function fetchMetrics(
+  subdomain: string,
+  tenantId: string,
+  range: MetricRange,
+  token?: string | null,
+): Promise<{
+  cpu: MetricSeries[]
+  memory: MetricSeries[]
+  requestRate: MetricSeries[]
+  latency: MetricSeries[]
+}> {
+  const data = await gqlObservability<{
+    cpuUsage: MetricSeries[]
+    memoryUsage: MetricSeries[]
+    httpRequestRate: MetricSeries[]
+    httpLatency: MetricSeries[]
+  }>(
+    subdomain,
+    `query ($tenantId: String!, $range: MetricRange) {
+      cpuUsage(tenantId: $tenantId, range: $range) { label datapoints { timestamp value } }
+      memoryUsage(tenantId: $tenantId, range: $range) { label datapoints { timestamp value } }
+      httpRequestRate(tenantId: $tenantId, range: $range) { label datapoints { timestamp value } }
+      httpLatency(tenantId: $tenantId, range: $range) { label datapoints { timestamp value } }
+    }`,
+    { tenantId, range },
+    token,
+  )
+  return {
+    cpu: data.cpuUsage,
+    memory: data.memoryUsage,
+    requestRate: data.httpRequestRate,
+    latency: data.httpLatency,
+  }
+}
+
+export async function fetchLogs(
+  subdomain: string,
+  tenantId: string,
+  service: TenantService | null,
+  since: MetricRange,
+  limit: number,
+  errorsOnly: boolean,
+  token?: string | null,
+): Promise<LogEntry[]> {
+  if (errorsOnly) {
+    const data = await gqlObservability<{ errorLogs: LogEntry[] }>(
+      subdomain,
+      `query ($tenantId: String!, $since: MetricRange, $limit: Int) {
+        errorLogs(tenantId: $tenantId, since: $since, limit: $limit) {
+          timestamp line
+        }
+      }`,
+      { tenantId, since, limit },
+      token,
+    )
+    return data.errorLogs
+  }
+
+  const data = await gqlObservability<{ logs: LogEntry[] }>(
+    subdomain,
+    `query ($tenantId: String!, $service: TenantService, $since: MetricRange, $limit: Int) {
+      logs(tenantId: $tenantId, service: $service, since: $since, limit: $limit) {
+        timestamp line
+      }
+    }`,
+    { tenantId, service, since, limit },
+    token,
+  )
+  return data.logs
 }
