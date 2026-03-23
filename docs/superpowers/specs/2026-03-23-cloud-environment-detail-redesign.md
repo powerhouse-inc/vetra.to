@@ -33,9 +33,11 @@ Available queries:
 - Status pill derived from `environmentStatus`:
   - `Healthy` (green) — argoHealthStatus=HEALTHY and argoSyncStatus=SYNCED
   - `Degraded` (yellow) — argoHealthStatus=DEGRADED
+  - `Deploying` (yellow pulse) — document status=DEPLOYING (before ArgoCD picks it up)
   - `Syncing` (blue pulse) — argoHealthStatus=PROGRESSING or argoSyncStatus=OUT_OF_SYNC
   - `Down` (red) — argoHealthStatus=MISSING or all pods not ready
   - `Stopped` (gray) — document status=STOPPED
+- While status data is loading, show a gray skeleton pill and disable the Start/Stop button
 - Primary action button: Start (when stopped) / Stop (when started)
 - "Visit" dropdown: links to Connect and Switchboard URLs (`https://{service}.{subdomain}.vetra.io`)
 
@@ -183,7 +185,17 @@ This is derived once when the environment detail loads (subdomain is in the docu
 
 ### GraphQL Endpoint
 
-Observability queries go to the same Switchboard GraphQL endpoint as existing mutations. The subgraph is registered on the same server — no new endpoint needed.
+Observability queries go to the **per-tenant** Switchboard, not the central one. The central Switchboard (`switchboard.vetra.io`) handles document mutations. The per-tenant Switchboard (`switchboard.{subdomain}.vetra.io`) hosts the observability subgraph.
+
+Add a helper to resolve the per-tenant endpoint:
+
+```typescript
+function getObservabilityEndpoint(subdomain: string): string {
+  return `https://switchboard.${subdomain}.vetra.io/graphql`
+}
+```
+
+All observability query functions (`fetchEnvironmentStatus`, `fetchEnvironmentPods`, `fetchMetrics`, `fetchLogs`, `fetchEnvironmentEvents`) must accept a `subdomain` parameter and use `getObservabilityEndpoint(subdomain)` instead of the central `getEndpoint()`.
 
 ### New Queries
 
@@ -210,7 +222,7 @@ errorLogs(tenantId: String!, since: MetricRange, limit: Int): [LogEntry!]!
 | `useEnvironmentLogs(tenantId, service, range, errorsOnly)` | `logs` or `errorLogs`                   | 10s                 |
 | `useEnvironmentMetrics(tenantId, range)`                   | All 4 metric queries in parallel        | 30s                 |
 
-Each hook follows the existing pattern: uses `gql()` helper from `modules/cloud/graphql.ts` with auth token from Renown, returns typed data + loading/error states via React Query.
+Each hook follows the existing pattern: uses `useState` + `useEffect` + `useCallback` with `useRenown()` for auth (same as `use-environment-detail.ts`). Polling is implemented via `setInterval` in a `useEffect`. Manual refresh calls the same fetch function and resets the interval.
 
 ## New Components
 
