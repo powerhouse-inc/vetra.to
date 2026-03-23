@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRenown } from '@powerhousedao/reactor-browser'
 import {
   Package,
   Server,
@@ -66,7 +67,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/modules/shared/components/ui/table'
-import { useRenown } from '@powerhousedao/reactor-browser'
 
 // ---------------------------------------------------------------------------
 // Local schema

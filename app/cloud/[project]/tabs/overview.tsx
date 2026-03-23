@@ -7,8 +7,8 @@ import { ServiceCard } from '@/modules/cloud/components/service-card'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useEnvironmentStatus } from '@/modules/cloud/hooks/use-environment-status'
 import type { CloudEnvironment } from '@/modules/cloud/types'
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
 import { Button } from '@/modules/shared/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
 
 type OverviewTabProps = {
   subdomain: string | null

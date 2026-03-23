@@ -2,15 +2,15 @@
 
 import { ArrowLeft, ExternalLink, Play, Square } from 'lucide-react'
 import Link from 'next/link'
-import { Suspense, use, useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, use, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import { StatusBadge } from '@/modules/cloud/components/status-badge'
 import { useEnvironmentDetail } from '@/modules/cloud/hooks/use-environment-detail'
 import { useEnvironmentStatus } from '@/modules/cloud/hooks/use-environment-status'
 import { generateSubdomain } from '@/modules/cloud/subdomain'
 import { getTenantId } from '@/modules/cloud/tenant-id'
-import { StatusBadge } from '@/modules/cloud/components/status-badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
   DropdownMenu,
@@ -110,6 +110,7 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
       subdomainHealedRef.current = true
       detail.setSubdomain(generateSubdomain(environment.id))
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [environment, detail.setSubdomain])
 
   const handleTabChange = (tab: string) => {

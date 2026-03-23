@@ -1,6 +1,7 @@
 'use client'
 
 import { RefreshCw, FileText } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 
 import { LogViewer } from '@/modules/cloud/components/log-viewer'
@@ -15,7 +16,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/modules/shared/components/ui/dropdown-menu'
-import { ChevronDown } from 'lucide-react'
 
 type LogsTabProps = {
   subdomain: string | null
