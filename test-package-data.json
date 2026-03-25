@@ -1,0 +1,95 @@
+{
+  "realPackageData": {
+    "name": "test-package-vetra",
+    "description": "ToDo Document Model with complete editor suite from E2E tests",
+    "version": "1.0.0",
+    "publisher": {
+      "name": "Powerhouse",
+      "url": "https://powerhouse.inc"
+    },
+    "category": "productivity",
+    "documentModels": [
+      {
+        "id": "powerhouse/todo",
+        "name": "ToDoDocument",
+        "schema": "type ToDoDocumentState {\n  items: [ToDoItem!]!\n  stats: ToDoListStats!\n}\n\ntype ToDoItem {\n  id: ID!\n  text: String!\n  checked: Boolean!\n}\n\ntype ToDoListStats {\n  total: Int!\n  checked: Int!\n  unchecked: Int!\n}",
+        "initialState": "{\n  \"items\": [],\n  \"stats\": {\n    \"total\": 0,\n    \"checked\": 0,\n    \"unchecked\": 0\n  }\n}"
+      }
+    ],
+    "editors": [
+      {
+        "id": "todo-editor",
+        "name": "ToDoEditor",
+        "documentTypes": ["powerhouse/todo"]
+      }
+    ],
+    "apps": [],
+    "subgraphs": [],
+    "processors": [],
+    "importScripts": []
+  },
+  "mockVariations": [
+    {
+      "name": "Financial Dashboard Suite",
+      "description": "Complete financial management with real-time analytics and reporting",
+      "publisher": { "name": "MakerDAO", "url": "https://makerdao.com" },
+      "category": "finance",
+      "documentModels": [
+        {
+          "id": "powerhouse/financial-report",
+          "name": "Financial Report",
+          "schema": "type FinancialReport {\n  revenue: Float!\n  expenses: [Expense!]!\n  profit: Float!\n}"
+        }
+      ],
+      "editors": [
+        {
+          "id": "financial-editor",
+          "name": "Financial Editor",
+          "documentTypes": ["powerhouse/financial-report"]
+        }
+      ],
+      "apps": [
+        {
+          "id": "finance-dashboard",
+          "name": "Finance Dashboard",
+          "driveEditor": "financial-dashboard-editor"
+        }
+      ],
+      "subgraphs": [
+        {
+          "id": "financial-api",
+          "name": "Financial Data API"
+        }
+      ],
+      "processors": []
+    },
+    {
+      "name": "Engineering Documentation",
+      "description": "Technical documentation system with schema validation",
+      "publisher": { "name": "Community", "url": "" },
+      "category": "engineering",
+      "documentModels": [
+        {
+          "id": "powerhouse/tech-spec",
+          "name": "Technical Specification",
+          "schema": "type TechSpec {\n  title: String!\n  requirements: [Requirement!]!\n  architecture: Architecture!\n}"
+        }
+      ],
+      "editors": [
+        {
+          "id": "tech-spec-editor",
+          "name": "Tech Spec Editor",
+          "documentTypes": ["powerhouse/tech-spec"]
+        }
+      ],
+      "apps": [],
+      "subgraphs": [],
+      "processors": [
+        {
+          "id": "doc-validator",
+          "name": "Document Validator"
+        }
+      ]
+    }
+  ]
+}

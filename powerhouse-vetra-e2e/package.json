@@ -1,0 +1,83 @@
+{
+  "name": "test-package-vetra",
+  "version": "1.0.0",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "files": [
+    "/dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./document-models": {
+      "types": "./dist/document-models/index.d.ts",
+      "import": "./dist/document-models/index.js"
+    },
+    "./document-models/*": {
+      "types": "./dist/document-models/*/index.d.ts",
+      "import": "./dist/document-models/*/index.js"
+    },
+    "./editors": {
+      "types": "./dist/editors/index.d.ts",
+      "import": "./dist/editors/index.js"
+    },
+    "./editors/*": {
+      "types": "./dist/editors/*/index.d.ts",
+      "import": "./dist/editors/*/index.js"
+    },
+    "./processors": {
+      "types": "./dist/processors/index.d.ts",
+      "import": "./dist/processors/index.js"
+    },
+    "./subgraphs": {
+      "types": "./dist/subgraphs/index.d.ts",
+      "import": "./dist/subgraphs/index.js"
+    },
+    "./manifest": {
+      "types": "./dist/manifest.d.ts",
+      "import": "./dist/manifest.js"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "scripts": {
+    "lint": "eslint . --cache",
+    "lint:fix": "eslint . --fix --cache",
+    "typecheck": "tsc --noEmit",
+    "generate": "ph-cli generate",
+    "connect": "ph-cli connect",
+    "reactor": "ph-cli reactor",
+    "vetra": "ph-cli vetra",
+    "service": "ph-cli service",
+    "build": "ph-cli build",
+    "service-startup": "bash ./node_modules/@powerhousedao/ph-cli/dist/scripts/service-startup.sh",
+    "service-unstartup": "bash ./node_modules/@powerhousedao/ph-cli/dist/scripts/service-unstartup.sh",
+    "test:e2e": "rimraf .ph && playwright test",
+    "test:e2e:ui": "rimraf .ph && playwright test --ui"
+  },
+  "dependencies": {
+    "document-model": "workspace:*",
+    "@powerhousedao/connect": "workspace:*",
+    "@powerhousedao/reactor-browser": "workspace:*",
+    "@powerhousedao/design-system": "workspace:*",
+    "@powerhousedao/versioned-documents": "workspace:*",
+    "zod": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@powerhousedao/ph-cli": "workspace:*",
+    "@powerhousedao/e2e-utils": "workspace:*",
+    "vitest": "catalog:",
+    "tailwindcss": "catalog:",
+    "@tailwindcss/cli": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "monocart-coverage-reports": "^2.12.8",
+    "@playwright/test": "^1.55.0",
+    "@powerhousedao/registry": "workspace:*"
+  },
+  "description": ""
+}

@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vetra Package Manager - Figma Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Figma Design System Tokens */
+        :root {
+            --primary-text: #343839;
+            --accent-blue: #504dff;
+            --accent-orange: #ff891d;
+            --muted-text: #9ea0a1;
+            --background: #fcfcfc;
+            --border: #efefef;
+            --header-bg: #f3f5f7;
+            --white: #ffffff;
+            --shadow-card: 1px 4px 15px 0px rgba(74,88,115,0.25);
+            --shadow-header: 0px 2px 12px 0px rgba(37,42,52,0.1);
+        }
+        
+        /* Typography System */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .inter-semibold {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+        
+        .inter-medium {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+        }
+        
+        .inter-bold {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+        }
+        
+        .inter-regular {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+        }
+        
+        /* Custom component styles */
+        .figma-card {
+            box-shadow: var(--shadow-card);
+            transition: all 0.3s ease;
+        }
+        
+        .figma-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .figma-header {
+            box-shadow: var(--shadow-header);
+        }
+        
+        .micro-text {
+            font-size: 5.088px;
+            line-height: normal;
+        }
+        
+        /* Preview image styles */
+        .preview-bg {
+            background: var(--background);
+            border: 1px solid var(--border);
+        }
+        
+        /* SVG icon styles */
+        .icon-stroke {
+            stroke: currentColor;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        
+        /* Navigation state */
+        .nav-overview .package-overview { display: block; }
+        .nav-overview .package-detail { display: none; }
+        .nav-detail .package-overview { display: none; }
+        .nav-detail .package-detail { display: block; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen nav-overview" id="app">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-2xl font-bold text-gray-900">Vetra Package Manager</h1>
+            <p class="text-gray-600 mt-1">Discover and install Powerhouse packages</p>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-6 py-8 space-y-6">
+        
+        <!-- Selected Package Header (shown when package is selected) -->
+        <div class="package-detail">
+            <div class="bg-white rounded-[12px] figma-header flex items-center justify-between px-[14px] py-[12px]">
+                <!-- Left: Back Navigation + Package Info -->
+                <div class="flex items-center gap-[16px]">
+                    <!-- Back Button -->
+                    <button onclick="showOverview()" class="bg-white border border-[#e4e4e7] p-[10px] rounded-[6px] rotate-180 hover:bg-gray-50">
+                        <svg class="w-[16px] h-[16px] icon-stroke" viewBox="0 0 10.66 10.66" stroke-width="1.33">
+                            <path d="M0.665 5.33167H9.99833M9.99833 5.33167L5.33167 0.665M9.99833 5.33167L5.33167 9.99833"/>
+                        </svg>
+                    </button>
+                    
+                    <!-- Package Details -->
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-[7px]">
+                            <!-- Package Icon -->
+                            <svg class="w-[12px] h-[13.335px] icon-stroke text-[#343839]" viewBox="0 0 13.25 14.5846" stroke-width="1.25">
+                                <path d="M5.95833 13.7768C6.16103 13.8938 6.39095 13.9554 6.625 13.9554C6.85905 13.9554 7.08897 13.8938 7.29167 13.7768L11.9583 11.1102C12.1608 10.9933 12.329 10.8252 12.446 10.6227C12.563 10.4203 12.6248 10.1907 12.625 9.95685V4.62358C12.6248 4.38977 12.563 4.16013 12.446 3.9577C12.329 3.75527 12.1608 3.58717 11.9583 3.47026L7.29167 0.803631C7.08897 0.686608 6.85905 0.625 6.625 0.625C6.39095 0.625 6.16103 0.686608 5.95833 0.803631L1.29167 3.47026C1.08918 3.58717 0.920987 3.75527 0.803975 3.9577C0.686962 4.16013 0.62524 4.38977 0.625 4.62358V9.95685C0.62524 10.1907 0.686962 10.4203 0.803975 10.6227C0.920987 10.8252 1.08918 10.9933 1.29167 11.1102L5.95833 13.7768Z"/>
+                                <path d="M6.62494 13.9596V7.29305"/>
+                                <path d="M0.818704 3.95699L6.62537 7.29028L12.432 3.95699"/>
+                                <path d="M3.62497 2.13636L9.62497 5.56965"/>
+                            </svg>
+                            
+                            <p class="inter-semibold text-[#343839] text-[14px] leading-[24px]">
+                                Atlas Package 
+                                <span class="inter-regular">by</span>
+                                <span class="text-[#504dff]">BAI-team</span>
+                            </p>
+                            
+                            <!-- Exit Icon -->
+                            <svg class="w-[16px] h-[16px] icon-stroke text-[#504dff]" viewBox="0 0 16 16" stroke-width="1.33">
+                                <path d="M6 9.33333L2.66667 6L6 2.66667"/>
+                                <path d="M2.66667 6H9.66667C10.1482 6 10.625 6.09484 11.0698 6.27911C11.5147 6.46338 11.9189 6.73346 12.2594 7.07394C12.5999 7.41442 12.87 7.81863 13.0542 8.26349C13.2385 8.70835 13.3333 9.18515 13.3333 9.66667C13.3333 10.1482 13.2385 10.625 13.0542 11.0698C12.87 11.5147 12.5999 11.9189 12.2594 12.2594C11.9189 12.5999 11.5147 12.87 11.0698 13.0542C10.625 13.2385 10.1482 13.3333 9.66667 13.3333H7.33333"/>
+                            </svg>
+                        </div>
+                        <p class="inter-medium text-[#9ea0a1] text-[12px] leading-[18px]">
+                            The Invoice package offers a convenient way for contributors to get paid in crypto or fiat
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Right: Open in Connect Button -->
+                <button class="bg-white border border-[#343839] px-[8px] py-[6px] rounded-[6px] flex items-center gap-[4px] hover:bg-gray-50">
+                    <!-- Connect Icon -->
+                    <div class="w-[28.8px] h-[28.8px] relative">
+                        <svg class="w-full h-full" viewBox="0 0 28.8 28.8" fill="#343839">
+                            <path d="M13.6706 7.35233C13.8362 7.35233 13.9706 7.21802 13.9706 7.05233L13.9706 4.22739C11.2544 4.34003 8.81311 5.51638 7.05205 7.35249L13.6706 7.35233ZM10.1356 11.4641C10.1356 11.6298 10.0013 11.7641 9.83557 11.7641L4.56292 11.7643C4.91229 10.4584 5.51479 9.25545 6.31379 8.2122L9.8356 8.21204C10.0013 8.21203 10.1356 8.34636 10.1356 8.51205L10.1356 11.4641ZM21.7498 21.4484C19.9894 23.2839 17.5481 24.4602 14.8312 24.5735L14.8313 21.7486C14.8313 21.5829 14.9656 21.4486 15.1313 21.4486L21.7498 21.4484ZM13.9708 24.5729C11.2546 24.4604 8.81269 23.2834 7.0524 21.4481L13.6709 21.448C13.8366 21.4479 13.9709 21.5823 13.9709 21.748L13.9708 24.5729ZM11.3167 17.3356C11.3167 17.1699 11.451 17.0356 11.6167 17.0356L24.2389 17.0353C23.8896 18.3412 23.2878 19.5434 22.4881 20.5873L11.6167 20.5876C11.451 20.5876 11.3166 20.4533 11.3167 20.2876L11.3167 17.3356ZM19.5613 12.9161C19.5654 12.7534 19.6985 12.6236 19.8612 12.6236L24.4301 12.6235C24.5317 13.2001 24.5849 13.7937 24.5849 14.3995C24.5849 15.0054 24.5317 15.599 24.43 16.1756L19.8626 16.175C19.6995 16.175 19.5663 16.0447 19.5627 15.8817L19.527 14.2832L19.5613 12.9161ZM10.5905 20.2883C10.5905 20.454 10.4562 20.5883 10.2905 20.5883L6.31418 20.5884C5.51455 19.5445 4.91279 18.3423 4.56348 17.0364L10.2906 17.0363C10.4563 17.0363 10.5906 17.1706 10.5906 17.3363L10.5905 20.2883ZM4.37322 12.624L18.3913 12.6237C18.557 12.6237 18.6913 12.758 18.6913 12.9237L18.6913 15.8757C18.6913 16.0414 18.557 16.1757 18.3913 16.1757L4.37314 16.176C4.27149 15.5995 4.21829 15.0059 4.21831 14.4C4.21832 13.7941 4.27155 13.2005 4.37322 12.624ZM10.9967 8.512C10.9967 8.34631 11.131 8.212 11.2967 8.212L22.4884 8.21182C23.288 9.25571 23.8898 10.4579 24.2391 11.7638L11.2966 11.764C11.1309 11.7641 10.9966 11.6297 10.9966 11.464L10.9967 8.512ZM14.8317 4.22738C17.5479 4.3399 19.9898 5.5168 21.7501 7.35214L15.1316 7.35229C14.966 7.3523 14.8316 7.21797 14.8316 7.05228L14.8317 4.22738Z"/>
+                        </svg>
+                    </div>
+                    <div class="flex flex-col text-left">
+                        <p class="inter-medium text-[#343839] text-[7.2px] leading-[14.4px]">
+                            OPEN IN CONNECT
+                        </p>
+                        <p class="inter-semibold text-[#343839] text-[8.4px] leading-[14.4px] whitespace-nowrap">
+                            Vetra Studio Drive
+                        </p>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
+            <!-- Filter Sidebar -->
+            <div class="package-overview">
+                <aside class="lg:col-span-1">
+                    <div class="bg-white rounded-[12px] border border-[#efefef] p-6 sticky top-6">
+                        <!-- Search Bar -->
+                        <div class="mb-6 relative">
+                            <input type="text" placeholder="Search packages..." 
+                                   class="w-full px-3 py-2 pl-10 border border-[#efefef] rounded-[6px] inter-medium text-[12px] focus:ring-2 focus:ring-[#504dff] focus:border-[#504dff]">
+                            <!-- Search Icon -->
+                            <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                <svg class="w-4 h-4 icon-stroke text-[#9ea0a1]" viewBox="0 0 16 16" stroke-width="1.25">
+                                    <path d="M1.7837 1.7837C4.16202 -0.59461 8.01859 -0.594522 10.397 1.7837C12.5308 3.91743 12.7481 7.23929 11.0532 9.61768L14.7036 13.2681C15.1001 13.6645 15.1001 14.3072 14.7036 14.7036C14.3074 15.0993 13.6653 15.0994 13.269 14.7036L9.61866 11.0532C7.24022 12.7483 3.91756 12.5308 1.7837 10.397C-0.594562 8.01865 -0.594569 4.16202 1.7837 1.7837ZM8.96143 3.21925C7.37584 1.63381 4.80478 1.63372 3.21924 3.21925C1.63379 4.80479 1.63379 7.37589 3.21924 8.96143C4.80478 10.547 7.37584 10.5469 8.96143 8.96143C10.547 7.37587 10.547 4.80481 8.96143 3.21925Z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="inter-semibold text-[#343839] text-[14px] mb-3">Results</h3>
+                                <div class="inter-medium text-[12px] text-[#504dff] bg-blue-50 px-3 py-2 rounded-[6px]">
+                                    <span class="font-medium">12</span> packages found
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="inter-semibold text-[#343839] text-[14px] mb-3">Module Types</h3>
+                                <div class="space-y-3">
+                                    <label class="flex items-center cursor-pointer">
+                                        <div class="relative">
+                                            <input type="checkbox" class="w-4 h-4 text-[#504dff] border-[#efefef] rounded focus:ring-[#504dff]" checked>
+                                            <!-- Custom check icon -->
+                                            <svg class="absolute top-0 left-0 w-4 h-4 text-white pointer-events-none" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M9.69626 0.190464C10.059 0.476614 10.1031 0.981489 9.79474 1.31813L3.93271 7.71812C3.77032 7.8954 3.53279 7.99832 3.28205 7.99998C3.03131 8.00164 2.79222 7.90193 2.6271 7.72683L0.213309 5.16681C-0.100212 4.8343 -0.0639035 4.32889 0.294406 4.03794C0.652709 3.747 1.19734 3.78069 1.51085 4.1132L3.26641 5.97509L8.48109 0.281894C8.78944 -0.0547483 9.3335 -0.0956838 9.69626 0.190464Z"/>
+                                            </svg>
+                                        </div>
+                                        <span class="ml-3 inter-medium text-[#343839] text-[12px]">📄 Document Models</span>
+                                        <span class="ml-auto inter-medium text-[#9ea0a1] text-[11px]">8</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="checkbox" class="w-4 h-4 text-[#504dff] border-[#efefef] rounded focus:ring-[#504dff]" checked>
+                                        <span class="ml-3 inter-medium text-[#343839] text-[12px]">✏️ Document Editors</span>
+                                        <span class="ml-auto inter-medium text-[#9ea0a1] text-[11px]">6</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="checkbox" class="w-4 h-4 text-[#504dff] border-[#efefef] rounded focus:ring-[#504dff]">
+                                        <span class="ml-3 inter-medium text-[#343839] text-[12px]">🎯 Applications</span>
+                                        <span class="ml-auto inter-medium text-[#9ea0a1] text-[11px]">4</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="checkbox" class="w-4 h-4 text-[#504dff] border-[#efefef] rounded focus:ring-[#504dff]">
+                                        <span class="ml-3 inter-medium text-[#343839] text-[12px]">🔗 Subgraphs</span>
+                                        <span class="ml-auto inter-medium text-[#9ea0a1] text-[11px]">3</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="checkbox" class="w-4 h-4 text-[#504dff] border-[#efefef] rounded focus:ring-[#504dff]">
+                                        <span class="ml-3 inter-medium text-[#343839] text-[12px]">⚡ Processors</span>
+                                        <span class="ml-auto inter-medium text-[#9ea0a1] text-[11px]">2</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="inter-semibold text-[#343839] text-[14px] mb-3">Categories</h3>
+                                <div class="space-y-3">
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="checkbox" class="w-4 h-4 text-[#504dff] border-[#efefef] rounded focus:ring-[#504dff]">
+                                        <span class="ml-3 inter-medium text-[#343839] text-[12px]">Engineering</span>
+                                        <span class="ml-auto inter-medium text-[#9ea0a1] text-[11px]">5</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="checkbox" class="w-4 h-4 text-[#504dff] border-[#efefef] rounded focus:ring-[#504dff]">
+                                        <span class="ml-3 inter-medium text-[#343839] text-[12px]">Finance</span>
+                                        <span class="ml-auto inter-medium text-[#9ea0a1] text-[11px]">4</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="checkbox" class="w-4 h-4 text-[#504dff] border-[#efefef] rounded focus:ring-[#504dff]">
+                                        <span class="ml-3 inter-medium text-[#343839] text-[12px]">Governance</span>
+                                        <span class="ml-auto inter-medium text-[#9ea0a1] text-[11px]">2</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="checkbox" class="w-4 h-4 text-[#504dff] border-[#efefef] rounded focus:ring-[#504dff]">
+                                        <span class="ml-3 inter-medium text-[#343839] text-[12px]">Operations</span>
+                                        <span class="ml-auto inter-medium text-[#9ea0a1] text-[11px]">1</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Package Grid -->
+            <div class="package-overview">
+                <main class="lg:col-span-1">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        
+                        <!-- Package 1: Atlas - Document Model (Figma Design) -->
+                        <div class="bg-white rounded-[12px] figma-card flex flex-col gap-[8px] pb-[8px] cursor-pointer" onclick="showPackageDetail('atlas')">
+                            <!-- Header -->
+                            <div class="bg-[#f3f5f7] h-[41px] rounded-tl-[12px] rounded-tr-[12px] flex items-center px-[8px]">
+                                <h3 class="inter-semibold text-[#343839] text-[16px] leading-[24px]">Atlas</h3>
+                            </div>
+
+                            <!-- Preview Area with Background Image -->
+                            <div class="h-[235px] relative rounded-[12px] mx-[8px] overflow-hidden">
+                                <div class="absolute inset-0 preview-bg rounded-[12px]"></div>
+                                <!-- Mock background image with grid pattern -->
+                                <div class="absolute inset-0 opacity-20 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-[12px]"></div>
+                                <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGRlZnM+CjxwYXR0ZXJuIGlkPSJncmlkIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPgo8cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDAsIDAsIDAsIDAuMDUpIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9wYXR0ZXJuPgo8L2RlZnM+CjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz4KPHN2Zz4=')] opacity-20"></div>
+                                
+                                <!-- Floating Type Indicator -->
+                                <div class="absolute bottom-[30%] right-[25%] flex flex-col items-center gap-[3px]">
+                                    <!-- Document Model Icon -->
+                                    <div class="w-[32px] h-[40px] relative">
+                                        <!-- Icon Background -->
+                                        <div class="absolute inset-[0_-12.5%_-20%_-12.5%]">
+                                            <div class="w-full h-full bg-[#f3f5f7] border-[1.5px] border-[#ff891d] rounded-[8px] shadow-md"></div>
+                                        </div>
+                                        <!-- Icon Content -->
+                                        <div class="absolute bottom-[30%] left-1/4 right-1/4 top-[30%]">
+                                            <svg class="w-full h-full" fill="#ff891d" viewBox="0 0 16 16">
+                                                <path d="M2 3a1 1 0 011-1h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3z"/>
+                                                <path d="M4 5h8v1H4V5zm0 2h8v1H4V7zm0 2h8v1H4V9z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <p class="inter-bold text-[#ff891d] micro-text text-center">Document Model</p>
+                                </div>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="preview-bg rounded-[12px] mx-[8px] px-[8px] py-[4px] flex flex-col gap-[4px]">
+                                <p class="inter-semibold text-[#343839] text-[14px] leading-[24px]">Document Model</p>
+                                
+                                <div class="flex items-center gap-[5px]">
+                                    <!-- Share Icon -->
+                                    <svg class="w-[10px] h-[11.112px] icon-stroke text-[#343839]" viewBox="0 0 13.25 14.5846" stroke-width="1.25">
+                                        <path d="M5.95833 13.7768C6.16103 13.8938 6.39095 13.9554 6.625 13.9554C6.85905 13.9554 7.08897 13.8938 7.29167 13.7768L11.9583 11.1102C12.1608 10.9933 12.329 10.8252 12.446 10.6227C12.563 10.4203 12.6248 10.1907 12.625 9.95685V4.62358C12.6248 4.38977 12.563 4.16013 12.446 3.9577C12.329 3.75527 12.1608 3.58717 11.9583 3.47026L7.29167 0.803631C7.08897 0.686608 6.85905 0.625 6.625 0.625C6.39095 0.625 6.16103 0.686608 5.95833 0.803631L1.29167 3.47026C1.08918 3.58717 0.920987 3.75527 0.803975 3.9577C0.686962 4.16013 0.62524 4.38977 0.625 4.62358V9.95685C0.62524 10.1907 0.686962 10.4203 0.803975 10.6227C0.920987 10.8252 1.08918 10.9933 1.29167 11.1102L5.95833 13.7768Z"/>
+                                        <path d="M6.625 13.96V7.29"/>
+                                        <path d="M0.818704 3.95699L6.62537 7.29028L12.432 3.95699"/>
+                                        <path d="M3.62497 2.13636L9.62497 5.56965"/>
+                                    </svg>
+                                    <p class="inter-medium text-[12px] leading-[18px]">
+                                        <span class="text-[#504dff]">Atlas</span>
+                                        <span class="text-[#343839]"> by </span>
+                                        <span class="text-[#504dff]">BAI-team</span>
+                                    </p>
+                                </div>
+                                
+                                <p class="inter-medium text-[#9ea0a1] text-[12px] leading-[18px]">
+                                    The Invoice package offers a convenient way for contributors to get paid in crypto or fiat
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Package 2: Finance Dashboard - Application -->
+                        <div class="bg-white rounded-[12px] figma-card flex flex-col gap-[8px] pb-[8px] cursor-pointer" onclick="showPackageDetail('finance')">
+                            <!-- Header -->
+                            <div class="bg-[#f3f5f7] h-[41px] rounded-tl-[12px] rounded-tr-[12px] flex items-center px-[8px]">
+                                <h3 class="inter-semibold text-[#343839] text-[16px] leading-[24px]">Finance Dashboard</h3>
+                            </div>
+
+                            <!-- Preview Area -->
+                            <div class="h-[235px] relative rounded-[12px] mx-[8px] overflow-hidden">
+                                <div class="absolute inset-0 preview-bg rounded-[12px]"></div>
+                                <!-- Application Preview Background -->
+                                <div class="absolute inset-0 opacity-20 bg-gradient-to-br from-purple-100 to-pink-200 rounded-[12px]"></div>
+                                
+                                <!-- Floating Type Indicator -->
+                                <div class="absolute bottom-[30%] right-[25%] flex flex-col items-center gap-[3px]">
+                                    <!-- Application Icon -->
+                                    <div class="w-[32px] h-[40px] relative">
+                                        <div class="absolute inset-[0_-12.5%_-20%_-12.5%]">
+                                            <div class="w-full h-full bg-[#f3f5f7] border-[1.5px] border-[#ff891d] rounded-[8px] shadow-md"></div>
+                                        </div>
+                                        <div class="absolute bottom-[30%] left-1/4 right-1/4 top-[30%]">
+                                            <svg class="w-full h-full" fill="#ff891d" viewBox="0 0 16 16">
+                                                <path d="M1 3h14v2H1V3zm0 4h14v6H1V7zm2 2v2h2V9H3zm4 0v2h2V9H7z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <p class="inter-bold text-[#ff891d] micro-text text-center">Application</p>
+                                </div>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="preview-bg rounded-[12px] mx-[8px] px-[8px] py-[4px] flex flex-col gap-[4px]">
+                                <p class="inter-semibold text-[#343839] text-[14px] leading-[24px]">Application</p>
+                                
+                                <div class="flex items-center gap-[5px]">
+                                    <svg class="w-[10px] h-[11.112px] icon-stroke text-[#343839]" viewBox="0 0 13.25 14.5846" stroke-width="1.25">
+                                        <path d="M5.95833 13.7768C6.16103 13.8938 6.39095 13.9554 6.625 13.9554C6.85905 13.9554 7.08897 13.8938 7.29167 13.7768L11.9583 11.1102C12.1608 10.9933 12.329 10.8252 12.446 10.6227C12.563 10.4203 12.6248 10.1907 12.625 9.95685V4.62358C12.6248 4.38977 12.563 4.16013 12.446 3.9577C12.329 3.75527 12.1608 3.58717 11.9583 3.47026L7.29167 0.803631C7.08897 0.686608 6.85905 0.625 6.625 0.625C6.39095 0.625 6.16103 0.686608 5.95833 0.803631L1.29167 3.47026C1.08918 3.58717 0.920987 3.75527 0.803975 3.9577C0.686962 4.16013 0.62524 4.38977 0.625 4.62358V9.95685C0.62524 10.1907 0.686962 10.4203 0.803975 10.6227C0.920987 10.8252 1.08918 10.9933 1.29167 11.1102L5.95833 13.7768Z"/>
+                                        <path d="M6.625 13.96V7.29"/>
+                                        <path d="M0.818704 3.95699L6.62537 7.29028L12.432 3.95699"/>
+                                        <path d="M3.62497 2.13636L9.62497 5.56965"/>
+                                    </svg>
+                                    <p class="inter-medium text-[12px] leading-[18px]">
+                                        <span class="text-[#504dff]">Finance Dashboard</span>
+                                        <span class="text-[#343839]"> by </span>
+                                        <span class="text-[#504dff]">MakerDAO</span>
+                                    </p>
+                                </div>
+                                
+                                <p class="inter-medium text-[#9ea0a1] text-[12px] leading-[18px]">
+                                    Complete financial management application with real-time analytics
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Package 3: Data API - Subgraph -->
+                        <div class="bg-white rounded-[12px] figma-card flex flex-col gap-[8px] pb-[8px] cursor-pointer" onclick="showPackageDetail('data-api')">
+                            <!-- Header -->
+                            <div class="bg-[#f3f5f7] h-[41px] rounded-tl-[12px] rounded-tr-[12px] flex items-center px-[8px]">
+                                <h3 class="inter-semibold text-[#343839] text-[16px] leading-[24px]">Data API</h3>
+                            </div>
+
+                            <!-- Preview Area -->
+                            <div class="h-[235px] relative rounded-[12px] mx-[8px] overflow-hidden">
+                                <div class="absolute inset-0 preview-bg rounded-[12px]"></div>
+                                <!-- Subgraph Preview - Dark Background -->
+                                <div class="absolute inset-0 bg-gray-900 rounded-[12px]"></div>
+                                
+                                <!-- Code Preview -->
+                                <div class="absolute inset-0 p-4 text-green-400 font-mono text-xs opacity-80">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                                        <span class="text-gray-400">GraphQL Schema</span>
+                                    </div>
+                                    <div class="space-y-1 text-xs">
+                                        <div><span class="text-pink-400">query</span> <span class="text-blue-400">documents</span> {</div>
+                                        <div>&nbsp;&nbsp;<span class="text-blue-400">id</span></div>
+                                        <div>&nbsp;&nbsp;<span class="text-blue-400">title</span></div>
+                                        <div>&nbsp;&nbsp;<span class="text-blue-400">author</span></div>
+                                        <div>}</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Floating Type Indicator -->
+                                <div class="absolute bottom-[30%] right-[25%] flex flex-col items-center gap-[3px]">
+                                    <div class="w-[32px] h-[40px] relative">
+                                        <div class="absolute inset-[0_-12.5%_-20%_-12.5%]">
+                                            <div class="w-full h-full bg-[#f3f5f7] border-[1.5px] border-[#ff891d] rounded-[8px] shadow-md"></div>
+                                        </div>
+                                        <div class="absolute bottom-[30%] left-1/4 right-1/4 top-[30%]">
+                                            <svg class="w-full h-full" fill="#ff891d" viewBox="0 0 16 16">
+                                                <path d="M4 4v8h8V4H4zm1 1h6v1H5V5zm0 2h6v1H5V7zm0 2h6v1H5V9z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <p class="inter-bold text-[#ff891d] micro-text text-center">Subgraph</p>
+                                </div>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="preview-bg rounded-[12px] mx-[8px] px-[8px] py-[4px] flex flex-col gap-[4px]">
+                                <p class="inter-semibold text-[#343839] text-[14px] leading-[24px]">Subgraph</p>
+                                
+                                <div class="flex items-center gap-[5px]">
+                                    <svg class="w-[10px] h-[11.112px] icon-stroke text-[#343839]" viewBox="0 0 13.25 14.5846" stroke-width="1.25">
+                                        <path d="M5.95833 13.7768C6.16103 13.8938 6.39095 13.9554 6.625 13.9554C6.85905 13.9554 7.08897 13.8938 7.29167 13.7768L11.9583 11.1102C12.1608 10.9933 12.329 10.8252 12.446 10.6227C12.563 10.4203 12.6248 10.1907 12.625 9.95685V4.62358C12.6248 4.38977 12.563 4.16013 12.446 3.9577C12.329 3.75527 12.1608 3.58717 11.9583 3.47026L7.29167 0.803631C7.08897 0.686608 6.85905 0.625 6.625 0.625C6.39095 0.625 6.16103 0.686608 5.95833 0.803631L1.29167 3.47026C1.08918 3.58717 0.920987 3.75527 0.803975 3.9577C0.686962 4.16013 0.62524 4.38977 0.625 4.62358V9.95685C0.62524 10.1907 0.686962 10.4203 0.803975 10.6227C0.920987 10.8252 1.08918 10.9933 1.29167 11.1102L5.95833 13.7768Z"/>
+                                        <path d="M6.625 13.96V7.29"/>
+                                        <path d="M0.818704 3.95699L6.62537 7.29028L12.432 3.95699"/>
+                                        <path d="M3.62497 2.13636L9.62497 5.56965"/>
+                                    </svg>
+                                    <p class="inter-medium text-[12px] leading-[18px]">
+                                        <span class="text-[#504dff]">Data API</span>
+                                        <span class="text-[#343839]"> by </span>
+                                        <span class="text-[#504dff]">Community</span>
+                                    </p>
+                                </div>
+                                
+                                <p class="inter-medium text-[#9ea0a1] text-[12px] leading-[18px]">
+                                    GraphQL API for querying document analytics and usage statistics
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation between overview and detail views
+        function showPackageDetail(packageId) {
+            document.body.className = 'bg-gray-50 min-h-screen nav-detail';
+        }
+
+        function showOverview() {
+            document.body.className = 'bg-gray-50 min-h-screen nav-overview';
+        }
+
+        // Smooth transitions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth transitions to all interactive elements
+            const cards = document.querySelectorAll('.figma-card');
+            cards.forEach(card => {
+                card.style.transition = 'all 0.3s ease';
+            });
+        });
+    </script>
+</body>
+</html>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">by <strong>Powerhouse</strong></p>
+                            
+                            <!-- Schema Word Cloud Preview -->
+                            <div class="relative h-32 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg mb-4 overflow-hidden">
+                                <div class="absolute top-2 left-2">
+                                    <span class="bg-white/90 px-2 py-1 rounded text-xs font-medium text-blue-700">Document Model</span>
+                                </div>
+                                <div class="flex items-center justify-center h-full p-4">
+                                    <div class="word-cloud grid grid-cols-3 gap-2 text-center">
+                                        <span class="text-lg font-bold text-blue-700">ToDoItem</span>
+                                        <span class="text-base text-blue-600">checked</span>
+                                        <span class="text-sm text-slate-500">Boolean</span>
+                                        <span class="text-base text-blue-600">text</span>
+                                        <span class="text-lg font-bold text-blue-700">stats</span>
+                                        <span class="text-sm text-slate-500">String</span>
+                                        <span class="text-sm text-slate-500">total</span>
+                                        <span class="text-base text-blue-600">items</span>
+                                        <span class="text-sm text-slate-500">unchecked</span>
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-2 right-2 flex gap-1">
+                                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">📄</span>
+                                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">✏️</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Module Type Indicators -->
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">📄 Document Model</span>
+                                <span class="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">✏️ Editor</span>
+                            </div>
+                            
+                            <!-- Description -->
+                            <p class="text-sm text-gray-700 mb-4 line-clamp-2">Complete todo document management with schema validation and generated React editor interface.</p>
+                            
+                            <!-- Expandable Module List -->
+                            <div class="expandable">
+                                <div class="border-t pt-3 space-y-2">
+                                    <h4 class="text-sm font-medium text-gray-900">Included Modules:</h4>
+                                    <div class="bg-gray-50 rounded-lg p-3 space-y-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-blue-600">📄</span>
+                                            <span class="text-sm font-medium">ToDoDocument</span>
+                                            <span class="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">powerhouse/todo</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-green-600">✏️</span>
+                                            <span class="text-sm font-medium">ToDoEditor</span>
+                                            <span class="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">Supports: powerhouse/todo</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Install Button -->
+                            <button class="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors">
+                                Install to Current Connect
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Package 2: Application Primary -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden preview-container">
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="font-semibold text-lg text-gray-900 line-clamp-1">Financial Dashboard</h3>
+                                <button class="text-gray-400 hover:text-gray-600 expand-btn" onclick="toggleExpand(this)">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">by <strong>MakerDAO</strong></p>
+                            
+                            <!-- App Thumbnail Preview -->
+                            <div class="relative h-32 app-preview rounded-lg mb-4 overflow-hidden">
+                                <div class="absolute top-2 left-2">
+                                    <span class="bg-white/90 px-2 py-1 rounded text-xs font-medium text-purple-700">Application</span>
+                                </div>
+                                <div class="absolute inset-2 bg-white rounded-lg shadow-sm border">
+                                    <div class="bg-gradient-to-r from-purple-600 to-blue-600 h-6 rounded-t-lg flex items-center px-2">
+                                        <div class="w-12 h-1.5 bg-white/30 rounded"></div>
+                                    </div>
+                                    <div class="p-2 space-y-1">
+                                        <div class="grid grid-cols-2 gap-1">
+                                            <div class="h-3 bg-gray-200 rounded"></div>
+                                            <div class="h-3 bg-blue-200 rounded"></div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <div class="h-1.5 bg-gray-100 rounded"></div>
+                                            <div class="h-1.5 bg-gray-100 rounded w-3/4"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-2 right-2 flex gap-1">
+                                    <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs">🎯</span>
+                                    <span class="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs">🔗</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <span class="bg-purple-50 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">🎯 Application</span>
+                                <span class="bg-orange-50 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">🔗 Subgraph</span>
+                            </div>
+                            
+                            <p class="text-sm text-gray-700 mb-4 line-clamp-2">Complete financial management application with real-time analytics and GraphQL API integration.</p>
+                            
+                            <div class="expandable">
+                                <div class="border-t pt-3 space-y-2">
+                                    <h4 class="text-sm font-medium text-gray-900">Included Modules:</h4>
+                                    <div class="bg-gray-50 rounded-lg p-3 space-y-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-purple-600">🎯</span>
+                                            <span class="text-sm font-medium">Finance Dashboard</span>
+                                            <span class="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">Full Application</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-orange-600">🔗</span>
+                                            <span class="text-sm font-medium">Financial Data API</span>
+                                            <span class="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">GraphQL Subgraph</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors">
+                                Install to Current Connect
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Package 3: Subgraph Primary -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden preview-container">
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="font-semibold text-lg text-gray-900 line-clamp-1">Document Analytics API</h3>
+                                <button class="text-gray-400 hover:text-gray-600 expand-btn" onclick="toggleExpand(this)">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">by <strong>Community</strong></p>
+                            
+                            <!-- GraphQL Code Preview -->
+                            <div class="relative h-32 bg-gray-900 text-green-400 rounded-lg mb-4 overflow-hidden">
+                                <div class="absolute top-2 left-2">
+                                    <span class="bg-gray-800 text-green-400 px-2 py-1 rounded text-xs font-medium">Subgraph</span>
+                                </div>
+                                <div class="p-3 pt-8 code-preview">
+                                    <div class="flex items-center gap-1 mb-2">
+                                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
+                                        <span class="text-gray-400 text-xs">GraphQL Schema</span>
+                                    </div>
+                                    <div class="text-xs leading-tight">
+                                        <span class="syntax-keyword">query</span> <span class="syntax-field">documents</span> {<br>
+                                        &nbsp;&nbsp;<span class="syntax-field">id</span><br>
+                                        &nbsp;&nbsp;<span class="syntax-field">title</span><br>
+                                        &nbsp;&nbsp;<span class="syntax-field">author</span><br>
+                                        &nbsp;&nbsp;<span class="syntax-field">createdAt</span><br>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-2 right-2 flex gap-1">
+                                    <span class="bg-gray-700 text-green-400 px-2 py-1 rounded-full text-xs">🔗</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <span class="bg-gray-50 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">🔗 Subgraph</span>
+                            </div>
+                            
+                            <p class="text-sm text-gray-700 mb-4 line-clamp-2">GraphQL API for querying document analytics and usage statistics with real-time subscriptions.</p>
+                            
+                            <div class="expandable">
+                                <div class="border-t pt-3 space-y-2">
+                                    <h4 class="text-sm font-medium text-gray-900">Included Modules:</h4>
+                                    <div class="bg-gray-50 rounded-lg p-3 space-y-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-gray-600">🔗</span>
+                                            <span class="text-sm font-medium">Document Analytics Subgraph</span>
+                                            <span class="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">GraphQL API</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors">
+                                Install to Current Connect
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Package 4: Multi-Module Package -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden preview-container">
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="font-semibold text-lg text-gray-900 line-clamp-1">Engineering Workflow</h3>
+                                <button class="text-gray-400 hover:text-gray-600 expand-btn" onclick="toggleExpand(this)">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">by <strong>Powerhouse</strong></p>
+                            
+                            <!-- Editor Preview (Primary) -->
+                            <div class="relative h-32 mock-editor rounded-lg mb-4 overflow-hidden border">
+                                <div class="absolute top-2 left-2">
+                                    <span class="bg-white/90 px-2 py-1 rounded text-xs font-medium text-gray-700">Editor</span>
+                                </div>
+                                <div class="bg-gray-100 border-b px-2 py-1.5 flex items-center gap-1">
+                                    <div class="flex gap-0.5">
+                                        <div class="w-2 h-2 bg-red-400 rounded-full"></div>
+                                        <div class="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                                        <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                                    </div>
+                                    <span class="text-xs text-gray-600 font-medium ml-1">Tech Spec Editor</span>
+                                </div>
+                                <div class="p-2 space-y-1.5">
+                                    <div class="h-1.5 bg-gray-200 rounded w-3/4"></div>
+                                    <div class="h-1.5 bg-blue-200 rounded w-1/2"></div>
+                                    <div class="h-1.5 bg-gray-200 rounded w-5/6"></div>
+                                    <div class="mt-2 space-y-1">
+                                        <div class="h-4 bg-gray-100 rounded border"></div>
+                                        <div class="h-3 bg-gray-100 rounded border w-2/3"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-2 right-2 flex gap-1">
+                                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">📄</span>
+                                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">✏️</span>
+                                    <span class="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs">⚡</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">📄 Document Model</span>
+                                <span class="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">✏️ Editor</span>
+                                <span class="bg-orange-50 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">⚡ Processor</span>
+                            </div>
+                            
+                            <p class="text-sm text-gray-700 mb-4 line-clamp-2">Complete engineering documentation system with schema validation, editors, and automated processing.</p>
+                            
+                            <div class="expandable">
+                                <div class="border-t pt-3 space-y-2">
+                                    <h4 class="text-sm font-medium text-gray-900">Included Modules:</h4>
+                                    <div class="bg-gray-50 rounded-lg p-3 space-y-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-blue-600">📄</span>
+                                            <span class="text-sm font-medium">Technical Specification</span>
+                                            <span class="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">powerhouse/tech-spec</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-green-600">✏️</span>
+                                            <span class="text-sm font-medium">Tech Spec Editor</span>
+                                            <span class="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">Generated Editor</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-orange-600">⚡</span>
+                                            <span class="text-sm font-medium">Document Validator</span>
+                                            <span class="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">Validation Processor</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors">
+                                Install to Current Connect
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Package 5: Processor Primary -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden preview-container">
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="font-semibold text-lg text-gray-900 line-clamp-1">Data Pipeline Suite</h3>
+                                <button class="text-gray-400 hover:text-gray-600 expand-btn" onclick="toggleExpand(this)">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">by <strong>Community</strong></p>
+                            
+                            <!-- Data Flow Diagram Preview -->
+                            <div class="relative h-32 bg-gray-50 rounded-lg mb-4 overflow-hidden border flex items-center justify-center">
+                                <div class="absolute top-2 left-2">
+                                    <span class="bg-white px-2 py-1 rounded text-xs font-medium text-orange-700">Processor</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <!-- Input -->
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-6 h-6 bg-blue-100 border-2 border-blue-300 rounded-lg flex items-center justify-center">
+                                            <div class="w-3 h-2 bg-blue-600 rounded-sm"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-600 mt-1">Input</span>
+                                    </div>
+                                    
+                                    <!-- Arrow -->
+                                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                    
+                                    <!-- Processor -->
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-6 h-6 bg-orange-100 border-2 border-orange-300 rounded-lg flex items-center justify-center">
+                                            <div class="w-2 h-2 bg-orange-600 rounded-full"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-600 mt-1">Process</span>
+                                    </div>
+                                    
+                                    <!-- Arrow -->
+                                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                    
+                                    <!-- Output -->
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-6 h-6 bg-green-100 border-2 border-green-300 rounded-lg flex items-center justify-center">
+                                            <div class="w-2 h-3 bg-green-600 rounded-sm"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-600 mt-1">Output</span>
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-2 right-2 flex gap-1">
+                                    <span class="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs">⚡</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <span class="bg-orange-50 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">⚡ Processor</span>
+                            </div>
+                            
+                            <p class="text-sm text-gray-700 mb-4 line-clamp-2">Automated data processing pipeline for document transformation and analysis workflows.</p>
+                            
+                            <div class="expandable">
+                                <div class="border-t pt-3 space-y-2">
+                                    <h4 class="text-sm font-medium text-gray-900">Included Modules:</h4>
+                                    <div class="bg-gray-50 rounded-lg p-3 space-y-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-orange-600">⚡</span>
+                                            <span class="text-sm font-medium">Data Transformer</span>
+                                            <span class="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">Processing Pipeline</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors">
+                                Install to Current Connect
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Package 6: Code Generator Primary -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden preview-container">
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="font-semibold text-lg text-gray-900 line-clamp-1">TypeScript Generator</h3>
+                                <button class="text-gray-400 hover:text-gray-600 expand-btn" onclick="toggleExpand(this)">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">by <strong>The Guild</strong></p>
+                            
+                            <!-- Code Generator Preview -->
+                            <div class="relative h-32 bg-gradient-to-br from-blue-900 to-blue-800 rounded-lg mb-4 overflow-hidden flex items-center justify-center">
+                                <div class="absolute top-2 left-2">
+                                    <span class="bg-blue-800 text-blue-200 px-2 py-1 rounded text-xs font-medium">Code Generator</span>
+                                </div>
+                                <div class="flex flex-col items-center space-y-2">
+                                    <!-- TypeScript Logo Style -->
+                                    <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                                        <span class="text-white font-bold text-lg">TS</span>
+                                    </div>
+                                    <span class="text-blue-200 text-sm font-medium">TypeScript</span>
+                                    <div class="flex space-x-1">
+                                        <div class="w-1 h-1 bg-blue-400 rounded-full"></div>
+                                        <div class="w-1 h-1 bg-blue-400 rounded-full"></div>
+                                        <div class="w-1 h-1 bg-blue-400 rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-2 right-2 flex gap-1">
+                                    <span class="bg-blue-700 text-blue-200 px-2 py-1 rounded-full text-xs">🔧</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">🔧 Code Generator</span>
+                            </div>
+                            
+                            <p class="text-sm text-gray-700 mb-4 line-clamp-2">Automatic TypeScript code generation for document models with type safety and validation.</p>
+                            
+                            <div class="expandable">
+                                <div class="border-t pt-3 space-y-2">
+                                    <h4 class="text-sm font-medium text-gray-900">Included Modules:</h4>
+                                    <div class="bg-gray-50 rounded-lg p-3 space-y-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-blue-600">🔧</span>
+                                            <span class="text-sm font-medium">TypeScript Generator</span>
+                                            <span class="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">Code Templates</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors">
+                                Install to Current Connect
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function toggleExpand(button) {
+            const card = button.closest('.preview-container');
+            const expandable = card.querySelector('.expandable');
+            const svg = button.querySelector('svg');
+            
+            expandable.classList.toggle('open');
+            
+            if (expandable.classList.contains('open')) {
+                svg.style.transform = 'rotate(180deg)';
+            } else {
+                svg.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Add hover effects and interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth transitions for expand/collapse
+            const buttons = document.querySelectorAll('.expand-btn svg');
+            buttons.forEach(svg => {
+                svg.style.transition = 'transform 0.3s ease';
+            });
+        });
+    </script>
+</body>
+</html>
