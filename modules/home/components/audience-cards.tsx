@@ -1,25 +1,24 @@
-import Image from 'next/image'
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
+import { AnimatedVetraLogo } from '@/modules/shared/components/ui/animated-vetra-logo'
 
 const audiences = [
   {
     title: 'Builders & Developers',
     description:
       'Want control without overhead? Use Vetra to launch services, build extensions, and own your deployment.',
-    image: '/images/home/audience-builders.png',
+    animation: 'scale' as const,
   },
   {
     title: 'System Integrators',
     description:
       'Deploy Vetra stacks for clients, offer managed services, and customize solutions. Get paid for uptime and support.',
-    image: '/images/home/audience-integrators.jpg',
+    animation: 'movement' as const,
   },
   {
     title: 'Data & AI Teams',
     description:
       'Subscribe to events across workflows and contributor actions. Train AI on structured, cross-org data streams.',
-    image: '/images/home/audience-data-ai.svg',
+    animation: 'threeStep' as const,
   },
 ]
 
@@ -38,12 +37,10 @@ export function AudienceCards() {
           <Card key={audience.title}>
             <CardHeader>
               <div className="flex items-center gap-3">
-                <Image
-                  src={audience.image}
-                  alt={audience.title}
-                  width={48}
-                  height={48}
-                  className="h-12 w-12 object-contain"
+                <AnimatedVetraLogo
+                  size={32}
+                  variant={audience.animation}
+                  className="h-8 w-8"
                 />
                 <CardTitle>{audience.title}</CardTitle>
               </div>

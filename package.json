@@ -58,6 +58,7 @@
     "document-drive": "6.0.0-dev.88",
     "document-model": "6.0.0-dev.88",
     "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.38.0",
     "graphql": "^16.11.0",
     "graphql-request": "^7.2.0",
     "input-otp": "^1.4.2",

@@ -36,7 +36,7 @@ export default function HomePage() {
             leftFadeIntensity={0}
             rightFadeDistance={0}
             rightFadeIntensity={0}
-            className="absolute inset-0 opacity-40"
+            className="absolute inset-0 opacity-15"
           />
           {/* CSS-based fade overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent via-transparent to-background opacity-100"></div>

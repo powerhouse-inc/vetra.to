@@ -68,21 +68,29 @@ export function FaqSection() {
       </h2>
       <p className="text-foreground-70 mb-12 text-center">Everything you need to know.</p>
 
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid gap-12 lg:grid-cols-2">
         <Accordion type="multiple">
           {leftColumn.map((faq, i) => (
-            <AccordionItem key={i} value={`left-${i}`}>
-              <AccordionTrigger>{faq.question}</AccordionTrigger>
-              <AccordionContent>{faq.answer}</AccordionContent>
+            <AccordionItem 
+              key={i} 
+              value={`left-${i}`}
+              className="border-b-[0.5px] border-border/30 py-2 last:border-b-0"
+            >
+              <AccordionTrigger className="py-6 text-base">{faq.question}</AccordionTrigger>
+              <AccordionContent className="pb-6">{faq.answer}</AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
 
         <Accordion type="multiple">
           {rightColumn.map((faq, i) => (
-            <AccordionItem key={i} value={`right-${i}`}>
-              <AccordionTrigger>{faq.question}</AccordionTrigger>
-              <AccordionContent>{faq.answer}</AccordionContent>
+            <AccordionItem 
+              key={i} 
+              value={`right-${i}`}
+              className="border-b-[0.5px] border-border/30 py-2 last:border-b-0"
+            >
+              <AccordionTrigger className="py-6 text-base">{faq.question}</AccordionTrigger>
+              <AccordionContent className="pb-6">{faq.answer}</AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>

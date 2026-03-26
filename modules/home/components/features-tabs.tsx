@@ -2,17 +2,22 @@
 
 import {
   BookOpen,
+  Clock,
   Code,
+  Cog,
   Database,
   FileText,
   FlaskConical,
   GitBranch,
   Layers,
   Lightbulb,
+  MessageSquare,
   Radio,
   RefreshCcw,
   ShieldCheck,
+  Users,
   Workflow,
+  Zap,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -22,40 +27,40 @@ type Feature = { title: string; description: string; icon: LucideIcon }
 
 const specAiFeatures: Feature[] = [
   {
-    title: 'Code Generation',
+    title: 'Code is dead.',
     description:
-      'Generate document model scaffolding, reducers, and type-safe APIs from your specifications automatically.',
+      'Communicate your solution and intent through a structured specification framework designed for AI collaboration',
+    icon: MessageSquare,
+  },
+  {
+    title: 'Specs as shared language',
+    description:
+      'They enable precise, iterative edits—turning messy intent into clean execution.',
+    icon: Users,
+  },
+  {
+    title: 'Build for AI',
+    description:
+      "Our documents are machine-readable and executable—laying the groundwork for a 'Git for Intent' for your AI agents.",
+    icon: Zap,
+  },
+  {
+    title: 'Iterate in lockstep.',
+    description:
+      'Update exact parameters and properties as your specs evolve—no more guesswork, just precision.',
+    icon: RefreshCcw,
+  },
+  {
+    title: 'Stop vibecoding. Start delivering.',
+    description:
+      'Specs turn fragile sandcastles into solid, editable, and maintainable functionality.',
     icon: Code,
   },
   {
-    title: 'Schema Validation',
+    title: 'Maintainable by design',
     description:
-      'AI validates your document models against best practices and catches issues before deployment.',
-    icon: ShieldCheck,
-  },
-  {
-    title: 'Smart Suggestions',
-    description:
-      'Get intelligent suggestions for operations, state transitions, and workflow optimizations.',
-    icon: Lightbulb,
-  },
-  {
-    title: 'Domain Modeling',
-    description:
-      'AI understands your domain and helps structure document models that match your business logic.',
-    icon: Database,
-  },
-  {
-    title: 'Test Generation',
-    description:
-      'Automatically generate comprehensive test suites for your document models and reducers.',
-    icon: FlaskConical,
-  },
-  {
-    title: 'Documentation',
-    description:
-      'AI generates clear documentation from your specifications, keeping docs in sync with code.',
-    icon: BookOpen,
+      'Turn business needs into document models, specs into unit tests, and intent into living documentation.',
+    icon: Cog,
   },
 ]
 
@@ -99,6 +104,14 @@ const rdaFeatures: Feature[] = [
 export function FeaturesTabs() {
   return (
     <section className="mx-auto max-w-[var(--container-width)] px-6 py-20">
+      <div className="text-center mb-12">
+        <h2 className="text-foreground text-3xl font-bold mb-2">
+          Build on the sovereign tech-stack of tomorrow
+        </h2>
+        <p className="text-foreground-70">
+          Structured document models powered by modern tooling
+        </p>
+      </div>
       <Tabs defaultValue="rda" className="items-center">
         <TabsList className="mb-10">
           <TabsTrigger value="rda">Reactive Document Architecture</TabsTrigger>
@@ -125,7 +138,7 @@ export function FeaturesTabs() {
             {specAiFeatures.map((feature) => (
               <div
                 key={feature.title}
-                className="border-border hover:bg-accent rounded-xl border p-6 transition-colors"
+                className="border-border hover:bg-accent rounded-xl border p-8 transition-colors"
               >
                 <feature.icon className="text-primary mb-2 h-6 w-6" />
                 <h3 className="text-foreground mb-2 text-base font-bold">{feature.title}</h3>
