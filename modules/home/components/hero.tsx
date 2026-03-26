@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { GridBackground } from '@/modules/shared/components/ui/grid-background'
 
 const phrases = ['Specification driven AI.', 'Web3 enabled features.', '100% open source.']
 
@@ -36,10 +37,10 @@ export function Hero() {
   }, [displayText, isDeleting, phraseIndex])
 
   return (
-    <section className="px-6 py-20 text-center md:py-28">
-      <div className="mx-auto max-w-[var(--container-width)]">
+    <section className="relative px-6 py-20 text-center md:py-28 bg-transparent">
+      <div className="relative mx-auto max-w-[var(--container-width)]">
         <div className="bg-primary-30 text-primary mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold">
-          Local-first!
+          Local-first
         </div>
         <h1 className="mx-auto mb-1 max-w-3xl text-[clamp(40px,5vw,64px)] leading-[1.1] font-bold tracking-tight">
           Built to scale.
