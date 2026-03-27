@@ -7,7 +7,7 @@ const features = [
     title: 'Rapid Application Development',
     description:
       'Turn specifications into applications with spec-driven AI. Generate scaffolding automatically, reuse modular components, and tap into an active open-source builder community.',
-    image: '/images/home/feature-rad.png',
+    image: '/images/home/rapid-application-development.svg',
   },
   {
     title: 'Build Reactive Apps',
@@ -19,7 +19,7 @@ const features = [
     title: 'Collaborative User Experiences',
     description:
       "Built 'Git-like' user experiences with branching merging & pull-requests. Applications built with Vetra are collaborative by default.",
-    image: '/images/home/feature-reactive.jpg',
+    image: '/images/home/collaborative-infrastructure.svg',
   },
   {
     title: 'Ready to Scale',
@@ -31,7 +31,7 @@ const features = [
     title: 'Web3 Built In',
     description:
       'Add Web3 to your workflows without extra setup. Vetra supports on-chain storage, cryptographic verification, and wallet-based authentication.',
-    image: '/images/home/feature-web3.png',
+    image: '/images/home/web3-enabled.svg',
   },
 ]
 

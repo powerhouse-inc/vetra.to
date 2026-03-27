@@ -28,7 +28,7 @@ export function AudienceCards() {
       <h2 className="text-foreground mb-4 text-center text-3xl font-bold">
         Who it&apos;s built for
       </h2>
-      <p className="text-foreground-70 mx-auto mb-12 max-w-lg text-center">
+      <p className="text-foreground-70 mx-auto mb-12 max-w-4xl text-center whitespace-nowrap">
         Vetra is designed for teams that need full control of their coordination infrastructure.
       </p>
 

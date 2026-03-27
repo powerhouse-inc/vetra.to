@@ -1,6 +1,44 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState, startTransition } from 'react'
 import { Database, Globe, Shield } from 'lucide-react'
+
+const logos = [
+  {
+    name: 'Kubernetes',
+    src: '/images/cloud/logos/kubernetes.png',
+  },
+  {
+    name: 'PostgreSQL',
+    src: '/images/cloud/logos/postgres.svg.png',
+  },
+  {
+    name: 'Grafana',
+    src: '/images/cloud/logos/grafana.webp',
+  },
+  {
+    name: 'Prometheus',
+    src: '/images/cloud/logos/Prometheus.png',
+  },
+  {
+    name: 'OpenBao',
+    src: '/images/cloud/logos/openbao.svg',
+  },
+  {
+    name: 'Harbor',
+    src: '/images/cloud/logos/harbor.svg',
+  },
+  {
+    name: 'Argo',
+    src: '/images/cloud/logos/argo.svg',
+  },
+  {
+    name: 'Verdaccio',
+    src: '/images/cloud/logos/verdaccio.svg',
+  },
+]
 
 function Principle({
   icon: Icon,
@@ -58,20 +96,28 @@ function FeatureSection({
 }
 
 export function CloudLandingFeatures() {
+  const [hoveredLogo, setHoveredLogo] = useState<string | null>(null)
+
   return (
     <div id="features">
       {/* Infrastructure bar */}
       <section className="bg-primary-30 px-6 py-12">
         <div className="mx-auto max-w-[var(--container-width)] text-center">
-          <p className="text-foreground-70 mb-4 text-sm font-medium">Vetra Open Cloud runs on</p>
+          <p className="text-foreground text-3xl font-bold">Vetra Open Cloud runs on</p>
+          <p className="text-foreground-70 mt-2 text-2xl mb-16">{hoveredLogo || 'your trusted open source stack'}</p>
           <div className="flex flex-wrap items-center justify-center gap-8">
-            <Image
-              src="/images/cloud/hetzner-openstack.png"
-              alt="Hetzner + OpenStack"
-              width={280}
-              height={60}
-              className="h-auto max-h-12 w-auto"
-            />
+            {logos.map((logo, index) => (
+              <Image
+                key={index}
+                src={logo.src}
+                alt={logo.name}
+                width={80}
+                height={80}
+                className="h-20 w-20 object-contain opacity-60 transition-opacity hover:opacity-100 grayscale hover:grayscale-0 cursor-pointer"
+                onMouseEnter={() => startTransition(() => setHoveredLogo(logo.name))}
+                onMouseLeave={() => startTransition(() => setHoveredLogo(null))}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -125,23 +171,6 @@ export function CloudLandingFeatures() {
         </div>
       </section>
 
-      {/* Bottom CTA */}
-      <section className="px-6 py-20">
-        <div className="mx-auto max-w-[var(--container-width)] text-center">
-          <div className="bg-card border-border mx-auto max-w-2xl rounded-2xl border p-12">
-            <h2 className="mb-3 text-2xl font-bold">Start building on Open Cloud</h2>
-            <p className="text-foreground-70 mb-6 text-sm leading-relaxed">
-              Deploy your first environment in minutes. No credit card required.
-            </p>
-            <Link
-              href="/cloud"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 inline-block rounded-lg px-8 py-3 text-sm font-semibold transition-colors"
-            >
-              Get Started
-            </Link>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }

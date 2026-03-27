@@ -5,7 +5,7 @@ import { Button } from '@/modules/shared/components/ui/button'
 
 export function PowerhouseStack() {
   return (
-    <section className="border-border border-b">
+    <section>
       <div className="mx-auto max-w-[var(--container-width)] px-6 py-20">
         <div className="mb-10 text-center">
           <h2 className="text-foreground mb-3 text-3xl font-bold">
@@ -101,9 +101,9 @@ export function PowerhouseStack() {
                   asChild
                   variant="outline"
                   size="lg"
-                  className="border-white text-white hover:bg-white/10"
+                  className="bg-gray-900 border-white text-white hover:bg-gray-800"
                 >
-                  <Link href="https://powerhouse.inc">Visit Powerhouse</Link>
+                  <Link href="https://powerhouse.io">Visit Powerhouse</Link>
                 </Button>
               </div>
             </div>

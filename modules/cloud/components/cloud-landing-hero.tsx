@@ -1,9 +1,11 @@
 import Link from 'next/link'
+import { IsoGrid } from '@/modules/shared/components/ui/iso-grid'
 
 export function CloudLandingHero() {
   return (
-    <section className="px-6 py-20 text-center md:py-28">
-      <div className="mx-auto max-w-[var(--container-width)]">
+    <section className="relative px-6 py-20 text-center md:py-28 overflow-hidden">
+      <IsoGrid />
+      <div className="relative z-10 mx-auto max-w-[var(--container-width)]">
         <p className="text-primary mb-4 text-sm font-semibold">The Open Cloud, on your terms.</p>
         <h1 className="mx-auto mb-4 max-w-2xl text-[clamp(28px,4vw,48px)] leading-[1.1] font-bold">
           Independent infrastructure{' '}
