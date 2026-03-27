@@ -17,8 +17,8 @@ import { CloudEnvironments } from './cloud-projects'
 
 export function CloudDashboard() {
   const environments = useEnvironments()
-  const runningCount = environments.filter((e) => e.state.status === 'STARTED').length
-  const totalPackages = environments.reduce((sum, e) => sum + (e.state.packages?.length ?? 0), 0)
+  const readyCount = environments.filter((e) => e.state.status === 'READY').length
+  const totalPackages = environments.reduce((sum, e) => sum + e.state.packages.length, 0)
 
   return (
     <main className="mx-auto mt-20 max-w-[var(--container-width)] space-y-8 px-6 py-8">
@@ -52,8 +52,8 @@ export function CloudDashboard() {
             <p className="text-2xl font-bold">{environments.length}</p>
           </div>
           <div className="bg-card border-border rounded-lg border px-4 py-3">
-            <p className="text-muted-foreground text-xs font-medium">Running</p>
-            <p className="text-success text-2xl font-bold">{runningCount}</p>
+            <p className="text-muted-foreground text-xs font-medium">Ready</p>
+            <p className="text-success text-2xl font-bold">{readyCount}</p>
           </div>
           <div className="bg-card border-border rounded-lg border px-4 py-3">
             <p className="text-muted-foreground text-xs font-medium">Packages</p>

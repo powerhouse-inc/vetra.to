@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowLeft, ExternalLink, Play, Square } from 'lucide-react'
+import { ArrowLeft, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, use, useEffect, useRef, useState } from 'react'
@@ -27,61 +27,6 @@ import { OverviewTab } from './tabs/overview'
 import { SettingsTab } from './tabs/settings'
 
 // ---------------------------------------------------------------------------
-// StartStopButton
-// ---------------------------------------------------------------------------
-
-function StartStopButton({
-  isRunning,
-  onStart,
-  onStop,
-}: {
-  isRunning: boolean
-  onStart: () => Promise<void>
-  onStop: () => Promise<void>
-}) {
-  const [isToggling, setIsToggling] = useState(false)
-
-  const handleToggle = async () => {
-    try {
-      setIsToggling(true)
-      if (isRunning) {
-        await onStop()
-      } else {
-        await onStart()
-      }
-      toast.success(`Environment ${isRunning ? 'stopped' : 'started'}`)
-    } catch (error) {
-      console.error('Failed to toggle environment:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to toggle environment')
-    } finally {
-      setIsToggling(false)
-    }
-  }
-
-  return (
-    <Button
-      variant={isRunning ? 'outline' : 'default'}
-      size="sm"
-      onClick={handleToggle}
-      disabled={isToggling}
-      className="flex items-center gap-1.5"
-    >
-      {isRunning ? (
-        <>
-          <Square className="h-3.5 w-3.5" />
-          {isToggling ? 'Stopping...' : 'Stop'}
-        </>
-      ) : (
-        <>
-          <Play className="h-3.5 w-3.5" />
-          {isToggling ? 'Starting...' : 'Start'}
-        </>
-      )}
-    </Button>
-  )
-}
-
-// ---------------------------------------------------------------------------
 // EnvironmentDetail — inner component that uses useSearchParams
 // (must be wrapped in <Suspense> per Next.js 15 requirements)
 // ---------------------------------------------------------------------------
@@ -95,23 +40,23 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
   const { environment, isLoading } = detail
 
   const state = environment?.state
-  const subdomain = state?.subdomain ?? null
+  const subdomain = state?.genericSubdomain ?? null
   const tenantId = subdomain && environment ? getTenantId(subdomain, environment.id) : null
-  const isRunning = state?.status === 'STARTED'
-  const isStopped = state?.status !== 'STARTED'
+  const isReady = state?.status === 'READY'
+  const isInactive = state?.status !== 'READY'
 
   const { status: envStatus, isLoading: statusLoading } = useEnvironmentStatus(subdomain, tenantId)
 
-  // Auto-heal: set subdomain if missing
+  // Auto-heal: set genericSubdomain if missing
   const subdomainHealedRef = useRef(false)
   useEffect(() => {
     if (!environment || subdomainHealedRef.current) return
-    if (environment.state.subdomain === null) {
+    if (environment.state.genericSubdomain === null) {
       subdomainHealedRef.current = true
-      detail.setSubdomain(generateSubdomain(environment.id))
+      detail.setGenericSubdomain(generateSubdomain(environment.id))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [environment, detail.setSubdomain])
+  }, [environment, detail.setGenericSubdomain])
 
   const handleTabChange = (tab: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -123,9 +68,11 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
     return <p className="text-muted-foreground">Loading environment...</p>
   }
 
-  const displayName = state?.name || environment?.name || 'Environment'
-  const connectUrl = subdomain ? `https://connect.${subdomain}.vetra.io` : null
-  const switchboardUrl = subdomain ? `https://switchboard.${subdomain}.vetra.io` : null
+  const displayName = state?.label || environment?.name || 'Environment'
+  const baseDomain = state?.genericBaseDomain ?? 'vetra.io'
+
+  // Build visit URLs from enabled services
+  const enabledServices = state?.services.filter((s) => s.enabled) ?? []
 
   return (
     <>
@@ -148,12 +95,9 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
               isLoading={statusLoading && !envStatus}
             />
           )}
-          {state && (
-            <StartStopButton isRunning={isRunning} onStart={detail.start} onStop={detail.stop} />
-          )}
 
           {/* Visit dropdown */}
-          {subdomain && (
+          {subdomain && enabledServices.length > 0 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center gap-1.5">
@@ -162,20 +106,21 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                {connectUrl && (
-                  <DropdownMenuItem asChild>
-                    <a href={connectUrl} target="_blank" rel="noopener noreferrer">
-                      Connect
+                {enabledServices.map((svc) => (
+                  <DropdownMenuItem key={svc.type} asChild>
+                    <a
+                      href={`https://${svc.prefix}.${subdomain}.${baseDomain}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {svc.type === 'CONNECT'
+                        ? 'Connect'
+                        : svc.type === 'SWITCHBOARD'
+                          ? 'Switchboard'
+                          : 'Fusion'}
                     </a>
                   </DropdownMenuItem>
-                )}
-                {switchboardUrl && (
-                  <DropdownMenuItem asChild>
-                    <a href={switchboardUrl} target="_blank" rel="noopener noreferrer">
-                      Switchboard
-                    </a>
-                  </DropdownMenuItem>
-                )}
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -204,10 +149,10 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
             <DeploymentsTab subdomain={subdomain} tenantId={tenantId} />
           </TabsContent>
           <TabsContent value="logs" className="pt-4">
-            <LogsTab subdomain={subdomain} tenantId={tenantId} isStopped={isStopped} />
+            <LogsTab subdomain={subdomain} tenantId={tenantId} isStopped={isInactive} />
           </TabsContent>
           <TabsContent value="metrics" className="pt-4">
-            <MetricsTab subdomain={subdomain} tenantId={tenantId} isStopped={isStopped} />
+            <MetricsTab subdomain={subdomain} tenantId={tenantId} isStopped={isInactive} />
           </TabsContent>
           <TabsContent value="settings" className="pt-4">
             <SettingsTab

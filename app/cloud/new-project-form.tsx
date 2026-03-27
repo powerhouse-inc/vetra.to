@@ -9,8 +9,8 @@ import { z } from 'zod'
 import {
   getAuthToken,
   createEnvironment,
-  setEnvironmentName,
-  setSubdomain,
+  setLabel,
+  initializeEnvironment,
 } from '@/modules/cloud/graphql'
 import { generateSubdomain } from '@/modules/cloud/subdomain'
 import { Button } from '@/modules/shared/components/ui/button'
@@ -66,10 +66,11 @@ export function NewEnvironmentForm({
       const token = await getAuthToken(renown)
 
       if (docId) {
-        await setEnvironmentName(docId, values.name, token)
+        await setLabel(docId, values.name, token)
       } else {
         const env = await createEnvironment(values.name, token)
-        await setSubdomain(env.id, generateSubdomain(env.id), token)
+        const subdomain = generateSubdomain(env.id)
+        await initializeEnvironment(env.id, subdomain, 'vetra.io', undefined, token)
         onCreated?.(env.id)
       }
 

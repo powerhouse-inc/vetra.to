@@ -8,6 +8,7 @@ import {
   Settings,
   Plus,
   Globe,
+  Zap,
   MoreHorizontal,
   Search,
   Trash2,
@@ -20,7 +21,7 @@ import { z } from 'zod'
 
 import { NewEnvironmentForm } from '@/app/cloud/new-project-form'
 import { getAuthToken, deleteEnvironment } from '@/modules/cloud/graphql'
-import type { CloudEnvironment, CloudEnvironmentService } from '@/modules/cloud/types'
+import type { CloudEnvironment, CloudEnvironmentServiceType } from '@/modules/cloud/types'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -85,9 +86,9 @@ type AddPackageFormValues = z.infer<typeof addPackageSchema>
 
 function StatusDot({ status }: { status: string }) {
   const colorClass =
-    status === 'STARTED'
+    status === 'READY' || status === 'ACTIVE'
       ? 'bg-emerald-500'
-      : status === 'DEPLOYING'
+      : status === 'DEPLOYING' || status === 'PROVISIONING'
         ? 'bg-yellow-500'
         : 'bg-muted-foreground'
 
@@ -250,23 +251,39 @@ function PackageRow({
 // ServiceRow (the toggle version with Switch — moved from page.tsx)
 // ---------------------------------------------------------------------------
 
+const SERVICE_LABELS: Record<CloudEnvironmentServiceType, string> = {
+  CONNECT: 'Powerhouse Connect',
+  SWITCHBOARD: 'Powerhouse Switchboard',
+  FUSION: 'Powerhouse Fusion',
+}
+
+const SERVICE_ICONS: Record<
+  CloudEnvironmentServiceType,
+  React.ComponentType<{ className?: string }>
+> = {
+  CONNECT: Globe,
+  SWITCHBOARD: Server,
+  FUSION: Zap,
+}
+
 function ServiceRow({
-  serviceName,
-  label,
-  icon: Icon,
+  serviceType,
+  prefix,
   subdomain,
   isEnabled,
+  serviceStatus,
   onToggle,
 }: {
-  serviceName: CloudEnvironmentService
-  label: string
-  icon: React.ComponentType<{ className?: string }>
+  serviceType: CloudEnvironmentServiceType
+  prefix: string
   subdomain: string | null
   isEnabled: boolean
+  serviceStatus: string
   onToggle: (enabled: boolean) => Promise<void>
 }) {
   const [isToggling, setIsToggling] = useState(false)
-  const prefix = serviceName === 'CONNECT' ? 'connect' : 'switchboard'
+  const label = SERVICE_LABELS[serviceType]
+  const Icon = SERVICE_ICONS[serviceType]
   const serviceUrl = subdomain
     ? `${prefix}.${subdomain}.vetra.io`
     : `${prefix}.<subdomain>.vetra.io`
@@ -293,7 +310,7 @@ function ServiceRow({
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium">{label}</span>
-            <StatusDot status={isEnabled ? 'STARTED' : 'STOPPED'} />
+            <StatusDot status={isEnabled ? serviceStatus : 'DISABLED'} />
           </div>
           <a
             href={`https://${serviceUrl}`}
@@ -321,8 +338,8 @@ function ServiceRow({
 
 type SettingsTabProps = {
   environment: CloudEnvironment
-  enableService: (service: CloudEnvironmentService) => Promise<void>
-  disableService: (service: CloudEnvironmentService) => Promise<void>
+  enableService: (type: CloudEnvironmentServiceType, prefix: string) => Promise<void>
+  disableService: (type: CloudEnvironmentServiceType) => Promise<void>
   addPackage: (name: string, version?: string) => Promise<void>
   removePackage: (name: string) => Promise<void>
   onDelete?: () => void
@@ -341,8 +358,9 @@ export function SettingsTab({
   const [isDeleting, setIsDeleting] = useState(false)
 
   const state = environment.state
-  const subdomain = state.subdomain ?? null
-  const genericDomain = subdomain ? `${subdomain}.vetra.io` : '<subdomain>.vetra.io'
+  const subdomain = state.genericSubdomain ?? null
+  const baseDomain = state.genericBaseDomain ?? 'vetra.io'
+  const genericDomain = subdomain ? `${subdomain}.${baseDomain}` : `<subdomain>.${baseDomain}`
 
   const handleDelete = async () => {
     try {
@@ -359,6 +377,15 @@ export function SettingsTab({
       setIsDeleting(false)
     }
   }
+
+  const defaultPrefixes: Record<CloudEnvironmentServiceType, string> = {
+    CONNECT: 'connect',
+    SWITCHBOARD: 'switchboard',
+    FUSION: 'fusion',
+  }
+
+  const getServiceEnabled = (type: CloudEnvironmentServiceType) =>
+    state.services.find((s) => s.type === type)
 
   return (
     <div className="space-y-6">
@@ -379,7 +406,7 @@ export function SettingsTab({
             <Input placeholder="Search registry coming soon" disabled className="pl-9 text-sm" />
           </div>
 
-          {state.packages && state.packages.length > 0 ? (
+          {state.packages.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -412,24 +439,24 @@ export function SettingsTab({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <ServiceRow
-            serviceName="CONNECT"
-            label="Powerhouse Connect"
-            icon={Globe}
-            subdomain={subdomain}
-            isEnabled={state.services.includes('CONNECT')}
-            onToggle={(enabled) => (enabled ? enableService('CONNECT') : disableService('CONNECT'))}
-          />
-          <ServiceRow
-            serviceName="SWITCHBOARD"
-            label="Powerhouse Switchboard"
-            icon={Server}
-            subdomain={subdomain}
-            isEnabled={state.services.includes('SWITCHBOARD')}
-            onToggle={(enabled) =>
-              enabled ? enableService('SWITCHBOARD') : disableService('SWITCHBOARD')
-            }
-          />
+          {(['CONNECT', 'SWITCHBOARD', 'FUSION'] as const).map((type) => {
+            const service = getServiceEnabled(type)
+            return (
+              <ServiceRow
+                key={type}
+                serviceType={type}
+                prefix={service?.prefix ?? defaultPrefixes[type]}
+                subdomain={subdomain}
+                isEnabled={service?.enabled ?? false}
+                serviceStatus={service?.status ?? 'PROVISIONING'}
+                onToggle={(enabled) =>
+                  enabled
+                    ? enableService(type, service?.prefix ?? defaultPrefixes[type])
+                    : disableService(type)
+                }
+              />
+            )
+          })}
         </CardContent>
       </Card>
 
@@ -449,24 +476,54 @@ export function SettingsTab({
 
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Checkbox id="custom-domain" disabled />
+              <Checkbox id="custom-domain" disabled checked={state.customDomain.enabled} />
               <label htmlFor="custom-domain" className="text-muted-foreground text-sm font-medium">
                 Custom Domain
               </label>
-              <Badge variant="outline" className="text-xs">
-                Coming soon
-              </Badge>
+              {!state.customDomain.enabled && (
+                <Badge variant="outline" className="text-xs">
+                  Coming soon
+                </Badge>
+              )}
             </div>
-            <Input placeholder="e.g. my-app.example.com" disabled className="font-mono text-sm" />
+            <Input
+              placeholder="e.g. my-app.example.com"
+              disabled
+              value={state.customDomain.domain ?? ''}
+              className="font-mono text-sm"
+            />
           </div>
 
           <div className="space-y-2 pt-2">
             <h4 className="text-muted-foreground text-sm font-medium">DNS Records</h4>
-            <div className="bg-muted/50 rounded-md border p-4">
-              <p className="text-muted-foreground text-sm">
-                Will be available when custom domain is set
-              </p>
-            </div>
+            {state.customDomain.dnsRecords.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Host</TableHead>
+                    <TableHead>Value</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {state.customDomain.dnsRecords.map((record, i) => (
+                    <TableRow key={i}>
+                      <TableCell className="font-mono text-xs">{record.type}</TableCell>
+                      <TableCell className="font-mono text-xs">{record.host}</TableCell>
+                      <TableCell className="font-mono text-xs">{record.value}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="bg-muted/50 rounded-md border p-4">
+                <p className="text-muted-foreground text-sm">
+                  {state.customDomain.enabled
+                    ? 'No DNS records configured'
+                    : 'Will be available when custom domain is set'}
+                </p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -480,7 +537,7 @@ export function SettingsTab({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <NewEnvironmentForm docId={environment.id} initialName={state.name || ''} />
+          <NewEnvironmentForm docId={environment.id} initialName={state.label || ''} />
         </CardContent>
       </Card>
 
@@ -549,7 +606,7 @@ export function SettingsTab({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete Environment</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to delete &ldquo;{state.name || environment.name}&rdquo;?
+                    Are you sure you want to delete &ldquo;{state.label || environment.name}&rdquo;?
                     This action cannot be undone and all data will be permanently lost.
                   </AlertDialogDescription>
                 </AlertDialogHeader>

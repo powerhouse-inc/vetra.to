@@ -2,18 +2,19 @@
 
 import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState, useEffect, useCallback } from 'react'
-import type { CloudEnvironment, CloudEnvironmentService } from '../types'
+import type { CloudEnvironment, CloudEnvironmentServiceType } from '../types'
 import {
   getAuthToken,
   fetchEnvironment,
-  setEnvironmentName as gqlSetName,
-  setSubdomain as gqlSetSubdomain,
+  setLabel as gqlSetLabel,
+  setGenericSubdomain as gqlSetGenericSubdomain,
   enableService as gqlEnableService,
   disableService as gqlDisableService,
+  toggleService as gqlToggleService,
   addPackage as gqlAddPackage,
   removePackage as gqlRemovePackage,
-  startEnvironment as gqlStart,
-  stopEnvironment as gqlStop,
+  initializeEnvironment as gqlInitialize,
+  terminateEnvironment as gqlTerminate,
 } from '../graphql'
 
 export function useEnvironmentDetail(documentId: string) {
@@ -52,44 +53,58 @@ export function useEnvironmentDetail(documentId: string) {
     [renown],
   )
 
-  const setName = useCallback(
-    (name: string) => mutate((t) => gqlSetName(documentId, name, t)),
+  const setLabel = useCallback(
+    (label: string) => mutate((t) => gqlSetLabel(documentId, label, t)),
     [documentId, mutate],
   )
-  const setSubdomain = useCallback(
-    (subdomain: string) => mutate((t) => gqlSetSubdomain(documentId, subdomain, t)),
+  const setGenericSubdomain = useCallback(
+    (subdomain: string) => mutate((t) => gqlSetGenericSubdomain(documentId, subdomain, t)),
     [documentId, mutate],
   )
   const enableService = useCallback(
-    (service: CloudEnvironmentService) => mutate((t) => gqlEnableService(documentId, service, t)),
+    (type: CloudEnvironmentServiceType, prefix: string) =>
+      mutate((t) => gqlEnableService(documentId, type, prefix, t)),
     [documentId, mutate],
   )
   const disableService = useCallback(
-    (service: CloudEnvironmentService) => mutate((t) => gqlDisableService(documentId, service, t)),
+    (type: CloudEnvironmentServiceType) => mutate((t) => gqlDisableService(documentId, type, t)),
+    [documentId, mutate],
+  )
+  const toggleServiceEnabled = useCallback(
+    (type: CloudEnvironmentServiceType) => mutate((t) => gqlToggleService(documentId, type, t)),
     [documentId, mutate],
   )
   const addPackage = useCallback(
-    (name: string, version?: string) => mutate((t) => gqlAddPackage(documentId, name, version, t)),
+    (name: string, version?: string) =>
+      mutate((t) => gqlAddPackage(documentId, name, version, undefined, t)),
     [documentId, mutate],
   )
   const removePackage = useCallback(
     (name: string) => mutate((t) => gqlRemovePackage(documentId, name, t)),
     [documentId, mutate],
   )
-  const start = useCallback(() => mutate((t) => gqlStart(documentId, t)), [documentId, mutate])
-  const stop = useCallback(() => mutate((t) => gqlStop(documentId, t)), [documentId, mutate])
+  const initialize = useCallback(
+    (subdomain: string, baseDomain: string, defaultRegistry?: string) =>
+      mutate((t) => gqlInitialize(documentId, subdomain, baseDomain, defaultRegistry, t)),
+    [documentId, mutate],
+  )
+  const terminate = useCallback(
+    () => mutate((t) => gqlTerminate(documentId, t)),
+    [documentId, mutate],
+  )
 
   return {
     environment,
     isLoading,
     error,
-    setName,
-    setSubdomain,
+    setLabel,
+    setGenericSubdomain,
     enableService,
     disableService,
+    toggleServiceEnabled,
     addPackage,
     removePackage,
-    start,
-    stop,
+    initialize,
+    terminate,
   }
 }

@@ -25,11 +25,13 @@ import type { CloudEnvironment } from './types'
 
 function StatusDot({ status }: { status: string }) {
   const colorClass =
-    status === 'STARTED'
+    status === 'READY'
       ? 'bg-success'
-      : status === 'DEPLOYING'
+      : status === 'DEPLOYING' || status === 'CHANGES_PUSHED'
         ? 'bg-warning'
-        : 'bg-muted-foreground'
+        : status === 'DEPLOYMENt_FAILED'
+          ? 'bg-destructive'
+          : 'bg-muted-foreground'
 
   return (
     <span className="flex items-center gap-1.5 text-xs font-medium">
@@ -44,8 +46,8 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const refreshEnvironments = useRefreshEnvironments()
-  const displayName = env.state.name || env.name || 'Unnamed'
-  const packageCount = env.state.packages?.length ?? 0
+  const displayName = env.state.label || env.name || 'Unnamed'
+  const packageCount = env.state.packages.length
 
   const handleDelete = async () => {
     try {
@@ -63,6 +65,8 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
     }
   }
 
+  const enabledServices = env.state.services.filter((s) => s.enabled)
+
   return (
     <Card className="transition-shadow hover:shadow-md">
       <CardHeader className="flex-row items-center justify-between pb-3">
@@ -78,8 +82,10 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
             <Package className="h-3.5 w-3.5" />
             {packageCount} package{packageCount !== 1 ? 's' : ''}
           </div>
-          {env.state.services.length > 0 && (
-            <div className="text-muted-foreground text-xs">{env.state.services.join(', ')}</div>
+          {enabledServices.length > 0 && (
+            <div className="text-muted-foreground text-xs">
+              {enabledServices.map((s) => s.type).join(', ')}
+            </div>
           )}
         </div>
 

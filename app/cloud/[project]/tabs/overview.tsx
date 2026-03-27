@@ -26,8 +26,12 @@ export function OverviewTab({ subdomain, tenantId, environment, onTabChange }: O
   const connectPods = pods.filter((p) => p.service === 'CONNECT')
   const switchboardPods = pods.filter((p) => p.service === 'SWITCHBOARD')
 
-  const isConnectEnabled = state.services.includes('CONNECT')
-  const isSwitchboardEnabled = state.services.includes('SWITCHBOARD')
+  const enabledServices = state.services.filter((s) => s.enabled)
+  const isConnectEnabled = state.services.some((s) => s.type === 'CONNECT' && s.enabled)
+  const isSwitchboardEnabled = state.services.some((s) => s.type === 'SWITCHBOARD' && s.enabled)
+
+  const connectService = state.services.find((s) => s.type === 'CONNECT')
+  const switchboardService = state.services.find((s) => s.type === 'SWITCHBOARD')
 
   return (
     <div className="space-y-6">
@@ -139,26 +143,28 @@ export function OverviewTab({ subdomain, tenantId, environment, onTabChange }: O
       </div>
 
       {/* Services Section */}
-      {(isConnectEnabled || isSwitchboardEnabled) && (
+      {enabledServices.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Services</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {isConnectEnabled && (
+            {isConnectEnabled && connectService && (
               <ServiceCard
                 serviceName="CONNECT"
                 label="Powerhouse Connect"
                 subdomain={subdomain}
+                prefix={connectService.prefix}
                 pods={connectPods}
                 isEnabled={isConnectEnabled}
               />
             )}
-            {isSwitchboardEnabled && (
+            {isSwitchboardEnabled && switchboardService && (
               <ServiceCard
                 serviceName="SWITCHBOARD"
                 label="Powerhouse Switchboard"
                 subdomain={subdomain}
+                prefix={switchboardService.prefix}
                 pods={switchboardPods}
                 isEnabled={isSwitchboardEnabled}
               />

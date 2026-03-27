@@ -1,21 +1,37 @@
-import { ExternalLink, Globe, Server } from 'lucide-react'
+import { ExternalLink, Globe, Server, Zap } from 'lucide-react'
 
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import { cn } from '@/shared/lib/utils'
-import type { Pod } from '@/modules/cloud/types'
+import type { CloudEnvironmentServiceType, Pod } from '@/modules/cloud/types'
 
 type ServiceCardProps = {
-  serviceName: 'CONNECT' | 'SWITCHBOARD'
+  serviceName: CloudEnvironmentServiceType
   label: string
   subdomain: string | null
+  prefix: string
   pods: Pod[]
   isEnabled: boolean
 }
 
-export function ServiceCard({ serviceName, label, subdomain, pods, isEnabled }: ServiceCardProps) {
-  const Icon = serviceName === 'CONNECT' ? Globe : Server
-  const prefix = serviceName === 'CONNECT' ? 'connect' : 'switchboard'
+const SERVICE_ICONS: Record<
+  CloudEnvironmentServiceType,
+  React.ComponentType<{ className?: string }>
+> = {
+  CONNECT: Globe,
+  SWITCHBOARD: Server,
+  FUSION: Zap,
+}
+
+export function ServiceCard({
+  serviceName,
+  label,
+  subdomain,
+  prefix,
+  pods,
+  isEnabled,
+}: ServiceCardProps) {
+  const Icon = SERVICE_ICONS[serviceName] ?? Server
   const serviceUrl = subdomain
     ? `https://${prefix}.${subdomain}.vetra.io`
     : `https://${prefix}.<subdomain>.vetra.io`

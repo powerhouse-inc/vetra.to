@@ -1,17 +1,53 @@
-export type CloudEnvironmentService = 'CONNECT' | 'SWITCHBOARD'
-export type CloudEnvironmentStatus = 'STARTED' | 'STOPPED' | 'DEPLOYING'
+export type CloudEnvironmentServiceType = 'CONNECT' | 'SWITCHBOARD' | 'FUSION'
+
+export type ServiceStatus = 'ACTIVE' | 'SUSPENDED' | 'PROVISIONING' | 'BILLING_ISSUE'
+
+export type CloudEnvironmentService = {
+  type: CloudEnvironmentServiceType
+  prefix: string
+  enabled: boolean
+  url: string | null
+  status: ServiceStatus
+}
+
+export type CloudEnvironmentStatus =
+  | 'DRAFT'
+  | 'CHANGES_PENDING'
+  | 'CHANGES_APPROVED'
+  | 'CHANGES_PUSHED'
+  | 'DEPLOYING'
+  | 'DEPLOYMENt_FAILED'
+  | 'READY'
+  | 'TERMINATING'
+  | 'DESTROYED'
+  | 'ARCHIVED'
+
+export type DnsRecord = {
+  type: string
+  host: string
+  value: string
+}
+
+export type CloudCustomDomain = {
+  enabled: boolean
+  domain: string | null
+  dnsRecords: DnsRecord[]
+}
 
 export type CloudPackage = {
+  registry: string
   name: string
   version: string | null
 }
 
 export type CloudEnvironmentState = {
-  name: string | null
-  subdomain: string | null
-  customDomain: string | null
+  label: string | null
+  genericSubdomain: string | null
+  genericBaseDomain: string | null
+  customDomain: CloudCustomDomain
+  defaultPackageRegistry: string | null
   services: CloudEnvironmentService[]
-  packages: CloudPackage[] | null
+  packages: CloudPackage[]
   status: CloudEnvironmentStatus
 }
 

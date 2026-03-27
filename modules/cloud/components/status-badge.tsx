@@ -23,18 +23,26 @@ export function StatusBadge({
     return <span className="bg-muted inline-flex h-5 w-16 animate-pulse rounded-full" />
   }
 
-  if (environmentStatus === 'STOPPED') {
+  if (
+    environmentStatus === 'DRAFT' ||
+    environmentStatus === 'DESTROYED' ||
+    environmentStatus === 'ARCHIVED'
+  ) {
     return (
       <Badge
         variant="secondary"
         className="bg-muted text-muted-foreground rounded-full border-transparent"
       >
-        Stopped
+        {environmentStatus === 'DRAFT'
+          ? 'Draft'
+          : environmentStatus === 'DESTROYED'
+            ? 'Destroyed'
+            : 'Archived'}
       </Badge>
     )
   }
 
-  if (environmentStatus === 'DEPLOYING') {
+  if (environmentStatus === 'DEPLOYING' || environmentStatus === 'CHANGES_PUSHED') {
     return (
       <Badge
         variant="secondary"
@@ -45,6 +53,40 @@ export function StatusBadge({
     )
   }
 
+  if (environmentStatus === 'DEPLOYMENt_FAILED') {
+    return (
+      <Badge
+        variant="secondary"
+        className="rounded-full border-transparent bg-[#ea4335]/20 text-[#ea4335]"
+      >
+        Failed
+      </Badge>
+    )
+  }
+
+  if (environmentStatus === 'TERMINATING') {
+    return (
+      <Badge
+        variant="secondary"
+        className="animate-pulse rounded-full border-transparent bg-[#ea4335]/20 text-[#ea4335]"
+      >
+        Terminating
+      </Badge>
+    )
+  }
+
+  if (environmentStatus === 'CHANGES_PENDING' || environmentStatus === 'CHANGES_APPROVED') {
+    return (
+      <Badge
+        variant="secondary"
+        className="rounded-full border-transparent bg-blue-500/20 text-blue-500"
+      >
+        {environmentStatus === 'CHANGES_PENDING' ? 'Pending' : 'Approved'}
+      </Badge>
+    )
+  }
+
+  // READY state — use ArgoCD status for more detail
   if (argoHealthStatus === 'MISSING') {
     return (
       <Badge

@@ -76,7 +76,7 @@ export default function AddPackagePage({ params }: PageProps) {
     }
   }
 
-  const displayName = environment?.state.name || environment?.name || 'Loading...'
+  const displayName = environment?.state.label || environment?.name || 'Loading...'
 
   if (isLoading) {
     return (

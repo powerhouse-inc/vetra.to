@@ -1,6 +1,6 @@
 import type {
   CloudEnvironment,
-  CloudEnvironmentService,
+  CloudEnvironmentServiceType,
   EnvironmentStatus,
   Pod,
   KubeEvent,
@@ -81,9 +81,12 @@ async function gql<T>(
 // Shared fragments (inlined as strings)
 // ---------------------------------------------------------------------------
 
-const STATE_FIELDS = `name subdomain customDomain status services packages { name version }`
-const DOCUMENT_FIELDS = `id name documentType createdAtUtcIso lastModifiedAtUtcIso revisionsList { scope revision } state { global { ${STATE_FIELDS} } }`
-const LIST_ITEM_FIELDS = `id name state { global { ${STATE_FIELDS} } }`
+const SERVICE_FIELDS = `type prefix enabled url status`
+const PACKAGE_FIELDS = `registry name version`
+const CUSTOM_DOMAIN_FIELDS = `enabled domain dnsRecords { type host value }`
+const STATE_FIELDS = `label genericSubdomain genericBaseDomain customDomain { ${CUSTOM_DOMAIN_FIELDS} } defaultPackageRegistry status services { ${SERVICE_FIELDS} } packages { ${PACKAGE_FIELDS} }`
+const DOCUMENT_FIELDS = `id documentType createdAtUtcIso lastModifiedAtUtcIso revisionsList { scope revision } state { global { ${STATE_FIELDS} } }`
+const LIST_ITEM_FIELDS = `id state { global { ${STATE_FIELDS} } }`
 
 // ---------------------------------------------------------------------------
 // Response mapper
@@ -91,7 +94,6 @@ const LIST_ITEM_FIELDS = `id name state { global { ${STATE_FIELDS} } }`
 
 type RawDocument = {
   id: string
-  name: string
   documentType: string
   createdAtUtcIso: string
   lastModifiedAtUtcIso: string
@@ -101,14 +103,13 @@ type RawDocument = {
 
 type RawListItem = {
   id: string
-  name: string
   state: { global: CloudEnvironment['state'] }
 }
 
 function mapDocument(raw: RawDocument): CloudEnvironment {
   return {
     id: raw.id,
-    name: raw.name,
+    name: raw.state.global.label ?? raw.id,
     documentType: raw.documentType,
     createdAtUtcIso: raw.createdAtUtcIso,
     lastModifiedAtUtcIso: raw.lastModifiedAtUtcIso,
@@ -120,7 +121,7 @@ function mapDocument(raw: RawDocument): CloudEnvironment {
 function mapListItem(raw: RawListItem): CloudEnvironment {
   return {
     id: raw.id,
-    name: raw.name,
+    name: raw.state.global.label ?? raw.id,
     documentType: 'powerhouse/vetra-cloud-environment',
     createdAtUtcIso: '',
     lastModifiedAtUtcIso: '',
@@ -174,7 +175,7 @@ export async function fetchEnvironment(
 }
 
 // ---------------------------------------------------------------------------
-// Mutations
+// Mutations — Data Management
 // ---------------------------------------------------------------------------
 
 export async function createEnvironment(
@@ -196,49 +197,75 @@ export async function createEnvironment(
   return mapDocument(data.VetraCloudEnvironment_createDocument)
 }
 
-export async function setEnvironmentName(
+export async function setLabel(
   docId: string,
-  name: string,
+  label: string,
   token?: string | null,
 ): Promise<CloudEnvironment> {
   const data = await gql<{
-    VetraCloudEnvironment_setEnvironmentName: RawDocument
+    VetraCloudEnvironment_setLabel: RawDocument
   }>(
-    `mutation ($docId: PHID!, $input: VetraCloudEnvironment_SetEnvironmentNameInput!) {
-      VetraCloudEnvironment_setEnvironmentName(docId: $docId, input: $input) {
+    `mutation ($docId: PHID!, $input: VetraCloudEnvironment_SetLabelInput!) {
+      VetraCloudEnvironment_setLabel(docId: $docId, input: $input) {
         ${DOCUMENT_FIELDS}
       }
     }`,
-    { docId, input: { name } },
+    { docId, input: { label } },
     token,
   )
 
-  return mapDocument(data.VetraCloudEnvironment_setEnvironmentName)
+  return mapDocument(data.VetraCloudEnvironment_setLabel)
 }
 
-export async function setSubdomain(
+export async function setGenericSubdomain(
   docId: string,
-  subdomain: string,
+  genericSubdomain: string,
   token?: string | null,
 ): Promise<CloudEnvironment> {
   const data = await gql<{
-    VetraCloudEnvironment_setSubdomain: RawDocument
+    VetraCloudEnvironment_setGenericSubdomain: RawDocument
   }>(
-    `mutation ($docId: PHID!, $input: VetraCloudEnvironment_SetSubdomainInput!) {
-      VetraCloudEnvironment_setSubdomain(docId: $docId, input: $input) {
+    `mutation ($docId: PHID!, $input: VetraCloudEnvironment_SetGenericSubdomainInput!) {
+      VetraCloudEnvironment_setGenericSubdomain(docId: $docId, input: $input) {
         ${DOCUMENT_FIELDS}
       }
     }`,
-    { docId, input: { subdomain } },
+    { docId, input: { genericSubdomain } },
     token,
   )
 
-  return mapDocument(data.VetraCloudEnvironment_setSubdomain)
+  return mapDocument(data.VetraCloudEnvironment_setGenericSubdomain)
 }
+
+export async function setCustomDomain(
+  docId: string,
+  enabled: boolean,
+  domain?: string | null,
+  token?: string | null,
+): Promise<CloudEnvironment> {
+  const data = await gql<{
+    VetraCloudEnvironment_setCustomDomain: RawDocument
+  }>(
+    `mutation ($docId: PHID!, $input: VetraCloudEnvironment_SetCustomDomainInput!) {
+      VetraCloudEnvironment_setCustomDomain(docId: $docId, input: $input) {
+        ${DOCUMENT_FIELDS}
+      }
+    }`,
+    { docId, input: { enabled, domain: domain ?? null } },
+    token,
+  )
+
+  return mapDocument(data.VetraCloudEnvironment_setCustomDomain)
+}
+
+// ---------------------------------------------------------------------------
+// Mutations — Services
+// ---------------------------------------------------------------------------
 
 export async function enableService(
   docId: string,
-  serviceName: CloudEnvironmentService,
+  type: CloudEnvironmentServiceType,
+  prefix: string,
   token?: string | null,
 ): Promise<CloudEnvironment> {
   const data = await gql<{
@@ -249,7 +276,7 @@ export async function enableService(
         ${DOCUMENT_FIELDS}
       }
     }`,
-    { docId, input: { serviceName } },
+    { docId, input: { type, prefix } },
     token,
   )
 
@@ -258,7 +285,7 @@ export async function enableService(
 
 export async function disableService(
   docId: string,
-  serviceName: CloudEnvironmentService,
+  type: CloudEnvironmentServiceType,
   token?: string | null,
 ): Promise<CloudEnvironment> {
   const data = await gql<{
@@ -269,17 +296,42 @@ export async function disableService(
         ${DOCUMENT_FIELDS}
       }
     }`,
-    { docId, input: { serviceName } },
+    { docId, input: { type } },
     token,
   )
 
   return mapDocument(data.VetraCloudEnvironment_disableService)
 }
 
+export async function toggleService(
+  docId: string,
+  type: CloudEnvironmentServiceType,
+  token?: string | null,
+): Promise<CloudEnvironment> {
+  const data = await gql<{
+    VetraCloudEnvironment_toggleService: RawDocument
+  }>(
+    `mutation ($docId: PHID!, $input: VetraCloudEnvironment_ToggleServiceInput!) {
+      VetraCloudEnvironment_toggleService(docId: $docId, input: $input) {
+        ${DOCUMENT_FIELDS}
+      }
+    }`,
+    { docId, input: { type } },
+    token,
+  )
+
+  return mapDocument(data.VetraCloudEnvironment_toggleService)
+}
+
+// ---------------------------------------------------------------------------
+// Mutations — Packages
+// ---------------------------------------------------------------------------
+
 export async function addPackage(
   docId: string,
   packageName: string,
   version?: string,
+  registry?: string,
   token?: string | null,
 ): Promise<CloudEnvironment> {
   const data = await gql<{
@@ -290,7 +342,7 @@ export async function addPackage(
         ${DOCUMENT_FIELDS}
       }
     }`,
-    { docId, input: { packageName, version: version || null } },
+    { docId, input: { packageName, version: version || null, registry: registry || null } },
     token,
   )
 
@@ -317,34 +369,48 @@ export async function removePackage(
   return mapDocument(data.VetraCloudEnvironment_removePackage)
 }
 
-export async function startEnvironment(
+// ---------------------------------------------------------------------------
+// Mutations — Status Transitions
+// ---------------------------------------------------------------------------
+
+export async function initializeEnvironment(
   docId: string,
+  genericSubdomain: string,
+  genericBaseDomain: string,
+  defaultPackageRegistry?: string | null,
   token?: string | null,
 ): Promise<CloudEnvironment> {
   const data = await gql<{
-    VetraCloudEnvironment_start: RawDocument
+    VetraCloudEnvironment_initialize: RawDocument
   }>(
-    `mutation ($docId: PHID!, $input: VetraCloudEnvironment_StartInput!) {
-      VetraCloudEnvironment_start(docId: $docId, input: $input) {
+    `mutation ($docId: PHID!, $input: VetraCloudEnvironment_InitializeInput!) {
+      VetraCloudEnvironment_initialize(docId: $docId, input: $input) {
         ${DOCUMENT_FIELDS}
       }
     }`,
-    { docId, input: {} },
+    {
+      docId,
+      input: {
+        genericSubdomain,
+        genericBaseDomain,
+        defaultPackageRegistry: defaultPackageRegistry || null,
+      },
+    },
     token,
   )
 
-  return mapDocument(data.VetraCloudEnvironment_start)
+  return mapDocument(data.VetraCloudEnvironment_initialize)
 }
 
-export async function stopEnvironment(
+export async function approveChanges(
   docId: string,
   token?: string | null,
 ): Promise<CloudEnvironment> {
   const data = await gql<{
-    VetraCloudEnvironment_stop: RawDocument
+    VetraCloudEnvironment_approveChanges: RawDocument
   }>(
-    `mutation ($docId: PHID!, $input: VetraCloudEnvironment_StopInput!) {
-      VetraCloudEnvironment_stop(docId: $docId, input: $input) {
+    `mutation ($docId: PHID!, $input: VetraCloudEnvironment_ApproveChangesInput!) {
+      VetraCloudEnvironment_approveChanges(docId: $docId, input: $input) {
         ${DOCUMENT_FIELDS}
       }
     }`,
@@ -352,7 +418,26 @@ export async function stopEnvironment(
     token,
   )
 
-  return mapDocument(data.VetraCloudEnvironment_stop)
+  return mapDocument(data.VetraCloudEnvironment_approveChanges)
+}
+
+export async function terminateEnvironment(
+  docId: string,
+  token?: string | null,
+): Promise<CloudEnvironment> {
+  const data = await gql<{
+    VetraCloudEnvironment_terminateEnvironment: RawDocument
+  }>(
+    `mutation ($docId: PHID!, $input: VetraCloudEnvironment_TerminateEnvironmentInput!) {
+      VetraCloudEnvironment_terminateEnvironment(docId: $docId, input: $input) {
+        ${DOCUMENT_FIELDS}
+      }
+    }`,
+    { docId, input: {} },
+    token,
+  )
+
+  return mapDocument(data.VetraCloudEnvironment_terminateEnvironment)
 }
 
 export async function deleteEnvironment(docId: string, token?: string | null): Promise<void> {
