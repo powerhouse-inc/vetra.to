@@ -72,11 +72,19 @@ function ScaleAnimation({ size = 48, duration = 8 }: { size: number; duration: n
 }
 
 // Variant 2: Movement Animation
-function MovementAnimation({ size = 48, duration = 12, inward = 14 }: { size: number; duration: number; inward: number }) {
+function MovementAnimation({
+  size = 48,
+  duration = 12,
+  inward = 14,
+}: {
+  size: number
+  duration: number
+  inward: number
+}) {
   const maxInward = FRAME - LEAF_SIZE // 18px
   const d = Math.min(inward, maxInward)
   const positions = basePositions()
-  
+
   const offsets: Record<string, { dx: number; dy: number }> = {
     tl: { dx: +d, dy: +d },
     tr: { dx: -d, dy: +d },
@@ -120,7 +128,15 @@ function MovementAnimation({ size = 48, duration = 12, inward = 14 }: { size: nu
 }
 
 // Variant 3: Three Step Animation
-function ThreeStepAnimation({ size = 48, duration = 5, inward = 5 }: { size: number; duration: number; inward: number }) {
+function ThreeStepAnimation({
+  size = 48,
+  duration = 5,
+  inward = 5,
+}: {
+  size: number
+  duration: number
+  inward: number
+}) {
   const positions = basePositions()
   const INNER = FRAME - LEAF_SIZE // 18
 

@@ -37,11 +37,7 @@ export function AudienceCards() {
           <Card key={audience.title}>
             <CardHeader>
               <div className="flex items-center gap-3">
-                <AnimatedVetraLogo
-                  size={32}
-                  variant={audience.animation}
-                  className="h-8 w-8"
-                />
+                <AnimatedVetraLogo size={32} variant={audience.animation} className="h-8 w-8" />
                 <CardTitle>{audience.title}</CardTitle>
               </div>
             </CardHeader>

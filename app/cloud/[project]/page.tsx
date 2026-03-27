@@ -3,8 +3,7 @@
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Suspense, use, useEffect, useRef, useState } from 'react'
-import { toast } from 'sonner'
+import { Suspense, use, useEffect, useRef } from 'react'
 
 import { StatusBadge } from '@/modules/cloud/components/status-badge'
 import { useEnvironmentDetail } from '@/modules/cloud/hooks/use-environment-detail'
@@ -42,7 +41,6 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
   const state = environment?.state
   const subdomain = state?.genericSubdomain ?? null
   const tenantId = subdomain && environment ? getTenantId(subdomain, environment.id) : null
-  const isReady = state?.status === 'READY'
   const isInactive = state?.status !== 'READY'
 
   const { status: envStatus, isLoading: statusLoading } = useEnvironmentStatus(subdomain, tenantId)

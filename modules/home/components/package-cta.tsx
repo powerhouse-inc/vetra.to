@@ -9,7 +9,7 @@ export function PackageCta() {
     <section className="mx-auto max-w-[var(--container-width)] px-6 py-20">
       <div className="relative overflow-hidden rounded-xl p-10 text-center">
         {/* Grid background */}
-        <div className="absolute inset-0 pointer-events-none">
+        <div className="pointer-events-none absolute inset-0">
           <GridBackground
             squareSize={30}
             strokeWidth={1}
@@ -25,7 +25,7 @@ export function PackageCta() {
             className="absolute inset-0 opacity-75"
           />
           {/* CSS-based fade overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent via-transparent to-background opacity-100 rounded-xl"></div>
+          <div className="from-background to-background absolute inset-0 rounded-xl bg-gradient-to-b via-transparent opacity-100"></div>
         </div>
         <div className="relative z-10">
           <h2 className="text-foreground mb-4 text-2xl font-bold">

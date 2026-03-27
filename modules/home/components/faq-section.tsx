@@ -71,10 +71,10 @@ export function FaqSection() {
       <div className="grid gap-12 lg:grid-cols-2">
         <Accordion type="multiple">
           {leftColumn.map((faq, i) => (
-            <AccordionItem 
-              key={i} 
+            <AccordionItem
+              key={i}
               value={`left-${i}`}
-              className="border-b-[0.5px] border-border/30 py-2 last:border-b-0"
+              className="border-border/30 border-b-[0.5px] py-2 last:border-b-0"
             >
               <AccordionTrigger className="py-6 text-base">{faq.question}</AccordionTrigger>
               <AccordionContent className="pb-6">{faq.answer}</AccordionContent>
@@ -84,10 +84,10 @@ export function FaqSection() {
 
         <Accordion type="multiple">
           {rightColumn.map((faq, i) => (
-            <AccordionItem 
-              key={i} 
+            <AccordionItem
+              key={i}
               value={`right-${i}`}
-              className="border-b-[0.5px] border-border/30 py-2 last:border-b-0"
+              className="border-border/30 border-b-[0.5px] py-2 last:border-b-0"
             >
               <AccordionTrigger className="py-6 text-base">{faq.question}</AccordionTrigger>
               <AccordionContent className="pb-6">{faq.answer}</AccordionContent>

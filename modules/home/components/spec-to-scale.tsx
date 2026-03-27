@@ -6,14 +6,13 @@ import { useState, startTransition } from 'react'
 
 import { Button } from '@/modules/shared/components/ui/button'
 
-
 const languages = [
   {
     name: 'GraphQL',
     logo: '/images/home/graphql.svg',
   },
   {
-    name: 'TypeScript', 
+    name: 'TypeScript',
     logo: '/images/home/typescript.svg',
   },
   {
@@ -42,24 +41,18 @@ export function SpecToScale() {
             <div
               key={index}
               className={`flex h-20 w-20 cursor-pointer items-center justify-center rounded-2xl border p-4 transition-all duration-300 ease-in-out ${
-                isHovered 
-                  ? 'border-border bg-background' 
-                  : 'border-transparent bg-transparent'
+                isHovered ? 'border-border bg-background' : 'border-transparent bg-transparent'
               }`}
-              onMouseEnter={() =>
-                startTransition(() => setHoveredLanguage(language.name))
-              }
-              onMouseLeave={() =>
-                startTransition(() => setHoveredLanguage(null))
-              }
+              onMouseEnter={() => startTransition(() => setHoveredLanguage(language.name))}
+              onMouseLeave={() => startTransition(() => setHoveredLanguage(null))}
             >
-              <Image 
-                src={language.logo} 
-                alt={language.name} 
-                width={56} 
+              <Image
+                src={language.logo}
+                alt={language.name}
+                width={56}
                 height={56}
                 className={`transition-all duration-300 ease-in-out ${
-                  isHovered ? 'filter-none' : 'filter grayscale brightness-50'
+                  isHovered ? 'filter-none' : 'brightness-50 grayscale filter'
                 }`}
               />
             </div>

@@ -19,10 +19,10 @@ export const metadata = {
 
 export default function HomePage() {
   return (
-    <div className="pt-16 relative">
+    <div className="relative pt-16">
       {/* Grid background for hero section */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="h-[600px] relative">
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <div className="relative h-[600px]">
           {/* Grid without fade */}
           <GridBackground
             squareSize={30}
@@ -39,7 +39,7 @@ export default function HomePage() {
             className="absolute inset-0 opacity-15"
           />
           {/* CSS-based fade overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent via-transparent to-background opacity-100"></div>
+          <div className="from-background to-background absolute inset-0 bg-gradient-to-b via-transparent opacity-100"></div>
         </div>
       </div>
       <div className="relative z-10">

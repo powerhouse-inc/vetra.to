@@ -34,8 +34,7 @@ const specAiFeatures: Feature[] = [
   },
   {
     title: 'Specs as shared language',
-    description:
-      'They enable precise, iterative edits—turning messy intent into clean execution.',
+    description: 'They enable precise, iterative edits—turning messy intent into clean execution.',
     icon: Users,
   },
   {
@@ -104,13 +103,11 @@ const rdaFeatures: Feature[] = [
 export function FeaturesTabs() {
   return (
     <section className="mx-auto max-w-[var(--container-width)] px-6 py-20">
-      <div className="text-center mb-12">
-        <h2 className="text-foreground text-3xl font-bold mb-2">
+      <div className="mb-12 text-center">
+        <h2 className="text-foreground mb-2 text-3xl font-bold">
           Build on the sovereign tech-stack of tomorrow
         </h2>
-        <p className="text-foreground-70">
-          Structured document models powered by modern tooling
-        </p>
+        <p className="text-foreground-70">Structured document models powered by modern tooling</p>
       </div>
       <Tabs defaultValue="rda" className="items-center">
         <TabsList className="mb-10">

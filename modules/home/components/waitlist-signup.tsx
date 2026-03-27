@@ -4,9 +4,9 @@ import { GridBackground } from '@/modules/shared/components/ui/grid-background'
 
 export function WaitlistSignup() {
   return (
-    <section className="relative text-foreground">
+    <section className="text-foreground relative">
       {/* Grid background */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="pointer-events-none absolute inset-0">
         <GridBackground
           squareSize={30}
           strokeWidth={1}
@@ -22,7 +22,7 @@ export function WaitlistSignup() {
           className="absolute inset-0 opacity-75"
         />
         {/* CSS-based fade overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent via-transparent to-background opacity-100"></div>
+        <div className="from-background to-background absolute inset-0 bg-gradient-to-b via-transparent opacity-100"></div>
       </div>
       <div className="relative z-10 mx-auto max-w-[var(--container-width)] px-6 py-20 text-center">
         <h2 className="mb-4 text-3xl font-bold">Join the Waitlist</h2>
@@ -43,11 +43,7 @@ export function WaitlistSignup() {
             required
             className="border-border bg-background text-foreground placeholder:text-foreground/60 flex-1"
           />
-          <Button
-            type="submit"
-            variant="default"
-            size="lg"
-          >
+          <Button type="submit" variant="default" size="lg">
             Subscribe
           </Button>
         </form>

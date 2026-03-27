@@ -114,61 +114,21 @@ export function GridBackground(props: GridBackgroundProps) {
           </mask>
 
           {/* Gradient definitions */}
-          <linearGradient
-            id={`topGradient-${maskId}`}
-            x1="0%"
-            y1="0%"
-            x2="0%"
-            y2="100%"
-          >
-            <stop
-              offset="0%"
-              stopColor="black"
-              stopOpacity={1 - topFadeIntensity / 100}
-            />
+          <linearGradient id={`topGradient-${maskId}`} x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="black" stopOpacity={1 - topFadeIntensity / 100} />
             <stop offset="100%" stopColor="white" stopOpacity="1" />
           </linearGradient>
-          <linearGradient
-            id={`bottomGradient-${maskId}`}
-            x1="0%"
-            y1="0%"
-            x2="0%"
-            y2="100%"
-          >
+          <linearGradient id={`bottomGradient-${maskId}`} x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="white" stopOpacity="1" />
-            <stop
-              offset="100%"
-              stopColor="black"
-              stopOpacity={1 - bottomFadeIntensity / 100}
-            />
+            <stop offset="100%" stopColor="black" stopOpacity={1 - bottomFadeIntensity / 100} />
           </linearGradient>
-          <linearGradient
-            id={`leftGradient-${maskId}`}
-            x1="0%"
-            y1="0%"
-            x2="100%"
-            y2="0%"
-          >
-            <stop
-              offset="0%"
-              stopColor="black"
-              stopOpacity={leftFadeIntensity / 100}
-            />
+          <linearGradient id={`leftGradient-${maskId}`} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="black" stopOpacity={leftFadeIntensity / 100} />
             <stop offset="100%" stopColor="white" stopOpacity="1" />
           </linearGradient>
-          <linearGradient
-            id={`rightGradient-${maskId}`}
-            x1="0%"
-            y1="0%"
-            x2="100%"
-            y2="0%"
-          >
+          <linearGradient id={`rightGradient-${maskId}`} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="white" stopOpacity="1" />
-            <stop
-              offset="100%"
-              stopColor="black"
-              stopOpacity={rightFadeIntensity / 100}
-            />
+            <stop offset="100%" stopColor="black" stopOpacity={rightFadeIntensity / 100} />
           </linearGradient>
         </defs>
 
