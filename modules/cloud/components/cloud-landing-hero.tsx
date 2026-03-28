@@ -3,7 +3,7 @@ import { IsoGrid } from '@/modules/shared/components/ui/iso-grid'
 
 export function CloudLandingHero() {
   return (
-    <section className="relative px-6 py-20 text-center md:py-28 overflow-hidden">
+    <section className="relative overflow-hidden px-6 py-20 text-center md:py-28">
       <IsoGrid />
       <div className="relative z-10 mx-auto max-w-[var(--container-width)]">
         <p className="text-primary mb-4 text-sm font-semibold">The Open Cloud, on your terms.</p>

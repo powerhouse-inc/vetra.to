@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import * as THREE from 'three'
 
 export function IsoGrid() {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -16,12 +17,12 @@ export function IsoGrid() {
       // Scene setup
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-      
+
       // Get container dimensions for proper sizing
       const rect = canvasRef.current!.getBoundingClientRect()
       renderer.setSize(rect.width, rect.height)
       renderer.setClearColor(0x000000, 0) // Transparent background
-      
+
       // Position canvas within hero section
       renderer.domElement.style.position = 'absolute'
       renderer.domElement.style.top = '0'
@@ -29,7 +30,7 @@ export function IsoGrid() {
       renderer.domElement.style.width = '100%'
       renderer.domElement.style.height = '100%'
       renderer.domElement.style.zIndex = '-1'
-      
+
       canvasRef.current!.appendChild(renderer.domElement)
 
       const scene = new THREE.Scene()
@@ -105,7 +106,8 @@ export function IsoGrid() {
         if (gridMesh) {
           scene.remove(gridMesh)
           gridMesh.geometry.dispose()
-          gridMesh.material.dispose()
+          const mat = gridMesh.material as THREE.Material
+          mat.dispose()
         }
 
         const size = 40
@@ -186,7 +188,8 @@ export function IsoGrid() {
         if (gridMesh) {
           scene.remove(gridMesh)
           gridMesh.geometry.dispose()
-          gridMesh.material.dispose()
+          const mat = gridMesh.material as THREE.Material
+          mat.dispose()
         }
         renderer.dispose()
         if (canvasRef.current && renderer.domElement) {
@@ -207,12 +210,13 @@ export function IsoGrid() {
   return (
     <div
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full z-0 pointer-events-none overflow-hidden"
+      className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-hidden"
       style={{
         background: 'transparent',
         height: '100vh',
         mask: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%)',
-        WebkitMask: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%)',
+        WebkitMask:
+          'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%)',
       }}
     />
   )

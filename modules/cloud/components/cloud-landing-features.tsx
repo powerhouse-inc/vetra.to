@@ -104,7 +104,9 @@ export function CloudLandingFeatures() {
       <section className="bg-primary-30 px-6 py-12">
         <div className="mx-auto max-w-[var(--container-width)] text-center">
           <p className="text-foreground text-3xl font-bold">Vetra Open Cloud runs on</p>
-          <p className="text-foreground-70 mt-2 text-2xl mb-16">{hoveredLogo || 'your trusted open source stack'}</p>
+          <p className="text-foreground-70 mt-2 mb-16 text-2xl">
+            {hoveredLogo || 'your trusted open source stack'}
+          </p>
           <div className="flex flex-wrap items-center justify-center gap-8">
             {logos.map((logo, index) => (
               <Image
@@ -113,7 +115,7 @@ export function CloudLandingFeatures() {
                 alt={logo.name}
                 width={80}
                 height={80}
-                className="h-20 w-20 object-contain opacity-60 transition-opacity hover:opacity-100 grayscale hover:grayscale-0 cursor-pointer"
+                className="h-20 w-20 cursor-pointer object-contain opacity-60 grayscale transition-opacity hover:opacity-100 hover:grayscale-0"
                 onMouseEnter={() => startTransition(() => setHoveredLogo(logo.name))}
                 onMouseLeave={() => startTransition(() => setHoveredLogo(null))}
               />
@@ -170,7 +172,6 @@ export function CloudLandingFeatures() {
           />
         </div>
       </section>
-
     </div>
   )
 }

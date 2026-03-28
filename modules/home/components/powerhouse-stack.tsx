@@ -101,7 +101,7 @@ export function PowerhouseStack() {
                   asChild
                   variant="outline"
                   size="lg"
-                  className="bg-gray-900 border-white text-white hover:bg-gray-800"
+                  className="border-white bg-gray-900 text-white hover:bg-gray-800"
                 >
                   <Link href="https://powerhouse.io">Visit Powerhouse</Link>
                 </Button>
