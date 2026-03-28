@@ -2,24 +2,35 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/compo
 import type { MetricSeries } from '@/modules/cloud/types'
 import { Sparkline } from './sparkline'
 
+const SERIES_COLORS = ['#04c161', '#329dff', '#ffa132', '#ea4335', '#9333ea', '#06b6d4']
+
 type MetricCardProps = {
   title: string
+  description?: string
   series: MetricSeries[]
   formatValue: (value: number) => string
   unit?: string
   isLoading?: boolean
 }
 
-export function MetricCard({ title, series, formatValue, unit, isLoading }: MetricCardProps) {
+export function MetricCard({
+  title,
+  description,
+  series,
+  formatValue,
+  unit,
+  isLoading,
+}: MetricCardProps) {
   const firstSeries = series[0]
   const datapoints = firstSeries?.datapoints ?? []
   const latestDatapoint = datapoints.length > 0 ? datapoints[datapoints.length - 1] : null
   const hasData = series.some((s) => s.datapoints.length > 0)
 
   return (
-    <Card>
+    <Card className="transition-shadow duration-200 hover:shadow-md">
       <CardHeader className="pb-2">
         <CardTitle className="text-muted-foreground text-sm font-medium">{title}</CardTitle>
+        {description && <p className="text-muted-foreground/70 text-xs">{description}</p>}
       </CardHeader>
       <CardContent className="space-y-3 pt-0">
         {isLoading ? (
@@ -43,8 +54,35 @@ export function MetricCard({ title, series, formatValue, unit, isLoading }: Metr
               )}
             </p>
             <div className="w-full">
-              <Sparkline series={series} width={300} height={100} />
+              <Sparkline series={series} width={300} height={100} formatValue={formatValue} />
             </div>
+            {series.length > 1 && (
+              <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1">
+                {series.map((s, i) => {
+                  const latest = s.datapoints[s.datapoints.length - 1]
+                  const shortLabel = s.label.replace(/^.*-(?=(connect|switchboard|pg|pooler))/, '')
+                  return (
+                    <div key={i} className="flex items-center gap-1.5 text-[10px]">
+                      <span
+                        className="inline-block h-2 w-2 rounded-full"
+                        style={{ backgroundColor: SERIES_COLORS[i % SERIES_COLORS.length] }}
+                      />
+                      <span
+                        className="text-muted-foreground max-w-[120px] truncate"
+                        title={s.label}
+                      >
+                        {shortLabel}
+                      </span>
+                      {latest && (
+                        <span className="text-foreground font-medium">
+                          {formatValue(latest.value)}
+                        </span>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </>
         )}
       </CardContent>

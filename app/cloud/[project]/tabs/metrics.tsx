@@ -45,26 +45,30 @@ export function MetricsTab({ subdomain, tenantId, isStopped }: MetricsTabProps) 
       <div className="grid grid-cols-2 gap-4">
         <MetricCard
           title="CPU Usage"
+          description="CPU cores consumed per pod (rate over window)"
           series={metrics?.cpu ?? []}
           formatValue={(v) => `${(v * 100).toFixed(1)}%`}
           isLoading={isLoading}
         />
         <MetricCard
           title="Memory"
+          description="Working set memory per pod"
           series={metrics?.memory ?? []}
           formatValue={formatBytes}
           isLoading={isLoading}
         />
         <MetricCard
           title="Request Rate"
+          description="HTTP requests per second"
           series={metrics?.requestRate ?? []}
           formatValue={(v) => `${v.toFixed(1)} req/s`}
           isLoading={isLoading}
         />
         <MetricCard
-          title="Latency (p95)"
+          title="Latency (p99)"
+          description="99th percentile HTTP response time"
           series={metrics?.latency ?? []}
-          formatValue={(v) => `${v.toFixed(0)}ms`}
+          formatValue={(v) => `${(v * 1000).toFixed(0)}ms`}
           isLoading={isLoading}
         />
       </div>
