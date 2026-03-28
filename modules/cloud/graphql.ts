@@ -451,12 +451,8 @@ export async function deleteEnvironment(docId: string, token?: string | null): P
 }
 
 // ---------------------------------------------------------------------------
-// Observability endpoint (per-tenant Switchboard)
+// Observability queries (same central Switchboard endpoint)
 // ---------------------------------------------------------------------------
-
-function getObservabilityEndpoint(subdomain: string): string {
-  return `https://switchboard.${subdomain}.vetra.io/graphql`
-}
 
 async function gqlObservability<T>(
   subdomain: string,
@@ -469,7 +465,7 @@ async function gqlObservability<T>(
     headers['Authorization'] = `Bearer ${token}`
   }
 
-  const res = await fetch(getObservabilityEndpoint(subdomain), {
+  const res = await fetch(getEndpoint(), {
     method: 'POST',
     headers,
     body: JSON.stringify({ query, variables }),

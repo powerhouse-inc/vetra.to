@@ -21,6 +21,7 @@ export type CloudEnvironmentStatus =
   | 'TERMINATING'
   | 'DESTROYED'
   | 'ARCHIVED'
+  | 'STOPPED'
 
 export type DnsRecord = {
   type: string
@@ -44,7 +45,7 @@ export type CloudEnvironmentState = {
   label: string | null
   genericSubdomain: string | null
   genericBaseDomain: string | null
-  customDomain: CloudCustomDomain
+  customDomain: CloudCustomDomain | null
   defaultPackageRegistry: string | null
   services: CloudEnvironmentService[]
   packages: CloudPackage[]

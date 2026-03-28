@@ -476,11 +476,15 @@ export function SettingsTab({
 
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Checkbox id="custom-domain" disabled checked={state.customDomain.enabled} />
+              <Checkbox
+                id="custom-domain"
+                disabled
+                checked={state.customDomain?.enabled ?? false}
+              />
               <label htmlFor="custom-domain" className="text-muted-foreground text-sm font-medium">
                 Custom Domain
               </label>
-              {!state.customDomain.enabled && (
+              {!state.customDomain?.enabled && (
                 <Badge variant="outline" className="text-xs">
                   Coming soon
                 </Badge>
@@ -489,14 +493,14 @@ export function SettingsTab({
             <Input
               placeholder="e.g. my-app.example.com"
               disabled
-              value={state.customDomain.domain ?? ''}
+              value={state.customDomain?.domain ?? ''}
               className="font-mono text-sm"
             />
           </div>
 
           <div className="space-y-2 pt-2">
             <h4 className="text-muted-foreground text-sm font-medium">DNS Records</h4>
-            {state.customDomain.dnsRecords.length > 0 ? (
+            {(state.customDomain?.dnsRecords?.length ?? 0) > 0 ? (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -506,7 +510,7 @@ export function SettingsTab({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {state.customDomain.dnsRecords.map((record, i) => (
+                  {state.customDomain!.dnsRecords.map((record, i) => (
                     <TableRow key={i}>
                       <TableCell className="font-mono text-xs">{record.type}</TableCell>
                       <TableCell className="font-mono text-xs">{record.host}</TableCell>
@@ -518,7 +522,7 @@ export function SettingsTab({
             ) : (
               <div className="bg-muted/50 rounded-md border p-4">
                 <p className="text-muted-foreground text-sm">
-                  {state.customDomain.enabled
+                  {state.customDomain?.enabled
                     ? 'No DNS records configured'
                     : 'Will be available when custom domain is set'}
                 </p>
