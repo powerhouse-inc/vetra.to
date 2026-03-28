@@ -31,7 +31,7 @@ const SERVICE_LABELS: Record<string, string> = {
 
 export function LogsTab({ subdomain, tenantId, isStopped }: LogsTabProps) {
   const [service, setService] = useState<TenantService | null>(null)
-  const [range, setRange] = useState<MetricRange>('FIVE_MIN')
+  const [range, setRange] = useState<MetricRange>('ONE_HOUR')
   const [errorsOnly, setErrorsOnly] = useState(false)
 
   const { logs, isLoading, refresh } = useEnvironmentLogs(

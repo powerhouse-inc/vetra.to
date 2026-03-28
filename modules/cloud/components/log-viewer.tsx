@@ -29,7 +29,7 @@ export function LogViewer({ logs, isLoading }: LogViewerProps) {
         <p className="py-8 text-center text-gray-500">No logs in this time range</p>
       ) : (
         <div className="space-y-0.5">
-          {logs.map((entry, i) => (
+          {[...logs].reverse().map((entry, i) => (
             <div key={i} className="flex gap-2 leading-5">
               <span className="shrink-0 text-gray-500 select-none">
                 {formatLogTimestamp(entry.timestamp)}
