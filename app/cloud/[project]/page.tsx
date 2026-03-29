@@ -22,8 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/shared/compo
 import { DeploymentsTab } from './tabs/deployments'
 import { LogsTab } from './tabs/logs'
 import { MetricsTab } from './tabs/metrics'
-import { OverviewTab } from './tabs/overview'
-import { SettingsTab } from './tabs/settings'
+import { InlineEditableTitle, OverviewTab } from './tabs/overview'
 
 // ---------------------------------------------------------------------------
 // EnvironmentDetail — inner component that uses useSearchParams
@@ -85,7 +84,7 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
           Back to Cloud
         </Link>
         <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-bold">{displayName}</h2>
+          <InlineEditableTitle value={displayName} onSave={detail.setLabel} />
           {state && (
             <StatusBadge
               environmentStatus={state.status}
@@ -154,7 +153,6 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
             <TabsTrigger value="deployments">Deployments</TabsTrigger>
             <TabsTrigger value="logs">Logs</TabsTrigger>
             <TabsTrigger value="metrics">Metrics</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="pt-4">
             <OverviewTab
@@ -162,6 +160,12 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
               tenantId={tenantId}
               environment={environment}
               onTabChange={handleTabChange}
+              enableService={detail.enableService}
+              disableService={detail.disableService}
+              addPackage={detail.addPackage}
+              removePackage={detail.removePackage}
+              setCustomDomain={detail.setCustomDomain}
+              onTerminate={detail.terminate}
             />
           </TabsContent>
           <TabsContent value="deployments" className="pt-4">
@@ -172,17 +176,6 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
           </TabsContent>
           <TabsContent value="metrics" className="pt-4">
             <MetricsTab subdomain={subdomain} tenantId={tenantId} isStopped={isInactive} />
-          </TabsContent>
-          <TabsContent value="settings" className="pt-4">
-            <SettingsTab
-              environment={environment}
-              enableService={detail.enableService}
-              disableService={detail.disableService}
-              addPackage={detail.addPackage}
-              removePackage={detail.removePackage}
-              setCustomDomain={detail.setCustomDomain}
-              onTerminate={detail.terminate}
-            />
           </TabsContent>
         </Tabs>
       )}
