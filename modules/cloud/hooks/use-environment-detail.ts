@@ -31,7 +31,7 @@ export function useEnvironmentDetail(documentId: string) {
     let cancelled = false
     async function load() {
       try {
-        setIsLoading(true)
+        if (!environment) setIsLoading(true)
         setError(null)
         const token = await getAuthToken(renownRef.current)
         const env = await fetchEnvironment(documentId, token)
@@ -43,8 +43,10 @@ export function useEnvironmentDetail(documentId: string) {
       }
     }
     load()
+    const interval = setInterval(load, 10_000)
     return () => {
       cancelled = true
+      clearInterval(interval)
     }
   }, [documentId])
 
