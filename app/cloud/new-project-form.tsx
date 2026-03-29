@@ -71,6 +71,7 @@ export function NewEnvironmentForm({
         const env = await createEnvironment(values.name, token)
         const subdomain = generateSubdomain(env.id)
         await initializeEnvironment(env.id, subdomain, 'vetra.io', undefined, token)
+        await setLabel(env.id, values.name, token)
         onCreated?.(env.id)
       }
 
