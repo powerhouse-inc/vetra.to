@@ -18,6 +18,7 @@ import {
   approveChanges as gqlApproveChanges,
   terminateEnvironment as gqlTerminate,
 } from '../graphql'
+import { useDocumentSubscription } from './use-document-subscription'
 
 export function useEnvironmentDetail(documentId: string) {
   const renown = useRenown()
@@ -30,33 +31,38 @@ export function useEnvironmentDetail(documentId: string) {
   const envRef = useRef(environment)
   envRef.current = environment
 
-  useEffect(() => {
-    let cancelled = false
-    async function load() {
-      try {
-        if (!envRef.current) setIsLoading(true)
-        const token = await getAuthToken(renownRef.current)
-        const env = await fetchEnvironment(documentId, token)
-        if (!cancelled && env) {
-          // Only update state if something actually changed (avoid unnecessary re-renders)
-          const prev = envRef.current
-          if (!prev || prev.revision !== env.revision || prev.state.status !== env.state.status) {
-            setEnvironment(env)
-          }
+  // Refetch function — used by both initial load and subscription events
+  const refetch = useCallback(async () => {
+    try {
+      if (!envRef.current) setIsLoading(true)
+      const token = await getAuthToken(renownRef.current)
+      const env = await fetchEnvironment(documentId, token)
+      if (env) {
+        const prev = envRef.current
+        if (!prev || prev.revision !== env.revision || prev.state.status !== env.state.status) {
+          setEnvironment(env)
         }
-      } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err : new Error('Failed to load'))
-      } finally {
-        if (!cancelled) setIsLoading(false)
       }
-    }
-    load()
-    const interval = setInterval(load, 10_000)
-    return () => {
-      cancelled = true
-      clearInterval(interval)
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to load'))
+    } finally {
+      setIsLoading(false)
     }
   }, [documentId])
+
+  // Initial load
+  useEffect(() => {
+    refetch()
+  }, [refetch])
+
+  // Subscribe to document changes via WebSocket — triggers refetch on any update
+  useDocumentSubscription(documentId, refetch)
+
+  // Fallback: poll every 30s in case WebSocket is disconnected
+  useEffect(() => {
+    const interval = setInterval(refetch, 30_000)
+    return () => clearInterval(interval)
+  }, [refetch])
 
   const mutate = useCallback(
     async (fn: (token: string | null) => Promise<CloudEnvironment>) => {
