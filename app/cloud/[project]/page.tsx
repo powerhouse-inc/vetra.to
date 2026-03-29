@@ -41,7 +41,8 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
   const state = environment?.state
   const subdomain = state?.genericSubdomain ?? null
   const tenantId = subdomain && environment ? getTenantId(subdomain, environment.id) : null
-  const isInactive = state?.status !== 'READY'
+  const TRULY_INACTIVE = new Set(['DRAFT', 'DESTROYED', 'ARCHIVED', 'STOPPED'])
+  const isInactive = TRULY_INACTIVE.has(state?.status ?? 'DRAFT')
 
   const { status: envStatus, isLoading: statusLoading } = useEnvironmentStatus(subdomain, tenantId)
 
@@ -94,7 +95,7 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
             />
           )}
 
-          {/* Action buttons based on status */}
+          {/* Approve button when changes are pending */}
           {state?.status === 'CHANGES_PENDING' && (
             <Button
               size="sm"
@@ -102,16 +103,6 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
               className="bg-blue-600 hover:bg-blue-700"
             >
               Approve Changes
-            </Button>
-          )}
-          {state && !['DRAFT', 'TERMINATING', 'DESTROYED', 'ARCHIVED'].includes(state.status) && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => detail.terminate()}
-              className="text-destructive hover:bg-destructive/10"
-            >
-              Terminate
             </Button>
           )}
 
@@ -180,6 +171,7 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
               disableService={detail.disableService}
               addPackage={detail.addPackage}
               removePackage={detail.removePackage}
+              onTerminate={detail.terminate}
             />
           </TabsContent>
         </Tabs>

@@ -346,6 +346,7 @@ type SettingsTabProps = {
   disableService: (type: CloudEnvironmentServiceType) => Promise<void>
   addPackage: (name: string, version?: string) => Promise<void>
   removePackage: (name: string) => Promise<void>
+  onTerminate?: () => Promise<void>
   onDelete?: () => void
 }
 
@@ -355,6 +356,7 @@ export function SettingsTab({
   disableService,
   addPackage,
   removePackage,
+  onTerminate,
   onDelete,
 }: SettingsTabProps) {
   const renown = useRenown()
@@ -596,7 +598,22 @@ export function SettingsTab({
             Danger Zone
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
+          {onTerminate &&
+            !['DRAFT', 'TERMINATING', 'DESTROYED', 'ARCHIVED'].includes(state.status) && (
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium">Terminate Environment</p>
+                  <p className="text-muted-foreground text-sm">
+                    Stop all services and begin teardown. The environment can be archived after
+                    termination.
+                  </p>
+                </div>
+                <Button variant="destructive" size="sm" onClick={() => onTerminate()}>
+                  Terminate
+                </Button>
+              </div>
+            )}
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm font-medium">Delete Environment</p>
