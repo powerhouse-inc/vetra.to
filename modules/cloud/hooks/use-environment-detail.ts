@@ -8,6 +8,7 @@ import {
   fetchEnvironment,
   setLabel as gqlSetLabel,
   setGenericSubdomain as gqlSetGenericSubdomain,
+  setCustomDomain as gqlSetCustomDomain,
   enableService as gqlEnableService,
   disableService as gqlDisableService,
   toggleService as gqlToggleService,
@@ -64,6 +65,11 @@ export function useEnvironmentDetail(documentId: string) {
     (subdomain: string) => mutate((t) => gqlSetGenericSubdomain(documentId, subdomain, t)),
     [documentId, mutate],
   )
+  const setCustomDomain = useCallback(
+    (enabled: boolean, domain?: string | null) =>
+      mutate((t) => gqlSetCustomDomain(documentId, enabled, domain, t)),
+    [documentId, mutate],
+  )
   const enableService = useCallback(
     (type: CloudEnvironmentServiceType, prefix: string) =>
       mutate((t) => gqlEnableService(documentId, type, prefix, t)),
@@ -106,6 +112,7 @@ export function useEnvironmentDetail(documentId: string) {
     error,
     setLabel,
     setGenericSubdomain,
+    setCustomDomain,
     enableService,
     disableService,
     toggleServiceEnabled,

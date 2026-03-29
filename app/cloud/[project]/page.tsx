@@ -171,6 +171,7 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
               disableService={detail.disableService}
               addPackage={detail.addPackage}
               removePackage={detail.removePackage}
+              setCustomDomain={detail.setCustomDomain}
               onTerminate={detail.terminate}
             />
           </TabsContent>

@@ -337,6 +337,153 @@ function ServiceRow({
 }
 
 // ---------------------------------------------------------------------------
+// CustomDomainSection
+// ---------------------------------------------------------------------------
+
+function CustomDomainSection({
+  customDomain,
+  onSetCustomDomain,
+}: {
+  customDomain: CloudEnvironment['state']['customDomain']
+  onSetCustomDomain: (enabled: boolean, domain?: string | null) => Promise<void>
+}) {
+  const [domainInput, setDomainInput] = useState(customDomain?.domain ?? '')
+  const [isSaving, setIsSaving] = useState(false)
+  const [dnsResults, setDnsResults] = useState<Record<string, boolean | null>>({})
+  const [isVerifying, setIsVerifying] = useState(false)
+  const enabled = customDomain?.enabled ?? false
+  const records = customDomain?.dnsRecords ?? []
+
+  const handleToggle = async (checked: boolean) => {
+    setIsSaving(true)
+    try {
+      await onSetCustomDomain(checked, checked ? domainInput || undefined : undefined)
+      if (!checked) setDomainInput('')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleSaveDomain = async () => {
+    if (!domainInput.trim()) return
+    setIsSaving(true)
+    try {
+      await onSetCustomDomain(true, domainInput.trim())
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleVerifyDns = async () => {
+    if (records.length === 0) return
+    setIsVerifying(true)
+    const results: Record<string, boolean | null> = {}
+    for (const record of records) {
+      try {
+        const res = await fetch(
+          `https://dns.google/resolve?name=${encodeURIComponent(record.host)}&type=A`,
+        )
+        const data = await res.json()
+        const answers = (data.Answer ?? []) as Array<{ data: string }>
+        results[record.host] = answers.some((a: { data: string }) => a.data === record.value)
+      } catch {
+        results[record.host] = null
+      }
+    }
+    setDnsResults(results)
+    setIsVerifying(false)
+  }
+
+  return (
+    <>
+      <div className="space-y-1">
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="custom-domain"
+            checked={enabled}
+            onCheckedChange={(checked) => handleToggle(checked === true)}
+            disabled={isSaving}
+          />
+          <label htmlFor="custom-domain" className="text-sm font-medium">
+            Custom Domain
+          </label>
+        </div>
+        {enabled && (
+          <div className="flex gap-2 pt-1">
+            <Input
+              placeholder="e.g. my-app.example.com"
+              value={domainInput}
+              onChange={(e) => setDomainInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSaveDomain()
+              }}
+              className="font-mono text-sm"
+            />
+            <Button
+              size="sm"
+              onClick={handleSaveDomain}
+              disabled={isSaving || !domainInput.trim() || domainInput === customDomain?.domain}
+            >
+              {isSaving ? 'Saving...' : 'Save'}
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {records.length > 0 && (
+        <div className="space-y-2 pt-2">
+          <div className="flex items-center justify-between">
+            <h4 className="text-muted-foreground text-sm font-medium">DNS Records</h4>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleVerifyDns}
+              disabled={isVerifying}
+              className="text-xs"
+            >
+              {isVerifying ? 'Verifying...' : 'Verify DNS'}
+            </Button>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Type</TableHead>
+                <TableHead>Host</TableHead>
+                <TableHead>Value</TableHead>
+                <TableHead className="w-16">Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {records.map((record, i) => {
+                const status = dnsResults[record.host]
+                return (
+                  <TableRow key={i}>
+                    <TableCell className="font-mono text-xs">{record.type}</TableCell>
+                    <TableCell className="font-mono text-xs">{record.host}</TableCell>
+                    <TableCell className="font-mono text-xs">{record.value}</TableCell>
+                    <TableCell>
+                      {status === true && <span className="text-xs text-emerald-500">Valid</span>}
+                      {status === false && <span className="text-xs text-red-500">Missing</span>}
+                      {status === null && <span className="text-xs text-amber-500">Error</span>}
+                      {status === undefined && (
+                        <span className="text-muted-foreground text-xs">—</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+          <p className="text-muted-foreground text-xs">
+            Add these A records to your DNS provider. Verification uses Google DNS.
+          </p>
+        </div>
+      )}
+    </>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // SettingsTab props + component
 // ---------------------------------------------------------------------------
 
@@ -346,6 +493,7 @@ type SettingsTabProps = {
   disableService: (type: CloudEnvironmentServiceType) => Promise<void>
   addPackage: (name: string, version?: string) => Promise<void>
   removePackage: (name: string) => Promise<void>
+  setCustomDomain: (enabled: boolean, domain?: string | null) => Promise<void>
   onTerminate?: () => Promise<void>
   onDelete?: () => void
 }
@@ -356,6 +504,7 @@ export function SettingsTab({
   disableService,
   addPackage,
   removePackage,
+  setCustomDomain,
   onTerminate,
   onDelete,
 }: SettingsTabProps) {
@@ -480,61 +629,10 @@ export function SettingsTab({
             <Input value={genericDomain} readOnly className="bg-muted font-mono text-sm" />
           </div>
 
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="custom-domain"
-                disabled
-                checked={state.customDomain?.enabled ?? false}
-              />
-              <label htmlFor="custom-domain" className="text-muted-foreground text-sm font-medium">
-                Custom Domain
-              </label>
-              {!state.customDomain?.enabled && (
-                <Badge variant="outline" className="text-xs">
-                  Coming soon
-                </Badge>
-              )}
-            </div>
-            <Input
-              placeholder="e.g. my-app.example.com"
-              disabled
-              value={state.customDomain?.domain ?? ''}
-              className="font-mono text-sm"
-            />
-          </div>
-
-          <div className="space-y-2 pt-2">
-            <h4 className="text-muted-foreground text-sm font-medium">DNS Records</h4>
-            {(state.customDomain?.dnsRecords?.length ?? 0) > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Host</TableHead>
-                    <TableHead>Value</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {state.customDomain!.dnsRecords.map((record, i) => (
-                    <TableRow key={i}>
-                      <TableCell className="font-mono text-xs">{record.type}</TableCell>
-                      <TableCell className="font-mono text-xs">{record.host}</TableCell>
-                      <TableCell className="font-mono text-xs">{record.value}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : (
-              <div className="bg-muted/50 rounded-md border p-4">
-                <p className="text-muted-foreground text-sm">
-                  {state.customDomain?.enabled
-                    ? 'No DNS records configured'
-                    : 'Will be available when custom domain is set'}
-                </p>
-              </div>
-            )}
-          </div>
+          <CustomDomainSection
+            customDomain={state.customDomain}
+            onSetCustomDomain={setCustomDomain}
+          />
         </CardContent>
       </Card>
 
