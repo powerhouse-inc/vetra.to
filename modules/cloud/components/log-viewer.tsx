@@ -127,15 +127,32 @@ function LogLine({ entry, showRaw }: { entry: LogEntry; showRaw: boolean }) {
 type LogViewerProps = {
   logs: LogEntry[]
   isLoading?: boolean
+  levelFilter?: string
 }
 
-export function LogViewer({ logs, isLoading }: LogViewerProps) {
+export function LogViewer({ logs, isLoading, levelFilter }: LogViewerProps) {
   const [showRaw, setShowRaw] = useState(false)
+
+  const filteredLogs = levelFilter
+    ? logs.filter((entry) => {
+        try {
+          const obj = JSON.parse(entry.line) as Record<string, unknown>
+          const entryLevel = (obj.level as string)?.toLowerCase()
+          if (!entryLevel) return true
+          if (levelFilter === 'warn') return entryLevel === 'warn' || entryLevel === 'warning'
+          return entryLevel === levelFilter
+        } catch {
+          return true
+        }
+      })
+    : logs
 
   return (
     <div className="rounded-lg bg-gray-950 font-mono text-xs text-gray-100">
       <div className="flex items-center justify-between border-b border-gray-800 px-4 py-2">
-        <span className="text-[11px] text-gray-500">{logs.length} entries</span>
+        <span className="text-[11px] text-gray-500">
+          {filteredLogs.length} entries{levelFilter ? ` (${levelFilter})` : ''}
+        </span>
         <button
           onClick={() => setShowRaw(!showRaw)}
           className="text-[11px] text-gray-500 transition-colors hover:text-gray-300"
@@ -156,11 +173,11 @@ export function LogViewer({ logs, isLoading }: LogViewerProps) {
               </div>
             ))}
           </div>
-        ) : logs.length === 0 ? (
+        ) : filteredLogs.length === 0 ? (
           <p className="py-8 text-center text-gray-500">No logs in this time range</p>
         ) : (
           <div className="space-y-0.5">
-            {[...logs].reverse().map((entry, i) => (
+            {[...filteredLogs].reverse().map((entry, i) => (
               <LogLine key={i} entry={entry} showRaw={showRaw} />
             ))}
           </div>

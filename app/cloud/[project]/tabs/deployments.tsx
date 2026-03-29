@@ -1,11 +1,12 @@
 'use client'
 
 import { AlertTriangle, RefreshCw } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useEnvironmentStatus } from '@/modules/cloud/hooks/use-environment-status'
+import type { KubeEvent } from '@/modules/cloud/types'
 import { Button } from '@/modules/shared/components/ui/button'
 import { Card, CardContent } from '@/modules/shared/components/ui/card'
 
@@ -14,6 +15,17 @@ type DeploymentsTabProps = {
   tenantId: string | null
 }
 
+const BACKUP_REASONS = new Set(['BackupSchedule', 'Completed', 'Starting'])
+
+function isBackupEvent(event: KubeEvent): boolean {
+  return (
+    BACKUP_REASONS.has(event.reason) &&
+    (event.involvedObject.includes('Backup/') || event.involvedObject.includes('ScheduledBackup/'))
+  )
+}
+
+type FilterMode = 'deployments' | 'all' | 'warnings'
+
 export function DeploymentsTab({ subdomain, tenantId }: DeploymentsTabProps) {
   const { status } = useEnvironmentStatus(subdomain, tenantId)
   const {
@@ -21,12 +33,22 @@ export function DeploymentsTab({ subdomain, tenantId }: DeploymentsTabProps) {
     isLoading,
     refresh: eventsRefresh,
   } = useEnvironmentEvents(subdomain, tenantId, 50)
-  const [warningsOnly, setWarningsOnly] = useState(false)
+  const [filter, setFilter] = useState<FilterMode>('deployments')
 
   const showDriftBanner =
     status?.argoSyncStatus === 'OUT_OF_SYNC' || status?.configDriftDetected === true
 
-  const filteredEvents = warningsOnly ? events.filter((e) => e.type === 'WARNING') : events
+  const filteredEvents = useMemo(() => {
+    switch (filter) {
+      case 'deployments':
+        return events.filter((e) => !isBackupEvent(e))
+      case 'warnings':
+        return events.filter((e) => e.type === 'WARNING')
+      case 'all':
+      default:
+        return events
+    }
+  }, [events, filter])
 
   return (
     <div className="space-y-4">
@@ -47,22 +69,17 @@ export function DeploymentsTab({ subdomain, tenantId }: DeploymentsTabProps) {
       {/* Controls */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1 rounded-md border p-1">
-          <Button
-            variant={warningsOnly ? 'ghost' : 'secondary'}
-            size="sm"
-            className="h-7 px-3 text-xs"
-            onClick={() => setWarningsOnly(false)}
-          >
-            All
-          </Button>
-          <Button
-            variant={warningsOnly ? 'secondary' : 'ghost'}
-            size="sm"
-            className="h-7 px-3 text-xs"
-            onClick={() => setWarningsOnly(true)}
-          >
-            Warnings only
-          </Button>
+          {(['deployments', 'warnings', 'all'] as const).map((mode) => (
+            <Button
+              key={mode}
+              variant={filter === mode ? 'secondary' : 'ghost'}
+              size="sm"
+              className="h-7 px-3 text-xs capitalize"
+              onClick={() => setFilter(mode)}
+            >
+              {mode}
+            </Button>
+          ))}
         </div>
 
         <Button
