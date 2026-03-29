@@ -56,6 +56,17 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [environment, detail.setGenericSubdomain])
 
+  // Auto-heal: set defaultPackageRegistry if missing
+  const registryHealedRef = useRef(false)
+  useEffect(() => {
+    if (!environment || registryHealedRef.current) return
+    if (environment.state.defaultPackageRegistry === null) {
+      registryHealedRef.current = true
+      detail.setDefaultPackageRegistry('https://registry.dev.vetra.io')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [environment, detail.setDefaultPackageRegistry])
+
   const handleTabChange = (tab: string) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set('tab', tab)

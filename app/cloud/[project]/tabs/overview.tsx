@@ -964,7 +964,10 @@ export function OverviewTab({
                 <Package className="h-4 w-4" />
                 Reactor Modules
               </CardTitle>
-              <AddPackageModal registryUrl={state.defaultPackageRegistry} onAdd={addPackage} />
+              <AddPackageModal
+                registryUrl={state.defaultPackageRegistry ?? 'https://registry.dev.vetra.io'}
+                onAdd={addPackage}
+              />
             </div>
           </CardHeader>
           <CardContent className="space-y-4">

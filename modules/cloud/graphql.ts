@@ -288,6 +288,30 @@ export async function setCustomDomain(
   return mapDocument(data.VetraCloudEnvironment.setCustomDomain)
 }
 
+export async function setDefaultPackageRegistry(
+  docId: string,
+  defaultPackageRegistry: string,
+  token?: string | null,
+): Promise<CloudEnvironment> {
+  const data = await gql<
+    Namespaced<{
+      setDefaultPackageRegistry: RawDocument
+    }>
+  >(
+    `mutation ($docId: PHID!, $input: VetraCloudEnvironment_SetDefaultPackageRegistryInput!) {
+      VetraCloudEnvironment {
+        setDefaultPackageRegistry(docId: $docId, input: $input) {
+          ${DOCUMENT_FIELDS}
+        }
+      }
+    }`,
+    { docId, input: { defaultPackageRegistry } },
+    token,
+  )
+
+  return mapDocument(data.VetraCloudEnvironment.setDefaultPackageRegistry)
+}
+
 // ---------------------------------------------------------------------------
 // Mutations — Services
 // ---------------------------------------------------------------------------
