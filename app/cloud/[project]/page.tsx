@@ -95,7 +95,16 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
             />
           )}
 
-          {/* Approve button when changes are pending */}
+          {/* Deploy/Approve button */}
+          {state?.status === 'DRAFT' && (
+            <Button
+              size="sm"
+              onClick={() => detail.approveChanges()}
+              className="bg-emerald-600 hover:bg-emerald-700"
+            >
+              Deploy
+            </Button>
+          )}
           {state?.status === 'CHANGES_PENDING' && (
             <Button
               size="sm"
