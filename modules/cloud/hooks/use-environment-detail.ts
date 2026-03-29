@@ -27,15 +27,23 @@ export function useEnvironmentDetail(documentId: string) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
+  const envRef = useRef(environment)
+  envRef.current = environment
+
   useEffect(() => {
     let cancelled = false
     async function load() {
       try {
-        if (!environment) setIsLoading(true)
-        setError(null)
+        if (!envRef.current) setIsLoading(true)
         const token = await getAuthToken(renownRef.current)
         const env = await fetchEnvironment(documentId, token)
-        if (!cancelled) setEnvironment(env)
+        if (!cancelled && env) {
+          // Only update state if something actually changed (avoid unnecessary re-renders)
+          const prev = envRef.current
+          if (!prev || prev.revision !== env.revision || prev.state.status !== env.state.status) {
+            setEnvironment(env)
+          }
+        }
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err : new Error('Failed to load'))
       } finally {
