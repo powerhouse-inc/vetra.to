@@ -1,6 +1,5 @@
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useRenown } from '@powerhousedao/reactor-browser'
 import {
   CheckCircle,
@@ -19,17 +18,18 @@ import {
   Pencil,
   Check,
   X,
+  ChevronsUpDown,
+  Loader2,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
 import { getAuthToken, deleteEnvironment } from '@/modules/cloud/graphql'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useEnvironmentStatus } from '@/modules/cloud/hooks/use-environment-status'
+import { useRegistryPackages, useRegistryVersions } from '@/modules/cloud/hooks/use-registry-search'
 import type { CloudEnvironment, CloudEnvironmentServiceType } from '@/modules/cloud/types'
 import {
   AlertDialog,
@@ -60,14 +60,15 @@ import {
   DropdownMenuTrigger,
 } from '@/modules/shared/components/ui/dropdown-menu'
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/modules/shared/components/ui/form'
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/modules/shared/components/ui/command'
 import { Input } from '@/modules/shared/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/modules/shared/components/ui/popover'
 import { Switch } from '@/modules/shared/components/ui/switch'
 import {
   Table,
@@ -78,17 +79,6 @@ import {
   TableRow,
 } from '@/modules/shared/components/ui/table'
 import { cn } from '@/shared/lib/utils'
-
-// ---------------------------------------------------------------------------
-// Local schema
-// ---------------------------------------------------------------------------
-
-const addPackageSchema = z.object({
-  packageName: z.string().min(1, 'Package name is required'),
-  version: z.string().optional(),
-})
-
-type AddPackageFormValues = z.infer<typeof addPackageSchema>
 
 // ---------------------------------------------------------------------------
 // Helper: StatusDot
@@ -114,24 +104,40 @@ function StatusDot({ status }: { status: string }) {
 // ---------------------------------------------------------------------------
 
 function AddPackageModal({
+  registryUrl,
   onAdd,
 }: {
+  registryUrl: string | null
   onAdd: (packageName: string, version?: string) => Promise<void>
 }) {
   const [open, setOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const form = useForm<AddPackageFormValues>({
-    resolver: zodResolver(addPackageSchema),
-    defaultValues: { packageName: '', version: '' },
-  })
+  const [packageSearch, setPackageSearch] = useState('')
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(null)
+  const [selectedVersion, setSelectedVersion] = useState<string>('')
+  const [packagePopoverOpen, setPackagePopoverOpen] = useState(false)
+  const [versionPopoverOpen, setVersionPopoverOpen] = useState(false)
 
-  const handleSubmit = async (values: AddPackageFormValues) => {
+  const { packages, isLoading: packagesLoading } = useRegistryPackages(registryUrl, packageSearch)
+  const { info: versionInfo, isLoading: versionsLoading } = useRegistryVersions(
+    registryUrl,
+    selectedPackage,
+  )
+
+  const resetForm = () => {
+    setPackageSearch('')
+    setSelectedPackage(null)
+    setSelectedVersion('')
+  }
+
+  const handleSubmit = async () => {
+    if (!selectedPackage) return
     try {
       setIsSubmitting(true)
-      await onAdd(values.packageName, values.version || undefined)
+      await onAdd(selectedPackage, selectedVersion || undefined)
       toast.success('Package added successfully')
-      form.reset()
+      resetForm()
       setOpen(false)
     } catch (error) {
       console.error('Failed to add package:', error)
@@ -142,7 +148,13 @@ function AddPackageModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        setOpen(v)
+        if (!v) resetForm()
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="flex items-center gap-1">
           <Plus className="h-3 w-3" />
@@ -153,46 +165,147 @@ function AddPackageModal({
         <DialogHeader>
           <DialogTitle>Add Package</DialogTitle>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)}>
-            <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="packageName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Package Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. @powerhouse/my-package" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="version"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Version (optional)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. 1.0.0" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        <div className="space-y-4">
+          {/* Package name combobox */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Package Name</label>
+            <Popover open={packagePopoverOpen} onOpenChange={setPackagePopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={packagePopoverOpen}
+                  className="w-full justify-between font-normal"
+                >
+                  {selectedPackage ?? 'Select package...'}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                <Command shouldFilter={false}>
+                  <CommandInput
+                    placeholder="Search packages..."
+                    value={packageSearch}
+                    onValueChange={setPackageSearch}
+                  />
+                  <CommandList>
+                    {packagesLoading && (
+                      <div className="flex items-center justify-center py-4">
+                        <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
+                      </div>
+                    )}
+                    {!packagesLoading && packages.length === 0 && (
+                      <CommandEmpty>
+                        {registryUrl ? 'No packages found.' : 'No registry configured.'}
+                      </CommandEmpty>
+                    )}
+                    <CommandGroup>
+                      {packages.map((pkg) => (
+                        <CommandItem
+                          key={pkg.name}
+                          value={pkg.name}
+                          onSelect={() => {
+                            setSelectedPackage(pkg.name)
+                            setSelectedVersion('')
+                            setPackagePopoverOpen(false)
+                          }}
+                        >
+                          <div className="flex flex-col">
+                            <span className="font-medium">{pkg.name}</span>
+                            <span className="text-muted-foreground text-xs">
+                              latest: {pkg.version}
+                            </span>
+                          </div>
+                          {selectedPackage === pkg.name && (
+                            <Check className="ml-auto h-4 w-4 shrink-0" />
+                          )}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Version combobox */}
+          {selectedPackage && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Version</label>
+              <Popover open={versionPopoverOpen} onOpenChange={setVersionPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={versionPopoverOpen}
+                    className="w-full justify-between font-mono text-sm font-normal"
+                    disabled={versionsLoading}
+                  >
+                    {versionsLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      selectedVersion || 'latest'
+                    )}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search versions..." />
+                    <CommandList>
+                      <CommandEmpty>No versions found.</CommandEmpty>
+                      <CommandGroup heading="Tags">
+                        {Object.entries(versionInfo?.distTags ?? {}).map(([tag, ver]) => (
+                          <CommandItem
+                            key={tag}
+                            value={`tag:${tag}`}
+                            onSelect={() => {
+                              setSelectedVersion(ver)
+                              setVersionPopoverOpen(false)
+                            }}
+                          >
+                            <span className="font-medium">{tag}</span>
+                            <span className="text-muted-foreground ml-2 font-mono text-xs">
+                              {ver}
+                            </span>
+                            {selectedVersion === ver && (
+                              <Check className="ml-auto h-4 w-4 shrink-0" />
+                            )}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                      <CommandGroup heading="Versions">
+                        {(versionInfo?.versions ?? []).map((ver) => (
+                          <CommandItem
+                            key={ver}
+                            value={ver}
+                            onSelect={() => {
+                              setSelectedVersion(ver)
+                              setVersionPopoverOpen(false)
+                            }}
+                          >
+                            <span className="font-mono text-sm">{ver}</span>
+                            {selectedVersion === ver && (
+                              <Check className="ml-auto h-4 w-4 shrink-0" />
+                            )}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
-            <div className="mt-6 flex gap-2">
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Adding...' : 'Add Package'}
-              </Button>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </Form>
+          )}
+        </div>
+        <div className="mt-2 flex gap-2">
+          <Button onClick={handleSubmit} disabled={isSubmitting || !selectedPackage}>
+            {isSubmitting ? 'Adding...' : 'Add Package'}
+          </Button>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   )
@@ -851,15 +964,10 @@ export function OverviewTab({
                 <Package className="h-4 w-4" />
                 Reactor Modules
               </CardTitle>
-              <AddPackageModal onAdd={addPackage} />
+              <AddPackageModal registryUrl={state.defaultPackageRegistry} onAdd={addPackage} />
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="relative">
-              <Search className="text-muted-foreground absolute top-2.5 left-3 h-4 w-4" />
-              <Input placeholder="Search registry coming soon" disabled className="pl-9 text-sm" />
-            </div>
-
             {state.packages.length > 0 ? (
               <Table>
                 <TableHeader>
