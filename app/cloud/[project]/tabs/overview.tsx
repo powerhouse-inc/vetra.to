@@ -47,6 +47,14 @@ import { Button } from '@/modules/shared/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
 import { Checkbox } from '@/modules/shared/components/ui/checkbox'
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/modules/shared/components/ui/command'
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -59,14 +67,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/modules/shared/components/ui/dropdown-menu'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/modules/shared/components/ui/command'
 import { Input } from '@/modules/shared/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/modules/shared/components/ui/popover'
 import { Switch } from '@/modules/shared/components/ui/switch'
