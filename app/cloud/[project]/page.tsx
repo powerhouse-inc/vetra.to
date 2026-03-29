@@ -94,6 +94,27 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
             />
           )}
 
+          {/* Action buttons based on status */}
+          {state?.status === 'CHANGES_PENDING' && (
+            <Button
+              size="sm"
+              onClick={() => detail.approveChanges()}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Approve Changes
+            </Button>
+          )}
+          {state && !['DRAFT', 'TERMINATING', 'DESTROYED', 'ARCHIVED'].includes(state.status) && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => detail.terminate()}
+              className="text-destructive hover:bg-destructive/10"
+            >
+              Terminate
+            </Button>
+          )}
+
           {/* Visit dropdown */}
           {subdomain && enabledServices.length > 0 && (
             <DropdownMenu>

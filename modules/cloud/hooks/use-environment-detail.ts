@@ -14,6 +14,7 @@ import {
   addPackage as gqlAddPackage,
   removePackage as gqlRemovePackage,
   initializeEnvironment as gqlInitialize,
+  approveChanges as gqlApproveChanges,
   terminateEnvironment as gqlTerminate,
 } from '../graphql'
 
@@ -90,6 +91,10 @@ export function useEnvironmentDetail(documentId: string) {
       mutate((t) => gqlInitialize(documentId, subdomain, baseDomain, defaultRegistry, t)),
     [documentId, mutate],
   )
+  const approveChanges = useCallback(
+    () => mutate((t) => gqlApproveChanges(documentId, t)),
+    [documentId, mutate],
+  )
   const terminate = useCallback(
     () => mutate((t) => gqlTerminate(documentId, t)),
     [documentId, mutate],
@@ -107,6 +112,7 @@ export function useEnvironmentDetail(documentId: string) {
     addPackage,
     removePackage,
     initialize,
+    approveChanges,
     terminate,
   }
 }
