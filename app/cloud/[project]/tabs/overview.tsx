@@ -811,76 +811,79 @@ export function OverviewTab({
         </Card>
       </div>
 
-      {/* b. Services Section (interactive toggles) */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Server className="h-4 w-4" />
-            Services
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {(['CONNECT', 'SWITCHBOARD', 'FUSION'] as const).map((type) => {
-            const service = getServiceEnabled(type)
-            return (
-              <ServiceRow
-                key={type}
-                serviceType={type}
-                prefix={service?.prefix ?? defaultPrefixes[type]}
-                subdomain={subdomain}
-                isEnabled={service?.enabled ?? false}
-                serviceStatus={service?.status ?? 'PROVISIONING'}
-                onToggle={(enabled) =>
-                  enabled
-                    ? enableService(type, service?.prefix ?? defaultPrefixes[type])
-                    : disableService(type)
-                }
-              />
-            )
-          })}
-        </CardContent>
-      </Card>
-
-      {/* c. Packages Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
+      {/* b. Services + Packages side-by-side on large screens */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* Services Section (interactive toggles) */}
+        <Card>
+          <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Package className="h-4 w-4" />
-              Reactor Modules
+              <Server className="h-4 w-4" />
+              Services
             </CardTitle>
-            <AddPackageModal onAdd={addPackage} />
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="relative">
-            <Search className="text-muted-foreground absolute top-2.5 left-3 h-4 w-4" />
-            <Input placeholder="Search registry coming soon" disabled className="pl-9 text-sm" />
-          </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {(['CONNECT', 'SWITCHBOARD', 'FUSION'] as const).map((type) => {
+              const service = getServiceEnabled(type)
+              return (
+                <ServiceRow
+                  key={type}
+                  serviceType={type}
+                  prefix={service?.prefix ?? defaultPrefixes[type]}
+                  subdomain={subdomain}
+                  isEnabled={service?.enabled ?? false}
+                  serviceStatus={service?.status ?? 'PROVISIONING'}
+                  onToggle={(enabled) =>
+                    enabled
+                      ? enableService(type, service?.prefix ?? defaultPrefixes[type])
+                      : disableService(type)
+                  }
+                />
+              )
+            })}
+          </CardContent>
+        </Card>
 
-          {state.packages.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Package</TableHead>
-                  <TableHead>Version</TableHead>
-                  <TableHead className="w-12 text-right" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {state.packages.map((pkg) => (
-                  <PackageRow key={pkg.name} pkg={pkg} onRemove={removePackage} />
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-2 py-8">
-              <Package className="text-muted-foreground h-8 w-8" />
-              <p className="text-muted-foreground text-sm">No packages installed</p>
+        {/* Packages Section */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Package className="h-4 w-4" />
+                Reactor Modules
+              </CardTitle>
+              <AddPackageModal onAdd={addPackage} />
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="relative">
+              <Search className="text-muted-foreground absolute top-2.5 left-3 h-4 w-4" />
+              <Input placeholder="Search registry coming soon" disabled className="pl-9 text-sm" />
+            </div>
+
+            {state.packages.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Package</TableHead>
+                    <TableHead>Version</TableHead>
+                    <TableHead className="w-12 text-right" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {state.packages.map((pkg) => (
+                    <PackageRow key={pkg.name} pkg={pkg} onRemove={removePackage} />
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="flex flex-col items-center justify-center gap-2 py-8">
+                <Package className="text-muted-foreground h-8 w-8" />
+                <p className="text-muted-foreground text-sm">No packages installed</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       {/* d. Domain Configuration */}
       <Card>
