@@ -88,9 +88,13 @@ function StatusDot({ status }: { status: string }) {
   const colorClass =
     status === 'READY' || status === 'ACTIVE'
       ? 'bg-emerald-500'
-      : status === 'DEPLOYING' || status === 'PROVISIONING'
+      : status === 'DEPLOYING'
         ? 'bg-yellow-500'
-        : 'bg-muted-foreground'
+        : status === 'PROVISIONING'
+          ? 'bg-blue-500'
+          : status === 'SUSPENDED' || status === 'BILLING_ISSUE'
+            ? 'bg-red-500'
+            : 'bg-muted-foreground'
 
   return <span className={`inline-block h-2 w-2 rounded-full ${colorClass}`} />
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useRenown } from '@powerhousedao/reactor-browser'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { CloudEnvironment, CloudEnvironmentServiceType } from '../types'
 import {
   getAuthToken,
@@ -19,6 +19,8 @@ import {
 
 export function useEnvironmentDetail(documentId: string) {
   const renown = useRenown()
+  const renownRef = useRef(renown)
+  renownRef.current = renown
   const [environment, setEnvironment] = useState<CloudEnvironment | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
@@ -29,7 +31,7 @@ export function useEnvironmentDetail(documentId: string) {
       try {
         setIsLoading(true)
         setError(null)
-        const token = await getAuthToken(renown)
+        const token = await getAuthToken(renownRef.current)
         const env = await fetchEnvironment(documentId, token)
         if (!cancelled) setEnvironment(env)
       } catch (err) {
@@ -42,11 +44,11 @@ export function useEnvironmentDetail(documentId: string) {
     return () => {
       cancelled = true
     }
-  }, [documentId, renown])
+  }, [documentId])
 
   const mutate = useCallback(
     async (fn: (token: string | null) => Promise<CloudEnvironment>) => {
-      const token = await getAuthToken(renown)
+      const token = await getAuthToken(renownRef.current)
       const updated = await fn(token)
       setEnvironment(updated)
     },

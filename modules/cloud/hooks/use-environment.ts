@@ -1,7 +1,7 @@
 'use client'
 
 import { useRenown } from '@powerhousedao/reactor-browser'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { getAuthToken, fetchEnvironments } from '../graphql'
 import type { CloudEnvironment } from '../types'
 
@@ -10,6 +10,8 @@ import type { CloudEnvironment } from '../types'
  */
 export function useEnvironments(): CloudEnvironment[] {
   const renown = useRenown()
+  const renownRef = useRef(renown)
+  renownRef.current = renown
   const [environments, setEnvironments] = useState<CloudEnvironment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
@@ -20,7 +22,7 @@ export function useEnvironments(): CloudEnvironment[] {
       try {
         setIsLoading(true)
         setError(null)
-        const token = await getAuthToken(renown)
+        const token = await getAuthToken(renownRef.current)
         const data = await fetchEnvironments(token)
         setEnvironments(data)
       } catch (err) {
@@ -42,7 +44,7 @@ export function useEnvironments(): CloudEnvironment[] {
     return () => {
       window.removeEventListener('refresh-environments', handleRefresh)
     }
-  }, [refreshTrigger, renown])
+  }, [refreshTrigger])
 
   if (isLoading || error) {
     return []

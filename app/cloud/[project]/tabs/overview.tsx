@@ -27,11 +27,6 @@ export function OverviewTab({ subdomain, tenantId, environment, onTabChange }: O
   const switchboardPods = pods.filter((p) => p.service === 'SWITCHBOARD')
 
   const enabledServices = state.services.filter((s) => s.enabled)
-  const isConnectEnabled = state.services.some((s) => s.type === 'CONNECT' && s.enabled)
-  const isSwitchboardEnabled = state.services.some((s) => s.type === 'SWITCHBOARD' && s.enabled)
-
-  const connectService = state.services.find((s) => s.type === 'CONNECT')
-  const switchboardService = state.services.find((s) => s.type === 'SWITCHBOARD')
 
   return (
     <div className="space-y-6">
@@ -149,26 +144,32 @@ export function OverviewTab({ subdomain, tenantId, environment, onTabChange }: O
             <CardTitle className="text-base">Services</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {isConnectEnabled && connectService && (
-              <ServiceCard
-                serviceName="CONNECT"
-                label="Powerhouse Connect"
-                subdomain={subdomain}
-                prefix={connectService.prefix}
-                pods={connectPods}
-                isEnabled={isConnectEnabled}
-              />
-            )}
-            {isSwitchboardEnabled && switchboardService && (
-              <ServiceCard
-                serviceName="SWITCHBOARD"
-                label="Powerhouse Switchboard"
-                subdomain={subdomain}
-                prefix={switchboardService.prefix}
-                pods={switchboardPods}
-                isEnabled={isSwitchboardEnabled}
-              />
-            )}
+            {enabledServices.map((svc) => {
+              const label =
+                svc.type === 'CONNECT'
+                  ? 'Powerhouse Connect'
+                  : svc.type === 'SWITCHBOARD'
+                    ? 'Powerhouse Switchboard'
+                    : svc.type === 'FUSION'
+                      ? 'Powerhouse Fusion'
+                      : svc.type
+              const svcPods = pods.filter(
+                (p) =>
+                  p.service === svc.type ||
+                  (svc.type === 'FUSION' && p.service === null && p.name.includes('fusion')),
+              )
+              return (
+                <ServiceCard
+                  key={svc.type}
+                  serviceName={svc.type}
+                  label={label}
+                  subdomain={subdomain}
+                  prefix={svc.prefix}
+                  pods={svcPods}
+                  isEnabled
+                />
+              )
+            })}
           </CardContent>
         </Card>
       )}

@@ -1,12 +1,14 @@
 'use client'
 
 import { useRenown } from '@powerhousedao/reactor-browser'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { EnvironmentStatus, Pod } from '../types'
 import { getAuthToken, fetchEnvironmentStatus, fetchEnvironmentPods } from '../graphql'
 
 export function useEnvironmentStatus(subdomain: string | null, tenantId: string | null) {
   const renown = useRenown()
+  const renownRef = useRef(renown)
+  renownRef.current = renown
   const [status, setStatus] = useState<EnvironmentStatus | null>(null)
   const [pods, setPods] = useState<Pod[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -15,7 +17,7 @@ export function useEnvironmentStatus(subdomain: string | null, tenantId: string 
   const refresh = useCallback(async () => {
     if (!subdomain || !tenantId) return
     try {
-      const token = await getAuthToken(renown)
+      const token = await getAuthToken(renownRef.current)
       const [s, p] = await Promise.all([
         fetchEnvironmentStatus(subdomain, tenantId, token),
         fetchEnvironmentPods(subdomain, tenantId, token),
@@ -28,7 +30,7 @@ export function useEnvironmentStatus(subdomain: string | null, tenantId: string 
     } finally {
       setIsLoading(false)
     }
-  }, [subdomain, tenantId, renown])
+  }, [subdomain, tenantId])
 
   useEffect(() => {
     refresh()

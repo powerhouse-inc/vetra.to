@@ -1,7 +1,7 @@
 'use client'
 
 import { useRenown } from '@powerhousedao/reactor-browser'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { KubeEvent } from '../types'
 import { getAuthToken, fetchEnvironmentEvents } from '../graphql'
 
@@ -11,6 +11,8 @@ export function useEnvironmentEvents(
   limit = 50,
 ) {
   const renown = useRenown()
+  const renownRef = useRef(renown)
+  renownRef.current = renown
   const [events, setEvents] = useState<KubeEvent[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
@@ -19,7 +21,7 @@ export function useEnvironmentEvents(
     if (!subdomain || !tenantId) return
     try {
       setIsLoading(true)
-      const token = await getAuthToken(renown)
+      const token = await getAuthToken(renownRef.current)
       const data = await fetchEnvironmentEvents(subdomain, tenantId, limit, token)
       setEvents(data)
       setError(null)
@@ -28,7 +30,7 @@ export function useEnvironmentEvents(
     } finally {
       setIsLoading(false)
     }
-  }, [subdomain, tenantId, limit, renown])
+  }, [subdomain, tenantId, limit])
 
   useEffect(() => {
     refresh()

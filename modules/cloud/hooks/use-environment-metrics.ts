@@ -1,7 +1,7 @@
 'use client'
 
 import { useRenown } from '@powerhousedao/reactor-browser'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { MetricSeries, MetricRange } from '../types'
 import { getAuthToken, fetchMetrics } from '../graphql'
 
@@ -18,6 +18,8 @@ export function useEnvironmentMetrics(
   range: MetricRange,
 ) {
   const renown = useRenown()
+  const renownRef = useRef(renown)
+  renownRef.current = renown
   const [metrics, setMetrics] = useState<Metrics | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
@@ -25,7 +27,7 @@ export function useEnvironmentMetrics(
   const refresh = useCallback(async () => {
     if (!subdomain || !tenantId) return
     try {
-      const token = await getAuthToken(renown)
+      const token = await getAuthToken(renownRef.current)
       const data = await fetchMetrics(subdomain, tenantId, range, token)
       setMetrics(data)
       setError(null)
@@ -34,7 +36,7 @@ export function useEnvironmentMetrics(
     } finally {
       setIsLoading(false)
     }
-  }, [subdomain, tenantId, range, renown])
+  }, [subdomain, tenantId, range])
 
   useEffect(() => {
     refresh()
