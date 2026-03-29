@@ -77,6 +77,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/modules/shared/components/ui/table'
+import { cn } from '@/shared/lib/utils'
 
 // ---------------------------------------------------------------------------
 // Local schema
@@ -315,24 +316,55 @@ function ServiceRow({
   }
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
+    <div
+      className={cn(
+        'flex items-center justify-between gap-4 rounded-lg border p-4 transition-colors',
+        isEnabled
+          ? 'border-emerald-500/30 bg-emerald-500/5 dark:border-emerald-500/20 dark:bg-emerald-500/5'
+          : 'border-border/50 bg-muted/30 opacity-70',
+      )}
+    >
       <div className="flex items-center gap-3">
-        <div className="bg-muted flex h-9 w-9 items-center justify-center rounded-md">
-          <Icon className="text-muted-foreground h-5 w-5" />
+        <div
+          className={cn(
+            'flex h-9 w-9 items-center justify-center rounded-md',
+            isEnabled ? 'bg-emerald-500/15 dark:bg-emerald-500/20' : 'bg-muted',
+          )}
+        >
+          <Icon
+            className={cn(
+              'h-5 w-5',
+              isEnabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground',
+            )}
+          />
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">{label}</span>
-            <StatusDot status={isEnabled ? serviceStatus : 'DISABLED'} />
+            <span className={cn('text-sm font-medium', !isEnabled && 'text-muted-foreground')}>
+              {label}
+            </span>
+            {isEnabled && <StatusDot status={serviceStatus} />}
+            {!isEnabled && (
+              <Badge
+                variant="outline"
+                className="text-muted-foreground border-border/50 px-1.5 py-0 text-[10px]"
+              >
+                OFF
+              </Badge>
+            )}
           </div>
-          <a
-            href={`https://${serviceUrl}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:text-primary/80 truncate font-mono text-xs underline underline-offset-2"
-          >
-            https://{serviceUrl}
-          </a>
+          {isEnabled ? (
+            <a
+              href={`https://${serviceUrl}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/80 truncate font-mono text-xs underline underline-offset-2"
+            >
+              https://{serviceUrl}
+            </a>
+          ) : (
+            <span className="text-muted-foreground/60 font-mono text-xs">{serviceUrl}</span>
+          )}
         </div>
       </div>
       <Switch
@@ -340,6 +372,11 @@ function ServiceRow({
         onCheckedChange={handleToggle}
         disabled={isToggling}
         aria-label={`Toggle ${label}`}
+        className={cn(
+          isEnabled
+            ? 'data-[state=checked]:bg-emerald-500'
+            : 'data-[state=unchecked]:bg-zinc-400 dark:data-[state=unchecked]:bg-zinc-600',
+        )}
       />
     </div>
   )
