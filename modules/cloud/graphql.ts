@@ -81,10 +81,10 @@ async function gql<T>(
 // Shared fragments (inlined as strings)
 // ---------------------------------------------------------------------------
 
-const SERVICE_FIELDS = `type prefix enabled url status`
+const SERVICE_FIELDS = `type prefix enabled url status imageTag`
 const PACKAGE_FIELDS = `registry name version`
 const CUSTOM_DOMAIN_FIELDS = `enabled domain dnsRecords { type host value }`
-const STATE_FIELDS = `label genericSubdomain genericBaseDomain customDomain { ${CUSTOM_DOMAIN_FIELDS} } defaultPackageRegistry status services { ${SERVICE_FIELDS} } packages { ${PACKAGE_FIELDS} }`
+const STATE_FIELDS = `label genericSubdomain genericBaseDomain customDomain { ${CUSTOM_DOMAIN_FIELDS} } defaultPackageRegistry status autoUpdate autoUpdateChannel services { ${SERVICE_FIELDS} } packages { ${PACKAGE_FIELDS} }`
 const DOCUMENT_FIELDS = `id documentType createdAtUtcIso lastModifiedAtUtcIso revisionsList { scope revision } state { global { ${STATE_FIELDS} } }`
 const LIST_ITEM_FIELDS = `id state { global { ${STATE_FIELDS} } }`
 
@@ -534,6 +534,58 @@ export async function deleteEnvironment(docId: string, token?: string | null): P
     { identifier: docId },
     token,
   )
+}
+
+// ---------------------------------------------------------------------------
+// Auto-update mutations
+// ---------------------------------------------------------------------------
+
+export async function toggleAutoUpdate(
+  docId: string,
+  enabled: boolean,
+  token?: string | null,
+): Promise<CloudEnvironment> {
+  const data = await gql<
+    Namespaced<{
+      toggleAutoUpdate: RawDocument
+    }>
+  >(
+    `mutation ($docId: PHID!, $input: VetraCloudEnvironment_ToggleAutoUpdateInput!) {
+      VetraCloudEnvironment {
+        toggleAutoUpdate(docId: $docId, input: $input) {
+          ${DOCUMENT_FIELDS}
+        }
+      }
+    }`,
+    { docId, input: { enabled } },
+    token,
+  )
+
+  return mapDocument(data.VetraCloudEnvironment.toggleAutoUpdate)
+}
+
+export async function setAutoUpdateChannel(
+  docId: string,
+  channel: string,
+  token?: string | null,
+): Promise<CloudEnvironment> {
+  const data = await gql<
+    Namespaced<{
+      setAutoUpdateChannel: RawDocument
+    }>
+  >(
+    `mutation ($docId: PHID!, $input: VetraCloudEnvironment_SetAutoUpdateChannelInput!) {
+      VetraCloudEnvironment {
+        setAutoUpdateChannel(docId: $docId, input: $input) {
+          ${DOCUMENT_FIELDS}
+        }
+      }
+    }`,
+    { docId, input: { channel } },
+    token,
+  )
+
+  return mapDocument(data.VetraCloudEnvironment.setAutoUpdateChannel)
 }
 
 // ---------------------------------------------------------------------------

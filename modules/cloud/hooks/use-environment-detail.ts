@@ -18,6 +18,8 @@ import {
   initializeEnvironment as gqlInitialize,
   approveChanges as gqlApproveChanges,
   terminateEnvironment as gqlTerminate,
+  toggleAutoUpdate as gqlToggleAutoUpdate,
+  setAutoUpdateChannel as gqlSetAutoUpdateChannel,
 } from '../graphql'
 import { useDocumentSubscription } from './use-document-subscription'
 
@@ -126,6 +128,14 @@ export function useEnvironmentDetail(documentId: string) {
     () => mutate((t) => gqlTerminate(documentId, t)),
     [documentId, mutate],
   )
+  const toggleAutoUpdate = useCallback(
+    (enabled: boolean) => mutate((t) => gqlToggleAutoUpdate(documentId, enabled, t)),
+    [documentId, mutate],
+  )
+  const setAutoUpdateChannel = useCallback(
+    (channel: string) => mutate((t) => gqlSetAutoUpdateChannel(documentId, channel, t)),
+    [documentId, mutate],
+  )
 
   return {
     environment,
@@ -143,5 +153,7 @@ export function useEnvironmentDetail(documentId: string) {
     initialize,
     approveChanges,
     terminate,
+    toggleAutoUpdate,
+    setAutoUpdateChannel,
   }
 }

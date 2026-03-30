@@ -177,6 +177,8 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
               removePackage={detail.removePackage}
               setCustomDomain={detail.setCustomDomain}
               onTerminate={detail.terminate}
+              toggleAutoUpdate={detail.toggleAutoUpdate}
+              setAutoUpdateChannel={detail.setAutoUpdateChannel}
             />
           </TabsContent>
           <TabsContent value="deployments" className="pt-4">
