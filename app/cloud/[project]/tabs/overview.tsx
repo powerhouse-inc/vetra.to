@@ -31,8 +31,8 @@ import { getAuthToken, deleteEnvironment } from '@/modules/cloud/graphql'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useEnvironmentStatus } from '@/modules/cloud/hooks/use-environment-status'
 import { usePackageUpdates } from '@/modules/cloud/hooks/use-package-updates'
-import { useServiceUpdates } from '@/modules/cloud/hooks/use-service-updates'
 import { useRegistryPackages, useRegistryVersions } from '@/modules/cloud/hooks/use-registry-search'
+import { useServiceUpdates } from '@/modules/cloud/hooks/use-service-updates'
 import type { CloudEnvironment, CloudEnvironmentServiceType } from '@/modules/cloud/types'
 import {
   AlertDialog,
