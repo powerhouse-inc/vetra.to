@@ -8,7 +8,7 @@ export type CloudEnvironmentService = {
   enabled: boolean
   url: string | null
   status: ServiceStatus
-  imageTag: string | null
+  version: string | null
 }
 
 export type CloudEnvironmentStatus =
@@ -51,8 +51,6 @@ export type CloudEnvironmentState = {
   services: CloudEnvironmentService[]
   packages: CloudPackage[]
   status: CloudEnvironmentStatus
-  autoUpdate: boolean | null
-  autoUpdateChannel: string | null
 }
 
 export type CloudEnvironment = {

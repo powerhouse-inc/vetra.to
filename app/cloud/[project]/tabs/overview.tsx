@@ -12,7 +12,6 @@ import {
   Server,
   Plus,
   Zap,
-  RefreshCw,
   MoreHorizontal,
   Search,
   Trash2,
@@ -26,10 +25,13 @@ import { useRouter } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 
+import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updates-card'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
 import { getAuthToken, deleteEnvironment } from '@/modules/cloud/graphql'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useEnvironmentStatus } from '@/modules/cloud/hooks/use-environment-status'
+import { usePackageUpdates } from '@/modules/cloud/hooks/use-package-updates'
+import { useServiceUpdates } from '@/modules/cloud/hooks/use-service-updates'
 import { useRegistryPackages, useRegistryVersions } from '@/modules/cloud/hooks/use-registry-search'
 import type { CloudEnvironment, CloudEnvironmentServiceType } from '@/modules/cloud/types'
 import {
@@ -379,125 +381,6 @@ function PackageRow({
         </DropdownMenu>
       </TableCell>
     </TableRow>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// AutoUpdateSection
-// ---------------------------------------------------------------------------
-
-function AutoUpdateSection({
-  autoUpdate,
-  autoUpdateChannel,
-  services,
-  onToggle,
-  onChannelChange,
-}: {
-  autoUpdate: boolean
-  autoUpdateChannel: string
-  services: CloudEnvironment['state']['services']
-  onToggle: (enabled: boolean) => Promise<void>
-  onChannelChange?: (channel: string) => Promise<void>
-}) {
-  const [isToggling, setIsToggling] = useState(false)
-  const [isChangingChannel, setIsChangingChannel] = useState(false)
-
-  const handleToggle = async (checked: boolean) => {
-    try {
-      setIsToggling(true)
-      await onToggle(checked)
-      toast.success(`Auto-update ${checked ? 'enabled' : 'disabled'}`)
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to toggle auto-update')
-    } finally {
-      setIsToggling(false)
-    }
-  }
-
-  const handleChannelChange = async (channel: string) => {
-    if (!onChannelChange) return
-    try {
-      setIsChangingChannel(true)
-      await onChannelChange(channel)
-      toast.success(`Update channel set to ${channel}`)
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to set channel')
-    } finally {
-      setIsChangingChannel(false)
-    }
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <RefreshCw className="h-4 w-4" />
-          Auto-Update
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
-          <div className="flex items-center gap-3">
-            <div>
-              <p className="text-sm font-medium">Automatic image updates</p>
-              <p className="text-muted-foreground text-xs">
-                Automatically deploy new images when releases are published
-              </p>
-            </div>
-          </div>
-          <Switch
-            checked={autoUpdate}
-            onCheckedChange={handleToggle}
-            disabled={isToggling}
-            aria-label="Toggle auto-update"
-            className={autoUpdate ? 'data-[state=checked]:bg-emerald-500' : ''}
-          />
-        </div>
-
-        {autoUpdate && onChannelChange && (
-          <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
-            <div>
-              <p className="text-sm font-medium">Release channel</p>
-              <p className="text-muted-foreground text-xs">
-                Which release channel to track for updates
-              </p>
-            </div>
-            <Select
-              value={autoUpdateChannel}
-              onValueChange={handleChannelChange}
-              disabled={isChangingChannel}
-            >
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dev">dev</SelectItem>
-                <SelectItem value="staging">staging</SelectItem>
-                <SelectItem value="latest">latest</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        )}
-
-        {autoUpdate && services.some((s) => s.imageTag) && (
-          <div className="rounded-lg border p-4">
-            <p className="mb-2 text-sm font-medium">Current image tags</p>
-            <div className="space-y-1">
-              {services
-                .filter((s) => s.enabled && s.imageTag)
-                .map((s) => (
-                  <div key={s.type} className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">{s.type}</span>
-                    <Badge variant="outline" className="font-mono text-xs">
-                      {s.imageTag}
-                    </Badge>
-                  </div>
-                ))}
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
   )
 }
 
@@ -892,8 +775,8 @@ type OverviewTabProps = {
   setCustomDomain: (enabled: boolean, domain?: string | null) => Promise<void>
   onTerminate?: () => Promise<void>
   onDelete?: () => void
-  toggleAutoUpdate?: (enabled: boolean) => Promise<void>
-  setAutoUpdateChannel?: (channel: string) => Promise<void>
+  setServiceVersion?: (type: CloudEnvironmentServiceType, version: string) => Promise<void>
+  setPackageVersion?: (packageName: string, version: string) => Promise<void>
 }
 
 export function OverviewTab({
@@ -908,8 +791,8 @@ export function OverviewTab({
   setCustomDomain,
   onTerminate,
   onDelete,
-  toggleAutoUpdate,
-  setAutoUpdateChannel,
+  setServiceVersion,
+  setPackageVersion,
 }: OverviewTabProps) {
   const renown = useRenown()
   const router = useRouter()
@@ -918,6 +801,11 @@ export function OverviewTab({
   const [isDeleting, setIsDeleting] = useState(false)
 
   const state = environment.state
+  const { updates: serviceUpdates } = useServiceUpdates(state.services)
+  const { updates: packageUpdates } = usePackageUpdates(
+    state.packages,
+    state.defaultPackageRegistry ?? null,
+  )
   const baseDomain = state.genericBaseDomain ?? 'vetra.io'
   const genericDomain = subdomain ? `${subdomain}.${baseDomain}` : `<subdomain>.${baseDomain}`
 
@@ -1055,7 +943,19 @@ export function OverviewTab({
         </Card>
       </div>
 
-      {/* b. Services + Packages side-by-side on large screens */}
+      {/* b. Available Updates */}
+      {setServiceVersion && setPackageVersion && (
+        <AvailableUpdatesCard
+          serviceUpdates={serviceUpdates}
+          packageUpdates={packageUpdates}
+          onUpdateService={(type, version) =>
+            setServiceVersion(type as CloudEnvironmentServiceType, version)
+          }
+          onUpdatePackage={setPackageVersion}
+        />
+      )}
+
+      {/* c. Services + Packages side-by-side on large screens */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Services Section (interactive toggles) */}
         <Card>
@@ -1086,17 +986,6 @@ export function OverviewTab({
             })}
           </CardContent>
         </Card>
-
-        {/* Auto-Update Section */}
-        {toggleAutoUpdate && (
-          <AutoUpdateSection
-            autoUpdate={state.autoUpdate ?? false}
-            autoUpdateChannel={state.autoUpdateChannel ?? 'dev'}
-            services={state.services}
-            onToggle={toggleAutoUpdate}
-            onChannelChange={setAutoUpdateChannel}
-          />
-        )}
 
         {/* Packages Section */}
         <Card>
