@@ -19,6 +19,11 @@ export function useEnvironmentStatus(
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
+  const statusRef = useRef(status)
+  statusRef.current = status
+  const podsRef = useRef(pods)
+  podsRef.current = pods
+
   const refresh = useCallback(async () => {
     if (!subdomain || !tenantId) return
     try {
@@ -27,8 +32,8 @@ export function useEnvironmentStatus(
         fetchEnvironmentStatus(subdomain, tenantId, token),
         fetchEnvironmentPods(subdomain, tenantId, token),
       ])
-      setStatus(s)
-      setPods(p)
+      if (JSON.stringify(s) !== JSON.stringify(statusRef.current)) setStatus(s)
+      if (JSON.stringify(p) !== JSON.stringify(podsRef.current)) setPods(p)
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to load status'))

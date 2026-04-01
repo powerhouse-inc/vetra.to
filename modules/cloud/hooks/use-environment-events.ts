@@ -19,13 +19,18 @@ export function useEnvironmentEvents(
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
+  const eventsRef = useRef(events)
+  eventsRef.current = events
+
   const refresh = useCallback(async () => {
     if (!subdomain || !tenantId) return
     try {
-      setIsLoading(true)
+      if (!eventsRef.current.length) setIsLoading(true)
       const token = await getAuthToken(renownRef.current)
       const data = await fetchEnvironmentEvents(subdomain, tenantId, limit, token)
-      setEvents(data)
+      if (JSON.stringify(data) !== JSON.stringify(eventsRef.current)) {
+        setEvents(data)
+      }
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to load events'))

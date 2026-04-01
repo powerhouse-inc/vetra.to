@@ -26,12 +26,17 @@ export function useEnvironmentMetrics(
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
+  const metricsRef = useRef(metrics)
+  metricsRef.current = metrics
+
   const refresh = useCallback(async () => {
     if (!subdomain || !tenantId) return
     try {
       const token = await getAuthToken(renownRef.current)
       const data = await fetchMetrics(subdomain, tenantId, range, token)
-      setMetrics(data)
+      if (JSON.stringify(data) !== JSON.stringify(metricsRef.current)) {
+        setMetrics(data)
+      }
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to load metrics'))

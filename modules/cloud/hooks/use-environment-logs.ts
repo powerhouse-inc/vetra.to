@@ -19,12 +19,17 @@ export function useEnvironmentLogs(
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
+  const logsRef = useRef(logs)
+  logsRef.current = logs
+
   const refresh = useCallback(async () => {
     if (!subdomain || !tenantId) return
     try {
       const token = await getAuthToken(renownRef.current)
       const data = await fetchLogs(subdomain, tenantId, service, range, 500, errorsOnly, token)
-      setLogs(data)
+      if (JSON.stringify(data) !== JSON.stringify(logsRef.current)) {
+        setLogs(data)
+      }
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to load logs'))

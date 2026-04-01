@@ -19,13 +19,19 @@ export function useEnvironments(): CloudEnvironment[] {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
+  const envsRef = useRef(environments)
+  envsRef.current = environments
+
   const refetch = useCallback(async () => {
     try {
-      if (!environments.length) setIsLoading(true)
+      if (!envsRef.current.length) setIsLoading(true)
       setError(null)
       const token = await getAuthToken(renownRef.current)
       const data = await fetchEnvironments(token)
-      setEnvironments(data)
+      const prev = JSON.stringify(envsRef.current)
+      if (JSON.stringify(data) !== prev) {
+        setEnvironments(data)
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch environments'))
       console.error('Failed to fetch environments:', err)
