@@ -24,13 +24,6 @@
       "@/shared/*": ["./modules/shared/*"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.svg",
-    "next-env.d.ts",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
-  ],
+  "include": ["**/*"],
   "exclude": ["node_modules", "modules/__generated__", "tests", "playwright.config.ts"]
 }
