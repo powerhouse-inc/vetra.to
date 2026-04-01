@@ -1,8 +1,8 @@
 // @ts-check
 
-import eslint from '@eslint/js';
-import { defineConfig, globalIgnores } from 'eslint/config';
-import tseslint from 'typescript-eslint';
+import eslint from '@eslint/js'
+import { defineConfig, globalIgnores } from 'eslint/config'
+import tseslint from 'typescript-eslint'
 import nextVitals from 'eslint-config-next/core-web-vitals'
 import nextTs from 'eslint-config-next/typescript'
 import prettier from 'eslint-config-prettier/flat'
@@ -13,13 +13,13 @@ export default defineConfig(
   tseslint.configs.recommendedTypeChecked,
   ...nextVitals,
   ...nextTs,
-...storybook.configs['flat/recommended'],
+  ...storybook.configs['flat/recommended'],
   {
     languageOptions: {
       parserOptions: {
         projectService: {
-          allowDefaultProject: ["tests/*", ".storybook/*"]
-        }
+          allowDefaultProject: ['tests/*', '.storybook/*'],
+        },
       },
     },
   },
@@ -76,5 +76,5 @@ export default defineConfig(
         },
       ],
     },
-  }
-);
+  },
+)

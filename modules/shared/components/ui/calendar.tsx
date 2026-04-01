@@ -1,5 +1,5 @@
 // This is a generated component from shadcn/ui so keep it as is
- 
+
 'use client'
 
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'

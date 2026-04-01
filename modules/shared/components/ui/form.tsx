@@ -46,7 +46,7 @@ const useFormField = () => {
   const fieldState = getFieldState(fieldContext.name, formState)
 
   // keeping it as it comes from shadcn
-   
+
   if (!fieldContext) {
     throw new Error('useFormField should be used within <FormField>')
   }

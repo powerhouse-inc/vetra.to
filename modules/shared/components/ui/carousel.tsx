@@ -108,7 +108,7 @@ function Carousel({
         api,
         opts,
         // keep it as it comes from shadcn
-         
+
         orientation: orientation || (opts?.axis === 'y' ? 'vertical' : 'horizontal'),
         scrollPrev,
         scrollNext,

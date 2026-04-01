@@ -1,6 +1,5 @@
 // This file is a workaround for Storybook's RSC, it is a copy/paste from the docs so keep it as is
- 
- 
+
 import type { Decorator } from '@storybook/nextjs'
 
 export type DecoratorStory = Parameters<Decorator>[0]

@@ -22,7 +22,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/shared/components/ui/tabs'
 import type { LucideIcon } from 'lucide-react'
 
-
 type Feature = { title: string; description: string; icon: LucideIcon }
 
 const specAiFeatures: Feature[] = [

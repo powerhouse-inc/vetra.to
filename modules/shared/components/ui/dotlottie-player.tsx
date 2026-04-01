@@ -4,7 +4,6 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import { cn } from '@/shared/lib/utils'
 import type { ComponentProps } from 'react'
 
-
 type DotLottieReactProps = ComponentProps<typeof DotLottieReact>
 
 interface DotLottiePlayerProps extends DotLottieReactProps {
