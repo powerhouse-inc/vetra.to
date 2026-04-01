@@ -2,9 +2,9 @@
 
 import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState, useEffect, useCallback, useRef } from 'react'
-import type { KubeEvent } from '../types'
 import { getAuthToken, fetchEnvironmentEvents } from '../graphql'
 import { useDocumentSubscription } from './use-document-subscription'
+import type { KubeEvent } from '../types'
 
 export function useEnvironmentEvents(
   subdomain: string | null,

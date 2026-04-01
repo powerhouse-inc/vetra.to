@@ -1,6 +1,6 @@
 import { Button } from '@/modules/shared/components/ui/button'
-import { Input } from '@/modules/shared/components/ui/input'
 import { GridBackground } from '@/modules/shared/components/ui/grid-background'
+import { Input } from '@/modules/shared/components/ui/input'
 
 export function WaitlistSignup() {
   return (

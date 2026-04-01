@@ -1,14 +1,14 @@
 'use client'
 
-import { useState } from 'react'
 import { ArrowRight, RefreshCw } from 'lucide-react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
-import type { ServiceUpdate } from '../hooks/use-service-updates'
 import type { PackageUpdate } from '../hooks/use-package-updates'
+import type { ServiceUpdate } from '../hooks/use-service-updates'
 
 type Props = {
   serviceUpdates: ServiceUpdate[]

@@ -1,5 +1,5 @@
-import VetraIcon from '@/modules/shared/components/svgs/vetra-logo.svg'
 import VetraLogoWithText from '@/modules/shared/components/svgs/vetra-logo-with-vetra.svg'
+import VetraIcon from '@/modules/shared/components/svgs/vetra-logo.svg'
 import type { NavbarConfig } from './types'
 
 export const NAVBAR_CONFIGS: Record<string, NavbarConfig> = {

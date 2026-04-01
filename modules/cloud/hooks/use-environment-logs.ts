@@ -2,8 +2,8 @@
 
 import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState, useEffect, useCallback, useRef } from 'react'
-import type { LogEntry, MetricRange, TenantService } from '../types'
 import { getAuthToken, fetchLogs } from '../graphql'
+import type { LogEntry, MetricRange, TenantService } from '../types'
 
 export function useEnvironmentLogs(
   subdomain: string | null,

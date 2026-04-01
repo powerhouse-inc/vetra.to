@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { GridBackground } from '@/modules/shared/components/ui/grid-background'
 
 const phrases = ['Specification driven AI.', 'Web3 enabled features.', '100% open source.']

@@ -2,9 +2,9 @@
 
 import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState, useEffect, useCallback, useRef } from 'react'
-import type { EnvironmentStatus, Pod } from '../types'
 import { getAuthToken, fetchEnvironmentStatus, fetchEnvironmentPods } from '../graphql'
 import { useDocumentSubscription } from './use-document-subscription'
+import type { EnvironmentStatus, Pod } from '../types'
 
 export function useEnvironmentStatus(
   subdomain: string | null,
