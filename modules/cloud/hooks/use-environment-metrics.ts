@@ -2,9 +2,9 @@
 
 import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState, useEffect, useCallback, useRef } from 'react'
-import type { MetricSeries, MetricRange } from '../types'
 import { getAuthToken, fetchMetrics } from '../graphql'
 import { useDocumentSubscription } from './use-document-subscription'
+import type { MetricSeries, MetricRange } from '../types'
 
 export type Metrics = {
   cpu: MetricSeries[]
