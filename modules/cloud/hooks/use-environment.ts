@@ -44,7 +44,7 @@ export function useEnvironments(): CloudEnvironment[] {
 
   // Fallback: poll every 30s in case WebSocket is disconnected
   useEffect(() => {
-    const interval = setInterval(refetch, 30_000)
+    const interval = setInterval(refetch, 10_000)
     return () => clearInterval(interval)
   }, [refetch])
 

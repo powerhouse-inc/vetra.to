@@ -43,7 +43,11 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
   const TRULY_INACTIVE = new Set(['DRAFT', 'DESTROYED', 'ARCHIVED', 'STOPPED'])
   const isInactive = TRULY_INACTIVE.has(state?.status ?? 'DRAFT')
 
-  const { status: envStatus, isLoading: statusLoading } = useEnvironmentStatus(subdomain, tenantId)
+  const { status: envStatus, isLoading: statusLoading } = useEnvironmentStatus(
+    subdomain,
+    tenantId,
+    documentId,
+  )
 
   // Auto-heal: set genericSubdomain if missing
   const subdomainHealedRef = useRef(false)
@@ -182,13 +186,18 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
             />
           </TabsContent>
           <TabsContent value="deployments" className="pt-4">
-            <DeploymentsTab subdomain={subdomain} tenantId={tenantId} />
+            <DeploymentsTab subdomain={subdomain} tenantId={tenantId} documentId={documentId} />
           </TabsContent>
           <TabsContent value="logs" className="pt-4">
             <LogsTab subdomain={subdomain} tenantId={tenantId} isStopped={isInactive} />
           </TabsContent>
           <TabsContent value="metrics" className="pt-4">
-            <MetricsTab subdomain={subdomain} tenantId={tenantId} isStopped={isInactive} />
+            <MetricsTab
+              subdomain={subdomain}
+              tenantId={tenantId}
+              isStopped={isInactive}
+              documentId={documentId}
+            />
           </TabsContent>
         </Tabs>
       )}

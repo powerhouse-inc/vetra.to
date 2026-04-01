@@ -12,6 +12,7 @@ type MetricsTabProps = {
   subdomain: string | null
   tenantId: string | null
   isStopped: boolean
+  documentId: string
 }
 
 function formatBytes(bytes: number): string {
@@ -20,9 +21,9 @@ function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
 }
 
-export function MetricsTab({ subdomain, tenantId, isStopped }: MetricsTabProps) {
+export function MetricsTab({ subdomain, tenantId, isStopped, documentId }: MetricsTabProps) {
   const [range, setRange] = useState<MetricRange>('ONE_HOUR')
-  const { metrics, isLoading } = useEnvironmentMetrics(subdomain, tenantId, range)
+  const { metrics, isLoading } = useEnvironmentMetrics(subdomain, tenantId, range, documentId)
 
   if (isStopped) {
     return (

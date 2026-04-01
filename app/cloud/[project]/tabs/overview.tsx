@@ -796,8 +796,17 @@ export function OverviewTab({
 }: OverviewTabProps) {
   const renown = useRenown()
   const router = useRouter()
-  const { status, pods, isLoading: statusLoading } = useEnvironmentStatus(subdomain, tenantId)
-  const { events, isLoading: eventsLoading } = useEnvironmentEvents(subdomain, tenantId, 5)
+  const {
+    status,
+    pods,
+    isLoading: statusLoading,
+  } = useEnvironmentStatus(subdomain, tenantId, environment.id)
+  const { events, isLoading: eventsLoading } = useEnvironmentEvents(
+    subdomain,
+    tenantId,
+    5,
+    environment.id,
+  )
   const [isDeleting, setIsDeleting] = useState(false)
 
   const state = environment.state
