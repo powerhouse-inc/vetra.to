@@ -23,6 +23,6 @@
       "@/shared/*": ["./modules/shared/*"]
     }
   },
-  "include": ["**/*", "next-env.d.ts", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
+  "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
   "exclude": ["node_modules", "modules/__generated__", "tests", "playwright.config.ts"]
 }

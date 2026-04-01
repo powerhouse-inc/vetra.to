@@ -23,7 +23,7 @@ jobs:
       image-tag: ${{ steps.meta.outputs.sha-tag }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Generate image tag
         id: meta
@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout k8s repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ env.K8S_REPO }}
           token: ${{ secrets.PATNAME }}
