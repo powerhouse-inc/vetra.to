@@ -18,9 +18,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    externalDir: true,
-  },
   output: 'standalone',
   turbopack: {
     rules: {
