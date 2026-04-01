@@ -12,7 +12,7 @@ jobs:
   lint-and-types:
     name: Lint and Types Checks
     runs-on: ubuntu-latest
-    container: node:22
+    container: node:24
 
     steps:
       - name: Checkout
@@ -21,11 +21,11 @@ jobs:
       - name: Install PNPM
         uses: pnpm/action-setup@v3
         with:
-          version: 9
+          version: 10
           run_install: false
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
         run: pnpm run lint
