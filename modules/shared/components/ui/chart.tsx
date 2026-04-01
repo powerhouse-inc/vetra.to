@@ -1,7 +1,7 @@
 // this file is from shadcn, keep it as it is
-/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
+ 
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+ 
 'use client'
 
 import * as React from 'react'

@@ -19,9 +19,9 @@ import {
   Workflow,
   Zap,
 } from 'lucide-react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/shared/components/ui/tabs'
 import type { LucideIcon } from 'lucide-react'
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/shared/components/ui/tabs'
 
 type Feature = { title: string; description: string; icon: LucideIcon }
 

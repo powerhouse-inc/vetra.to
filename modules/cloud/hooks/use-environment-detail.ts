@@ -2,7 +2,6 @@
 
 import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState, useEffect, useCallback, useRef } from 'react'
-import type { CloudEnvironment, CloudEnvironmentServiceType } from '../types'
 import {
   getAuthToken,
   fetchEnvironment,
@@ -22,6 +21,7 @@ import {
   setPackageVersion as gqlSetPackageVersion,
 } from '../graphql'
 import { useDocumentSubscription } from './use-document-subscription'
+import type { CloudEnvironment, CloudEnvironmentServiceType } from '../types'
 
 export function useEnvironmentDetail(documentId: string) {
   const renown = useRenown()

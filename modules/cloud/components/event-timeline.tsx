@@ -1,5 +1,5 @@
-import { Badge } from '@/modules/shared/components/ui/badge'
 import type { KubeEvent } from '@/modules/cloud/types'
+import { Badge } from '@/modules/shared/components/ui/badge'
 
 function timeAgo(timestamp: string): string {
   const seconds = Math.floor((Date.now() - new Date(timestamp).getTime()) / 1000)

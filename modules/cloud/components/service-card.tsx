@@ -1,9 +1,9 @@
 import { ExternalLink, Globe, Server, Zap } from 'lucide-react'
 
+import type { CloudEnvironmentServiceType, Pod } from '@/modules/cloud/types'
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import { cn } from '@/shared/lib/utils'
-import type { CloudEnvironmentServiceType, Pod } from '@/modules/cloud/types'
 
 type ServiceCardProps = {
   serviceName: CloudEnvironmentServiceType

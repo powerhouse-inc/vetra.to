@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import { createClient } from 'graphql-ws'
+import { useEffect, useRef } from 'react'
 
 /**
  * Returns the WebSocket URL for the switchboard subscription endpoint.

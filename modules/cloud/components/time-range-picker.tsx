@@ -2,6 +2,7 @@
 
 import { ChevronDown } from 'lucide-react'
 
+import type { MetricRange } from '@/modules/cloud/types'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
   DropdownMenu,
@@ -9,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/modules/shared/components/ui/dropdown-menu'
-import type { MetricRange } from '@/modules/cloud/types'
 
 const RANGE_LABELS: Record<MetricRange, string> = {
   ONE_MIN: '1m',

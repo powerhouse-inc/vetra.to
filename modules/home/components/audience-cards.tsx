@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
 import { AnimatedVetraLogo } from '@/modules/shared/components/ui/animated-vetra-logo'
+import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
 
 const audiences = [
   {

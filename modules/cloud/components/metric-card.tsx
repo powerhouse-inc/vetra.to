@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
 import type { MetricSeries } from '@/modules/cloud/types'
+import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
 import { Sparkline } from './sparkline'
 
 const SERIES_COLORS = ['#04c161', '#329dff', '#ffa132', '#ea4335', '#9333ea', '#06b6d4']

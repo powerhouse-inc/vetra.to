@@ -1,6 +1,6 @@
 // This file is a workaround for Storybook's RSC, it is a copy/paste from the docs so keep it as is
-/* eslint-disable @typescript-eslint/promise-function-async */
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+ 
+ 
 import type { Decorator } from '@storybook/nextjs'
 
 export type DecoratorStory = Parameters<Decorator>[0]

@@ -36,7 +36,7 @@ function getDriveId() {
 // Auth helper — call renown.getBearerToken() with the switchboard URL as aud
 // ---------------------------------------------------------------------------
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 type Renown = { getBearerToken: (opts: { expiresIn: number; aud: string }) => Promise<string> }
 
 export async function getAuthToken(renown: Renown | null | undefined): Promise<string | null> {

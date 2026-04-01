@@ -1,9 +1,9 @@
 'use client'
 
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
+import { cn } from '@/shared/lib/utils'
 import type { ComponentProps } from 'react'
 
-import { cn } from '@/shared/lib/utils'
 
 type DotLottieReactProps = ComponentProps<typeof DotLottieReact>
 

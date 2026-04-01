@@ -2,8 +2,8 @@
 
 import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState, useEffect, useCallback, useRef } from 'react'
-import type { EnvironmentStatus, Pod } from '../types'
 import { getAuthToken, fetchEnvironmentStatus, fetchEnvironmentPods } from '../graphql'
+import type { EnvironmentStatus, Pod } from '../types'
 
 export function useEnvironmentStatus(subdomain: string | null, tenantId: string | null) {
   const renown = useRenown()

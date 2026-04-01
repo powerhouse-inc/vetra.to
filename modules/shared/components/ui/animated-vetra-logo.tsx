@@ -1,7 +1,7 @@
 'use client'
 
-import * as React from 'react'
 import { motion } from 'framer-motion'
+import * as React from 'react'
 
 const LEAF_PATH =
   'M12.7297 -9.92366e-08C13.9836 -4.44297e-08 15 1.01643 15 2.27027L15 3.64865C15 9.91783 9.91783 15 3.64865 15L2.27027 15C1.01643 15 2.82829e-07 13.9836 3.37635e-07 12.7297L7.94833e-07 2.27027C8.4964e-07 1.01643 1.01644 -6.11241e-07 2.27027 -5.56434e-07L12.7297 -9.92366e-08Z'
@@ -55,7 +55,7 @@ function ScaleAnimation({ size = 48, duration = 8 }: { size: number; duration: n
             d={LEAF_PATH}
             fill="#04c161"
             initial={{ scale: 1 }}
-            animate={{ scale: leafScales[key as keyof typeof leafScales] }}
+            animate={{ scale: leafScales[key] }}
             transition={{
               duration,
               ease: 'easeInOut',

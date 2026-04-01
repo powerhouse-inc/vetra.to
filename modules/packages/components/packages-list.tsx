@@ -2,10 +2,10 @@
 
 import React, { useState, useMemo } from 'react'
 
-import type { VetraPackage } from '../lib/server-data'
-import type { PackageFilter } from './package-filters'
 import { PackageFilters } from './package-filters'
 import { PackageItemCard } from './package-item-card'
+import type { PackageFilter } from './package-filters'
+import type { VetraPackage } from '../lib/server-data'
 
 interface PackagesListProps {
   packages: VetraPackage[]

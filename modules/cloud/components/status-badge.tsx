@@ -1,9 +1,9 @@
-import { Badge } from '@/modules/shared/components/ui/badge'
 import type {
   ArgoHealthStatus,
   ArgoSyncStatus,
   CloudEnvironmentStatus,
 } from '@/modules/cloud/types'
+import { Badge } from '@/modules/shared/components/ui/badge'
 
 type StatusBadgeProps = {
   argoHealthStatus?: ArgoHealthStatus
