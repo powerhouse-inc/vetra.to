@@ -13,6 +13,7 @@ import { Card, CardContent } from '@/modules/shared/components/ui/card'
 type DeploymentsTabProps = {
   subdomain: string | null
   tenantId: string | null
+  documentId: string
 }
 
 const BACKUP_REASONS = new Set(['BackupSchedule', 'Completed', 'Starting'])
@@ -26,13 +27,13 @@ function isBackupEvent(event: KubeEvent): boolean {
 
 type FilterMode = 'deployments' | 'all' | 'warnings'
 
-export function DeploymentsTab({ subdomain, tenantId }: DeploymentsTabProps) {
-  const { status } = useEnvironmentStatus(subdomain, tenantId)
+export function DeploymentsTab({ subdomain, tenantId, documentId }: DeploymentsTabProps) {
+  const { status } = useEnvironmentStatus(subdomain, tenantId, documentId)
   const {
     events,
     isLoading,
     refresh: eventsRefresh,
-  } = useEnvironmentEvents(subdomain, tenantId, 50)
+  } = useEnvironmentEvents(subdomain, tenantId, 50, documentId)
   const [filter, setFilter] = useState<FilterMode>('deployments')
 
   const showDriftBanner =

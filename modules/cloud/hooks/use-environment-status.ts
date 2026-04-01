@@ -2,10 +2,15 @@
 
 import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { getAuthToken, fetchEnvironmentStatus, fetchEnvironmentPods } from '../graphql'
 import type { EnvironmentStatus, Pod } from '../types'
+import { getAuthToken, fetchEnvironmentStatus, fetchEnvironmentPods } from '../graphql'
+import { useDocumentSubscription } from './use-document-subscription'
 
-export function useEnvironmentStatus(subdomain: string | null, tenantId: string | null) {
+export function useEnvironmentStatus(
+  subdomain: string | null,
+  tenantId: string | null,
+  documentId?: string | null,
+) {
   const renown = useRenown()
   const renownRef = useRef(renown)
   renownRef.current = renown
@@ -37,6 +42,9 @@ export function useEnvironmentStatus(subdomain: string | null, tenantId: string 
     const interval = setInterval(refresh, 15_000)
     return () => clearInterval(interval)
   }, [refresh])
+
+  // Subscribe to document changes via WebSocket — triggers refresh on any update
+  useDocumentSubscription(documentId ?? null, refresh)
 
   return { status, pods, isLoading, error, refresh }
 }

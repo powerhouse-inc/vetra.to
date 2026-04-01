@@ -49,16 +49,13 @@ export function useDocumentSubscription(documentId: string | null, onEvent: () =
     const url = getWsEndpoint()
     const client = createClient({
       url,
-      // Retry with exponential back-off, max 5 retries
       retryAttempts: 5,
       shouldRetry: () => true,
-      // No auth needed for subscriptions (public read)
       lazy: true,
     })
 
     let unsubscribe: (() => void) | undefined
 
-    // graphql-ws .subscribe returns an unsubscribe function via the cleanup
     unsubscribe = client.subscribe(
       {
         query: SUBSCRIPTION_QUERY,
@@ -84,4 +81,45 @@ export function useDocumentSubscription(documentId: string | null, onEvent: () =
       client.dispose()
     }
   }, [documentId])
+}
+
+/**
+ * Subscribes to all document change events via WebSocket.
+ * Useful for list pages that need to react to any environment change.
+ */
+export function useDocumentListSubscription(onEvent: () => void) {
+  const onEventRef = useRef(onEvent)
+  onEventRef.current = onEvent
+
+  useEffect(() => {
+    const url = getWsEndpoint()
+    const client = createClient({
+      url,
+      retryAttempts: 5,
+      shouldRetry: () => true,
+      lazy: true,
+    })
+
+    const unsubscribe = client.subscribe(
+      {
+        query: SUBSCRIPTION_QUERY,
+      },
+      {
+        next: () => {
+          onEventRef.current()
+        },
+        error: (err) => {
+          console.warn('[ws-subscription] list error:', err)
+        },
+        complete: () => {
+          // Connection closed normally
+        },
+      },
+    )
+
+    return () => {
+      unsubscribe()
+      client.dispose()
+    }
+  }, [])
 }

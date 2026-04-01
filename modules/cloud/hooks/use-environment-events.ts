@@ -2,13 +2,15 @@
 
 import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { getAuthToken, fetchEnvironmentEvents } from '../graphql'
 import type { KubeEvent } from '../types'
+import { getAuthToken, fetchEnvironmentEvents } from '../graphql'
+import { useDocumentSubscription } from './use-document-subscription'
 
 export function useEnvironmentEvents(
   subdomain: string | null,
   tenantId: string | null,
   limit = 50,
+  documentId?: string | null,
 ) {
   const renown = useRenown()
   const renownRef = useRef(renown)
@@ -35,6 +37,9 @@ export function useEnvironmentEvents(
   useEffect(() => {
     refresh()
   }, [refresh])
+
+  // Subscribe to document changes via WebSocket — triggers refresh on any update
+  useDocumentSubscription(documentId ?? null, refresh)
 
   return { events, isLoading, error, refresh }
 }

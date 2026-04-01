@@ -1,12 +1,15 @@
 'use client'
 
 import { useRenown } from '@powerhousedao/reactor-browser'
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { getAuthToken, fetchEnvironments } from '../graphql'
+import { useDocumentListSubscription } from './use-document-subscription'
 import type { CloudEnvironment } from '../types'
 
 /**
- * Hook to get all cloud environments from the API
+ * Hook to get all cloud environments from the API.
+ * Subscribes to document changes via WebSocket for real-time updates
+ * and polls every 30s as fallback.
  */
 export function useEnvironments(): CloudEnvironment[] {
   const renown = useRenown()
@@ -15,36 +18,42 @@ export function useEnvironments(): CloudEnvironment[] {
   const [environments, setEnvironments] = useState<CloudEnvironment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
-  const [refreshTrigger, setRefreshTrigger] = useState(0)
 
+  const refetch = useCallback(async () => {
+    try {
+      if (!environments.length) setIsLoading(true)
+      setError(null)
+      const token = await getAuthToken(renownRef.current)
+      const data = await fetchEnvironments(token)
+      setEnvironments(data)
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to fetch environments'))
+      console.error('Failed to fetch environments:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  // Initial load
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-        const token = await getAuthToken(renownRef.current)
-        const data = await fetchEnvironments(token)
-        setEnvironments(data)
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to fetch environments'))
-        console.error('Failed to fetch environments:', err)
-        setEnvironments([])
-      } finally {
-        setIsLoading(false)
-      }
-    }
+    refetch()
+  }, [refetch])
 
-    fetchData()
+  // Subscribe to all document changes via WebSocket — triggers refetch on any update
+  useDocumentListSubscription(refetch)
 
-    const handleRefresh = () => {
-      setRefreshTrigger((prev) => prev + 1)
-    }
+  // Fallback: poll every 30s in case WebSocket is disconnected
+  useEffect(() => {
+    const interval = setInterval(refetch, 10_000)
+    return () => clearInterval(interval)
+  }, [refetch])
 
+  // Listen for manual refresh events (e.g. after deletion)
+  useEffect(() => {
+    const handleRefresh = () => refetch()
     window.addEventListener('refresh-environments', handleRefresh)
-    return () => {
-      window.removeEventListener('refresh-environments', handleRefresh)
-    }
-  }, [refreshTrigger])
+    return () => window.removeEventListener('refresh-environments', handleRefresh)
+  }, [refetch])
 
   if (isLoading || error) {
     return []
