@@ -78,7 +78,9 @@ function FeatureSection({
       className={`flex flex-col items-center gap-10 md:flex-row ${reversed ? 'md:flex-row-reverse' : ''}`}
     >
       <div className="flex-1 space-y-3">
-        <p className="text-primary text-sm font-semibold">{subtitle}</p>
+        <div className="bg-primary-30 text-primary mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold">
+          {subtitle}
+        </div>
         <h3 className="text-2xl leading-tight font-bold">{title}</h3>
         <p className="text-foreground-70 leading-relaxed">{description}</p>
       </div>
@@ -115,7 +117,7 @@ export function CloudLandingFeatures() {
                 alt={logo.name}
                 width={80}
                 height={80}
-                className="h-20 w-20 cursor-pointer object-contain opacity-60 grayscale transition-opacity hover:opacity-100 hover:grayscale-0"
+                className="h-20 w-20 cursor-pointer object-contain opacity-60 grayscale transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] hover:opacity-100 hover:grayscale-0"
                 onMouseEnter={() => startTransition(() => setHoveredLogo(logo.name))}
                 onMouseLeave={() => startTransition(() => setHoveredLogo(null))}
               />

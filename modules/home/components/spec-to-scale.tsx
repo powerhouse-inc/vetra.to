@@ -29,7 +29,7 @@ export function SpecToScale() {
       {/* Get started section */}
       <div className="mb-10 text-center">
         <p className="text-foreground text-3xl font-bold">Get started with Vetra</p>
-        <p className="text-foreground-70 mt-2 text-2xl">
+        <p className="text-foreground-70 mt-2 text-2xl transition-all duration-500 ease-out">
           {hoveredLanguage || 'The minimal stack that scales'}
         </p>
       </div>
@@ -40,7 +40,7 @@ export function SpecToScale() {
           return (
             <div
               key={index}
-              className={`flex h-20 w-20 cursor-pointer items-center justify-center rounded-2xl border p-4 transition-all duration-300 ease-in-out ${
+              className={`flex h-20 w-20 cursor-pointer items-center justify-center rounded-2xl border p-4 transition-all duration-500 ease-out ${
                 isHovered ? 'border-border bg-background' : 'border-transparent bg-transparent'
               }`}
               onMouseEnter={() => startTransition(() => setHoveredLanguage(language.name))}
@@ -51,7 +51,7 @@ export function SpecToScale() {
                 alt={language.name}
                 width={56}
                 height={56}
-                className={`transition-all duration-300 ease-in-out ${
+                className={`transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
                   isHovered ? 'filter-none' : 'brightness-50 grayscale filter'
                 }`}
               />

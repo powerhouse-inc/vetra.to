@@ -26,8 +26,8 @@ export function WaitlistSignup() {
       </div>
       <div className="relative z-10 mx-auto max-w-[var(--container-width)] px-6 py-20 text-center">
         <h2 className="mb-4 text-3xl font-bold">Join the Waitlist</h2>
-        <p className="mx-auto mb-10 max-w-lg opacity-90">
-          Own your coordination infrastructure and run it on an independent open source back-end.
+        <p className="text-foreground-70 mt-2 text-2xl transition-all duration-500 ease-out">
+          Own your coordination infrastructure <br /> and run it on an independent open source back-end.
         </p>
 
         <form

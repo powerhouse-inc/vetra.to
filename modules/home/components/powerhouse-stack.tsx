@@ -11,9 +11,9 @@ export function PowerhouseStack() {
           <h2 className="text-foreground mb-3 text-3xl font-bold">
             <strong>Part of the Powerhouse Stack</strong>
           </h2>
-          <h2 className="text-foreground-70 text-lg">
+          <p className="text-foreground-70 mt-2 text-2xl transition-all duration-500 ease-out">
             Tools that make distributed work simple and private.
-          </h2>
+          </p>
         </div>
 
         <div className="flex flex-col gap-6 md:flex-row">

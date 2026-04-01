@@ -31,8 +31,8 @@ export function PackageCta() {
           <h2 className="text-foreground mb-4 text-2xl font-bold">
             Explore the Vetra Package Library
           </h2>
-          <p className="text-foreground-70 mx-auto mb-8 max-w-lg">
-            Browse community-built packages, document models, and extensions ready to use in your
+          <p className="text-foreground-70 mt-2 text-2xl transition-all duration-500 ease-out">
+            Browse community-built packages, document models, and extensions <br /> ready to use in your
             projects.
           </p>
           <div className="mx-auto mb-8 max-w-5xl">
