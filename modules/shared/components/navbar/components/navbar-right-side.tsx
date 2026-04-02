@@ -1,7 +1,7 @@
 'use client'
 
 import { useRenownAuth } from '@powerhousedao/reactor-browser'
-import { LogIn, Loader2, MoreVertical, User } from 'lucide-react'
+import { LogIn, LogOut, Loader2, MoreVertical, User } from 'lucide-react'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { ThemeToggle } from '../../theme-toggle'
@@ -30,10 +30,29 @@ function RenownButton() {
   }
   if (auth.status === 'authorized') {
     return (
-      <button type="button" onClick={auth.openProfile} className={btnSecondary}>
-        <User className="h-4 w-4" />
-        {auth.displayName ?? auth.displayAddress ?? 'Account'}
-      </button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button type="button" className={btnSecondary}>
+            <User className="h-4 w-4" />
+            {auth.displayName ?? auth.displayAddress ?? 'Account'}
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem onClick={auth.openProfile} className="cursor-pointer">
+            <User className="h-4 w-4" />
+            Profile
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => auth.logout()}
+            variant="destructive"
+            className="cursor-pointer"
+          >
+            <LogOut className="h-4 w-4" />
+            Log out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     )
   }
   return (
