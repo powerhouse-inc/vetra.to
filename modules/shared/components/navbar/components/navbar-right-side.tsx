@@ -37,16 +37,21 @@ function RenownButton() {
             {auth.displayName ?? auth.displayAddress ?? 'Account'}
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem onClick={auth.openProfile} className="cursor-pointer">
+        <DropdownMenuContent
+          align="end"
+          className="bg-accent border-border/50 w-44 rounded-lg p-1.5"
+        >
+          <DropdownMenuItem
+            onClick={auth.openProfile}
+            className="cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
+          >
             <User className="h-4 w-4" />
             Profile
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className="bg-border/50" />
           <DropdownMenuItem
             onClick={() => auth.logout()}
-            variant="destructive"
-            className="cursor-pointer"
+            className="cursor-pointer rounded-md px-3 py-2 text-sm font-medium text-red-500 focus:text-red-500"
           >
             <LogOut className="h-4 w-4" />
             Log out
