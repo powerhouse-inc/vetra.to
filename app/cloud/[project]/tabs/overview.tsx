@@ -409,6 +409,7 @@ function ServiceRow({
   subdomain,
   isEnabled,
   serviceStatus,
+  environmentStatus,
   onToggle,
 }: {
   serviceType: CloudEnvironmentServiceType
@@ -416,6 +417,7 @@ function ServiceRow({
   subdomain: string | null
   isEnabled: boolean
   serviceStatus: string
+  environmentStatus: string
   onToggle: (enabled: boolean) => Promise<void>
 }) {
   const [isToggling, setIsToggling] = useState(false)
@@ -476,7 +478,7 @@ function ServiceRow({
               </Badge>
             )}
           </div>
-          {isEnabled ? (
+          {isEnabled && environmentStatus === 'READY' ? (
             <a
               href={`https://${serviceUrl}`}
               target="_blank"
@@ -985,6 +987,7 @@ export function OverviewTab({
                   subdomain={subdomain}
                   isEnabled={service?.enabled ?? false}
                   serviceStatus={service?.status ?? 'PROVISIONING'}
+                  environmentStatus={state.status}
                   onToggle={(enabled) =>
                     enabled
                       ? enableService(type, service?.prefix ?? defaultPrefixes[type])
