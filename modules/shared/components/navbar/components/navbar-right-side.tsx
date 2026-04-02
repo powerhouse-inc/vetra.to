@@ -39,7 +39,7 @@ function RenownButton() {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="bg-accent border-border/50 w-44 rounded-lg p-1.5"
+          className="bg-accent border-border/50 z-170 w-44 rounded-lg p-1.5"
         >
           <DropdownMenuItem
             onClick={auth.openProfile}
