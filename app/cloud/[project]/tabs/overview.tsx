@@ -408,6 +408,7 @@ function ServiceRow({
   prefix,
   subdomain,
   customDomain,
+  customDomainValid,
   isEnabled,
   serviceStatus,
   environmentStatus,
@@ -417,6 +418,7 @@ function ServiceRow({
   prefix: string
   subdomain: string | null
   customDomain?: string | null
+  customDomainValid?: boolean
   isEnabled: boolean
   serviceStatus: string
   environmentStatus: string
@@ -428,7 +430,8 @@ function ServiceRow({
   const defaultUrl = subdomain
     ? `${prefix}.${subdomain}.vetra.io`
     : `${prefix}.<subdomain>.vetra.io`
-  const serviceUrl = customDomain ? `${prefix}.${customDomain}` : defaultUrl
+  const serviceUrl =
+    customDomain && customDomainValid !== false ? `${prefix}.${customDomain}` : defaultUrl
 
   const handleToggle = async (checked: boolean) => {
     try {
@@ -989,6 +992,9 @@ export function OverviewTab({
                   prefix={service?.prefix ?? defaultPrefixes[type]}
                   subdomain={subdomain}
                   customDomain={state.customDomain?.enabled ? state.customDomain.domain : null}
+                  customDomainValid={
+                    status?.domainResolves === true && status?.tlsCertValid === true
+                  }
                   isEnabled={service?.enabled ?? false}
                   serviceStatus={service?.status ?? 'PROVISIONING'}
                   environmentStatus={state.status}
