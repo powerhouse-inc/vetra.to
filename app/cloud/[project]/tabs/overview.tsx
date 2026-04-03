@@ -428,11 +428,7 @@ function ServiceRow({
   const defaultUrl = subdomain
     ? `${prefix}.${subdomain}.vetra.io`
     : `${prefix}.<subdomain>.vetra.io`
-  const serviceUrl = customDomain
-    ? serviceType === 'SWITCHBOARD'
-      ? customDomain
-      : `${prefix}.${customDomain}`
-    : defaultUrl
+  const serviceUrl = customDomain ? `${prefix}.${customDomain}` : defaultUrl
 
   const handleToggle = async (checked: boolean) => {
     try {
