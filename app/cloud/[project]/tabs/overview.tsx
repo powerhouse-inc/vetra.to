@@ -407,6 +407,7 @@ function ServiceRow({
   serviceType,
   prefix,
   subdomain,
+  customDomain,
   isEnabled,
   serviceStatus,
   environmentStatus,
@@ -415,6 +416,7 @@ function ServiceRow({
   serviceType: CloudEnvironmentServiceType
   prefix: string
   subdomain: string | null
+  customDomain?: string | null
   isEnabled: boolean
   serviceStatus: string
   environmentStatus: string
@@ -423,9 +425,14 @@ function ServiceRow({
   const [isToggling, setIsToggling] = useState(false)
   const label = SERVICE_LABELS[serviceType]
   const Icon = SERVICE_ICONS[serviceType]
-  const serviceUrl = subdomain
+  const defaultUrl = subdomain
     ? `${prefix}.${subdomain}.vetra.io`
     : `${prefix}.<subdomain>.vetra.io`
+  const serviceUrl = customDomain
+    ? serviceType === 'SWITCHBOARD'
+      ? customDomain
+      : `${prefix}.${customDomain}`
+    : defaultUrl
 
   const handleToggle = async (checked: boolean) => {
     try {
@@ -985,6 +992,7 @@ export function OverviewTab({
                   serviceType={type}
                   prefix={service?.prefix ?? defaultPrefixes[type]}
                   subdomain={subdomain}
+                  customDomain={state.customDomain?.enabled ? state.customDomain.domain : null}
                   isEnabled={service?.enabled ?? false}
                   serviceStatus={service?.status ?? 'PROVISIONING'}
                   environmentStatus={state.status}
