@@ -1,9 +1,10 @@
-import { ExternalLink, Globe, Server, Zap } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 
 import type { CloudEnvironmentServiceType, Pod } from '@/modules/cloud/types'
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import { cn } from '@/shared/lib/utils'
+import { ServiceLogo } from './service-logo'
 
 type ServiceCardProps = {
   serviceName: CloudEnvironmentServiceType
@@ -14,14 +15,6 @@ type ServiceCardProps = {
   isEnabled: boolean
 }
 
-const SERVICE_ICONS: Record<
-  CloudEnvironmentServiceType,
-  React.ComponentType<{ className?: string }>
-> = {
-  CONNECT: Globe,
-  SWITCHBOARD: Server,
-  FUSION: Zap,
-}
 
 export function ServiceCard({
   serviceName,
@@ -31,7 +24,6 @@ export function ServiceCard({
   pods,
   isEnabled,
 }: ServiceCardProps) {
-  const Icon = SERVICE_ICONS[serviceName] ?? Server
   const serviceUrl = subdomain
     ? `https://${prefix}.${subdomain}.vetra.io`
     : `https://${prefix}.<subdomain>.vetra.io`
@@ -40,7 +32,11 @@ export function ServiceCard({
     <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <div className="bg-muted flex h-9 w-9 shrink-0 items-center justify-center rounded-md">
-          <Icon className="text-muted-foreground h-5 w-5" />
+          <ServiceLogo 
+            service={serviceName} 
+            className="text-muted-foreground h-5 w-5" 
+            size={20} 
+          />
         </div>
 
         <div className="min-w-0 flex-1">

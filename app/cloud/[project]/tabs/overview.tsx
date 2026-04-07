@@ -11,7 +11,6 @@ import {
   Package,
   Server,
   Plus,
-  Zap,
   MoreHorizontal,
   Search,
   Trash2,
@@ -27,6 +26,7 @@ import { toast } from 'sonner'
 
 import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updates-card'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
+import { ServiceLogo } from '@/modules/cloud/components/service-logo'
 import { getAuthToken, deleteEnvironment } from '@/modules/cloud/graphql'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useEnvironmentStatus } from '@/modules/cloud/hooks/use-environment-status'
@@ -394,14 +394,6 @@ const SERVICE_LABELS: Record<CloudEnvironmentServiceType, string> = {
   FUSION: 'Powerhouse Fusion',
 }
 
-const SERVICE_ICONS: Record<
-  CloudEnvironmentServiceType,
-  React.ComponentType<{ className?: string }>
-> = {
-  CONNECT: Globe,
-  SWITCHBOARD: Server,
-  FUSION: Zap,
-}
 
 function ServiceRow({
   serviceType,
@@ -426,7 +418,6 @@ function ServiceRow({
 }) {
   const [isToggling, setIsToggling] = useState(false)
   const label = SERVICE_LABELS[serviceType]
-  const Icon = SERVICE_ICONS[serviceType]
   const defaultUrl = subdomain
     ? `${prefix}.${subdomain}.vetra.io`
     : `${prefix}.<subdomain>.vetra.io`
@@ -462,11 +453,13 @@ function ServiceRow({
             isEnabled ? 'bg-emerald-500/15 dark:bg-emerald-500/20' : 'bg-muted',
           )}
         >
-          <Icon
+          <ServiceLogo
+            service={serviceType}
             className={cn(
               'h-5 w-5',
               isEnabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground',
             )}
+            size={20}
           />
         </div>
         <div className="min-w-0">

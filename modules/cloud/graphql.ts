@@ -9,6 +9,15 @@ import type {
   MetricRange,
   TenantService,
 } from './types'
+import {
+  shouldUseMockAPI,
+  mockCreateEnvironment,
+  mockSetLabel,
+  mockInitializeEnvironment,
+  mockEnableService,
+  mockFetchEnvironments,
+  mockFetchEnvironment,
+} from './mock-api'
 
 // Read env vars from window.__ENV (injected at runtime by the server layout)
 // with fallback to process.env (inlined at build time by Next.js).
@@ -140,6 +149,10 @@ function mapListItem(raw: RawListItem): CloudEnvironment {
 // ---------------------------------------------------------------------------
 
 export async function fetchEnvironments(token?: string | null): Promise<CloudEnvironment[]> {
+  if (shouldUseMockAPI()) {
+    return mockFetchEnvironments()
+  }
+
   const data = await gql<
     Namespaced<{
       findDocuments: {
@@ -165,6 +178,10 @@ export async function fetchEnvironment(
   id: string,
   token?: string | null,
 ): Promise<CloudEnvironment | null> {
+  if (shouldUseMockAPI()) {
+    return mockFetchEnvironment(id)
+  }
+
   const data = await gql<
     Namespaced<{
       document: {
@@ -195,6 +212,10 @@ export async function createEnvironment(
   name: string,
   token?: string | null,
 ): Promise<CloudEnvironment> {
+  if (shouldUseMockAPI()) {
+    return mockCreateEnvironment(name)
+  }
+
   const data = await gql<
     Namespaced<{
       createDocument: RawDocument
@@ -219,6 +240,10 @@ export async function setLabel(
   label: string,
   token?: string | null,
 ): Promise<CloudEnvironment> {
+  if (shouldUseMockAPI()) {
+    return mockSetLabel(docId, label)
+  }
+
   const data = await gql<
     Namespaced<{
       setLabel: RawDocument
@@ -321,6 +346,10 @@ export async function enableService(
   prefix: string,
   token?: string | null,
 ): Promise<CloudEnvironment> {
+  if (shouldUseMockAPI()) {
+    return mockEnableService(docId, type, prefix)
+  }
+
   const data = await gql<
     Namespaced<{
       enableService: RawDocument
@@ -453,6 +482,10 @@ export async function initializeEnvironment(
   defaultPackageRegistry?: string | null,
   token?: string | null,
 ): Promise<CloudEnvironment> {
+  if (shouldUseMockAPI()) {
+    return mockInitializeEnvironment(docId, genericSubdomain, genericBaseDomain, defaultPackageRegistry)
+  }
+
   const data = await gql<
     Namespaced<{
       initialize: RawDocument

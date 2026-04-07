@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, use, useEffect, useRef } from 'react'
 
 import { StatusBadge } from '@/modules/cloud/components/status-badge'
+import { ServiceLogo } from '@/modules/cloud/components/service-logo'
 import { useEnvironmentDetail } from '@/modules/cloud/hooks/use-environment-detail'
 import { useEnvironmentStatus } from '@/modules/cloud/hooks/use-environment-status'
 import { generateSubdomain } from '@/modules/cloud/subdomain'
@@ -98,65 +99,78 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
           <ArrowLeft className="h-4 w-4" />
           Back to Cloud
         </Link>
-        <div className="flex items-center gap-3">
-          <InlineEditableTitle value={displayName} onSave={detail.setLabel} />
-          {state && (
-            <StatusBadge
-              environmentStatus={state.status}
-              argoHealthStatus={envStatus?.argoHealthStatus}
-              argoSyncStatus={envStatus?.argoSyncStatus}
-              isLoading={statusLoading && !envStatus}
-            />
-          )}
+        <div className="flex items-center justify-between">
+          {/* Left side: Title and Visit button */}
+          <div className="flex items-center gap-3">
+            <InlineEditableTitle value={displayName} onSave={detail.setLabel} />
+            
+            {/* Visit dropdown */}
+            {subdomain && enabledServices.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="flex items-center gap-1.5">
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    Visit
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  {enabledServices.map((svc) => (
+                    <DropdownMenuItem key={svc.type} asChild>
+                      <a
+                        href={`https://${svc.prefix}.${subdomain}.${baseDomain}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2"
+                      >
+                        <ServiceLogo 
+                          service={svc.type} 
+                          size={16}
+                          className="h-4 w-4"
+                        />
+                        {svc.type === 'CONNECT'
+                          ? 'Connect'
+                          : svc.type === 'SWITCHBOARD'
+                            ? 'Switchboard'
+                            : 'Fusion'}
+                      </a>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
 
-          {/* Deploy/Approve button */}
-          {state?.status === 'DRAFT' && (
-            <Button
-              size="sm"
-              onClick={() => detail.approveChanges()}
-              className="bg-emerald-600 hover:bg-emerald-700"
-            >
-              Deploy
-            </Button>
-          )}
-          {state?.status === 'CHANGES_PENDING' && (
-            <Button
-              size="sm"
-              onClick={() => detail.approveChanges()}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Approve Changes
-            </Button>
-          )}
-
-          {/* Visit dropdown */}
-          {subdomain && enabledServices.length > 0 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-1.5">
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  Visit
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {enabledServices.map((svc) => (
-                  <DropdownMenuItem key={svc.type} asChild>
-                    <a
-                      href={`https://${svc.prefix}.${subdomain}.${baseDomain}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {svc.type === 'CONNECT'
-                        ? 'Connect'
-                        : svc.type === 'SWITCHBOARD'
-                          ? 'Switchboard'
-                          : 'Fusion'}
-                    </a>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          {/* Right side: Status Badge and Action Buttons */}
+          <div className="flex items-center gap-3">
+            {state && (
+              <StatusBadge
+                environmentStatus={state.status}
+                argoHealthStatus={envStatus?.argoHealthStatus}
+                argoSyncStatus={envStatus?.argoSyncStatus}
+                isLoading={statusLoading && !envStatus}
+              />
+            )}
+            
+            {/* Deploy/Approve button */}
+            {state?.status === 'DRAFT' && (
+              <Button
+                size="sm"
+                onClick={() => detail.approveChanges()}
+                className="bg-emerald-600 hover:bg-emerald-700"
+              >
+                Deploy
+              </Button>
+            )}
+            {state?.status === 'CHANGES_PENDING' && (
+              <Button
+                size="sm"
+                onClick={() => detail.approveChanges()}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Approve Changes
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
