@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -24,23 +20,10 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@/shared/*": [
-        "./modules/shared/*"
-      ]
+      "@/*": ["./*"],
+      "@/shared/*": ["./modules/shared/*"]
     }
   },
-  "include": [
-    "**/*",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "modules/__generated__",
-    "tests",
-    "playwright.config.ts"
-  ]
+  "include": ["**/*", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
+  "exclude": ["node_modules", "modules/__generated__", "tests", "playwright.config.ts"]
 }

@@ -106,12 +106,18 @@ export function FeaturesTabs() {
         <h2 className="text-foreground mb-2 text-3xl font-bold">
           Build on the sovereign tech-stack of tomorrow
         </h2>
-        <p className="text-foreground-70 mt-2 text-2xl transition-all duration-500 ease-out">Structured document models powered by modern tooling</p>
+        <p className="text-foreground-70 mt-2 text-2xl transition-all duration-500 ease-out">
+          Structured document models powered by modern tooling
+        </p>
       </div>
       <Tabs defaultValue="rda" className="items-center">
         <TabsList className="mb-10">
-          <TabsTrigger value="rda" className="text-lg">Reactive Document Architecture</TabsTrigger>
-          <TabsTrigger value="spec-ai" className="text-lg">Specification Driven AI</TabsTrigger>
+          <TabsTrigger value="rda" className="text-lg">
+            Reactive Document Architecture
+          </TabsTrigger>
+          <TabsTrigger value="spec-ai" className="text-lg">
+            Specification Driven AI
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="rda">
