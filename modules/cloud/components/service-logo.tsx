@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import Image from 'next/image'
 import { Globe, Server, Zap } from 'lucide-react'
+import Image from 'next/image'
+import { useState } from 'react'
 
 import type { CloudEnvironmentServiceType } from '@/modules/cloud/types'
 
@@ -18,7 +18,7 @@ const SERVICE_LOGO_PATHS: Record<CloudEnvironmentServiceType, string> = {
 
 const SERVICE_FALLBACK_ICONS: Record<
   CloudEnvironmentServiceType,
-  React.ComponentType<{ className?: string }>
+  React.ComponentType<{ className?: string; style?: React.CSSProperties }>
 > = {
   CONNECT: Globe,
   SWITCHBOARD: Server,

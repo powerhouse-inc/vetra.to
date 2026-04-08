@@ -16,7 +16,7 @@ const USE_MOCK_API = process.env.NEXT_PUBLIC_USE_MOCK_CLOUD_API === 'true'
 const MOCK_DELAY_MS = 500
 
 // Mock data store
-let mockEnvironments: CloudEnvironment[] = [
+const mockEnvironments: CloudEnvironment[] = [
   {
     id: 'mock-env-1',
     name: 'Development Environment',

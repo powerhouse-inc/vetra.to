@@ -1,3 +1,12 @@
+import {
+  shouldUseMockAPI,
+  mockCreateEnvironment,
+  mockSetLabel,
+  mockInitializeEnvironment,
+  mockEnableService,
+  mockFetchEnvironments,
+  mockFetchEnvironment,
+} from './mock-api'
 import type {
   CloudEnvironment,
   CloudEnvironmentServiceType,
@@ -9,15 +18,6 @@ import type {
   MetricRange,
   TenantService,
 } from './types'
-import {
-  shouldUseMockAPI,
-  mockCreateEnvironment,
-  mockSetLabel,
-  mockInitializeEnvironment,
-  mockEnableService,
-  mockFetchEnvironments,
-  mockFetchEnvironment,
-} from './mock-api'
 
 // Read env vars from window.__ENV (injected at runtime by the server layout)
 // with fallback to process.env (inlined at build time by Next.js).
