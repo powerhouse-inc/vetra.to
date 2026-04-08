@@ -1,7 +1,7 @@
-import { type Manifest } from "@powerhousedao/shared"
-import { type PackageFilters } from "./types"
-import { type FuseResultMatch } from "fuse.js"
-import { filter, isTruthy } from "remeda"
+import { type Manifest } from '@powerhousedao/shared'
+import { type PackageFilters } from './types'
+import { type FuseResultMatch } from 'fuse.js'
+import { filter, isTruthy } from 'remeda'
 
 export function filterManifests(
   manifests: Manifest[],

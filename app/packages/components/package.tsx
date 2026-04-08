@@ -1,12 +1,12 @@
-import { type Manifest, type Publisher, type PowerhouseModule } from "@powerhousedao/shared";
-import { capitalCase } from "change-case";
-import { PackageIcon } from "lucide-react";
-import { type ComponentProps } from "react";
-import { USE_PACKAGE_COVER, REGISTRY_URL } from "../lib/constants";
-import { type PackageModulesRecord } from "../lib/types";
-import Image from "next/image"
-import Highlighter from "react-highlight-words";
-import Link from "next/link";
+import { type Manifest, type Publisher, type PowerhouseModule } from '@powerhousedao/shared'
+import { capitalCase } from 'change-case'
+import { PackageIcon } from 'lucide-react'
+import { type ComponentProps } from 'react'
+import { USE_PACKAGE_COVER, REGISTRY_URL } from '../lib/constants'
+import { type PackageModulesRecord } from '../lib/types'
+import Image from 'next/image'
+import Highlighter from 'react-highlight-words'
+import Link from 'next/link'
 
 export function PackageManifest(props: { manifest: Manifest; searchWords: string[] }) {
   const {

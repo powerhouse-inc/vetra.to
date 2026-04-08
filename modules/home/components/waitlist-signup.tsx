@@ -35,7 +35,7 @@ export function WaitlistSignup() {
           action="https://gmail.us21.list-manage.com/subscribe/post?u=a65ca7e437961008f5f5c1bad&id=c8ea339c46&f_id=00fda7e6f0"
           method="post"
           target="_blank"
-          className="mx-auto flex max-w-md gap-3 justify-center items-center"
+          className="mx-auto flex max-w-md items-center justify-center gap-3"
         >
           <Input
             type="email"

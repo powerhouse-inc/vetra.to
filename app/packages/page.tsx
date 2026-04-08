@@ -1,6 +1,4 @@
-import {
-  type PackageInfo,
-} from '@powerhousedao/shared'
+import { type PackageInfo } from '@powerhousedao/shared'
 import { type SearchParams } from 'nuqs/server'
 import { JoinedUsersBadge } from '@/modules/shared/components/joined-users-badge'
 import { loadSearchParams } from './lib/search-params'
@@ -9,7 +7,6 @@ import { fuse, packageModuleTypes, REGISTRY_URL } from './lib/constants'
 import { map, unique, filter, isTruthy } from 'remeda'
 import { filterManifests, getSearchWords } from './lib/utils'
 import { PackageManifest } from './components/package'
-
 
 export const metadata: unknown = {
   title: 'Vetra Packages',
