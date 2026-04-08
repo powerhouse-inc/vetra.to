@@ -36,13 +36,13 @@ export function AudienceCards() {
       <div className="grid gap-6 lg:grid-cols-3">
         {audiences.map((audience) => (
           <Card key={audience.title}>
-            <CardHeader>
+            <CardHeader className="p-4">
               <div className="flex items-center gap-3">
                 <AnimatedVetraLogo size={32} variant={audience.animation} className="h-8 w-8" />
                 <CardTitle>{audience.title}</CardTitle>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 pt-0">
               <p className="text-foreground-70 text-sm leading-relaxed">{audience.description}</p>
             </CardContent>
           </Card>

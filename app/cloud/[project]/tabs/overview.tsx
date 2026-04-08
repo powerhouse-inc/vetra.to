@@ -407,23 +407,31 @@ function ServiceRow({
   serviceType,
   prefix,
   subdomain,
+  customDomain,
+  customDomainValid,
   isEnabled,
   serviceStatus,
+  environmentStatus,
   onToggle,
 }: {
   serviceType: CloudEnvironmentServiceType
   prefix: string
   subdomain: string | null
+  customDomain?: string | null
+  customDomainValid?: boolean
   isEnabled: boolean
   serviceStatus: string
+  environmentStatus: string
   onToggle: (enabled: boolean) => Promise<void>
 }) {
   const [isToggling, setIsToggling] = useState(false)
   const label = SERVICE_LABELS[serviceType]
   const Icon = SERVICE_ICONS[serviceType]
-  const serviceUrl = subdomain
+  const defaultUrl = subdomain
     ? `${prefix}.${subdomain}.vetra.io`
     : `${prefix}.<subdomain>.vetra.io`
+  const serviceUrl =
+    customDomain && customDomainValid !== false ? `${prefix}.${customDomain}` : defaultUrl
 
   const handleToggle = async (checked: boolean) => {
     try {
@@ -476,7 +484,7 @@ function ServiceRow({
               </Badge>
             )}
           </div>
-          {isEnabled ? (
+          {isEnabled && environmentStatus === 'READY' ? (
             <a
               href={`https://${serviceUrl}`}
               target="_blank"
@@ -983,8 +991,13 @@ export function OverviewTab({
                   serviceType={type}
                   prefix={service?.prefix ?? defaultPrefixes[type]}
                   subdomain={subdomain}
+                  customDomain={state.customDomain?.enabled ? state.customDomain.domain : null}
+                  customDomainValid={
+                    status?.domainResolves === true && status?.tlsCertValid === true
+                  }
                   isEnabled={service?.enabled ?? false}
                   serviceStatus={service?.status ?? 'PROVISIONING'}
+                  environmentStatus={state.status}
                   onToggle={(enabled) =>
                     enabled
                       ? enableService(type, service?.prefix ?? defaultPrefixes[type])

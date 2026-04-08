@@ -26,7 +26,7 @@ export function WaitlistSignup() {
       </div>
       <div className="relative z-10 mx-auto max-w-[var(--container-width)] px-6 py-20 text-center">
         <h2 className="mb-4 text-3xl font-bold">Join the Waitlist</h2>
-        <p className="text-foreground-70 mt-2 text-2xl transition-all duration-500 ease-out">
+        <p className="text-foreground-70 mt-2 mb-8 text-2xl transition-all duration-500 ease-out">
           Own your coordination infrastructure <br /> and run it on an independent open source
           back-end.
         </p>
@@ -35,7 +35,7 @@ export function WaitlistSignup() {
           action="https://gmail.us21.list-manage.com/subscribe/post?u=a65ca7e437961008f5f5c1bad&id=c8ea339c46&f_id=00fda7e6f0"
           method="post"
           target="_blank"
-          className="mx-auto flex max-w-md gap-3"
+          className="mx-auto flex max-w-md gap-3 justify-center items-center"
         >
           <Input
             type="email"

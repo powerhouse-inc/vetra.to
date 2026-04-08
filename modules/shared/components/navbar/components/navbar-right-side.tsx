@@ -1,7 +1,7 @@
 'use client'
 
 import { useRenownAuth } from '@powerhousedao/reactor-browser'
-import { LogIn, Loader2, MoreVertical, User } from 'lucide-react'
+import { LogIn, LogOut, Loader2, MoreVertical, User } from 'lucide-react'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { ThemeToggle } from '../../theme-toggle'
@@ -30,10 +30,34 @@ function RenownButton() {
   }
   if (auth.status === 'authorized') {
     return (
-      <button type="button" onClick={auth.openProfile} className={btnSecondary}>
-        <User className="h-4 w-4" />
-        {auth.displayName ?? auth.displayAddress ?? 'Account'}
-      </button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button type="button" className={btnSecondary}>
+            <User className="h-4 w-4" />
+            {auth.displayName ?? auth.displayAddress ?? 'Account'}
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="bg-accent border-border/50 z-170 w-44 rounded-lg p-1.5"
+        >
+          <DropdownMenuItem
+            onClick={auth.openProfile}
+            className="cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
+          >
+            <User className="h-4 w-4" />
+            Profile
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="bg-border/50" />
+          <DropdownMenuItem
+            onClick={() => auth.logout()}
+            className="cursor-pointer rounded-md px-3 py-2 text-sm font-medium text-red-500 focus:text-red-500"
+          >
+            <LogOut className="h-4 w-4" />
+            Log out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     )
   }
   return (

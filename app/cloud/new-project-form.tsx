@@ -11,6 +11,7 @@ import {
   createEnvironment,
   setLabel,
   initializeEnvironment,
+  enableService,
 } from '@/modules/cloud/graphql'
 import { generateSubdomain } from '@/modules/cloud/subdomain'
 import { Button } from '@/modules/shared/components/ui/button'
@@ -77,6 +78,7 @@ export function NewEnvironmentForm({
           'https://registry.dev.vetra.io',
           token,
         )
+        await enableService(env.id, 'CONNECT', 'connect', token)
         await setLabel(env.id, values.name, token)
         onCreated?.(env.id)
       }

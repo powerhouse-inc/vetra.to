@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, type CSSProperties } from 'react'
+import { useMemo, useId, type CSSProperties } from 'react'
 
 interface GridBackgroundProps {
   squareSize?: number
@@ -34,8 +34,10 @@ export function GridBackground(props: GridBackgroundProps) {
     className = '',
   } = props
 
-  const { gridSvg, maskId } = useMemo(() => {
-    const maskId = `fade-mask-${Math.random().toString(36).substr(2, 9)}`
+  const id = useId()
+
+  const gridSvg = useMemo(() => {
+    const maskId = `fade-mask-${id}`
 
     const gridSvg = (
       <svg
@@ -143,7 +145,7 @@ export function GridBackground(props: GridBackgroundProps) {
       </svg>
     )
 
-    return { gridSvg, maskId }
+    return gridSvg
   }, [
     squareSize,
     strokeWidth,
@@ -156,6 +158,7 @@ export function GridBackground(props: GridBackgroundProps) {
     leftFadeIntensity,
     rightFadeDistance,
     rightFadeIntensity,
+    id,
   ])
 
   return (
