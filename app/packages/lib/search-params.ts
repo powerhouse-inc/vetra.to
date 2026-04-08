@@ -1,5 +1,5 @@
 import { createLoader, parseAsArrayOf, parseAsString, parseAsStringLiteral } from 'nuqs/server'
-import { packageModuleTypes } from '../constants'
+import { packageModuleTypes } from '../lib/constants'
 
 export const filterParsers = {
   moduleTypes: parseAsArrayOf(parseAsStringLiteral(packageModuleTypes)),
