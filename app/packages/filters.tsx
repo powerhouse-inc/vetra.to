@@ -1,9 +1,11 @@
 'use client'
-import { useQueryState, useQueryStates } from 'nuqs'
+import { useQueryStates } from 'nuqs'
 import { filterParsers } from './lib/search-params'
-import { packageModuleTypes } from './constants'
 import { type PackageFilters, type PackageModuleType } from './types'
 import { capitalCase } from 'change-case'
+import { Button } from '@/modules/shared/components/ui/button'
+import { Search } from './search'
+import { Checkbox } from '@/modules/shared/components/ui/checkbox'
 
 export function Filters(props: {
   moduleTypeOptions: PackageModuleType[]
@@ -41,10 +43,31 @@ export function Filters(props: {
 
   return (
     <div>
-      <button onClick={clearFilters}>Clear filters</button>
+      <div className="flex align-middle">
+        <h3>Filters</h3>
+        <Button onClick={clearFilters}>Reset Filters</Button>
+      </div>
+      <Search />
       <Filter
         filterKey="moduleTypes"
-        options={moduleTypeOptions}
+        title="user experiences"
+        options={['apps', 'editors']}
+        values={moduleTypes ?? []}
+        addFilter={addFilter}
+        removeFilter={removeFilter}
+      />
+      <Filter
+        filterKey="moduleTypes"
+        title="document models"
+        options={['documentModels']}
+        values={moduleTypes ?? []}
+        addFilter={addFilter}
+        removeFilter={removeFilter}
+      />
+      <Filter
+        filterKey="moduleTypes"
+        title="data integrations"
+        options={['subgraphs', 'processors']}
         values={moduleTypes ?? []}
         addFilter={addFilter}
         removeFilter={removeFilter}
@@ -58,6 +81,7 @@ export function Filters(props: {
       />
       <Filter
         filterKey="publisherNames"
+        title="publishers"
         options={publisherNameOptions}
         values={publisherNames ?? []}
         addFilter={addFilter}
@@ -74,28 +98,29 @@ function Filter<
   filterKey: TKey
   options: TValues
   values: TValues
+  title?: string;
   addFilter: (filterKey: TKey, value: TValues[number]) => void
   removeFilter: (filterKey: TKey, value: TValues[number]) => void
 }) {
-  const { filterKey, options, values, addFilter, removeFilter } = props
-  console.log({ filterKey, options, values })
+  const { filterKey, options, values, title, addFilter, removeFilter } = props
   return (
     <div>
-      <h3 className="font-semibold">{capitalCase(filterKey)}</h3>
-      {options.map((option) => (
-        <div key={option} className="flex gap-2 align-middle">
+      <h3 className="font-semibold">{capitalCase(title ?? filterKey)}</h3>
+      <div className='bg-gray-50'>
+        {options.map((option) => (
+        <div key={option} className="flex justify-between items-center">
           <label htmlFor={option}>{capitalCase(option)}</label>
-          <input
+          <Checkbox
             id={option}
-            type="checkbox"
             checked={(values as string[]).includes(option) ?? false}
-            onChange={(e) => {
-              if (e.currentTarget.checked) addFilter(filterKey, option)
+            onCheckedChange={(checked) => {
+              if (checked) addFilter(filterKey, option)
               else removeFilter(filterKey, option)
             }}
           />
         </div>
       ))}
+      </div>
     </div>
   )
 }

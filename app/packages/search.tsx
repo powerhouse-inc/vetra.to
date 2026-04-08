@@ -1,5 +1,6 @@
 'use client'
 
+import { Input } from '@/modules/shared/components/ui/input'
 import { useQueryState } from 'nuqs'
 
 export function Search() {
@@ -9,7 +10,7 @@ export function Search() {
 
   return (
     <div>
-      <input
+      <Input
         type="text"
         value={searchText ?? ''}
         onChange={(e) => {
