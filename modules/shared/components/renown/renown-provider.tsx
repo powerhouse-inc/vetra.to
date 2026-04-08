@@ -44,7 +44,7 @@ function RenownLoginGuard() {
       while (Date.now() - start < maxWaitMs) {
         if (cancelled) return
 
-        const renown = (window as any).ph?.renown
+        const renown = (window as Window).ph?.renown
         if (renown && renown.status === 'authorized') return
 
         if (renown && typeof renown.login === 'function') {

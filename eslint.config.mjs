@@ -37,20 +37,6 @@ export default defineConfig(
   prettier,
   {
     rules: {
-      'import/order': [
-        'error',
-        {
-          groups: ['builtin', 'external', 'parent', 'sibling', 'index', 'object', 'type'],
-          pathGroups: [
-            {
-              pattern: '@/**/**',
-              group: 'parent',
-              position: 'before',
-            },
-          ],
-          alphabetize: { order: 'asc' },
-        },
-      ],
       'prefer-const': 'warn',
       'react-hooks/purity': 'warn',
       'react-hooks/set-state-in-effect': 'warn',

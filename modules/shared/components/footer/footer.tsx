@@ -9,7 +9,10 @@ const footerLinks = {
   ],
   resources: [
     { label: 'Academy', href: 'https://academy.vetra.io/' },
-    { label: 'Vetra Studio', href: 'https://academy.vetra.io/academy/MasteryTrack/BuilderEnvironment/VetraStudio' },
+    {
+      label: 'Vetra Studio',
+      href: 'https://academy.vetra.io/academy/MasteryTrack/BuilderEnvironment/VetraStudio',
+    },
     { label: 'LLM Docs', href: 'https://academy.vetra.io/academy/LLMDocs' },
   ],
   socials: [

@@ -1,6 +1,12 @@
-import React from 'react'
-
+import { type PackageInfo } from '@powerhousedao/shared'
+import { type SearchParams } from 'nuqs/server'
 import { JoinedUsersBadge } from '@/modules/shared/components/joined-users-badge'
+import { loadSearchParams } from './lib/search-params'
+import { Filters } from './components/filters'
+import { fuse, packageModuleTypes, REGISTRY_URL } from './lib/constants'
+import { map, unique, filter, isTruthy } from 'remeda'
+import { filterManifests, getSearchWords } from './lib/utils'
+import { PackageManifest } from './components/package'
 
 export const metadata: unknown = {
   title: 'Vetra Packages',
@@ -35,7 +41,36 @@ export const metadata: unknown = {
   },
 }
 
-export default async function PackagesPage() {
+type PageProps = {
+  searchParams: Promise<SearchParams>
+}
+export default async function PackagesPage({ searchParams }: PageProps) {
+  const { search, ...filters } = await loadSearchParams(searchParams)
+  const packagesRes = await fetch(`${REGISTRY_URL}/packages`, {
+    next: { revalidate: 30 },
+  })
+  const packages = (await packagesRes.json()) as PackageInfo[]
+  const manifests = filter(
+    map(packages, (m) => m.manifest),
+    isTruthy,
+  )
+  const categoryOptions = unique(
+    filter(
+      map(manifests, (m) => m.category),
+      isTruthy,
+    ),
+  )
+  const publisherNameOptions = unique(
+    filter(
+      map(manifests, (m) => m.publisher?.name),
+      isTruthy,
+    ),
+  )
+  const filteredManifests = filterManifests(manifests, filters)
+  fuse.setCollection(filteredManifests)
+
+  const searchResult = fuse.search(search ?? '')
+
   return (
     <div className="container mx-auto mt-[80px] max-w-[var(--container-width)] space-y-8 p-8">
       {/* Page Header */}
@@ -47,14 +82,36 @@ export default async function PackagesPage() {
           Packages provide solutions to within specific domains and industries.
         </p>
       </div>
-
       {/* Breadcrumb */}
       <div className="text-muted-foreground flex items-center gap-2 text-sm">
         <span>Packages</span>
         <span>&gt;</span>
         <span className="font-medium">Overview</span>
       </div>
-
+      <div className="flex gap-3">
+        <div className="flex-none">
+          <Filters
+            moduleTypeOptions={packageModuleTypes}
+            categoryOptions={categoryOptions}
+            publisherNameOptions={publisherNameOptions}
+          />
+        </div>
+        <div>
+          {searchResult.length === 0 ? (
+            <div>
+              <p>The current set of filters do not return any results</p>
+            </div>
+          ) : (
+            searchResult.map(({ item: manifest, matches }) => (
+              <PackageManifest
+                key={manifest.name}
+                manifest={manifest}
+                searchWords={getSearchWords(matches)}
+              />
+            ))
+          )}
+        </div>
+      </div>
       {/* Waitlist Section */}
       <div className="flex min-h-[500px] flex-col items-center justify-center space-y-8 py-12">
         <div className="max-w-3xl space-y-6 text-center">
