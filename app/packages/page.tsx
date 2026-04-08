@@ -11,11 +11,13 @@ import { JoinedUsersBadge } from '@/modules/shared/components/joined-users-badge
 import { loadSearchParams } from './lib/search-params'
 import { type PackageFilters, type PackageModulesRecord } from './types'
 import { Filters } from './filters'
-import { packageModuleTypes, REGISTRY_URL } from './constants'
+import { packageModuleTypes, REGISTRY_URL, USE_PACKAGE_COVER } from './constants'
 import { map, unique, filter, isTruthy } from 'remeda'
 import Fuse, { type FuseResultMatch } from 'fuse.js'
 import Highlighter from 'react-highlight-words'
 import Image from 'next/image'
+import { type ComponentProps } from 'react'
+import { Package as PackageIcon } from 'lucide-react'
 
 const keys = [
   'name',
@@ -212,14 +214,19 @@ function PackageManifest(props: { manifest: Manifest; searchWords: string[] }) {
   } = props
   const modules = { documentModels, editors, apps, processors, subgraphs }
   return (
-    <div className='mb-4'>
+    <div
+      className="mb-4 rounded-md p-3"
+      style={{
+        boxShadow: '1px 4px 15px 0px #4A587340',
+      }}
+    >
       <PackageTitle name={name} />
       <div className="flex flex-col gap-3 md:flex-row">
-        <div className="flex-none">
-          <PackageCover />
+        <div className="flex-none rounded-lg border border-gray-200">
+          <PackageCover name={name} />
         </div>
-        <div className='bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-xs leading-[18px] flex-1 text-gray-500'>
-          <h2 className='font-semibold text-sm text-gray-900 mb-1'>Package</h2>
+        <div className="flex-1 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-xs leading-[18px] text-gray-500">
+          <h2 className="mb-1 text-sm font-semibold text-gray-900">Package</h2>
           <PackageName name={name} publisher={publisher} searchWords={searchWords} />
           <PackageDescription description={description} searchWords={searchWords} />
           <PackageCategory category={category} searchWords={searchWords} />
@@ -230,24 +237,25 @@ function PackageManifest(props: { manifest: Manifest; searchWords: string[] }) {
   )
 }
 
+function PurpleHighlighter(props: ComponentProps<typeof Highlighter>) {
+  return <Highlighter {...props} highlightClassName="bg-purple-30" />
+}
+
 function PackageTitle(props: { name: string }) {
   const { name } = props
   return (
-    <div className='bg-slate-50 rounded-t-lg h-10 grid place-content-center mb-2'>
-      <h3 className='w-fit h-fit font-semibold text-gray-900 text-md'>{name}</h3>
+    <div className="mb-2 grid h-10 place-content-center rounded-t-lg bg-slate-50">
+      <h3 className="text-md h-fit w-fit font-semibold text-gray-900">{name}</h3>
     </div>
   )
 }
 
-function PackageCover() {
-  return (
-    <Image
-      width={300}
-      height={235}
-      src="/package-placeholder-image.png"
-      alt="package-placeholder-image"
-    />
-  )
+function PackageCover(props: { name: string }) {
+  const { name } = props
+  const PACKAGE_COVER_URL = USE_PACKAGE_COVER
+    ? `${REGISTRY_URL}/${name}/browser/cover.png`
+    : '/package-placeholder-image.png'
+  return <Image width={300} height={235} src={PACKAGE_COVER_URL} alt="package-placeholder-image" />
 }
 
 function PackageName(props: {
@@ -257,45 +265,11 @@ function PackageName(props: {
 }) {
   const { name, publisher, searchWords } = props
   return (
-    <p className="text-xs font-medium">
-      <svg
-        className='inline'
-        width="12"
-        height="13"
-        viewBox="0 0 12 13"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M5.06944 11.585C5.23835 11.6825 5.42996 11.7338 5.625 11.7338C5.82004 11.7338 6.01165 11.6825 6.18056 11.585L10.0694 9.36275C10.2382 9.26533 10.3783 9.12524 10.4759 8.95655C10.5734 8.78786 10.6248 8.59649 10.625 8.40164V3.95719C10.6248 3.76235 10.5734 3.57098 10.4759 3.40228C10.3783 3.23359 10.2382 3.09351 10.0694 2.99608L6.18056 0.773861C6.01165 0.67634 5.82004 0.625 5.625 0.625C5.42996 0.625 5.23835 0.67634 5.06944 0.773861L1.18056 2.99608C1.01181 3.09351 0.871656 3.23359 0.774145 3.40228C0.676635 3.57098 0.6252 3.76235 0.625 3.95719V8.40164C0.6252 8.59649 0.676635 8.78786 0.774145 8.95655C0.871656 9.12524 1.01181 9.26533 1.18056 9.36275L5.06944 11.585Z"
-          stroke="#343839"
-          strokeWidth="1.25"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M5.625 11.7372V6.18164"
-          stroke="#343839"
-          strokeWidth="1.25"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M0.786133 3.4017L5.62502 6.17948L10.4639 3.4017"
-          stroke="#343839"
-          strokeWidth="1.25"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M3.125 1.88477L8.125 4.74588"
-          stroke="#343839"
-          strokeWidth="1.25"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>{' '}
-      <Link className='text-[#504DFF]' href={`${REGISTRY_URL}/-/web/detail/${name}`}><Highlighter textToHighlight={name} searchWords={searchWords} /></Link>
+    <p className="mb-3 text-xs font-medium">
+      <PackageIcon size={12} className="inline text-gray-900" />{' '}
+      <Link className="text-purple-700" href={`${REGISTRY_URL}/-/web/detail/${name}`}>
+        <PurpleHighlighter textToHighlight={name} searchWords={searchWords} />
+      </Link>
       {!!publisher?.name && (
         <span>
           {' '}
@@ -317,14 +291,14 @@ function PackagePublisher(props: { publisher: Publisher | undefined; searchWords
 
   if (url)
     return (
-      <Link className='text-[#504DFF]' href={url}>
-        <Highlighter textToHighlight={name} searchWords={searchWords} />
+      <Link className="text-purple-700" href={url}>
+        <PurpleHighlighter textToHighlight={name} searchWords={searchWords} />
       </Link>
     )
 
   return (
     <span>
-      <Highlighter textToHighlight={name} searchWords={searchWords} />
+      <PurpleHighlighter textToHighlight={name} searchWords={searchWords} />
     </span>
   )
 }
@@ -333,8 +307,8 @@ function PackageDescription(props: { description: string | undefined; searchWord
   const { description, searchWords } = props
   if (!description) return null
   return (
-    <p className='my-3'>
-      <Highlighter textToHighlight={description} searchWords={searchWords} />
+    <p className="mb-3">
+      <PurpleHighlighter textToHighlight={description} searchWords={searchWords} />
     </p>
   )
 }
@@ -343,9 +317,9 @@ function PackageCategory(props: { category: string | undefined; searchWords: str
   const { category, searchWords } = props
   if (!category) return null
   return (
-    <p className='mb-2'>
+    <p className="mb-2">
       <span className="font-semibold">Category: </span>
-      <Highlighter textToHighlight={capitalCase(category)} searchWords={searchWords} />
+      <PurpleHighlighter textToHighlight={capitalCase(category)} searchWords={searchWords} />
     </p>
   )
 }
@@ -371,20 +345,24 @@ function PackageModuleList(props: {
   searchWords: string[]
 }) {
   const { type, modules, searchWords } = props
-  const hasModules = !!modules?.length;
+  const hasModules = !!modules?.length
   const hasMultipleModules = hasModules && modules.length > 1
 
   return (
     <p>
       <span className="font-semibold">{capitalCase(type)}: </span>
-      {hasModules ? modules.map((module) => (
-        <PackageModule
-          key={module.id}
-          module={module}
-          hasMultipleModules={hasMultipleModules}
-          searchWords={searchWords}
-        />
-      )) : <span>No {type} used in this package</span>}
+      {hasModules ? (
+        modules.map((module) => (
+          <PackageModule
+            key={module.id}
+            module={module}
+            hasMultipleModules={hasMultipleModules}
+            searchWords={searchWords}
+          />
+        ))
+      ) : (
+        <span>No {type} used in this package</span>
+      )}
     </p>
   )
 }
@@ -398,7 +376,7 @@ function PackageModule(props: {
 
   return (
     <span>
-      <Highlighter textToHighlight={capitalCase(module.name)} searchWords={searchWords} /> (
+      <PurpleHighlighter textToHighlight={capitalCase(module.name)} searchWords={searchWords} /> (
       {module.id}){hasMultipleModules && ', '}
     </span>
   )
