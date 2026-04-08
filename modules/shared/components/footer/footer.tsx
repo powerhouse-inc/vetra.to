@@ -3,14 +3,14 @@ import { PowerhouseLogoIsotype } from '../svgs'
 
 const footerLinks = {
   product: [
-    { label: 'Academy', href: 'https://academy.vetra.io/' },
-    { label: 'PH-CLI', href: 'https://academy.vetra.io/' },
-    { label: 'Vetra Studio', href: 'https://academy.vetra.io/' },
+    { label: 'Packages', href: '/packages' },
+    { label: 'Builders', href: '/builders' },
+    { label: 'Cloud', href: '/cloud' },
   ],
   resources: [
-    { label: 'Dev Docs', href: 'https://academy.vetra.io/' },
     { label: 'Academy', href: 'https://academy.vetra.io/' },
-    { label: 'Tools', href: 'https://academy.vetra.io/' },
+    { label: 'Vetra Studio', href: 'https://academy.vetra.io/academy/MasteryTrack/BuilderEnvironment/VetraStudio' },
+    { label: 'LLM Docs', href: 'https://academy.vetra.io/academy/LLMDocs' },
   ],
   socials: [
     { label: 'Powerhouse on X', href: 'https://x.com/PowerhouseDAO' },
@@ -63,7 +63,7 @@ export function Footer() {
         </div>
         <div className="border-border mt-8 flex flex-col items-center justify-between gap-4 border-t pt-8 sm:flex-row">
           <Link
-            href="https://powerhouse.inc"
+            href="https://powerhouse.io"
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm transition-colors"
