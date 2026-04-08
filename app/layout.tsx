@@ -54,19 +54,19 @@ export default async function RootLayout({
           }}
         />
       </head>
-       <body className={`${inter.variable} bg-background antialiased`}>
+      <body className={`${inter.variable} bg-background antialiased`}>
         <NuqsAdapter>
-        <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
-          <QueryClientProvider>
-            <RenownProvider appName="vetra" url={process.env.NEXT_PUBLIC_RENOWN_URL} />
-            <div className="items-right flex min-h-screen flex-col">
-              <Navbar />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-            <Toaster />
-          </QueryClientProvider>
-        </ThemeProvider>
+          <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+            <QueryClientProvider>
+              <RenownProvider appName="vetra" url={process.env.NEXT_PUBLIC_RENOWN_URL} />
+              <div className="items-right flex min-h-screen flex-col">
+                <Navbar />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+              <Toaster />
+            </QueryClientProvider>
+          </ThemeProvider>
         </NuqsAdapter>
       </body>
     </html>

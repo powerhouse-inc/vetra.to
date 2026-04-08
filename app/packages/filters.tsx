@@ -6,11 +6,11 @@ import { type PackageFilters, type PackageModuleType } from './types'
 import { capitalCase } from 'change-case'
 
 export function Filters(props: {
-  moduleTypeOptions: PackageModuleType[];
-  categoryOptions: string[];
-  publisherNameOptions: string[];
+  moduleTypeOptions: PackageModuleType[]
+  categoryOptions: string[]
+  publisherNameOptions: string[]
 }) {
-  const { moduleTypeOptions, categoryOptions, publisherNameOptions } = props;
+  const { moduleTypeOptions, categoryOptions, publisherNameOptions } = props
   const [{ moduleTypes, categories, publisherNames }, setFilters] = useQueryStates(filterParsers, {
     shallow: false,
   })
@@ -83,7 +83,7 @@ function Filter<
     <div>
       <h3 className="font-semibold">{capitalCase(filterKey)}</h3>
       {options.map((option) => (
-        <div key={option} className='flex gap-2 align-middle'>
+        <div key={option} className="flex gap-2 align-middle">
           <label htmlFor={option}>{capitalCase(option)}</label>
           <input
             id={option}

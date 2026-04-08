@@ -2,7 +2,6 @@
 
 import { useQueryState } from 'nuqs'
 
-
 export function Search() {
   const [searchText, setSearchText] = useQueryState('search', {
     shallow: false,
@@ -12,7 +11,7 @@ export function Search() {
     <div>
       <input
         type="text"
-        value={searchText ?? ""}
+        value={searchText ?? ''}
         onChange={(e) => {
           setSearchText(e.currentTarget.value).catch(console.error)
         }}

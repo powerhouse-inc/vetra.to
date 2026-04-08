@@ -242,29 +242,33 @@ function PackagePublisher(props: { publisher: Publisher | undefined; searchWords
 }
 
 function PackageDescription(props: { description: string | undefined; searchWords: string[] }) {
-  const { description, searchWords } = props;
+  const { description, searchWords } = props
   if (!description) return null
   return (
     <div>
       <h3 className="font-semibold">Description</h3>
-      <p><Highlighter textToHighlight={description} searchWords={searchWords}/></p>
+      <p>
+        <Highlighter textToHighlight={description} searchWords={searchWords} />
+      </p>
     </div>
   )
 }
 
 function PackageCategory(props: { category: string | undefined; searchWords: string[] }) {
-  const { category, searchWords } = props;
+  const { category, searchWords } = props
   if (!category) return null
   return (
     <div>
       <h3 className="font-semibold">Category</h3>
-      <p><Highlighter textToHighlight={category} searchWords={searchWords}/></p>
+      <p>
+        <Highlighter textToHighlight={category} searchWords={searchWords} />
+      </p>
     </div>
   )
 }
 
 function PackageModules(props: { modules: PackageModulesRecord; searchWords: string[] }) {
-  const { modules, searchWords } = props;
+  const { modules, searchWords } = props
   if (
     !modules.documentModels?.length &&
     !modules.apps?.length &&
@@ -276,12 +280,7 @@ function PackageModules(props: { modules: PackageModulesRecord; searchWords: str
   return (
     <div className="flex flex-col gap-1">
       {Object.entries(modules).map(([type, modules]) => (
-        <PackageModuleList
-          key={type}
-          type={type}
-          modules={modules}
-          searchWords={searchWords}
-        />
+        <PackageModuleList key={type} type={type} modules={modules} searchWords={searchWords} />
       ))}
     </div>
   )
@@ -292,7 +291,7 @@ function PackageModuleList(props: {
   modules: PowerhouseModule[] | undefined
   searchWords: string[]
 }) {
-  const { type, modules, searchWords } = props;
+  const { type, modules, searchWords } = props
   if (!modules?.length) return null
 
   return (
@@ -308,17 +307,21 @@ function PackageModuleList(props: {
 }
 
 function PackageModule(props: { module: PowerhouseModule; searchWords: string[] }) {
-  const { module, searchWords } = props;
+  const { module, searchWords } = props
 
   return (
     <li className="list-item">
-      <span><Highlighter textToHighlight={capitalCase(module.name)} searchWords={searchWords}/></span>
+      <span>
+        <Highlighter textToHighlight={capitalCase(module.name)} searchWords={searchWords} />
+      </span>
       <span> ({module.id})</span>
       {!!module.documentTypes?.length && (
         <div>
           <h4 className="text-sm font-semibold">Document Types</h4>
           {module.documentTypes?.map((documentType) => (
-            <p key={documentType}><Highlighter textToHighlight={documentType} searchWords={searchWords}/></p>
+            <p key={documentType}>
+              <Highlighter textToHighlight={documentType} searchWords={searchWords} />
+            </p>
           ))}
         </div>
       )}
