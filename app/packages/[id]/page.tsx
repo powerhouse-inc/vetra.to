@@ -255,32 +255,9 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
           </div>
         </div>
 
-        {/* Action buttons */}
-        <div className="flex gap-2">
-          {repoUrl && (
-            <Button variant="outline" size="sm" asChild>
-              <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="gap-2">
-                <Github className="size-4" />
-                Repository
-              </a>
-            </Button>
-          )}
-        </div>
 
         {/* Tags */}
         <div className="flex flex-wrap items-center gap-2">
-          {manifest.category && (
-            <span
-              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold ${catStyle.bg} ${catStyle.text}`}
-            >
-              {capitalCase(manifest.category)}
-            </span>
-          )}
-          {moduleCount > 0 && (
-            <Badge variant="outline">
-              {moduleCount} module{moduleCount !== 1 ? 's' : ''}
-            </Badge>
-          )}
           {manifest.publisher?.name && (
             <Badge variant="secondary">
               by{' '}
@@ -310,8 +287,32 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
           {manifest.description && (
             <Card>
               <CardContent className="p-6">
-                <h2 className="mb-3 text-lg font-semibold">About</h2>
-                <p className="text-foreground-70 leading-relaxed">{manifest.description}</p>
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="text-lg font-semibold">About</h2>
+                  {repoUrl && (
+                    <Button variant="outline" size="sm" asChild>
+                      <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="gap-2 shrink-0">
+                        <Github className="size-4" />
+                        Repository
+                      </a>
+                    </Button>
+                  )}
+                </div>
+                <p className="text-foreground-70 leading-relaxed mt-3">{manifest.description}</p>
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  {manifest.category && (
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold ${catStyle.bg} ${catStyle.text}`}
+                    >
+                      {capitalCase(manifest.category)}
+                    </span>
+                  )}
+                  {moduleCount > 0 && (
+                    <Badge variant="outline">
+                      {moduleCount} module{moduleCount !== 1 ? 's' : ''}
+                    </Badge>
+                  )}
+                </div>
               </CardContent>
             </Card>
           )}
@@ -350,7 +351,7 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(dependencies).map(([name, version]) => (
-                    <span key={name} className="bg-accent/30 rounded-md border px-2.5 py-1 text-xs break-all">
+                    <span key={name} className="bg-accent/30 rounded-md border-[0.5px] border-muted px-2.5 py-1 text-xs break-all">
                       <span className="font-medium">{name}</span>
                       <span className="text-muted-foreground ml-1">{version}</span>
                     </span>
@@ -373,7 +374,7 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
         {/* Right sidebar */}
         <div className="min-w-0 overflow-hidden space-y-6">
           {/* Install */}
-          <Card className="border-primary/20 bg-primary/5">
+          <Card className="border-[0.5px] border-primary/20 bg-primary/5">
             <CardContent className="space-y-4 p-5">
               <h3 className="flex items-center gap-2 text-sm font-semibold">
                 <PackageIcon className="text-primary size-4" />

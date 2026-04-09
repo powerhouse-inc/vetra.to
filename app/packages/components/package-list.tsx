@@ -84,7 +84,7 @@ export function PackageList({ results }: PackageListProps) {
         <p className="text-muted-foreground text-sm">
           {results.length} package{results.length !== 1 ? 's' : ''}
         </p>
-        <div className="flex rounded-lg border p-0.5">
+        <div className="flex rounded-lg border-[0.5px] border-muted p-0.5">
           <Button
             variant={view === 'grid' ? 'secondary' : 'ghost'}
             size="sm"
@@ -113,10 +113,10 @@ export function PackageList({ results }: PackageListProps) {
           ))}
         </div>
       ) : (
-        <div className="bg-card overflow-hidden rounded-xl border">
+        <div className="bg-card overflow-hidden rounded-xl border-[0.5px] border-muted">
           <table className="w-full">
             <thead>
-              <tr className="bg-accent/50 border-b text-xs">
+              <tr className="bg-accent/50 border-b-[0.5px] border-muted text-xs">
                 <SortHeader
                   label="Package"
                   sortKey="name"
@@ -167,7 +167,7 @@ export function PackageList({ results }: PackageListProps) {
                   <tr
                     key={manifest.name}
                     className={cn(
-                      'hover:bg-accent/30 border-b transition-colors last:border-0',
+                      'hover:bg-accent/30 border-b-[0.5px] border-muted transition-colors last:border-0',
                       i % 2 === 0 ? 'bg-card' : 'bg-accent/10',
                     )}
                   >
