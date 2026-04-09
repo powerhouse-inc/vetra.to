@@ -16,7 +16,7 @@ const steps = [
   {
     title: 'Install Powerhouse CLI',
     description: 'Install the Powerhouse command-line tool globally.',
-    command: 'npm install -g @powerhousedao/cli',
+    command: 'npm install -g ph-cmd',
   },
   {
     title: 'Initialize your package',
