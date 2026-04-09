@@ -21,7 +21,7 @@ export function CloudDashboard() {
   const totalPackages = environments.reduce((sum, e) => sum + e.state.packages.length, 0)
 
   return (
-    <main className="mx-auto mt-20 max-w-[var(--container-width)] space-y-8 px-6 py-8">
+    <main className="mx-auto mt-20 max-w-screen-xl space-y-8 px-6 py-8">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Your Environments</h1>

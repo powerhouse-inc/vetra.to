@@ -38,7 +38,7 @@ export function Hero() {
 
   return (
     <section className="relative bg-transparent px-[74px] py-20 text-center md:py-28">
-      <div className="relative mx-auto max-w-[var(--container-width)]">
+      <div className="relative mx-auto max-w-screen-xl">
         <div className="bg-primary-30 text-primary mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold">
           Local-first
         </div>

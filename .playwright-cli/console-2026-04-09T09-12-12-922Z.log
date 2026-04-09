@@ -1,0 +1,3 @@
+[     698ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     698ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     752ms] [ERROR] Cannot update a component (`%s`) while rendering a different component (`%s`). To locate the bad setState() call inside `%s`, follow the stack trace as described in https://react.dev/link/setstate-in-render RenownButton Renown Renown @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:3272

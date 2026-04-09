@@ -80,14 +80,14 @@ export default function AddPackagePage({ params }: PageProps) {
 
   if (isLoading) {
     return (
-      <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] p-8">
+      <main className="container mx-auto mt-[80px] max-w-screen-xl p-8">
         <p className="text-muted-foreground">Loading environment...</p>
       </main>
     )
   }
 
   return (
-    <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] space-y-8 p-8">
+    <main className="container mx-auto mt-[80px] max-w-screen-xl space-y-8 p-8">
       {/* Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">Add Package</h1>

@@ -104,7 +104,7 @@ export function CloudLandingFeatures() {
     <div id="features">
       {/* Infrastructure bar */}
       <section className="bg-primary-30 px-6 py-12">
-        <div className="mx-auto max-w-[var(--container-width)] text-center">
+        <div className="mx-auto max-w-screen-xl text-center">
           <p className="text-foreground text-3xl font-bold">Vetra Open Cloud runs on</p>
           <p className="text-foreground-70 mt-2 mb-16 text-2xl">
             {hoveredLogo || 'your trusted open source stack'}
@@ -128,7 +128,7 @@ export function CloudLandingFeatures() {
 
       {/* Key principles */}
       <section className="px-6 py-20">
-        <div className="mx-auto max-w-[var(--container-width)]">
+        <div className="mx-auto max-w-screen-xl">
           <h2 className="mb-12 text-center text-2xl font-bold">Built on open principles</h2>
           <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
             <Principle
@@ -152,7 +152,7 @@ export function CloudLandingFeatures() {
 
       {/* Alternating feature sections */}
       <section className="space-y-20 px-6 py-12">
-        <div className="mx-auto max-w-[var(--container-width)] space-y-20">
+        <div className="mx-auto max-w-screen-xl space-y-20">
           <FeatureSection
             subtitle="Ownership"
             title="Open cloud. Clear sky."

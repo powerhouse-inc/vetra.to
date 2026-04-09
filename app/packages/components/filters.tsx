@@ -1,12 +1,15 @@
 'use client'
+
 import { useQueryStates } from 'nuqs'
 import { filterParsers } from '../lib/search-params'
 import { type PackageFilters, type PackageModuleType } from '../lib/types'
 import { capitalCase } from 'change-case'
 import { Button } from '@/modules/shared/components/ui/button'
-import { Search } from './search'
+import { Checkbox } from '@/modules/shared/components/ui/checkbox'
+import { Input } from '@/modules/shared/components/ui/input'
 import { cn } from '@/modules/shared/lib/utils'
-import { PackagesCheckbox } from './checkbox'
+import { getCategoryStyle } from '../lib/category-colors'
+import { Search } from './search'
 
 export function Filters(props: {
   moduleTypeOptions: PackageModuleType[]
@@ -17,6 +20,9 @@ export function Filters(props: {
   const [{ moduleTypes, categories, publisherNames }, setFilters] = useQueryStates(filterParsers, {
     shallow: false,
   })
+
+  const activeFilterCount =
+    (moduleTypes?.length ?? 0) + (categories?.length ?? 0) + (publisherNames?.length ?? 0)
 
   function clearFilters() {
     setFilters(null).catch(console.error)
@@ -43,94 +49,147 @@ export function Filters(props: {
   }
 
   return (
-    <div
-      className="min-w-76 rounded-lg bg-white p-4"
-      style={{
-        boxShadow: '1px 4px 15px 0px #4A587340',
-      }}
-    >
-      <div className="flex h-10 items-center justify-between text-sm">
-        <h3 className="text-slate-60 h-fit w-fit font-semibold">Filters</h3>
-        <Button
-          onClick={clearFilters}
-          variant="ghost"
-          size="sm"
-          className="font-semibold text-slate-400"
-        >
-          Reset Filters
-        </Button>
+    <FiltersContent
+      categoryOptions={categoryOptions}
+      publisherNameOptions={publisherNameOptions}
+      moduleTypes={moduleTypes}
+      categories={categories}
+      publisherNames={publisherNames}
+      activeFilterCount={activeFilterCount}
+      clearFilters={clearFilters}
+      addFilter={addFilter}
+      removeFilter={removeFilter}
+    />
+  )
+}
+
+export function FiltersContent(props: {
+  categoryOptions: string[]
+  publisherNameOptions: string[]
+  moduleTypes: PackageModuleType[] | null
+  categories: string[] | null
+  publisherNames: string[] | null
+  activeFilterCount: number
+  clearFilters: () => void
+  addFilter: <TKey extends keyof PackageFilters>(
+    key: TKey,
+    value: NonNullable<PackageFilters[TKey]>[number],
+  ) => void
+  removeFilter: <TKey extends keyof PackageFilters>(
+    key: TKey,
+    value: NonNullable<PackageFilters[TKey]>[number],
+  ) => void
+}) {
+  const {
+    categoryOptions,
+    publisherNameOptions,
+    moduleTypes,
+    categories,
+    publisherNames,
+    activeFilterCount,
+    clearFilters,
+    addFilter,
+    removeFilter,
+  } = props
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold">Filters</h3>
+        {activeFilterCount > 0 && (
+          <Button
+            onClick={clearFilters}
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground"
+          >
+            Reset
+          </Button>
+        )}
       </div>
       <Search />
-      <h3 className="mt-4 mb-2 font-bold">Modules</h3>
-      <div className="rounded-md bg-slate-50 p-1">
-        <Filter
+      <FilterSection title="Modules">
+        <FilterGroup
           filterKey="moduleTypes"
-          title="user experiences"
+          title="User Experiences"
           options={['apps', 'editors']}
           values={moduleTypes ?? []}
           addFilter={addFilter}
           removeFilter={removeFilter}
         />
-        <Filter
+        <FilterGroup
           filterKey="moduleTypes"
-          title="document models"
+          title="Document Models"
           options={['documentModels']}
           values={moduleTypes ?? []}
           addFilter={addFilter}
           removeFilter={removeFilter}
         />
-        <Filter
+        <FilterGroup
           filterKey="moduleTypes"
-          title="data integrations"
+          title="Data Integrations"
           options={['subgraphs', 'processors']}
           values={moduleTypes ?? []}
           addFilter={addFilter}
           removeFilter={removeFilter}
         />
-      </div>
-      <h3 className="mt-4 mb-2 font-bold">Categories</h3>
-      <div className="rounded-md bg-slate-50 p-1">
-        <Filter
-          filterKey="categories"
-          options={categoryOptions}
-          values={categories ?? []}
-          addFilter={addFilter}
-          removeFilter={removeFilter}
-        />
-      </div>
-      <h3 className="mt-4 mb-2 font-bold">Publishers</h3>
-      <div className="rounded-md bg-slate-50 p-1">
-        <Filter
-          filterKey="publisherNames"
-          options={publisherNameOptions}
-          values={publisherNames ?? []}
-          addFilter={addFilter}
-          removeFilter={removeFilter}
-        />
-      </div>
+      </FilterSection>
+      {categoryOptions.length > 0 && (
+        <FilterSection title="Categories">
+          <FilterGroup
+            filterKey="categories"
+            options={categoryOptions}
+            values={categories ?? []}
+            addFilter={addFilter}
+            removeFilter={removeFilter}
+          />
+        </FilterSection>
+      )}
+      {publisherNameOptions.length > 0 && (
+        <FilterSection title="Publishers">
+          <FilterGroup
+            filterKey="publisherNames"
+            options={publisherNameOptions}
+            values={publisherNames ?? []}
+            addFilter={addFilter}
+            removeFilter={removeFilter}
+          />
+        </FilterSection>
+      )}
     </div>
   )
 }
 
-const colors = {
-  purple: 'text-purple-700 bg-purple-50 border-purple-700',
-  orange: 'text-orange-700 bg-orange-50 border-orange-700',
-  red: 'text-red-700 bg-red-50 border-red-700',
-  blue: 'text-blue-700 bg-blue-50 border-blue-700',
-  green: 'text-green-700 bg-green-50 border-green-700',
-} as const
-
-function getLabelColorStyles(option: string, index: number) {
-  if (option === 'documentModels') return colors.red
-  if (option === 'editors' || option === 'apps') return colors.orange
-  if (option === 'subgraphs' || option === 'processors') return colors.blue
-  const colorsArray = Object.values(colors)
-  const colorsCount = colorsArray.length
-  const optionColorIndex = index % colorsCount
-  return colorsArray[optionColorIndex]
+function FilterSection(props: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h4 className="mb-2 text-sm font-bold">{props.title}</h4>
+      <div className="bg-accent space-y-1 rounded-lg p-3">{props.children}</div>
+    </div>
+  )
 }
 
-function Filter<
+const moduleTypeColors: Record<string, string> = {
+  documentModels:
+    'text-red-700 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-950 dark:border-red-800',
+  editors:
+    'text-orange-700 bg-orange-50 border-orange-200 dark:text-orange-400 dark:bg-orange-950 dark:border-orange-800',
+  apps: 'text-orange-700 bg-orange-50 border-orange-200 dark:text-orange-400 dark:bg-orange-950 dark:border-orange-800',
+  subgraphs:
+    'text-blue-700 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-950 dark:border-blue-800',
+  processors:
+    'text-blue-700 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-950 dark:border-blue-800',
+}
+
+function getLabelColor(option: string, filterKey: string) {
+  if (filterKey === 'moduleTypes') {
+    return moduleTypeColors[option] ?? moduleTypeColors.documentModels
+  }
+  // For categories and publishers, use the shared category color system
+  return getCategoryStyle(option).label
+}
+
+function FilterGroup<
   TKey extends keyof PackageFilters,
   TValues extends NonNullable<PackageFilters[TKey]>,
 >(props: {
@@ -144,30 +203,35 @@ function Filter<
   const { filterKey, options, values, title, addFilter, removeFilter } = props
   return (
     <div>
-      {!!title && <h3 className="py-2 font-semibold">{capitalCase(title)}</h3>}
-      <div className="flex flex-col gap-3">
-        {options.map((option, index) => (
-          <div key={option} className="flex items-center justify-between">
-            <label
-              htmlFor={option}
+      {!!title && <h5 className="py-2 text-xs font-semibold">{title}</h5>}
+      <div className="flex flex-col gap-2">
+        {options.map((option) => (
+          <label
+            key={option}
+            htmlFor={option}
+            className="flex cursor-pointer items-center justify-between"
+          >
+            <span
               className={cn(
-                'rounded-sm border-2 px-2 py-px text-sm font-semibold',
-                getLabelColorStyles(option, index),
+                'rounded-sm border px-2 py-0.5 text-xs font-semibold',
+                getLabelColor(option, filterKey),
               )}
             >
               {capitalCase(option)}
-            </label>
-            <PackagesCheckbox
+            </span>
+            <Checkbox
               id={option}
-              checked={(values as string[]).includes(option) ?? false}
+              checked={(values as string[]).includes(option)}
               onCheckedChange={(checked) => {
                 if (checked) addFilter(filterKey, option)
                 else removeFilter(filterKey, option)
               }}
             />
-          </div>
+          </label>
         ))}
       </div>
     </div>
   )
 }
+
+export { type PackageFilters }

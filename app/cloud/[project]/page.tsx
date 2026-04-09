@@ -183,6 +183,8 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
               onTerminate={detail.terminate}
               setServiceVersion={detail.setServiceVersion}
               setPackageVersion={detail.setPackageVersion}
+              initialAddPackage={searchParams.get('addPackage')}
+              initialAddVersion={searchParams.get('version')}
             />
           </TabsContent>
           <TabsContent value="deployments" className="pt-4">
@@ -216,7 +218,7 @@ type PageProps = {
 export default function EnvironmentDetailPage({ params }: PageProps) {
   const { project } = use(params)
   return (
-    <main className="mx-auto mt-20 max-w-[var(--container-width)] space-y-8 px-6 py-8">
+    <main className="mx-auto mt-20 max-w-screen-xl space-y-8 px-6 py-8">
       <Suspense fallback={<p className="text-muted-foreground">Loading...</p>}>
         <EnvironmentDetail documentId={project} />
       </Suspense>

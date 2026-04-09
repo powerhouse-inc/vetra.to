@@ -2,6 +2,7 @@
 
 import { useQueryState } from 'nuqs'
 import { Search as SearchIcon } from 'lucide-react'
+import { Input } from '@/modules/shared/components/ui/input'
 
 export function Search() {
   const [searchText, setSearchText] = useQueryState('search', {
@@ -9,16 +10,13 @@ export function Search() {
   })
 
   return (
-    <div className="relative mt-2 mb-3 h-8 rounded-md bg-slate-50">
-      <SearchIcon
-        className="absolute inset-y-0 left-1 my-auto text-gray-900"
-        size={15}
-        strokeWidth={3}
-      />
-      <input
-        className="h-full w-full pl-6 placeholder:font-semibold placeholder:text-gray-900 focus:outline-purple-700"
-        placeholder="Search"
+    <div className="relative">
+      <SearchIcon className="text-muted-foreground absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
+      <Input
+        className="pl-8"
+        placeholder="Search packages..."
         type="text"
+        aria-label="Search packages"
         value={searchText ?? ''}
         onChange={(e) => {
           setSearchText(e.currentTarget.value).catch(console.error)

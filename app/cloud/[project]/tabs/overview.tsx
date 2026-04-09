@@ -116,16 +116,22 @@ function StatusDot({ status }: { status: string }) {
 function AddPackageModal({
   registryUrl,
   onAdd,
+  initialPackage,
+  initialVersion,
+  initialOpen,
 }: {
   registryUrl: string | null
   onAdd: (packageName: string, version?: string) => Promise<void>
+  initialPackage?: string | null
+  initialVersion?: string | null
+  initialOpen?: boolean
 }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(initialOpen ?? false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const [packageSearch, setPackageSearch] = useState('')
-  const [selectedPackage, setSelectedPackage] = useState<string | null>(null)
-  const [selectedVersion, setSelectedVersion] = useState<string>('')
+  const [packageSearch, setPackageSearch] = useState(initialPackage ?? '')
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(initialPackage ?? null)
+  const [selectedVersion, setSelectedVersion] = useState<string>(initialVersion ?? '')
   const [packagePopoverOpen, setPackagePopoverOpen] = useState(false)
   const [versionPopoverOpen, setVersionPopoverOpen] = useState(false)
 
@@ -785,6 +791,8 @@ type OverviewTabProps = {
   onDelete?: () => void
   setServiceVersion?: (type: CloudEnvironmentServiceType, version: string) => Promise<void>
   setPackageVersion?: (packageName: string, version: string) => Promise<void>
+  initialAddPackage?: string | null
+  initialAddVersion?: string | null
 }
 
 export function OverviewTab({
@@ -801,6 +809,8 @@ export function OverviewTab({
   onDelete,
   setServiceVersion,
   setPackageVersion,
+  initialAddPackage,
+  initialAddVersion,
 }: OverviewTabProps) {
   const renown = useRenown()
   const router = useRouter()
@@ -1020,6 +1030,9 @@ export function OverviewTab({
               <AddPackageModal
                 registryUrl={state.defaultPackageRegistry ?? 'https://registry.dev.vetra.io'}
                 onAdd={addPackage}
+                initialPackage={initialAddPackage}
+                initialVersion={initialAddVersion}
+                initialOpen={!!initialAddPackage}
               />
             </div>
           </CardHeader>

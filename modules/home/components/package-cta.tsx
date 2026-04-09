@@ -6,7 +6,7 @@ import { GridBackground } from '@/modules/shared/components/ui/grid-background'
 
 export function PackageCta() {
   return (
-    <section className="mx-auto max-w-[var(--container-width)] px-6 py-20">
+    <section className="mx-auto max-w-screen-xl px-6 py-20">
       <div className="relative overflow-hidden rounded-xl p-10 text-center">
         {/* Grid background */}
         <div className="pointer-events-none absolute inset-0">

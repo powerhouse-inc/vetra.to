@@ -1,0 +1,76 @@
+[     141ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/packages:0
+[     468ms] [ERROR] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:3272
+[     581ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     581ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     581ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     581ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     582ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     582ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     582ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     582ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     640ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     640ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     641ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     641ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     641ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     641ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     641ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     641ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[     673ms] Error: Image with src "/api/og/packages?name=%40powerhousedao%2Fbuilder-profile" is using a query string which is not configured in images.localPatterns.
+Read more: https://nextjs.org/docs/messages/next-image-unconfigured-localpatterns
+    at defaultLoader (http://localhost:3000/_next/static/chunks/0m-8__pnpm_0l5im1o._.js:7389:37)
+    at http://localhost:3000/_next/static/chunks/0m-8__pnpm_0l5im1o._.js:5097:39
+    at Array.map (<anonymous>)
+    at generateImgAttrs (http://localhost:3000/_next/static/chunks/0m-8__pnpm_0l5im1o._.js:5097:24)
+    at getImgProps (http://localhost:3000/_next/static/chunks/0m-8__pnpm_0l5im1o._.js:5510:27)
+    at http://localhost:3000/_next/static/chunks/0m-8__pnpm_0l5im1o._.js:7792:82
+    at Object.react_stack_bottom_frame (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-dom_06ggtdk._.js:15037:24)
+    at renderWithHooks (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-dom_06ggtdk._.js:4620:24)
+    at updateForwardRef (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-dom_06ggtdk._.js:5908:21)
+    at beginWork (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-dom_06ggtdk._.js:6671:46)
+    at runWithFiberInDEV (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-dom_06ggtdk._.js:965:74)
+    at performUnitOfWork (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-dom_06ggtdk._.js:9555:97)
+    at workLoopSync (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-dom_06ggtdk._.js:9449:40)
+    at renderRootSync (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-dom_06ggtdk._.js:9433:13)
+    at performWorkOnRoot (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-dom_06ggtdk._.js:9098:47)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-dom_06ggtdk._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_0hx_y7e._.js:2647:64)
+[   50174ms] [WARNING] [HMR] Invalid message: {"isTrusted":true}
+TypeError: Cannot convert undefined or null to object
+    at Object.keys (<anonymous>)
+    at extractModulesFromTurbopackMessage (http://localhost:3000/_next/static/chunks/0jvu_next_dist_client_0uzi4r6._.js:13631:39)
+    at TurbopackHmr.onTurbopackMessage (http://localhost:3000/_next/static/chunks/0jvu_next_dist_client_0uzi4r6._.js:13578:32)
+    at processMessage (http://localhost:3000/_next/static/chunks/0jvu_next_dist_client_0uzi4r6._.js:13936:30)
+    at WebSocket.handleMessage (http://localhost:3000/_next/static/chunks/0jvu_next_dist_client_0uzi4r6._.js:13335:52) @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51275ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/packages:0
+[   51493ms] [ERROR] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:3272
+[   51562ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51562ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51562ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51563ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51563ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51563ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51563ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51563ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51636ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51636ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51636ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51636ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51637ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51637ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51637ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51637ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   51673ms] ReferenceError: Image is not defined
+    at PackageCard (about://React/Server/file:///home/froid/projects/powerhouse/vetra.to/.next/dev/server/chunks/ssr/%5Broot-of-the-server%5D__0ec286r._.js?0:714:512)
+    at resolveErrorDev (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-server-dom-turbopack_11qs4ek._.js:1919:105)
+    at processFullStringRow (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-server-dom-turbopack_11qs4ek._.js:2434:29)
+    at processFullBinaryRow (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-server-dom-turbopack_11qs4ek._.js:2393:9)
+    at processBinaryChunk (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-server-dom-turbopack_11qs4ek._.js:2502:221)
+    at progress (http://localhost:3000/_next/static/chunks/0jvu_next_dist_compiled_react-server-dom-turbopack_11qs4ek._.js:2689:13)
+[   58764ms] [ERROR] Failed to load resource: net::ERR_EMPTY_RESPONSE @ http://localhost:3000/api/og/packages?name=%40vetra%2Fbaby-feeding-schedule:0
+[   58766ms] [ERROR] Failed to load resource: net::ERR_EMPTY_RESPONSE @ http://localhost:3000/api/og/packages?name=%40powerhousedao%2Fversioned-documents:0
+[   58766ms] [ERROR] Failed to load resource: net::ERR_EMPTY_RESPONSE @ http://localhost:3000/api/og/packages?name=%40powerhousedao%2Fgnosispay-account-analytics:0
+[   59550ms] [ERROR] Failed to load resource: net::ERR_EMPTY_RESPONSE @ http://localhost:3000/api/og/packages?name=retrospective-package:0
+[   60390ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   60391ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
+[   60464ms] [ERROR] Cannot update a component (`%s`) while rendering a different component (`%s`). To locate the bad setState() call inside `%s`, follow the stack trace as described in https://react.dev/link/setstate-in-render RenownButton Renown Renown @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:3272

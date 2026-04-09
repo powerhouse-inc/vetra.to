@@ -25,7 +25,7 @@ export function SpecToScale() {
   const [hoveredLanguage, setHoveredLanguage] = useState<string | null>(null)
 
   return (
-    <section className="mx-auto max-w-[var(--container-width)] px-6 py-20">
+    <section className="mx-auto max-w-screen-xl px-6 py-20">
       {/* Get started section */}
       <div className="mb-10 text-center">
         <p className="text-foreground text-3xl font-bold">Get started with Vetra</p>

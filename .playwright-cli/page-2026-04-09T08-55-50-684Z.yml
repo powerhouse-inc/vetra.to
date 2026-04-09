@@ -1,0 +1,131 @@
+- generic [active] [ref=e1]:
+    - generic [ref=e2]:
+        - generic [ref=e4]:
+            - generic [ref=e5]:
+                - link [ref=e7] [cursor=pointer]:
+                    - /url: /
+                    - img [ref=e9]
+                - navigation [ref=e12]:
+                    - link "Packages" [ref=e14] [cursor=pointer]:
+                        - /url: /packages
+                    - link "Builders" [ref=e16] [cursor=pointer]:
+                        - /url: /builders
+                    - generic [ref=e17]:
+                        - link "Academy" [ref=e18] [cursor=pointer]:
+                            - /url: https://academy.vetra.io/
+                        - img [ref=e19]
+                    - link "Cloud" [ref=e24] [cursor=pointer]:
+                        - /url: /cloud
+            - generic [ref=e25]:
+                - button "Toggle theme" [ref=e26] [cursor=pointer]:
+                    - img
+                    - generic [ref=e27]: Toggle theme
+                - button "Log in" [ref=e28] [cursor=pointer]:
+                    - img [ref=e29]
+                    - text: Log in
+                - link "Join Waitlist" [ref=e32] [cursor=pointer]:
+                    - /url: https://gmail.us21.list-manage.com/subscribe/post?u=a65ca7e437961008f5f5c1bad&id=c8ea339c46&f_id=00fda7e6f0
+        - main [ref=e33]:
+            - main [ref=e34]:
+                - generic [ref=e35]:
+                    - navigation "breadcrumb" [ref=e36]:
+                        - list [ref=e37]:
+                            - listitem [ref=e38]:
+                                - link "Packages" [ref=e39] [cursor=pointer]:
+                                    - /url: /packages
+                            - listitem [ref=e40]:
+                                - img [ref=e41]
+                            - listitem [ref=e43]:
+                                - link "@powerhousedao/builder-profile" [disabled] [ref=e44]
+                    - heading "@powerhousedao/builder-profile" [level=1] [ref=e45]
+                    - generic [ref=e46]:
+                        - generic [ref=e47]: Project Management
+                        - generic [ref=e48]: 2 modules
+                - generic [ref=e49]:
+                    - generic [ref=e50]:
+                        - img "@powerhousedao/builder-profile" [ref=e52]
+                        - generic [ref=e53]:
+                            - generic [ref=e55]: About
+                            - paragraph [ref=e57]: Builder profile document model
+                        - generic [ref=e58]:
+                            - generic [ref=e60]: Modules
+                            - generic [ref=e61]:
+                                - generic [ref=e62]:
+                                    - heading "Document Models" [level=4] [ref=e63]
+                                    - generic [ref=e65]: Builder Profile
+                                - generic [ref=e66]:
+                                    - heading "Editors" [level=4] [ref=e67]
+                                    - generic [ref=e69]: Builder Profile
+                    - generic [ref=e70]:
+                        - generic [ref=e71]:
+                            - generic [ref=e73]: Resources
+                            - link "View on Registry" [ref=e75] [cursor=pointer]:
+                                - /url: https://registry.dev.vetra.io/-/web/detail/@powerhousedao/builder-profile
+                                - img
+                                - text: View on Registry
+                                - img
+                        - generic [ref=e76]:
+                            - generic [ref=e78]: Package Details
+                            - generic [ref=e79]:
+                                - generic [ref=e80]:
+                                    - term [ref=e81]: Name
+                                    - definition [ref=e82]: '@powerhousedao/builder-profile'
+                                - generic [ref=e83]:
+                                    - term [ref=e84]: Category
+                                    - definition [ref=e85]: Project Management
+                                - generic [ref=e86]:
+                                    - term [ref=e87]: Total Modules
+                                    - definition [ref=e88]: '2'
+        - contentinfo [ref=e89]:
+            - generic [ref=e90]:
+                - generic [ref=e91]:
+                    - generic [ref=e92]:
+                        - link "VETRA" [ref=e93] [cursor=pointer]:
+                            - /url: /
+                        - paragraph [ref=e94]: Build smarter, ship faster.
+                    - generic [ref=e95]:
+                        - heading "Product" [level=5] [ref=e96]
+                        - list [ref=e97]:
+                            - listitem [ref=e98]:
+                                - link "Packages" [ref=e99] [cursor=pointer]:
+                                    - /url: /packages
+                            - listitem [ref=e100]:
+                                - link "Builders" [ref=e101] [cursor=pointer]:
+                                    - /url: /builders
+                            - listitem [ref=e102]:
+                                - link "Cloud" [ref=e103] [cursor=pointer]:
+                                    - /url: /cloud
+                    - generic [ref=e104]:
+                        - heading "Resources" [level=5] [ref=e105]
+                        - list [ref=e106]:
+                            - listitem [ref=e107]:
+                                - link "Academy" [ref=e108] [cursor=pointer]:
+                                    - /url: https://academy.vetra.io/
+                            - listitem [ref=e109]:
+                                - link "Vetra Studio" [ref=e110] [cursor=pointer]:
+                                    - /url: https://academy.vetra.io/academy/MasteryTrack/BuilderEnvironment/VetraStudio
+                            - listitem [ref=e111]:
+                                - link "LLM Docs" [ref=e112] [cursor=pointer]:
+                                    - /url: https://academy.vetra.io/academy/LLMDocs
+                    - generic [ref=e113]:
+                        - heading "Socials" [level=5] [ref=e114]
+                        - list [ref=e115]:
+                            - listitem [ref=e116]:
+                                - link "Powerhouse on X" [ref=e117] [cursor=pointer]:
+                                    - /url: https://x.com/PowerhouseDAO
+                            - listitem [ref=e118]:
+                                - link "Discord" [ref=e119] [cursor=pointer]:
+                                    - /url: https://discord.gg/pwQJwgaQKd
+                - generic [ref=e120]:
+                    - link "Powered by" [ref=e121] [cursor=pointer]:
+                        - /url: https://powerhouse.io
+                        - text: Powered by
+                        - img [ref=e122]
+                    - generic [ref=e124]:
+                        - link "Privacy Policy" [ref=e125] [cursor=pointer]:
+                            - /url: /
+                        - link "Terms & Conditions" [ref=e126] [cursor=pointer]:
+                            - /url: /
+    - region "Notifications alt+T"
+    - button "Open Next.js Dev Tools" [ref=e132] [cursor=pointer]:
+        - img [ref=e133]

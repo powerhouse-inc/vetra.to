@@ -1,7 +1,7 @@
 import { ExternalLink, Github, Package } from 'lucide-react'
 import React from 'react'
 
-import { RepositoryActionButton } from '@/modules/packages/components/repository-action-button'
+import { RepositoryActionButton } from '@/modules/shared/components/repository-action-button'
 import ConnectSvg from '@/modules/shared/components/svgs/connect.svg'
 import { Button } from '@/modules/shared/components/ui/button'
 import { Card, CardContent } from '@/modules/shared/components/ui/card'

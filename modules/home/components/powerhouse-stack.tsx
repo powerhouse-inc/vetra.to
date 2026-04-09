@@ -6,7 +6,7 @@ import { Button } from '@/modules/shared/components/ui/button'
 export function PowerhouseStack() {
   return (
     <section>
-      <div className="mx-auto max-w-[var(--container-width)] px-6 py-20">
+      <div className="mx-auto max-w-screen-xl px-6 py-20">
         <div className="mb-10 text-center">
           <h2 className="text-foreground mb-3 text-3xl font-bold">
             <strong>Part of the Powerhouse Stack</strong>

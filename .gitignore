@@ -49,4 +49,4 @@ chromatic-diagnostics.json
 
 # Powerhouse registry
 storage/
-cdn-cache/
+cdn-cache/.playwright-cli/

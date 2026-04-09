@@ -41,7 +41,7 @@ export const metadata: unknown = {
 export default function BuildersPage() {
   return (
     <BuildersPageClient>
-      <main className="container mx-auto mt-20 max-w-[var(--container-width)] px-6 py-12">
+      <main className="container mx-auto mt-20 max-w-screen-xl px-6 py-12">
         {/* Hero Section */}
         <div className="mb-10 space-y-3">
           <h1 className="text-[clamp(2rem,4vw,3rem)] leading-tight font-bold">

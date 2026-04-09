@@ -1,0 +1,337 @@
+- generic [active] [ref=e1]:
+    - generic [ref=e2]:
+        - generic [ref=e4]:
+            - generic [ref=e5]:
+                - link [ref=e7] [cursor=pointer]:
+                    - /url: /
+                    - img [ref=e9]
+                - navigation [ref=e12]:
+                    - link "Packages" [ref=e14] [cursor=pointer]:
+                        - /url: /packages
+                    - link "Builders" [ref=e16] [cursor=pointer]:
+                        - /url: /builders
+                    - generic [ref=e17]:
+                        - link "Academy" [ref=e18] [cursor=pointer]:
+                            - /url: https://academy.vetra.io/
+                        - img [ref=e19]
+                    - link "Cloud" [ref=e24] [cursor=pointer]:
+                        - /url: /cloud
+            - generic [ref=e25]:
+                - button "Toggle theme" [ref=e26] [cursor=pointer]:
+                    - img
+                    - generic [ref=e27]: Toggle theme
+                - button "Log in" [ref=e28] [cursor=pointer]:
+                    - img [ref=e29]
+                    - text: Log in
+                - link "Join Waitlist" [ref=e32] [cursor=pointer]:
+                    - /url: https://gmail.us21.list-manage.com/subscribe/post?u=a65ca7e437961008f5f5c1bad&id=c8ea339c46&f_id=00fda7e6f0
+        - main [ref=e33]:
+            - generic [ref=e34]:
+                - generic [ref=e35]:
+                    - heading "Packages" [level=1] [ref=e36]
+                    - paragraph [ref=e37]: Packages are a collection of document models, editors, and other module resources providing solutions for specific domains and industries.
+                    - navigation "breadcrumb" [ref=e38]:
+                        - list [ref=e39]:
+                            - listitem [ref=e40]:
+                                - link "Packages" [ref=e41] [cursor=pointer]:
+                                    - /url: /packages
+                            - listitem [ref=e42]:
+                                - img [ref=e43]
+                            - listitem [ref=e45]:
+                                - link "Overview" [disabled] [ref=e46]
+                - generic [ref=e47]:
+                    - complementary [ref=e48]:
+                        - generic [ref=e50]:
+                            - heading "Filters" [level=3] [ref=e52]
+                            - generic [ref=e53]:
+                                - img [ref=e54]
+                                - textbox "Search packages" [ref=e57]:
+                                    - /placeholder: Search packages...
+                            - generic [ref=e58]:
+                                - heading "Modules" [level=4] [ref=e59]
+                                - generic [ref=e60]:
+                                    - generic [ref=e61]:
+                                        - heading "User Experiences" [level=5] [ref=e62]
+                                        - generic [ref=e63]:
+                                            - generic [ref=e64] [cursor=pointer]:
+                                                - generic [ref=e65]: Apps
+                                                - checkbox "Apps" [ref=e66]
+                                            - generic [ref=e67] [cursor=pointer]:
+                                                - generic [ref=e68]: Editors
+                                                - checkbox "Editors" [ref=e69]
+                                    - generic [ref=e70]:
+                                        - heading "Document Models" [level=5] [ref=e71]
+                                        - generic [ref=e73] [cursor=pointer]:
+                                            - generic [ref=e74]: Document Models
+                                            - checkbox "Document Models" [ref=e75]
+                                    - generic [ref=e76]:
+                                        - heading "Data Integrations" [level=5] [ref=e77]
+                                        - generic [ref=e78]:
+                                            - generic [ref=e79] [cursor=pointer]:
+                                                - generic [ref=e80]: Subgraphs
+                                                - checkbox "Subgraphs" [ref=e81]
+                                            - generic [ref=e82] [cursor=pointer]:
+                                                - generic [ref=e83]: Processors
+                                                - checkbox "Processors" [ref=e84]
+                            - generic [ref=e85]:
+                                - heading "Categories" [level=4] [ref=e86]
+                                - generic [ref=e89]:
+                                    - generic [ref=e90] [cursor=pointer]:
+                                        - generic [ref=e91]: Project Management
+                                        - checkbox "Project Management" [ref=e92]
+                                    - generic [ref=e93] [cursor=pointer]:
+                                        - generic [ref=e94]: Analytics
+                                        - checkbox "Analytics" [ref=e95]
+                                    - generic [ref=e96] [cursor=pointer]:
+                                        - generic [ref=e97]: Testing
+                                        - checkbox "Testing" [ref=e98]
+                                    - generic [ref=e99] [cursor=pointer]:
+                                        - generic [ref=e100]: People Culture
+                                        - checkbox "People Culture" [ref=e101]
+                                    - generic [ref=e102] [cursor=pointer]:
+                                        - generic [ref=e103]: Collaboration
+                                        - checkbox "Collaboration" [ref=e104]
+                            - generic [ref=e105]:
+                                - heading "Publishers" [level=4] [ref=e106]
+                                - generic [ref=e109]:
+                                    - generic [ref=e110] [cursor=pointer]:
+                                        - generic [ref=e111]: Powerhouse Dao
+                                        - checkbox "Powerhouse Dao" [ref=e112]
+                                    - generic [ref=e113] [cursor=pointer]:
+                                        - generic [ref=e114]: Powerhousedao
+                                        - checkbox "Powerhousedao" [ref=e115]
+                                    - generic [ref=e116] [cursor=pointer]:
+                                        - generic [ref=e117]: Powerhouse
+                                        - checkbox "Powerhouse" [ref=e118]
+                                    - generic [ref=e119] [cursor=pointer]:
+                                        - generic [ref=e120]: Call Me T
+                                        - checkbox "Call Me T" [ref=e121]
+                    - generic [ref=e123]:
+                        - link "Builder Profile Builder Profile Builder Profile Builder Profile Builder Profile Builder Profile Builder Profile Builder Profile @powerhousedao/builder-profile Builder profile document model Project Management 2 modules" [ref=e124] [cursor=pointer]:
+                            - /url: /packages/%40powerhousedao%2Fbuilder-profile
+                            - generic [ref=e125]:
+                                - generic [ref=e127]:
+                                    - generic [ref=e128]: Builder Profile
+                                    - generic [ref=e129]: Builder Profile
+                                    - generic [ref=e130]: Builder Profile
+                                    - generic [ref=e131]: Builder Profile
+                                    - generic [ref=e132]: Builder Profile
+                                    - generic [ref=e133]: Builder Profile
+                                    - generic [ref=e134]: Builder Profile
+                                    - generic [ref=e135]: Builder Profile
+                                - generic [ref=e136]:
+                                    - generic [ref=e137]:
+                                        - img [ref=e138]
+                                        - heading "@powerhousedao/builder-profile" [level=3] [ref=e142]:
+                                            - generic [ref=e143]: '@powerhousedao/builder-profile'
+                                    - paragraph [ref=e144]:
+                                        - generic [ref=e145]: Builder profile document model
+                                    - generic [ref=e146]:
+                                        - generic [ref=e148]: Project Management
+                                        - generic [ref=e149]: 2 modules
+                        - link "Gnosispay Analytics Gnosispay Analytics Editor Gnosispay Analytics Gnosispay Analytics Editor Gnosispay Analytics Gnosispay Analytics Editor Gnosispay Analytics Gnosispay Analytics Editor @powerhousedao/gnosispay-account-analytics by PowerhouseDAO Gnosis Pay Account Analytics - Track and analyze blockchain transactions with multi-token support Analytics 2 modules" [ref=e150] [cursor=pointer]:
+                            - /url: /packages/%40powerhousedao%2Fgnosispay-account-analytics
+                            - generic [ref=e151]:
+                                - generic [ref=e153]:
+                                    - generic [ref=e154]: Gnosispay Analytics
+                                    - generic [ref=e155]: Gnosispay Analytics Editor
+                                    - generic [ref=e156]: Gnosispay Analytics
+                                    - generic [ref=e157]: Gnosispay Analytics Editor
+                                    - generic [ref=e158]: Gnosispay Analytics
+                                    - generic [ref=e159]: Gnosispay Analytics Editor
+                                    - generic [ref=e160]: Gnosispay Analytics
+                                    - generic [ref=e161]: Gnosispay Analytics Editor
+                                - generic [ref=e162]:
+                                    - generic [ref=e163]:
+                                        - img [ref=e164]
+                                        - heading "@powerhousedao/gnosispay-account-analytics" [level=3] [ref=e168]:
+                                            - generic [ref=e169]: '@powerhousedao/gnosispay-account-analytics'
+                                    - paragraph [ref=e170]:
+                                        - text: by
+                                        - generic [ref=e171]: PowerhouseDAO
+                                    - paragraph [ref=e172]:
+                                        - generic [ref=e173]: Gnosis Pay Account Analytics - Track and analyze blockchain transactions with multi-token support
+                                    - generic [ref=e174]:
+                                        - generic [ref=e176]: Analytics
+                                        - generic [ref=e177]: 2 modules
+                        - link "Todo Todo Editor Todo Todo Editor Todo Todo Editor Todo Todo Editor @powerhousedao/versioned-documents by @powerhousedao Versioned documents test package Testing 2 modules" [ref=e178] [cursor=pointer]:
+                            - /url: /packages/%40powerhousedao%2Fversioned-documents
+                            - generic [ref=e179]:
+                                - generic [ref=e181]:
+                                    - generic [ref=e182]: Todo
+                                    - generic [ref=e183]: Todo Editor
+                                    - generic [ref=e184]: Todo
+                                    - generic [ref=e185]: Todo Editor
+                                    - generic [ref=e186]: Todo
+                                    - generic [ref=e187]: Todo Editor
+                                    - generic [ref=e188]: Todo
+                                    - generic [ref=e189]: Todo Editor
+                                - generic [ref=e190]:
+                                    - generic [ref=e191]:
+                                        - img [ref=e192]
+                                        - heading "@powerhousedao/versioned-documents" [level=3] [ref=e196]:
+                                            - generic [ref=e197]: '@powerhousedao/versioned-documents'
+                                    - paragraph [ref=e198]:
+                                        - text: by
+                                        - generic [ref=e199]: '@powerhousedao'
+                                    - paragraph [ref=e200]:
+                                        - generic [ref=e201]: Versioned documents test package
+                                    - generic [ref=e202]:
+                                        - generic [ref=e204]: Testing
+                                        - generic [ref=e205]: 2 modules
+                        - link "Vetra Cloud Environment Vetra Cloud Environment Vetra Cloud Environment Vetra Cloud Environment Vetra Cloud Environment Vetra Cloud Environment Vetra Cloud Environment Vetra Cloud Environment @powerhousedao/vetra-cloud-package 2 modules" [ref=e206] [cursor=pointer]:
+                            - /url: /packages/%40powerhousedao%2Fvetra-cloud-package
+                            - generic [ref=e207]:
+                                - generic [ref=e209]:
+                                    - generic [ref=e210]: Vetra Cloud Environment
+                                    - generic [ref=e211]: Vetra Cloud Environment
+                                    - generic [ref=e212]: Vetra Cloud Environment
+                                    - generic [ref=e213]: Vetra Cloud Environment
+                                    - generic [ref=e214]: Vetra Cloud Environment
+                                    - generic [ref=e215]: Vetra Cloud Environment
+                                    - generic [ref=e216]: Vetra Cloud Environment
+                                    - generic [ref=e217]: Vetra Cloud Environment
+                                - generic [ref=e218]:
+                                    - generic [ref=e219]:
+                                        - img [ref=e220]
+                                        - heading "@powerhousedao/vetra-cloud-package" [level=3] [ref=e224]:
+                                            - generic [ref=e225]: '@powerhousedao/vetra-cloud-package'
+                                    - generic [ref=e227]: 2 modules
+                        - link "Baby Feeding Schedule Baby Feeding Schedule Editor Baby Feeding Schedule Baby Feeding Schedule Editor Baby Feeding Schedule Baby Feeding Schedule Editor Baby Feeding Schedule Baby Feeding Schedule Editor @vetra/baby-feeding-schedule by Powerhouse Track and manage baby feeding schedules including breast, bottle, and solid food entries with daily summaries and analytics. People Culture 2 modules" [ref=e228] [cursor=pointer]:
+                            - /url: /packages/%40vetra%2Fbaby-feeding-schedule
+                            - generic [ref=e229]:
+                                - generic [ref=e231]:
+                                    - generic [ref=e232]: Baby Feeding Schedule
+                                    - generic [ref=e233]: Baby Feeding Schedule Editor
+                                    - generic [ref=e234]: Baby Feeding Schedule
+                                    - generic [ref=e235]: Baby Feeding Schedule Editor
+                                    - generic [ref=e236]: Baby Feeding Schedule
+                                    - generic [ref=e237]: Baby Feeding Schedule Editor
+                                    - generic [ref=e238]: Baby Feeding Schedule
+                                    - generic [ref=e239]: Baby Feeding Schedule Editor
+                                - generic [ref=e240]:
+                                    - generic [ref=e241]:
+                                        - img [ref=e242]
+                                        - heading "@vetra/baby-feeding-schedule" [level=3] [ref=e246]:
+                                            - generic [ref=e247]: '@vetra/baby-feeding-schedule'
+                                    - paragraph [ref=e248]:
+                                        - text: by
+                                        - generic [ref=e249]: Powerhouse
+                                    - paragraph [ref=e250]:
+                                        - generic [ref=e251]: Track and manage baby feeding schedules including breast, bottle, and solid food entries with daily summaries and analytics.
+                                    - generic [ref=e252]:
+                                        - generic [ref=e254]: People Culture
+                                        - generic [ref=e255]: 2 modules
+                        - link "Retrospective Retrospective Editor Retrospective Retrospective Editor Retrospective Retrospective Editor Retrospective Retrospective Editor retrospective-package by Call me T A complete retrospective tool with kanban-style cards, private/public workflow, voting system, and countdown timer for agile team retrospectives Collaboration 2 modules" [ref=e256] [cursor=pointer]:
+                            - /url: /packages/retrospective-package
+                            - generic [ref=e257]:
+                                - generic [ref=e259]:
+                                    - generic [ref=e260]: Retrospective
+                                    - generic [ref=e261]: Retrospective Editor
+                                    - generic [ref=e262]: Retrospective
+                                    - generic [ref=e263]: Retrospective Editor
+                                    - generic [ref=e264]: Retrospective
+                                    - generic [ref=e265]: Retrospective Editor
+                                    - generic [ref=e266]: Retrospective
+                                    - generic [ref=e267]: Retrospective Editor
+                                - generic [ref=e268]:
+                                    - generic [ref=e269]:
+                                        - img [ref=e270]
+                                        - heading "retrospective-package" [level=3] [ref=e274]:
+                                            - generic [ref=e275]: retrospective-package
+                                    - paragraph [ref=e276]:
+                                        - text: by
+                                        - generic [ref=e277]: Call me T
+                                    - paragraph [ref=e278]:
+                                        - generic [ref=e279]: A complete retrospective tool with kanban-style cards, private/public workflow, voting system, and countdown timer for agile team retrospectives
+                                    - generic [ref=e280]:
+                                        - generic [ref=e282]: Collaboration
+                                        - generic [ref=e283]: 2 modules
+                        - link "your-test-project" [ref=e284] [cursor=pointer]:
+                            - /url: /packages/your-test-project
+                            - generic [ref=e289]:
+                                - img [ref=e290]
+                                - heading "your-test-project" [level=3] [ref=e294]:
+                                    - generic [ref=e295]: your-test-project
+                - generic [ref=e298]:
+                    - heading "Join the Waitlist" [level=2] [ref=e299]
+                    - paragraph [ref=e300]: Sign up to stay in the loop & be amongst the first builders on Vetra!
+                    - iframe [ref=e302]:
+                        - alert [ref=f1e3]
+                    - generic [ref=e304]:
+                        - generic [ref=e305]:
+                            - img "acaldas" [ref=e307]
+                            - img "Ryan Wolhuter" [ref=e309]
+                            - img "Guillermo Puente Sandoval" [ref=e311]
+                            - img "Frank" [ref=e313]
+                            - img "Benjamin Jordan" [ref=e315]
+                            - img "Manuel Alejandro" [ref=e317]
+                            - img "Yasiel Cabrera" [ref=e319]
+                            - img "CallmeT-ty" [ref=e321]
+                            - img "liberuum" [ref=e323]
+                            - img "Wouter Kampmann" [ref=e325]
+                            - img "DianaTahiri" [ref=e327]
+                        - paragraph [ref=e328]: +100 people already joined
+        - contentinfo [ref=e329]:
+            - generic [ref=e330]:
+                - generic [ref=e331]:
+                    - generic [ref=e332]:
+                        - link "VETRA" [ref=e333] [cursor=pointer]:
+                            - /url: /
+                        - paragraph [ref=e334]: Build smarter, ship faster.
+                    - generic [ref=e335]:
+                        - heading "Product" [level=5] [ref=e336]
+                        - list [ref=e337]:
+                            - listitem [ref=e338]:
+                                - link "Packages" [ref=e339] [cursor=pointer]:
+                                    - /url: /packages
+                            - listitem [ref=e340]:
+                                - link "Builders" [ref=e341] [cursor=pointer]:
+                                    - /url: /builders
+                            - listitem [ref=e342]:
+                                - link "Cloud" [ref=e343] [cursor=pointer]:
+                                    - /url: /cloud
+                    - generic [ref=e344]:
+                        - heading "Resources" [level=5] [ref=e345]
+                        - list [ref=e346]:
+                            - listitem [ref=e347]:
+                                - link "Academy" [ref=e348] [cursor=pointer]:
+                                    - /url: https://academy.vetra.io/
+                            - listitem [ref=e349]:
+                                - link "Vetra Studio" [ref=e350] [cursor=pointer]:
+                                    - /url: https://academy.vetra.io/academy/MasteryTrack/BuilderEnvironment/VetraStudio
+                            - listitem [ref=e351]:
+                                - link "LLM Docs" [ref=e352] [cursor=pointer]:
+                                    - /url: https://academy.vetra.io/academy/LLMDocs
+                    - generic [ref=e353]:
+                        - heading "Socials" [level=5] [ref=e354]
+                        - list [ref=e355]:
+                            - listitem [ref=e356]:
+                                - link "Powerhouse on X" [ref=e357] [cursor=pointer]:
+                                    - /url: https://x.com/PowerhouseDAO
+                            - listitem [ref=e358]:
+                                - link "Discord" [ref=e359] [cursor=pointer]:
+                                    - /url: https://discord.gg/pwQJwgaQKd
+                - generic [ref=e360]:
+                    - link "Powered by" [ref=e361] [cursor=pointer]:
+                        - /url: https://powerhouse.io
+                        - text: Powered by
+                        - img [ref=e362]
+                    - generic [ref=e364]:
+                        - link "Privacy Policy" [ref=e365] [cursor=pointer]:
+                            - /url: /
+                        - link "Terms & Conditions" [ref=e366] [cursor=pointer]:
+                            - /url: /
+    - region "Notifications alt+T"
+    - generic [ref=e371] [cursor=pointer]:
+        - button "Open Next.js Dev Tools" [ref=e372]:
+            - img [ref=e373]
+        - generic [ref=e376]:
+            - button "Open issues overlay" [ref=e377]:
+                - generic [ref=e378]:
+                    - generic [ref=e379]: '0'
+                    - generic [ref=e380]: '1'
+                - generic [ref=e381]: Issue
+            - button "Collapse issues badge" [ref=e382]:
+                - img [ref=e383]
+    - alert [ref=e385]

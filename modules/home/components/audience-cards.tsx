@@ -24,7 +24,7 @@ const audiences = [
 
 export function AudienceCards() {
   return (
-    <section className="mx-auto max-w-[var(--container-width)] px-6 py-20">
+    <section className="mx-auto max-w-screen-xl px-6 py-20">
       <h2 className="text-foreground mb-4 text-center text-3xl font-bold">
         Who it&apos;s built for
       </h2>

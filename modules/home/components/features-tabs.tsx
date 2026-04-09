@@ -101,7 +101,7 @@ const rdaFeatures: Feature[] = [
 
 export function FeaturesTabs() {
   return (
-    <section className="mx-auto max-w-[var(--container-width)] px-[74px] py-20">
+    <section className="mx-auto max-w-screen-xl px-[74px] py-20">
       <div className="mb-12 text-center">
         <h2 className="text-foreground mb-2 text-3xl font-bold">
           Build on the sovereign tech-stack of tomorrow

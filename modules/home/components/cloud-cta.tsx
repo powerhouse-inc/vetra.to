@@ -5,7 +5,7 @@ import { Button } from '@/modules/shared/components/ui/button'
 
 export function CloudCta() {
   return (
-    <section className="mx-auto max-w-[var(--container-width)] px-6 py-20">
+    <section className="mx-auto max-w-screen-xl px-6 py-20">
       <div className="flex flex-col items-center gap-10 md:flex-row">
         <div className="flex-1">
           <h2 className="text-foreground mb-4 text-3xl font-bold">Launch with Vetra Cloud</h2>

@@ -1,0 +1,338 @@
+- generic [active] [ref=e1]:
+    - generic [ref=e2]:
+        - generic [ref=e4]:
+            - generic [ref=e5]:
+                - link [ref=e7] [cursor=pointer]:
+                    - /url: /
+                    - img [ref=e9]
+                - navigation [ref=e12]:
+                    - link "Packages" [ref=e14] [cursor=pointer]:
+                        - /url: /packages
+                    - link "Builders" [ref=e16] [cursor=pointer]:
+                        - /url: /builders
+                    - generic [ref=e17]:
+                        - link "Academy" [ref=e18] [cursor=pointer]:
+                            - /url: https://academy.vetra.io/
+                        - img [ref=e19]
+                    - link "Cloud" [ref=e24] [cursor=pointer]:
+                        - /url: /cloud
+            - generic [ref=e25]:
+                - button "Toggle theme" [ref=e26] [cursor=pointer]:
+                    - img
+                    - generic [ref=e27]: Toggle theme
+                - button "Log in" [ref=e28] [cursor=pointer]:
+                    - img [ref=e29]
+                    - text: Log in
+                - link "Join Waitlist" [ref=e32] [cursor=pointer]:
+                    - /url: https://gmail.us21.list-manage.com/subscribe/post?u=a65ca7e437961008f5f5c1bad&id=c8ea339c46&f_id=00fda7e6f0
+        - main [ref=e33]:
+            - main [ref=e34]:
+                - navigation "breadcrumb" [ref=e35]:
+                    - list [ref=e36]:
+                        - listitem [ref=e37]:
+                            - link "Packages" [ref=e38] [cursor=pointer]:
+                                - /url: /packages
+                        - listitem [ref=e39]:
+                            - img [ref=e40]
+                        - listitem [ref=e42]:
+                            - link "@powerhousedao/builder-profile" [disabled] [ref=e43]
+                - generic [ref=e44]:
+                    - generic [ref=e45]:
+                        - generic [ref=e47]:
+                            - img [ref=e49]
+                            - generic [ref=e53]:
+                                - heading "@powerhousedao/builder-profile" [level=1] [ref=e54]
+                                - generic [ref=e55]:
+                                    - generic [ref=e56]: 1.1.0
+                                    - generic [ref=e57]: ·
+                                    - generic [ref=e58]:
+                                        - img [ref=e59]
+                                        - text: AGPL-3.0-only
+                                    - generic [ref=e63]: ·
+                                    - generic [ref=e64]: Updated Apr 2, 2026
+                        - generic [ref=e65]:
+                            - link "Repository" [ref=e66] [cursor=pointer]:
+                                - /url: https://github.com/powerhouse-inc/builder-profile
+                                - img
+                                - text: Repository
+                            - link "Registry" [ref=e67] [cursor=pointer]:
+                                - /url: https://registry.dev.vetra.io/-/web/detail/@powerhousedao/builder-profile
+                                - img
+                                - text: Registry
+                    - generic [ref=e68]:
+                        - generic [ref=e69]: Project Management
+                        - generic [ref=e70]: 2 modules
+                - generic [ref=e71]:
+                    - generic [ref=e72]: $
+                    - code [ref=e73]: ph install @powerhousedao/builder-profile
+                    - button [ref=e74]:
+                        - img [ref=e75]
+                - generic [ref=e78]:
+                    - generic [ref=e79]:
+                        - generic [ref=e81]:
+                            - heading "About" [level=2] [ref=e82]
+                            - paragraph [ref=e83]: Builder profile document model
+                        - generic [ref=e85]:
+                            - heading "Modules" [level=2] [ref=e86]
+                            - generic [ref=e87]:
+                                - generic [ref=e88]:
+                                    - heading "Document Models" [level=3] [ref=e89]:
+                                        - img [ref=e90]
+                                        - text: Document Models
+                                    - generic [ref=e96]:
+                                        - paragraph [ref=e97]: Builder Profile
+                                        - paragraph [ref=e98]: powerhouse/builder-profile
+                                - generic [ref=e99]:
+                                    - heading "Editors" [level=3] [ref=e100]:
+                                        - img [ref=e101]
+                                        - text: Editors
+                                    - generic [ref=e107]:
+                                        - paragraph [ref=e108]: Builder Profile
+                                        - paragraph [ref=e109]: builder-profile
+                        - generic [ref=e112]:
+                            - heading "Versions(28 stable, 48 total)" [level=3] [ref=e114]:
+                                - text: Versions
+                                - generic [ref=e115]: (28 stable, 48 total)
+                            - generic [ref=e116]:
+                                - generic [ref=e117]:
+                                    - img [ref=e118]
+                                    - generic [ref=e121]: staging
+                                    - generic [ref=e122]: 1.0.0-staging.5
+                                - generic [ref=e123]:
+                                    - img [ref=e124]
+                                    - generic [ref=e127]: dev
+                                    - generic [ref=e128]: 1.1.0-dev.6
+                                - generic [ref=e129]:
+                                    - img [ref=e130]
+                                    - generic [ref=e133]: latest
+                                    - generic [ref=e134]: 1.1.0
+                            - generic [ref=e135]:
+                                - generic [ref=e136]:
+                                    - generic [ref=e137]:
+                                        - link "1.1.0" [ref=e138] [cursor=pointer]:
+                                            - /url: https://registry.dev.vetra.io/-/web/detail/@powerhousedao/builder-profile/v/1.1.0
+                                        - generic [ref=e139]: latest
+                                    - generic "Apr 2, 2026" [ref=e140]: 6d ago
+                                - generic [ref=e141]:
+                                    - link "1.0.8" [ref=e143] [cursor=pointer]:
+                                        - /url: https://registry.dev.vetra.io/-/web/detail/@powerhousedao/builder-profile/v/1.0.8
+                                    - generic "Mar 23, 2026" [ref=e144]: 16d ago
+                                - generic [ref=e145]:
+                                    - link "1.0.7" [ref=e147] [cursor=pointer]:
+                                        - /url: https://registry.dev.vetra.io/-/web/detail/@powerhousedao/builder-profile/v/1.0.7
+                                    - generic "Mar 6, 2026" [ref=e148]: 1mo ago
+                                - generic [ref=e149]:
+                                    - link "1.0.6" [ref=e151] [cursor=pointer]:
+                                        - /url: https://registry.dev.vetra.io/-/web/detail/@powerhousedao/builder-profile/v/1.0.6
+                                    - generic "Feb 26, 2026" [ref=e152]: 1mo ago
+                                - generic [ref=e153]:
+                                    - link "1.0.5" [ref=e155] [cursor=pointer]:
+                                        - /url: https://registry.dev.vetra.io/-/web/detail/@powerhousedao/builder-profile/v/1.0.5
+                                    - generic "Feb 25, 2026" [ref=e156]: 1mo ago
+                                - generic [ref=e157]:
+                                    - link "1.0.4" [ref=e159] [cursor=pointer]:
+                                        - /url: https://registry.dev.vetra.io/-/web/detail/@powerhousedao/builder-profile/v/1.0.4
+                                    - generic "Feb 23, 2026" [ref=e160]: 1mo ago
+                                - generic [ref=e161]:
+                                    - link "1.0.3" [ref=e163] [cursor=pointer]:
+                                        - /url: https://registry.dev.vetra.io/-/web/detail/@powerhousedao/builder-profile/v/1.0.3
+                                    - generic "Feb 16, 2026" [ref=e164]: 1mo ago
+                                - generic [ref=e165]:
+                                    - link "1.0.2" [ref=e167] [cursor=pointer]:
+                                        - /url: https://registry.dev.vetra.io/-/web/detail/@powerhousedao/builder-profile/v/1.0.2
+                                    - generic "Feb 13, 2026" [ref=e168]: 1mo ago
+                                - generic [ref=e169]:
+                                    - link "1.0.1" [ref=e171] [cursor=pointer]:
+                                        - /url: https://registry.dev.vetra.io/-/web/detail/@powerhousedao/builder-profile/v/1.0.1
+                                    - generic "Feb 12, 2026" [ref=e172]: 1mo ago
+                                - generic [ref=e173]:
+                                    - link "1.0.0" [ref=e175] [cursor=pointer]:
+                                        - /url: https://registry.dev.vetra.io/-/web/detail/@powerhousedao/builder-profile/v/1.0.0
+                                    - generic "Feb 12, 2026" [ref=e176]: 1mo ago
+                            - button "Show all 48 versions" [ref=e177] [cursor=pointer]:
+                                - text: Show all 48 versions
+                                - img
+                        - generic [ref=e179]:
+                            - heading "Dependencies(15)" [level=2] [ref=e180]:
+                                - text: Dependencies
+                                - generic [ref=e181]: (15)
+                            - generic [ref=e182]:
+                                - generic [ref=e183]: '@powerhousedao/analytics-engine-core6.0.0-dev.153'
+                                - generic [ref=e184]: '@powerhousedao/connect6.0.0-dev.153'
+                                - generic [ref=e185]: '@powerhousedao/design-system6.0.0-dev.153'
+                                - generic [ref=e186]: '@powerhousedao/document-engineering1.40.1'
+                                - generic [ref=e187]: '@powerhousedao/reactor-browser6.0.0-dev.153'
+                                - generic [ref=e188]: '@uiw/react-markdown-preview^5.1.5'
+                                - generic [ref=e189]: '@uiw/react-md-editor^4.0.11'
+                                - generic [ref=e190]: document-model6.0.0-dev.153
+                                - generic [ref=e191]: graphql^16.10.0
+                                - generic [ref=e192]: graphql-tag^2.12.6
+                                - generic [ref=e193]: lucide-react^0.577.0
+                                - generic [ref=e194]: react^19.2.3
+                                - generic [ref=e195]: react-dom^19.2.3
+                                - generic [ref=e196]: rehype-slug^6.0.0
+                                - generic [ref=e197]: zod^4.3.5
+                        - generic [ref=e200]:
+                            - generic [ref=e201]:
+                                - heading "Source" [level=2] [ref=e202]
+                                - link "Browse on GitHub" [ref=e203] [cursor=pointer]:
+                                    - /url: https://github.com/powerhouse-inc/builder-profile
+                                    - img
+                                    - text: Browse on GitHub
+                                    - img
+                            - generic [ref=e204]:
+                                - button "powerhouse.manifest.json" [ref=e205]:
+                                    - img [ref=e206]
+                                    - text: powerhouse.manifest.json
+                                - button "package.json" [ref=e211]:
+                                    - img [ref=e212]
+                                    - text: package.json
+                            - generic [ref=e217]:
+                                - generic [ref=e219]: dist/powerhouse.manifest.json
+                                - code [ref=e221]: '{ "name": "@powerhousedao/builder-profile", "description": "Builder profile document model", "category": "Project Management", "publisher": { "name": "", "url": "" }, "documentModels": [ { "id": "powerhouse/builder-profile", "name": "BuilderProfile" } ], "editors": [ { "id": "builder-profile", "name": "builder-profile", "documentTypes": [ "powerhouse/builder-profile" ] } ], "apps": [], "subgraphs": [], "importScripts": [] }'
+                            - generic [ref=e222]:
+                                - heading "Exports" [level=3] [ref=e223]
+                                - generic [ref=e224]:
+                                    - generic [ref=e225]:
+                                        - img [ref=e226]
+                                        - generic [ref=e228]: .
+                                        - generic [ref=e229]: →
+                                        - generic [ref=e230]: ./dist/index.js
+                                    - generic [ref=e231]:
+                                        - img [ref=e232]
+                                        - generic [ref=e234]: ./document-models
+                                        - generic [ref=e235]: →
+                                        - generic [ref=e236]: ./dist/document-models/index.js
+                                    - generic [ref=e237]:
+                                        - img [ref=e238]
+                                        - generic [ref=e240]: ./document-models/*
+                                        - generic [ref=e241]: →
+                                        - generic [ref=e242]: ./dist/document-models/*/index.js
+                                    - generic [ref=e243]:
+                                        - img [ref=e244]
+                                        - generic [ref=e246]: ./editors
+                                        - generic [ref=e247]: →
+                                        - generic [ref=e248]: ./dist/editors/index.js
+                                    - generic [ref=e249]:
+                                        - img [ref=e250]
+                                        - generic [ref=e252]: ./editors/*
+                                        - generic [ref=e253]: →
+                                        - generic [ref=e254]: ./dist/editors/*/index.js
+                                    - generic [ref=e255]:
+                                        - img [ref=e256]
+                                        - generic [ref=e258]: ./subgraphs
+                                        - generic [ref=e259]: →
+                                        - generic [ref=e260]: ./dist/subgraphs/index.js
+                                    - generic [ref=e261]:
+                                        - img [ref=e262]
+                                        - generic [ref=e264]: ./processors
+                                        - generic [ref=e265]: →
+                                        - generic [ref=e266]: ./dist/processors/index.js
+                                    - generic [ref=e267]:
+                                        - img [ref=e268]
+                                        - generic [ref=e270]: ./style.css
+                                        - generic [ref=e271]: →
+                                        - generic [ref=e272]: ./dist/style.css
+                    - generic [ref=e273]:
+                        - generic [ref=e275]:
+                            - heading "Install" [level=3] [ref=e276]:
+                                - img [ref=e277]
+                                - text: Install
+                            - generic [ref=e281]:
+                                - generic [ref=e282]: $
+                                - code [ref=e283]: ph install @powerhousedao/builder-profile
+                                - button [ref=e284]:
+                                    - img [ref=e285]
+                            - paragraph [ref=e288]:
+                                - text: Requires
+                                - link "Powerhouse CLI" [ref=e289] [cursor=pointer]:
+                                    - /url: https://github.com/powerhouse-inc/powerhouse
+                        - generic [ref=e291]:
+                            - heading "Package Info" [level=3] [ref=e292]
+                            - generic [ref=e293]:
+                                - generic [ref=e294]:
+                                    - generic [ref=e295]: Version
+                                    - generic [ref=e296]: 1.1.0
+                                - generic [ref=e297]:
+                                    - generic [ref=e298]: License
+                                    - generic [ref=e299]: AGPL-3.0-only
+                                - generic [ref=e300]:
+                                    - generic [ref=e301]: Published
+                                    - generic [ref=e302]:
+                                        - img [ref=e303]
+                                        - text: Oct 15, 2025
+                                - generic [ref=e305]:
+                                    - generic [ref=e306]: Updated
+                                    - generic [ref=e307]:
+                                        - img [ref=e308]
+                                        - text: Apr 2, 2026
+                        - generic [ref=e311]:
+                            - heading "Links" [level=3] [ref=e312]
+                            - link "Repository" [ref=e313] [cursor=pointer]:
+                                - /url: https://github.com/powerhouse-inc/builder-profile
+                                - img [ref=e314]
+                                - text: Repository
+                                - img [ref=e317]
+                            - link "Registry" [ref=e321] [cursor=pointer]:
+                                - /url: https://registry.dev.vetra.io/-/web/detail/@powerhousedao/builder-profile
+                                - img [ref=e322]
+                                - text: Registry
+                                - img [ref=e326]
+                            - link "Download Tarball" [ref=e330] [cursor=pointer]:
+                                - /url: https://registry.dev.vetra.io/@powerhousedao/builder-profile/-/builder-profile-1.1.0.tgz
+                                - img [ref=e331]
+                                - text: Download Tarball
+                                - img [ref=e336]
+        - contentinfo [ref=e340]:
+            - generic [ref=e341]:
+                - generic [ref=e342]:
+                    - generic [ref=e343]:
+                        - link "VETRA" [ref=e344] [cursor=pointer]:
+                            - /url: /
+                        - paragraph [ref=e345]: Build smarter, ship faster.
+                    - generic [ref=e346]:
+                        - heading "Product" [level=5] [ref=e347]
+                        - list [ref=e348]:
+                            - listitem [ref=e349]:
+                                - link "Packages" [ref=e350] [cursor=pointer]:
+                                    - /url: /packages
+                            - listitem [ref=e351]:
+                                - link "Builders" [ref=e352] [cursor=pointer]:
+                                    - /url: /builders
+                            - listitem [ref=e353]:
+                                - link "Cloud" [ref=e354] [cursor=pointer]:
+                                    - /url: /cloud
+                    - generic [ref=e355]:
+                        - heading "Resources" [level=5] [ref=e356]
+                        - list [ref=e357]:
+                            - listitem [ref=e358]:
+                                - link "Academy" [ref=e359] [cursor=pointer]:
+                                    - /url: https://academy.vetra.io/
+                            - listitem [ref=e360]:
+                                - link "Vetra Studio" [ref=e361] [cursor=pointer]:
+                                    - /url: https://academy.vetra.io/academy/MasteryTrack/BuilderEnvironment/VetraStudio
+                            - listitem [ref=e362]:
+                                - link "LLM Docs" [ref=e363] [cursor=pointer]:
+                                    - /url: https://academy.vetra.io/academy/LLMDocs
+                    - generic [ref=e364]:
+                        - heading "Socials" [level=5] [ref=e365]
+                        - list [ref=e366]:
+                            - listitem [ref=e367]:
+                                - link "Powerhouse on X" [ref=e368] [cursor=pointer]:
+                                    - /url: https://x.com/PowerhouseDAO
+                            - listitem [ref=e369]:
+                                - link "Discord" [ref=e370] [cursor=pointer]:
+                                    - /url: https://discord.gg/pwQJwgaQKd
+                - generic [ref=e371]:
+                    - link "Powered by" [ref=e372] [cursor=pointer]:
+                        - /url: https://powerhouse.io
+                        - text: Powered by
+                        - img [ref=e373]
+                    - generic [ref=e375]:
+                        - link "Privacy Policy" [ref=e376] [cursor=pointer]:
+                            - /url: /
+                        - link "Terms & Conditions" [ref=e377] [cursor=pointer]:
+                            - /url: /
+    - region "Notifications alt+T"
+    - button "Open Next.js Dev Tools" [ref=e383] [cursor=pointer]:
+        - img [ref=e384]

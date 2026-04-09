@@ -62,7 +62,7 @@ const rightColumn = faqs.slice(5, 10)
 
 export function FaqSection() {
   return (
-    <section className="mx-auto max-w-[var(--container-width)] px-6 py-20">
+    <section className="mx-auto max-w-screen-xl px-6 py-20">
       <h2 className="text-foreground mb-2 text-center text-3xl font-bold">
         Frequently Asked Questions
       </h2>

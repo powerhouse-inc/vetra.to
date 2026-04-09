@@ -59,7 +59,6 @@
   --shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.25);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
-  --container-width: 1200px;
 }
 
 .dark {
@@ -182,4 +181,10 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+
+  --font-size-xl: clamp(1.15rem, 1.5vw, 1.25rem);
+  --font-size-2xl: clamp(1.35rem, 2vw, 1.5rem);
+  --font-size-3xl: clamp(1.6rem, 2.5vw, 1.875rem);
+  --font-size-4xl: clamp(1.875rem, 3.5vw, 2.25rem);
+  --font-size-5xl: clamp(2.25rem, 5vw, 3rem);
 }
