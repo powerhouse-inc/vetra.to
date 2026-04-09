@@ -38,7 +38,7 @@ export function PackageCard(props: { manifest: Manifest; searchWords: string[] }
       <Card
         className={cn(
           'flex h-full flex-col border-t-3 transition-shadow hover:shadow-md',
-          catStyle.border,
+          'border-t-gray-300',
         )}
       >
         <CardContent className="flex flex-1 flex-col gap-3 p-5">
@@ -63,12 +63,18 @@ export function PackageCard(props: { manifest: Manifest; searchWords: string[] }
 
           <div className="mt-auto flex flex-wrap gap-1 pt-2">
             {category && (
-              <Badge variant="secondary" className="text-[10px]">
+              <span
+                className={cn(
+                  'inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium',
+                  catStyle.bg,
+                  catStyle.text,
+                )}
+              >
                 <PurpleHighlighter
                   textToHighlight={capitalCase(category)}
                   searchWords={searchWords}
                 />
-              </Badge>
+              </span>
             )}
             {moduleCount > 0 && (
               <Badge variant="outline" className="text-[10px]">
