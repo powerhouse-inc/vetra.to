@@ -1,7 +1,7 @@
 'use client'
 
 import { useUser } from '@powerhousedao/reactor-browser'
-import { Cloud, ChevronDown, LogIn, Plus } from 'lucide-react'
+import { Check, Cloud, ChevronDown, LogIn, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { useEnvironments } from '@/modules/cloud/hooks/use-environment'
 import { Button } from '@/modules/shared/components/ui/button'
@@ -71,24 +71,40 @@ export function AddToCloud({ packageName, version }: AddToCloudProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64">
-          {environments.map((env) => (
-            <DropdownMenuItem key={env.id} asChild>
-              <Link
-                href={`/cloud/${env.id}?${addParams.toString()}`}
-                className="flex items-center gap-2"
-              >
-                <Cloud className="text-muted-foreground size-4" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">
-                    {env.state.label || env.state.genericSubdomain || 'Unnamed'}
-                  </p>
-                  <p className="text-muted-foreground text-[10px]">
-                    {env.state.packages.length} package{env.state.packages.length !== 1 ? 's' : ''}
-                  </p>
-                </div>
-              </Link>
-            </DropdownMenuItem>
-          ))}
+          {environments.map((env) => {
+            const installed = env.state.packages.some((p) => p.name === packageName)
+            return (
+              <DropdownMenuItem key={env.id} asChild disabled={installed}>
+                {installed ? (
+                  <div className="flex items-center gap-2 opacity-60">
+                    <Check className="text-primary size-4" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">
+                        {env.state.label || env.state.genericSubdomain || 'Unnamed'}
+                      </p>
+                      <p className="text-primary text-[10px]">Already installed</p>
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    href={`/cloud/${env.id}?${addParams.toString()}`}
+                    className="flex items-center gap-2"
+                  >
+                    <Cloud className="text-muted-foreground size-4" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">
+                        {env.state.label || env.state.genericSubdomain || 'Unnamed'}
+                      </p>
+                      <p className="text-muted-foreground text-[10px]">
+                        {env.state.packages.length} package
+                        {env.state.packages.length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                  </Link>
+                )}
+              </DropdownMenuItem>
+            )
+          })}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
