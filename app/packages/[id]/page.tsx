@@ -338,15 +338,6 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
             </Card>
           )}
 
-          {/* Source */}
-          {sourceFiles.length > 0 && (
-            <Card className="overflow-hidden">
-              <CardContent className="min-w-0 p-4 sm:p-6">
-                <SourceViewer files={sourceFiles} repoUrl={repoUrl} />
-              </CardContent>
-            </Card>
-          )}
-
           {/* Dependencies */}
           {Object.keys(dependencies).length > 0 && (
             <Card className="overflow-hidden">
@@ -365,6 +356,15 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
                     </span>
                   ))}
                 </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Source */}
+          {sourceFiles.length > 0 && (
+            <Card className="overflow-hidden">
+              <CardContent className="min-w-0 p-4 sm:p-6">
+                <SourceViewer files={sourceFiles} repoUrl={repoUrl} />
               </CardContent>
             </Card>
           )}
