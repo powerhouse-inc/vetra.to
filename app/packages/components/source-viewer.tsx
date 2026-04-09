@@ -59,7 +59,9 @@ export function SourceViewer({ files, repoUrl }: SourceViewerProps) {
       {active && (
         <div className="w-full overflow-hidden rounded-lg border">
           <div className="bg-accent/50 flex items-center border-b px-4 py-2">
-            <span className="text-muted-foreground truncate text-xs font-medium">{active.path}</span>
+            <span className="text-muted-foreground truncate text-xs font-medium">
+              {active.path}
+            </span>
           </div>
           <div className="overflow-x-auto">
             <pre className="max-h-[400px] overflow-y-auto p-4 text-xs leading-relaxed">

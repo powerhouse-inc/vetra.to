@@ -25,7 +25,8 @@ const steps = [
   },
   {
     title: 'Start the development server',
-    description: 'Launch the local development environment to build and test your document models and editors.',
+    description:
+      'Launch the local development environment to build and test your document models and editors.',
     commands: ['ph vetra'],
   },
   {
@@ -50,9 +51,9 @@ function CopyButton({ text }: { text: string }) {
         setCopied(true)
         setTimeout(() => setCopied(false), 2000)
       }}
-      className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+      className="text-muted-foreground hover:text-foreground shrink-0 transition-colors"
     >
-      {copied ? <Check className="size-3.5 text-primary" /> : <Copy className="size-3.5" />}
+      {copied ? <Check className="text-primary size-3.5" /> : <Copy className="size-3.5" />}
     </button>
   )
 }
@@ -69,7 +70,7 @@ export function CreatePackageModal() {
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <PackagePlus className="size-5 text-primary" />
+            <PackagePlus className="text-primary size-5" />
             Create a Package
           </DialogTitle>
           <DialogDescription>
@@ -82,28 +83,33 @@ export function CreatePackageModal() {
             <div key={step.title} className="relative flex gap-4 pb-6 last:pb-0">
               {/* Connector line */}
               {i < steps.length - 1 && (
-                <div className="absolute left-[15px] top-8 h-[calc(100%-32px)] w-px bg-border" />
+                <div className="bg-border absolute top-8 left-[15px] h-[calc(100%-32px)] w-px" />
               )}
 
               {/* Step number */}
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+              <div className="bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-bold">
                 {i + 1}
               </div>
 
               {/* Content */}
               <div className="min-w-0 flex-1 pt-0.5">
                 {/* Two-column layout for all steps */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                   {/* Left column - Description */}
                   <div className="space-y-2">
                     <h3 className="text-sm font-semibold">{step.title}</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{step.description}</p>
+                    <p className="text-muted-foreground text-xs leading-relaxed">
+                      {step.description}
+                    </p>
                   </div>
-                  
+
                   {/* Right column - Commands or Academy Button */}
                   <div className="space-y-2">
                     {step.showAcademy ? (
-                      <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                      <Button
+                        asChild
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                      >
                         <a
                           href="https://academy.vetra.io"
                           target="_blank"
@@ -114,8 +120,11 @@ export function CreatePackageModal() {
                       </Button>
                     ) : (
                       step.commands?.map((command, cmdIndex) => (
-                        <div key={cmdIndex} className="flex items-center gap-2 rounded-md bg-accent/50 border px-3 py-2 font-mono text-xs">
-                          <Terminal className="size-3 shrink-0 text-muted-foreground" />
+                        <div
+                          key={cmdIndex}
+                          className="bg-accent/50 flex items-center gap-2 rounded-md border px-3 py-2 font-mono text-xs"
+                        >
+                          <Terminal className="text-muted-foreground size-3 shrink-0" />
                           <code className="flex-1 truncate">{command}</code>
                           <CopyButton text={command} />
                         </div>
@@ -127,7 +136,6 @@ export function CreatePackageModal() {
             </div>
           ))}
         </div>
-
       </DialogContent>
     </Dialog>
   )

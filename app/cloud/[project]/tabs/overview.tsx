@@ -409,6 +409,11 @@ const SERVICE_ICONS: Record<
   FUSION: Zap,
 }
 
+const SERVICE_IMAGES: Record<string, string> = {
+  CONNECT: 'cr.vetra.io/powerhouse-inc-powerhouse/connect',
+  SWITCHBOARD: 'cr.vetra.io/powerhouse-inc-powerhouse/switchboard',
+}
+
 function ServiceRow({
   serviceType,
   prefix,
@@ -418,7 +423,9 @@ function ServiceRow({
   isEnabled,
   serviceStatus,
   environmentStatus,
+  currentVersion,
   onToggle,
+  onSetVersion,
 }: {
   serviceType: CloudEnvironmentServiceType
   prefix: string
@@ -428,11 +435,17 @@ function ServiceRow({
   isEnabled: boolean
   serviceStatus: string
   environmentStatus: string
+  currentVersion: string | null
   onToggle: (enabled: boolean) => Promise<void>
+  onSetVersion?: (version: string) => Promise<void>
 }) {
   const [isToggling, setIsToggling] = useState(false)
+  const [showVersionPicker, setShowVersionPicker] = useState(false)
+  const [tags, setTags] = useState<string[]>([])
+  const [tagsLoading, setTagsLoading] = useState(false)
   const label = SERVICE_LABELS[serviceType]
   const Icon = SERVICE_ICONS[serviceType]
+  const image = SERVICE_IMAGES[serviceType]
   const defaultUrl = subdomain
     ? `${prefix}.${subdomain}.vetra.io`
     : `${prefix}.<subdomain>.vetra.io`
@@ -452,69 +465,153 @@ function ServiceRow({
     }
   }
 
+  const loadTags = async () => {
+    if (tags.length > 0) {
+      setShowVersionPicker(!showVersionPicker)
+      return
+    }
+    setShowVersionPicker(true)
+    setTagsLoading(true)
+    try {
+      const res = await fetch(`/api/registry/tags?service=${serviceType}`)
+      if (res.ok) {
+        const data = (await res.json()) as { tags: string[] }
+        setTags((data.tags ?? []).reverse())
+      }
+    } finally {
+      setTagsLoading(false)
+    }
+  }
+
+  const handleSetVersion = async (version: string) => {
+    if (!onSetVersion) return
+    try {
+      await onSetVersion(version)
+      toast.success(`${label} version set to ${version}`)
+      setShowVersionPicker(false)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : `Failed to set ${label} version`)
+    }
+  }
+
   return (
     <div
       className={cn(
-        'flex items-center justify-between gap-4 rounded-lg border p-4 transition-colors',
+        'rounded-lg border p-4 transition-colors',
         isEnabled
           ? 'border-emerald-500/30 bg-emerald-500/5 dark:border-emerald-500/20 dark:bg-emerald-500/5'
           : 'border-border/50 bg-muted/30 opacity-70',
       )}
     >
-      <div className="flex items-center gap-3">
-        <div
-          className={cn(
-            'flex h-9 w-9 items-center justify-center rounded-md',
-            isEnabled ? 'bg-emerald-500/15 dark:bg-emerald-500/20' : 'bg-muted',
-          )}
-        >
-          <Icon
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div
             className={cn(
-              'h-5 w-5',
-              isEnabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground',
+              'flex h-9 w-9 items-center justify-center rounded-md',
+              isEnabled ? 'bg-emerald-500/15 dark:bg-emerald-500/20' : 'bg-muted',
             )}
-          />
-        </div>
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <span className={cn('text-sm font-medium', !isEnabled && 'text-muted-foreground')}>
-              {label}
-            </span>
-            {isEnabled && <StatusDot status={serviceStatus} />}
-            {!isEnabled && (
-              <Badge
-                variant="outline"
-                className="text-muted-foreground border-border/50 px-1.5 py-0 text-[10px]"
+          >
+            <Icon
+              className={cn(
+                'h-5 w-5',
+                isEnabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground',
+              )}
+            />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <span className={cn('text-sm font-medium', !isEnabled && 'text-muted-foreground')}>
+                {label}
+              </span>
+              {isEnabled && <StatusDot status={serviceStatus} />}
+              {!isEnabled && (
+                <Badge
+                  variant="outline"
+                  className="text-muted-foreground border-border/50 px-1.5 py-0 text-[10px]"
+                >
+                  OFF
+                </Badge>
+              )}
+            </div>
+            {isEnabled && environmentStatus === 'READY' ? (
+              <a
+                href={`https://${serviceUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80 truncate font-mono text-xs underline underline-offset-2"
               >
-                OFF
-              </Badge>
+                https://{serviceUrl}
+              </a>
+            ) : (
+              <span className="text-muted-foreground/60 font-mono text-xs">{serviceUrl}</span>
             )}
           </div>
-          {isEnabled && environmentStatus === 'READY' ? (
-            <a
-              href={`https://${serviceUrl}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:text-primary/80 truncate font-mono text-xs underline underline-offset-2"
-            >
-              https://{serviceUrl}
-            </a>
-          ) : (
-            <span className="text-muted-foreground/60 font-mono text-xs">{serviceUrl}</span>
+        </div>
+        <Switch
+          checked={isEnabled}
+          onCheckedChange={handleToggle}
+          disabled={isToggling}
+          aria-label={`Toggle ${label}`}
+          className={cn(
+            isEnabled
+              ? 'data-[state=checked]:bg-emerald-500'
+              : 'data-[state=unchecked]:bg-zinc-400 dark:data-[state=unchecked]:bg-zinc-600',
+          )}
+        />
+      </div>
+
+      {/* Version & image info */}
+      {isEnabled && (
+        <div className="mt-3 space-y-2 border-t border-emerald-500/10 pt-3">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+            {image && (
+              <span className="text-muted-foreground">
+                <span className="font-medium">Image:</span>{' '}
+                <span className="font-mono">{image}</span>
+              </span>
+            )}
+            <span className="text-muted-foreground">
+              <span className="font-medium">Version:</span>{' '}
+              <span className="font-mono">{currentVersion ?? 'not set'}</span>
+            </span>
+          </div>
+          {onSetVersion && (
+            <div>
+              <button
+                onClick={loadTags}
+                className="text-primary hover:text-primary/80 text-xs font-medium hover:underline"
+              >
+                {showVersionPicker ? 'Hide versions' : 'Change version'}
+              </button>
+              {showVersionPicker && (
+                <div className="mt-2 max-h-48 overflow-y-auto rounded-md border bg-card">
+                  {tagsLoading ? (
+                    <div className="flex items-center justify-center p-4">
+                      <Loader2 className="text-muted-foreground size-4 animate-spin" />
+                    </div>
+                  ) : (
+                    tags.map((tag) => (
+                      <button
+                        key={tag}
+                        onClick={() => handleSetVersion(tag)}
+                        className={cn(
+                          'flex w-full items-center justify-between px-3 py-1.5 text-left text-xs transition-colors hover:bg-accent',
+                          tag === currentVersion && 'bg-primary/5',
+                        )}
+                      >
+                        <span className="font-mono">{tag}</span>
+                        {tag === currentVersion && (
+                          <Badge variant="default" className="text-[9px]">current</Badge>
+                        )}
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
           )}
         </div>
-      </div>
-      <Switch
-        checked={isEnabled}
-        onCheckedChange={handleToggle}
-        disabled={isToggling}
-        aria-label={`Toggle ${label}`}
-        className={cn(
-          isEnabled
-            ? 'data-[state=checked]:bg-emerald-500'
-            : 'data-[state=unchecked]:bg-zinc-400 dark:data-[state=unchecked]:bg-zinc-600',
-        )}
-      />
+      )}
     </div>
   )
 }
@@ -1008,10 +1105,16 @@ export function OverviewTab({
                   isEnabled={service?.enabled ?? false}
                   serviceStatus={service?.status ?? 'PROVISIONING'}
                   environmentStatus={state.status}
+                  currentVersion={service?.version ?? null}
                   onToggle={(enabled) =>
                     enabled
                       ? enableService(type, service?.prefix ?? defaultPrefixes[type])
                       : disableService(type)
+                  }
+                  onSetVersion={
+                    setServiceVersion
+                      ? (version) => setServiceVersion(type, version)
+                      : undefined
                   }
                 />
               )

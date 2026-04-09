@@ -203,7 +203,9 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage className="truncate max-w-[200px] sm:max-w-none">{manifest.name}</BreadcrumbPage>
+            <BreadcrumbPage className="max-w-[200px] truncate sm:max-w-none">
+              {manifest.name}
+            </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -255,7 +257,6 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
           </div>
         </div>
 
-
         {/* Tags */}
         <div className="flex flex-wrap items-center gap-2">
           {manifest.publisher?.name && (
@@ -278,11 +279,10 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
         </div>
       </div>
 
-
       {/* Main content grid */}
       <div className="grid w-full grid-cols-1 gap-8 overflow-hidden lg:grid-cols-3">
         {/* Left column */}
-        <div className="min-w-0 overflow-hidden space-y-6 lg:col-span-2">
+        <div className="min-w-0 space-y-6 overflow-hidden lg:col-span-2">
           {/* About */}
           {manifest.description && (
             <Card>
@@ -291,14 +291,19 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
                   <h2 className="text-lg font-semibold">About</h2>
                   {repoUrl && (
                     <Button variant="outline" size="sm" asChild>
-                      <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="gap-2 shrink-0">
+                      <a
+                        href={repoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 gap-2"
+                      >
                         <Github className="size-4" />
                         Repository
                       </a>
                     </Button>
                   )}
                 </div>
-                <p className="text-foreground-70 leading-relaxed mt-3">{manifest.description}</p>
+                <p className="text-foreground-70 mt-3 leading-relaxed">{manifest.description}</p>
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   {manifest.category && (
                     <span
@@ -351,7 +356,10 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(dependencies).map(([name, version]) => (
-                    <span key={name} className="bg-accent/30 rounded-md border-[0.5px] border-muted px-2.5 py-1 text-xs break-all">
+                    <span
+                      key={name}
+                      className="bg-accent/30 border-muted rounded-md border-[0.5px] px-2.5 py-1 text-xs break-all"
+                    >
                       <span className="font-medium">{name}</span>
                       <span className="text-muted-foreground ml-1">{version}</span>
                     </span>
@@ -372,9 +380,9 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
         </div>
 
         {/* Right sidebar */}
-        <div className="min-w-0 overflow-hidden space-y-6">
+        <div className="min-w-0 space-y-6 overflow-hidden">
           {/* Install */}
-          <Card className="border-[0.5px] border-primary/20 bg-primary/5">
+          <Card className="border-primary/20 bg-primary/5 border-[0.5px]">
             <CardContent className="space-y-4 p-5">
               <h3 className="flex items-center gap-2 text-sm font-semibold">
                 <PackageIcon className="text-primary size-4" />
