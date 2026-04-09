@@ -315,9 +315,9 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
       />
 
       {/* Main content grid */}
-      <div className="grid min-w-0 gap-8 lg:grid-cols-3">
+      <div className="grid w-full grid-cols-1 gap-8 overflow-hidden lg:grid-cols-3">
         {/* Left column */}
-        <div className="min-w-0 space-y-6 lg:col-span-2">
+        <div className="min-w-0 overflow-hidden space-y-6 lg:col-span-2">
           {/* About */}
           {manifest.description && (
             <Card>
@@ -383,7 +383,7 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
         </div>
 
         {/* Right sidebar */}
-        <div className="space-y-6">
+        <div className="min-w-0 overflow-hidden space-y-6">
           {/* Install */}
           <Card className="border-primary/20 bg-primary/5">
             <CardContent className="space-y-4 p-5">
