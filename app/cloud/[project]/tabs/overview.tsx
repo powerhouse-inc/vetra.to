@@ -497,9 +497,10 @@ function ServiceRow({
 
   const handleSetVersion = async (version: string) => {
     if (!onSetVersion) return
+    const versionWithPrefix = version.startsWith('v') ? version : `v${version}`
     try {
-      await onSetVersion(version)
-      toast.success(`${label} version set to ${version}`)
+      await onSetVersion(versionWithPrefix)
+      toast.success(`${label} version set to ${versionWithPrefix}`)
       setShowVersionPicker(false)
     } catch (error) {
       toast.error(error instanceof Error ? error.message : `Failed to set ${label} version`)
