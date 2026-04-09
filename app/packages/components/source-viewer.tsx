@@ -56,11 +56,11 @@ export function SourceViewer({ files, repoUrl }: SourceViewerProps) {
 
       {/* File content */}
       {active && (
-        <div className="overflow-hidden rounded-lg border">
+        <div className="max-w-full overflow-hidden rounded-lg border">
           <div className="bg-accent/50 flex items-center justify-between border-b px-4 py-2">
-            <span className="text-muted-foreground text-xs font-medium">{active.path}</span>
+            <span className="text-muted-foreground truncate text-xs font-medium">{active.path}</span>
           </div>
-          <pre className="max-h-[500px] overflow-auto p-4 text-xs leading-relaxed">
+          <pre className="max-h-[400px] overflow-auto p-4 text-xs leading-relaxed">
             <code>{active.content}</code>
           </pre>
         </div>

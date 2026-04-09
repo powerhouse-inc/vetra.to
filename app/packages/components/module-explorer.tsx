@@ -230,8 +230,8 @@ export function ModuleExplorer({ modules, cdnBase }: ModuleExplorerProps) {
                         </div>
 
                         {activeContent && (
-                          <div className="relative">
-                            <div className="bg-accent/80 text-muted-foreground absolute top-2 right-2 rounded px-1.5 py-0.5 text-[9px]">
+                          <div className="relative max-w-full overflow-hidden">
+                            <div className="bg-accent/80 text-muted-foreground absolute top-2 right-2 z-10 rounded px-1.5 py-0.5 text-[9px]">
                               {activeContent.path}
                             </div>
                             <pre className="max-h-[400px] overflow-auto p-4 text-xs leading-relaxed">
