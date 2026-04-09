@@ -414,6 +414,11 @@ const SERVICE_IMAGES: Record<string, string> = {
   SWITCHBOARD: 'cr.vetra.io/powerhouse-inc-powerhouse/switchboard',
 }
 
+const SERVICE_NPM_PACKAGES: Record<string, string> = {
+  CONNECT: '@powerhousedao/connect',
+  SWITCHBOARD: '@powerhousedao/switchboard',
+}
+
 function ServiceRow({
   serviceType,
   prefix,
@@ -442,7 +447,9 @@ function ServiceRow({
   const [isToggling, setIsToggling] = useState(false)
   const [showVersionPicker, setShowVersionPicker] = useState(false)
   const [tags, setTags] = useState<string[]>([])
+  const [distTags, setDistTags] = useState<Record<string, string>>({})
   const [tagsLoading, setTagsLoading] = useState(false)
+  const npmPackage = SERVICE_NPM_PACKAGES[serviceType]
   const label = SERVICE_LABELS[serviceType]
   const Icon = SERVICE_ICONS[serviceType]
   const image = SERVICE_IMAGES[serviceType]
@@ -470,13 +477,18 @@ function ServiceRow({
       setShowVersionPicker(!showVersionPicker)
       return
     }
+    if (!npmPackage) return
     setShowVersionPicker(true)
     setTagsLoading(true)
     try {
-      const res = await fetch(`/api/registry/tags?service=${serviceType}`)
+      const res = await fetch(`https://registry.npmjs.org/${npmPackage}`)
       if (res.ok) {
-        const data = (await res.json()) as { tags: string[] }
-        setTags((data.tags ?? []).reverse())
+        const data = (await res.json()) as {
+          'dist-tags': Record<string, string>
+          versions: Record<string, unknown>
+        }
+        setDistTags(data['dist-tags'] ?? {})
+        setTags(Object.keys(data.versions ?? {}).reverse())
       }
     } finally {
       setTagsLoading(false)
@@ -570,6 +582,12 @@ function ServiceRow({
                 <span className="font-mono">{image}</span>
               </span>
             )}
+            {npmPackage && (
+              <span className="text-muted-foreground">
+                <span className="font-medium">Package:</span>{' '}
+                <span className="font-mono">{npmPackage}</span>
+              </span>
+            )}
             <span className="text-muted-foreground">
               <span className="font-medium">Version:</span>{' '}
               <span className="font-mono">{currentVersion ?? 'not set'}</span>
@@ -584,28 +602,61 @@ function ServiceRow({
                 {showVersionPicker ? 'Hide versions' : 'Change version'}
               </button>
               {showVersionPicker && (
-                <div className="mt-2 max-h-48 overflow-y-auto rounded-md border bg-card">
-                  {tagsLoading ? (
-                    <div className="flex items-center justify-center p-4">
-                      <Loader2 className="text-muted-foreground size-4 animate-spin" />
+                <div className="mt-2 space-y-2">
+                  {/* Dist tags as quick picks */}
+                  {Object.keys(distTags).length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {Object.entries(distTags).map(([tag, version]) => (
+                        <button
+                          key={tag}
+                          onClick={() => handleSetVersion(version)}
+                          className={cn(
+                            'flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] transition-colors hover:border-primary hover:bg-primary/5',
+                            version === currentVersion && 'border-primary bg-primary/5',
+                          )}
+                        >
+                          <span className="font-semibold">{tag}</span>
+                          <span className="text-muted-foreground font-mono">{version}</span>
+                        </button>
+                      ))}
                     </div>
-                  ) : (
-                    tags.map((tag) => (
-                      <button
-                        key={tag}
-                        onClick={() => handleSetVersion(tag)}
-                        className={cn(
-                          'flex w-full items-center justify-between px-3 py-1.5 text-left text-xs transition-colors hover:bg-accent',
-                          tag === currentVersion && 'bg-primary/5',
-                        )}
-                      >
-                        <span className="font-mono">{tag}</span>
-                        {tag === currentVersion && (
-                          <Badge variant="default" className="text-[9px]">current</Badge>
-                        )}
-                      </button>
-                    ))
                   )}
+                  {/* Full version list */}
+                  <div className="max-h-48 overflow-y-auto rounded-md border bg-card">
+                    {tagsLoading ? (
+                      <div className="flex items-center justify-center p-4">
+                        <Loader2 className="text-muted-foreground size-4 animate-spin" />
+                      </div>
+                    ) : tags.length === 0 ? (
+                      <p className="text-muted-foreground p-4 text-center text-xs">
+                        No versions available.
+                      </p>
+                    ) : (
+                      tags.map((tag) => {
+                        const tagLabel = Object.entries(distTags).find(([, v]) => v === tag)?.[0]
+                        return (
+                          <button
+                            key={tag}
+                            onClick={() => handleSetVersion(tag)}
+                            className={cn(
+                              'flex w-full items-center justify-between px-3 py-1.5 text-left text-xs transition-colors hover:bg-accent',
+                              tag === currentVersion && 'bg-primary/5',
+                            )}
+                          >
+                            <span className="font-mono">{tag}</span>
+                            <div className="flex items-center gap-1">
+                              {tagLabel && (
+                                <Badge variant="secondary" className="text-[9px]">{tagLabel}</Badge>
+                              )}
+                              {tag === currentVersion && (
+                                <Badge variant="default" className="text-[9px]">current</Badge>
+                              )}
+                            </div>
+                          </button>
+                        )
+                      })
+                    )}
+                  </div>
                 </div>
               )}
             </div>
