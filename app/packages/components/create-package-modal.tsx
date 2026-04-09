@@ -108,7 +108,7 @@ export function CreatePackageModal() {
           <p className="text-xs text-muted-foreground leading-relaxed">
             Need more details? Check the{' '}
             <a
-              href="https://www.powerhouse.inc/academy"
+              href="https://academy.vetra.io"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary font-medium hover:underline"
