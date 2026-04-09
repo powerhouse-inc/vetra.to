@@ -21,14 +21,15 @@ export function SourceViewer({ files, repoUrl }: SourceViewerProps) {
   const active = files.find((f) => f.name === activeFile) ?? files[0]
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="min-w-0 space-y-4">
+      <div className="flex items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">Source</h2>
         {repoUrl && (
           <Button variant="outline" size="sm" asChild>
             <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="gap-2">
               <Github className="size-4" />
-              Browse on GitHub
+              <span className="hidden sm:inline">Browse on GitHub</span>
+              <span className="sm:hidden">GitHub</span>
               <ExternalLink className="size-3" />
             </a>
           </Button>
@@ -36,13 +37,13 @@ export function SourceViewer({ files, repoUrl }: SourceViewerProps) {
       </div>
 
       {/* File tabs */}
-      <div className="flex gap-1 border-b">
+      <div className="flex gap-1 overflow-x-auto border-b">
         {files.map((file) => (
           <button
             key={file.name}
             onClick={() => setActiveFile(file.name)}
             className={cn(
-              'flex items-center gap-1.5 border-b-2 px-3 py-2 text-xs font-medium transition-colors',
+              'flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2 text-xs font-medium whitespace-nowrap transition-colors',
               activeFile === file.name
                 ? 'border-primary text-primary'
                 : 'text-muted-foreground hover:text-foreground border-transparent',
@@ -56,13 +57,15 @@ export function SourceViewer({ files, repoUrl }: SourceViewerProps) {
 
       {/* File content */}
       {active && (
-        <div className="max-w-full overflow-hidden rounded-lg border">
-          <div className="bg-accent/50 flex items-center justify-between border-b px-4 py-2">
+        <div className="w-full overflow-hidden rounded-lg border">
+          <div className="bg-accent/50 flex items-center border-b px-4 py-2">
             <span className="text-muted-foreground truncate text-xs font-medium">{active.path}</span>
           </div>
-          <pre className="max-h-[400px] overflow-auto p-4 text-xs leading-relaxed">
-            <code>{active.content}</code>
-          </pre>
+          <div className="overflow-x-auto">
+            <pre className="max-h-[400px] overflow-y-auto p-4 text-xs leading-relaxed">
+              <code>{active.content}</code>
+            </pre>
+          </div>
         </div>
       )}
     </div>

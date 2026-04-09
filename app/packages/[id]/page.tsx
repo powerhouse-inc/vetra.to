@@ -329,8 +329,8 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
           )}
 
           {/* Modules - interactive explorer */}
-          <Card>
-            <CardContent className="p-6">
+          <Card className="overflow-hidden">
+            <CardContent className="min-w-0 p-4 sm:p-6">
               <ModuleExplorer modules={modules} cdnBase={cdnBase} />
             </CardContent>
           </Card>
@@ -352,8 +352,8 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
 
           {/* Source */}
           {sourceFiles.length > 0 && (
-            <Card>
-              <CardContent className="p-6">
+            <Card className="overflow-hidden">
+              <CardContent className="min-w-0 p-4 sm:p-6">
                 <SourceViewer files={sourceFiles} repoUrl={repoUrl} />
               </CardContent>
             </Card>
@@ -361,8 +361,8 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
 
           {/* Dependencies */}
           {Object.keys(dependencies).length > 0 && (
-            <Card>
-              <CardContent className="p-6">
+            <Card className="overflow-hidden">
+              <CardContent className="min-w-0 p-4 sm:p-6">
                 <h2 className="mb-3 text-lg font-semibold">
                   Dependencies
                   <span className="text-muted-foreground ml-2 text-sm font-normal">
