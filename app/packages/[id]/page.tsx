@@ -265,14 +265,6 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
               </a>
             </Button>
           )}
-          {dist?.tarball && (
-            <Button variant="outline" size="sm" asChild>
-              <a href={dist.tarball} className="gap-2">
-                <Download className="size-4" />
-                Tarball
-              </a>
-            </Button>
-          )}
         </div>
 
         {/* Tags */}
@@ -309,10 +301,6 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
         </div>
       </div>
 
-      {/* Install command */}
-      <CopyCommand
-        command={`ph install ${manifest.name}${showVersion ? `@${activeVersion}` : ''}`}
-      />
 
       {/* Main content grid */}
       <div className="grid w-full grid-cols-1 gap-8 overflow-hidden lg:grid-cols-3">
