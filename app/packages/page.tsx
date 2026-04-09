@@ -17,6 +17,7 @@ import { fuse, packageModuleTypes, REGISTRY_URL } from './lib/constants'
 import { map, unique, filter, isTruthy } from 'remeda'
 import { filterManifests, getSearchWords } from './lib/utils'
 import { PackageList } from './components/package-list'
+import { CreatePackageModal } from './components/create-package-modal'
 
 export const metadata: unknown = {
   title: 'Vetra Packages',
@@ -86,7 +87,10 @@ export default async function PackagesPage({ searchParams }: PageProps) {
     <div className="container mx-auto mt-20 max-w-screen-xl space-y-8 px-6 py-8">
       {/* Page Header */}
       <div className="space-y-3">
-        <h1 className="text-4xl font-bold">Packages</h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-4xl font-bold">Packages</h1>
+          <CreatePackageModal />
+        </div>
         <p className="text-foreground-70 max-w-2xl">
           Packages are a collection of document models, editors, and other module resources
           providing solutions for specific domains and industries.
