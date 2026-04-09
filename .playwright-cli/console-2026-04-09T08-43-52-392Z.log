@@ -1,7 +1,0 @@
-[    2084ms] [WARNING] Image with src "/package-placeholder-image.png" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
-Read more: https://nextjs.org/docs/app/api-reference/components/image#loading @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
-[    2125ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
-[    2126ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
-[    2201ms] [ERROR] Cannot update a component (`%s`) while rendering a different component (`%s`). To locate the bad setState() call inside `%s`, follow the stack trace as described in https://react.dev/link/setstate-in-render RenownButton Renown Renown @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:3272
-[   36635ms] [WARNING] Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
-[   36639ms] [WARNING] Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. @ http://localhost:3000/_next/static/chunks/0jvu_next_dist_09tqux~._.js:2431
