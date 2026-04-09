@@ -194,7 +194,7 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
   }[]
 
   return (
-    <main className="container mx-auto mt-20 max-w-screen-xl space-y-8 px-6 py-8">
+    <main className="container mx-auto mt-20 max-w-screen-xl space-y-8 overflow-hidden px-6 py-8">
       {/* Breadcrumb */}
       <Breadcrumb>
         <BreadcrumbList>
@@ -203,80 +203,76 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>{manifest.name}</BreadcrumbPage>
+            <BreadcrumbPage className="truncate max-w-[200px] sm:max-w-none">{manifest.name}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
       {/* Hero Header */}
       <div className="space-y-4">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="bg-primary/10 flex size-10 items-center justify-center rounded-lg">
-                <PackageIcon className="text-primary size-5" />
-              </div>
-              <div>
-                <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-bold">{manifest.name}</h1>
-                  <Badge variant={isLatest ? 'default' : 'secondary'} className="font-mono text-xs">
-                    {activeVersion}
-                  </Badge>
-                  {activeTag && (
-                    <Badge variant="outline" className="gap-1 text-xs">
-                      <Tag className="size-3" />
-                      {activeTag}
-                    </Badge>
-                  )}
-                </div>
-                <div className="text-muted-foreground flex items-center gap-2 text-sm">
-                  {license && (
-                    <span className="flex items-center gap-1">
-                      <Scale className="size-3" />
-                      {license}
-                    </span>
-                  )}
-                  {versionDate && (
-                    <>
-                      {license && <span>·</span>}
-                      <span>Published {formatDate(versionDate)}</span>
-                    </>
-                  )}
-                  {!isLatest && (
-                    <>
-                      <span>·</span>
-                      <a
-                        href={`/packages/${encodeURIComponent(manifest.name)}`}
-                        className="text-primary hover:underline"
-                      >
-                        View latest ({latestVersion})
-                      </a>
-                    </>
-                  )}
-                </div>
-              </div>
+        <div className="flex items-start gap-3">
+          <div className="bg-primary/10 flex size-10 shrink-0 items-center justify-center rounded-lg">
+            <PackageIcon className="text-primary size-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl font-bold break-words sm:text-2xl">{manifest.name}</h1>
+            <div className="mt-1 flex flex-wrap items-center gap-1.5">
+              <Badge variant={isLatest ? 'default' : 'secondary'} className="font-mono text-xs">
+                {activeVersion}
+              </Badge>
+              {activeTag && (
+                <Badge variant="outline" className="gap-1 text-xs">
+                  <Tag className="size-3" />
+                  {activeTag}
+                </Badge>
+              )}
+            </div>
+            <div className="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm">
+              {license && (
+                <span className="flex items-center gap-1">
+                  <Scale className="size-3" />
+                  {license}
+                </span>
+              )}
+              {versionDate && (
+                <>
+                  {license && <span>·</span>}
+                  <span>Published {formatDate(versionDate)}</span>
+                </>
+              )}
+              {!isLatest && (
+                <>
+                  <span>·</span>
+                  <a
+                    href={`/packages/${encodeURIComponent(manifest.name)}`}
+                    className="text-primary hover:underline"
+                  >
+                    View latest ({latestVersion})
+                  </a>
+                </>
+              )}
             </div>
           </div>
+        </div>
 
-          {/* Action buttons */}
-          <div className="flex gap-2">
-            {repoUrl && (
-              <Button variant="outline" size="sm" asChild>
-                <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="gap-2">
-                  <Github className="size-4" />
-                  Repository
-                </a>
-              </Button>
-            )}
-            {dist?.tarball && (
-              <Button variant="outline" size="sm" asChild>
-                <a href={dist.tarball} className="gap-2">
-                  <Download className="size-4" />
-                  Tarball
-                </a>
-              </Button>
-            )}
-          </div>
+        {/* Action buttons */}
+        <div className="flex gap-2">
+          {repoUrl && (
+            <Button variant="outline" size="sm" asChild>
+              <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="gap-2">
+                <Github className="size-4" />
+                Repository
+              </a>
+            </Button>
+          )}
+          {dist?.tarball && (
+            <Button variant="outline" size="sm" asChild>
+              <a href={dist.tarball} className="gap-2">
+                <Download className="size-4" />
+                Tarball
+              </a>
+            </Button>
+          )}
         </div>
 
         {/* Tags */}
@@ -319,9 +315,9 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
       />
 
       {/* Main content grid */}
-      <div className="grid gap-8 lg:grid-cols-3">
+      <div className="grid min-w-0 gap-8 lg:grid-cols-3">
         {/* Left column */}
-        <div className="space-y-6 lg:col-span-2">
+        <div className="min-w-0 space-y-6 lg:col-span-2">
           {/* About */}
           {manifest.description && (
             <Card>
@@ -375,7 +371,7 @@ export default async function PackageDetailPage({ params, searchParams }: Packag
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(dependencies).map(([name, version]) => (
-                    <span key={name} className="bg-accent/30 rounded-md border px-2.5 py-1 text-xs">
+                    <span key={name} className="bg-accent/30 rounded-md border px-2.5 py-1 text-xs break-all">
                       <span className="font-medium">{name}</span>
                       <span className="text-muted-foreground ml-1">{version}</span>
                     </span>
