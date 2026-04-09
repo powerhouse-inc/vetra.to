@@ -14,29 +14,29 @@ import {
 
 const steps = [
   {
-    title: 'Install Powerhouse CLI',
-    description: 'Install the Powerhouse command-line tool globally.',
-    command: 'npm install -g ph-cmd',
+    title: 'Install and Initialize',
+    description: 'Install the Powerhouse CLI globally and create a new package project.',
+    commands: ['npm install -g ph-cmd', 'ph init my-package'],
   },
   {
-    title: 'Initialize your package',
-    description: 'Create a new package project with the Powerhouse scaffolding.',
-    command: 'ph init my-package',
+    title: 'Develop your package',
+    description: 'Use the Powerhouse Academy to learn how to build document models and editors.',
+    showAcademy: true,
   },
   {
     title: 'Start the development server',
     description: 'Launch the local development environment to build and test your document models and editors.',
-    command: 'ph vetra',
+    commands: ['ph vetra'],
   },
   {
     title: 'Build your package',
     description: 'Compile your document models, editors, and other modules for distribution.',
-    command: 'ph build',
+    commands: ['ph build'],
   },
   {
     title: 'Publish to registry',
     description: 'Publish your package to the Vetra package registry so others can install it.',
-    command: 'ph publish',
+    commands: ['ph publish'],
   },
 ]
 
@@ -66,7 +66,7 @@ export function CreatePackageModal() {
           Create your own Package
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <PackagePlus className="size-5 text-primary" />
@@ -82,7 +82,7 @@ export function CreatePackageModal() {
             <div key={step.title} className="relative flex gap-4 pb-6 last:pb-0">
               {/* Connector line */}
               {i < steps.length - 1 && (
-                <div className="absolute left-[15px] top-8 h-[calc(100%-16px)] w-px bg-border" />
+                <div className="absolute left-[15px] top-8 h-[calc(100%-32px)] w-px bg-border" />
               )}
 
               {/* Step number */}
@@ -91,33 +91,43 @@ export function CreatePackageModal() {
               </div>
 
               {/* Content */}
-              <div className="min-w-0 flex-1 space-y-2 pt-0.5">
-                <h3 className="text-sm font-semibold">{step.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{step.description}</p>
-                <div className="flex items-center gap-2 rounded-md bg-accent/50 border px-3 py-2 font-mono text-xs">
-                  <Terminal className="size-3 shrink-0 text-muted-foreground" />
-                  <code className="flex-1 truncate">{step.command}</code>
-                  <CopyButton text={step.command} />
+              <div className="min-w-0 flex-1 pt-0.5">
+                {/* Two-column layout for all steps */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {/* Left column - Description */}
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-semibold">{step.title}</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{step.description}</p>
+                  </div>
+                  
+                  {/* Right column - Commands or Academy Button */}
+                  <div className="space-y-2">
+                    {step.showAcademy ? (
+                      <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                        <a
+                          href="https://academy.vetra.io"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Visit Powerhouse Academy →
+                        </a>
+                      </Button>
+                    ) : (
+                      step.commands?.map((command, cmdIndex) => (
+                        <div key={cmdIndex} className="flex items-center gap-2 rounded-md bg-accent/50 border px-3 py-2 font-mono text-xs">
+                          <Terminal className="size-3 shrink-0 text-muted-foreground" />
+                          <code className="flex-1 truncate">{command}</code>
+                          <CopyButton text={command} />
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-4">
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Need more details? Check the{' '}
-            <a
-              href="https://academy.vetra.io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary font-medium hover:underline"
-            >
-              Powerhouse Academy
-            </a>
-            {' '}for comprehensive guides on building document models and editors.
-          </p>
-        </div>
       </DialogContent>
     </Dialog>
   )
