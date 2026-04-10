@@ -103,9 +103,9 @@ export function CloudLandingFeatures() {
   return (
     <div id="features">
       {/* Infrastructure bar */}
-      <section className="bg-primary-30 px-6 py-12">
+      <section className="bg-gradient-to-b from-primary-30/50 to-primary-30 px-6 py-12">
         <div className="mx-auto max-w-screen-xl text-center">
-          <p className="text-foreground text-3xl font-bold">Vetra Open Cloud runs on</p>
+          <p className="text-foreground text-3xl font-bold">Vetra Cloud runs on</p>
           <p className="text-foreground-70 mt-2 mb-16 text-2xl">
             {hoveredLogo || 'your trusted open source stack'}
           </p>
