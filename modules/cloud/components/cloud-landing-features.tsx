@@ -69,7 +69,7 @@ function FeatureSection({
 }: {
   title: string
   subtitle: string
-  description: string
+  description: string | string[] | React.ReactNode[]
   image: string
   reversed?: boolean
 }) {
@@ -82,7 +82,15 @@ function FeatureSection({
           {subtitle}
         </div>
         <h3 className="text-2xl leading-tight font-bold">{title}</h3>
-        <p className="text-foreground-70 leading-relaxed">{description}</p>
+        <div className="text-foreground-70 leading-relaxed space-y-4">
+          {Array.isArray(description) ? (
+            description.map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))
+          ) : (
+            <p>{description}</p>
+          )}
+        </div>
       </div>
       <div className="bg-accent flex w-full flex-1 items-center justify-center overflow-hidden rounded-2xl">
         <Image
@@ -162,7 +170,11 @@ export function CloudLandingFeatures() {
           <FeatureSection
             subtitle="Freedom"
             title="Cloud without Captivity."
-            description="A pluggable anchoring layer that is storage-agnostic by design. Switch between storage backends, anchoring providers, and sync protocols without rewriting your application."
+            description={[
+              <>A <strong>pluggable anchoring layer</strong> that is storage-agnostic by design. Switch between storage backends, anchoring providers, and sync protocols without rewriting your application.</>,
+              <>Powerhouse Reactors are the nodes in the network that store documents, resolve conflicts and verify document event histories. Reactors can be configured for local storage, centralized cloud storage, or decentralized networks - giving you complete control over where and how your data is stored.</>,
+              <>Document histories are append-only, which means they can be stored in both <strong>mutable and immutable repositories</strong>. Whether as files, in browsers, databases, or on the blockchain - different storage options for different use cases, all accessible through the same unified interface.</>
+            ]}
             image="/images/cloud/cloud-architecture.png"
             reversed
           />
