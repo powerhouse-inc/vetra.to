@@ -140,7 +140,7 @@ export function FeaturesTabs() {
             {specAiFeatures.map((feature) => (
               <div
                 key={feature.title}
-                className="border-border hover:bg-accent rounded-xl border p-8 transition-colors"
+                className="border-border hover:bg-accent rounded-xl border p-6 transition-colors"
               >
                 <feature.icon className="text-primary mb-2 h-6 w-6" />
                 <h3 className="text-foreground mb-2 text-base font-bold">{feature.title}</h3>

@@ -11,49 +11,104 @@ const faqs = [
   {
     question: 'What can I do with Vetra?',
     answer:
-      'Vetra is the builder platform of the Powerhouse ecosystem. It allows you to browse the packages of other builders or start building your own package by defining document models, user experiences and data integrations with the help of specification driven AI.',
+      'Vetra helps you build any type of web application, ERP, CMS, or SaaS Backend on a reactive document architecture. You can browse packages from other builders, create your own packages using specification-driven AI, and deploy applications with local-first capabilities. Define workflows once, deploy them globally, and co-own the software you create.',
   },
   {
     question: 'Where to get started?',
-    answer:
-      'A good place to start is the Powerhouse Academy developer documentation. Here we guide you through the process of creating your first package in Vetra Studio.',
+    answer: (
+      <>
+        Start by exploring the{' '}
+        <a
+          href="https://academy.vetra.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline"
+        >
+          Vetra Academy
+        </a>{' '}
+        for comprehensive developer documentation and tutorials. You can also get hands-on by trying Vetra Cloud for deployment or browsing the package ecosystem to see what others have built. The platform supports both technical builders and tech-enthusiasts through guided experiences.
+      </>
+    ),
   },
   {
     question: 'What code languages are required?',
     answer:
-      'Knowledge of Typescript and GraphQL are recommended. But even for tech-enthusiasts you can get far with the help of our Academy, the PH-CLI and the specification driven AI tooling we provide.',
+      'Vetra is built on a minimal tech stack that scales: TypeScript, GraphQL, and React. These form the core foundation, but with our specification-driven AI tooling and Academy resources, even tech-enthusiasts can build effectively without deep expertise in all technologies.',
   },
   {
     question: 'Is all code open-source?',
     answer:
-      'All Powerhouse code is created under the Daimon Dual Phase License (DDPL), which combines copyleft licensing with eventual permissive licensing.',
+      'Yes, Vetra is 100% open source. All Powerhouse code is created under the Daimon Dual Phase License (DDPL), which combines copyleft licensing with eventual permissive licensing, ensuring the codebase remains open and accessible.',
   },
   {
     question: 'How can I get support?',
-    answer:
-      'The easiest way to talk directly with the Powerhouse team is through their Discord server.',
+    answer: (
+      <>
+        The easiest way to get support is through the{' '}
+        <a
+          href="https://discord.com/invite/pwQJwgaQKd"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline"
+        >
+          Powerhouse Discord server
+        </a>{' '}
+        where you can directly communicate with the team and community. You can also find comprehensive documentation and tutorials at the{' '}
+        <a
+          href="https://academy.vetra.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline"
+        >
+          Vetra Academy
+        </a>
+        .
+      </>
+    ),
   },
   {
     question: 'Can I integrate other tools?',
-    answer: 'We invite you to integrate your preferred tools into our open source framework.',
+    answer: 'Absolutely! Vetra is designed as an open framework that welcomes integration with your preferred tools and services. The reactive document architecture and modular package system make it easy to extend and customize for your specific needs.',
   },
   {
     question: 'What is Vetra Cloud?',
     answer:
-      'Vetra Cloud is a hosting and deployment solution for builders, teams and organizations to host their Powerhouse Stack in the Ecosystem.',
+      'Vetra Cloud is a real-time sync and storage infrastructure that scales your workflows up to millions of users. It provides hosting and deployment solutions for builders, teams, and organizations, following the principle of "Documents as code, code as infrastructure."',
   },
   {
     question: 'What is Switchboard?',
     answer:
-      'Switchboard is a portal through which you can manage remote instances and get access to the API.',
+      'Switchboard is a portal for managing remote instances and accessing APIs within the Vetra ecosystem. It serves as the central hub for cloud environment management and provides the GraphQL endpoints that power the platform.',
   },
   {
     question: 'How can I contribute?',
-    answer: 'Please find the way to contribute in the Powerhouse GitHub repository.',
+    answer: (
+      <>
+        You can contribute to Vetra through the Powerhouse GitHub repository, join the community discussions on{' '}
+        <a
+          href="https://discord.com/invite/pwQJwgaQKd"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline"
+        >
+          Discord
+        </a>
+        , create and share packages, or contribute to the{' '}
+        <a
+          href="https://academy.vetra.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline"
+        >
+          Academy
+        </a>{' '}
+        documentation. The open-source nature welcomes contributions at all levels.
+      </>
+    ),
   },
   {
     question: 'What blockchains do you integrate with?',
-    answer: "Currently you're able to login with Ethereum and Solana into our host applications.",
+    answer: 'Vetra currently supports Web3 authentication through Ethereum and Solana wallets via the Renown identity system. This enables blockchain-based login and identity management across all host applications in the ecosystem.',
   },
 ]
 

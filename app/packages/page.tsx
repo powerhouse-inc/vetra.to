@@ -1,7 +1,6 @@
 import { type PackageInfo } from '@powerhousedao/shared'
 import { type SearchParams } from 'nuqs/server'
 import { Search as SearchIcon } from 'lucide-react'
-import { JoinedUsersBadge } from '@/modules/shared/components/joined-users-badge'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -148,29 +147,6 @@ export default async function PackagesPage({ searchParams }: PageProps) {
         </div>
       </div>
 
-      {/* Waitlist Section */}
-      <div className="flex min-h-[500px] flex-col items-center justify-center space-y-8 py-12">
-        <div className="max-w-3xl space-y-6 text-center">
-          <h2 className="text-5xl font-bold tracking-tight">Join the Waitlist</h2>
-          <p className="text-muted-foreground text-lg">
-            Sign up to stay in the loop & be amongst the first builders on Vetra!
-          </p>
-          <div className="flex justify-center pt-4">
-            <iframe
-              src="https://paragraph.com/@powerhouse/embed?minimal=true"
-              width="480"
-              height="45"
-              style={{ border: '1px solid #EEE', background: 'white' }}
-              frameBorder="0"
-              scrolling="no"
-              title="Newsletter Signup"
-            />
-          </div>
-          <div className="flex items-center justify-center gap-3 pt-4">
-            <JoinedUsersBadge />
-          </div>
-        </div>
-      </div>
     </div>
   )
 }

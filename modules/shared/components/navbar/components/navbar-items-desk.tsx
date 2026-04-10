@@ -22,19 +22,18 @@ function NavbarItemsDesk({ navItems, pathname }: NavbarCenterProps) {
     >
       {navItems.map((item) => {
         return (
-          <div key={item.label} className="flex items-center gap-1">
-            <Link
-              href={item.href}
-              target={item.isExternal ? '_blank' : '_self'}
-              className={cn(
-                'text-foreground/70 hover:text-foreground flex items-center gap-1 text-base font-semibold transition-colors',
-                !item.isExternal && item.isActive(pathname) && 'text-foreground',
-              )}
-            >
-              {item.label}
-            </Link>
+          <Link
+            key={item.label}
+            href={item.href}
+            target={item.isExternal ? '_blank' : '_self'}
+            className={cn(
+              'text-foreground/70 hover:text-foreground flex items-center gap-1 text-base font-semibold transition-colors',
+              !item.isExternal && item.isActive(pathname) && 'text-foreground',
+            )}
+          >
+            {item.label}
             {item.isExternal && <ExternalLink className="h-4 w-4" />}
-          </div>
+          </Link>
         )
       })}
     </nav>

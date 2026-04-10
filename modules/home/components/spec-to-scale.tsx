@@ -65,7 +65,7 @@ export function SpecToScale() {
           <Link href="https://academy.vetra.io/">Explore Academy</Link>
         </Button>
         <Button asChild size="lg">
-          <Link href="/cloud">Explore Open Cloud</Link>
+          <Link href="/cloud">Vetra Cloud</Link>
         </Button>
       </div>
     </section>
