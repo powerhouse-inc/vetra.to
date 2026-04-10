@@ -1,20 +1,14 @@
 'use client'
 
 import {
-  BookOpen,
-  Clock,
   Code,
   Cog,
-  Database,
   FileText,
-  FlaskConical,
   GitBranch,
   Layers,
-  Lightbulb,
   MessageSquare,
   Radio,
   RefreshCcw,
-  ShieldCheck,
   Users,
   Workflow,
   Zap,

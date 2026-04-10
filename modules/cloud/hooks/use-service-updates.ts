@@ -14,10 +14,18 @@ export function useServiceUpdates(services: CloudEnvironmentService[]) {
   const [isLoading, setIsLoading] = useState(false)
   const abortRef = useRef<AbortController | null>(null)
 
+  // Reset updates when no enabled services
   useEffect(() => {
     const enabledServices = services.filter((s) => s.enabled)
     if (enabledServices.length === 0) {
       setUpdates([])
+      return
+    }
+  }, [services])
+
+  useEffect(() => {
+    const enabledServices = services.filter((s) => s.enabled)
+    if (enabledServices.length === 0) {
       return
     }
 
@@ -25,9 +33,11 @@ export function useServiceUpdates(services: CloudEnvironmentService[]) {
     const controller = new AbortController()
     abortRef.current = controller
 
-    setIsLoading(true)
-
-    Promise.all(
+    const checkUpdates = async () => {
+      setIsLoading(true)
+      
+      try {
+        const results = await Promise.all(
       enabledServices.map(async (service) => {
         try {
           const params = new URLSearchParams({ service: service.type })
@@ -53,17 +63,19 @@ export function useServiceUpdates(services: CloudEnvironmentService[]) {
           return null
         }
       }),
-    )
-      .then((results) => {
+        )
+        
         if (!controller.signal.aborted) {
           setUpdates(results.filter((r): r is ServiceUpdate => r !== null))
         }
-      })
-      .finally(() => {
+      } finally {
         if (!controller.signal.aborted) {
           setIsLoading(false)
         }
-      })
+      }
+    }
+    
+    void checkUpdates()
 
     return () => controller.abort()
   }, [services])

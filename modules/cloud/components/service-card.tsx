@@ -29,7 +29,6 @@ export function ServiceCard({
   subdomain,
   prefix,
   pods,
-  isEnabled,
 }: ServiceCardProps) {
   const Icon = SERVICE_ICONS[serviceName] ?? Server
   const serviceUrl = subdomain

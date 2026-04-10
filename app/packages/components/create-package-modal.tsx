@@ -45,10 +45,12 @@ function CopyButton({ text }: { text: string }) {
 
   return (
     <button
-      onClick={async () => {
-        await navigator.clipboard.writeText(text)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
+      onClick={() => {
+        void (async () => {
+          await navigator.clipboard.writeText(text)
+          setCopied(true)
+          setTimeout(() => setCopied(false), 2000)
+        })()
       }}
       className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
     >

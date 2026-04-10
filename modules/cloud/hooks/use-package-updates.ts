@@ -14,9 +14,16 @@ export function usePackageUpdates(packages: CloudPackage[], registryUrl: string 
   const [isLoading, setIsLoading] = useState(false)
   const abortRef = useRef<AbortController | null>(null)
 
+  // Reset updates when conditions change
   useEffect(() => {
     if (!registryUrl || packages.length === 0) {
       setUpdates([])
+      return
+    }
+  }, [registryUrl, packages.length])
+
+  useEffect(() => {
+    if (!registryUrl || packages.length === 0) {
       return
     }
 
@@ -24,9 +31,11 @@ export function usePackageUpdates(packages: CloudPackage[], registryUrl: string 
     const controller = new AbortController()
     abortRef.current = controller
 
-    setIsLoading(true)
-
-    Promise.all(
+    const checkUpdates = async () => {
+      setIsLoading(true)
+      
+      try {
+        const results = await Promise.all(
       packages.map(async (pkg) => {
         try {
           const params = new URLSearchParams({
@@ -54,17 +63,19 @@ export function usePackageUpdates(packages: CloudPackage[], registryUrl: string 
           return null
         }
       }),
-    )
-      .then((results) => {
+        )
+        
         if (!controller.signal.aborted) {
           setUpdates(results.filter((r): r is PackageUpdate => r !== null))
         }
-      })
-      .finally(() => {
+      } finally {
         if (!controller.signal.aborted) {
           setIsLoading(false)
         }
-      })
+      }
+    }
+    
+    void checkUpdates()
 
     return () => controller.abort()
   }, [packages, registryUrl])

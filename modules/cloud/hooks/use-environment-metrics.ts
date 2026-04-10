@@ -46,13 +46,13 @@ export function useEnvironmentMetrics(
   }, [subdomain, tenantId, range])
 
   useEffect(() => {
-    refresh()
-    const interval = setInterval(refresh, 30_000)
+    void refresh()
+    const interval = setInterval(() => void refresh(), 30_000)
     return () => clearInterval(interval)
   }, [refresh])
 
   // Subscribe to document changes via WebSocket — triggers refresh on any update
-  useDocumentSubscription(documentId ?? null, refresh)
+  useDocumentSubscription(documentId ?? null, () => void refresh())
 
   return { metrics, isLoading, error, refresh }
 }

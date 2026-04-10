@@ -9,7 +9,10 @@ export function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    const timeout = setTimeout(() => setMounted(true), 0)
+    return () => clearTimeout(timeout)
+  }, [])
 
   const handleThemeToggle = useCallback(() => {
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')

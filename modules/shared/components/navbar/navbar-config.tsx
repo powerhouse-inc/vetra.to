@@ -25,6 +25,6 @@ export const NAVBAR_CONFIGS: Record<string, NavbarConfig> = {
   },
 }
 
-export const getNavbarConfig = (pathname: string): NavbarConfig => {
+export const getNavbarConfig = (): NavbarConfig => {
   return NAVBAR_CONFIGS['/vetra']
 }

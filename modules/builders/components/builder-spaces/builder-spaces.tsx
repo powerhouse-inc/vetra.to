@@ -1,4 +1,4 @@
-import { ExternalLink, Github, Package } from 'lucide-react'
+import { Github, Package } from 'lucide-react'
 import React from 'react'
 
 import { RepositoryActionButton } from '@/modules/shared/components/repository-action-button'
@@ -30,8 +30,6 @@ interface BuilderSpacesProps {
 
 const BuilderSpaces: React.FC<BuilderSpacesProps> = ({
   spaces,
-  teamName,
-  discordUrl,
   className,
 }) => {
   // Flatten all packages if there's only one space

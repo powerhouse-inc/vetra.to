@@ -87,7 +87,7 @@ export function DeploymentsTab({ subdomain, tenantId, documentId }: DeploymentsT
           variant="outline"
           size="sm"
           className="flex items-center gap-1.5"
-          onClick={() => eventsRefresh()}
+          onClick={() => void eventsRefresh()}
         >
           <RefreshCw className="h-3.5 w-3.5" />
           Refresh

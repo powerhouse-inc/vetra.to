@@ -67,10 +67,10 @@ async function gql<T>(
     body: JSON.stringify({ query, variables }),
   })
 
-  const json = await res.json()
+  const json = await res.json() as { data?: T; errors?: Array<{ message: string }> }
 
   if (json.errors?.length) {
-    throw new Error(json.errors[0].message)
+    throw new Error(json.errors[0]?.message ?? 'GraphQL error')
   }
 
   return json.data as T
@@ -606,10 +606,10 @@ async function gqlObservability<T>(
     body: JSON.stringify({ query, variables }),
   })
 
-  const json = await res.json()
+  const json = await res.json() as { data?: T; errors?: Array<{ message: string }> }
 
   if (json.errors?.length) {
-    throw new Error(json.errors[0].message)
+    throw new Error(json.errors[0]?.message ?? 'GraphQL error')
   }
 
   return json.data as T

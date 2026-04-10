@@ -38,9 +38,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { search } = await request.json()
+    const body = await request.json() as { search?: string }
+    const { search } = body
 
-    const builders = await fetchAllBuilderTeams(search)
+    const builders = await fetchAllBuilderTeams(search ?? undefined)
 
     const response = NextResponse.json({
       builders: builders,

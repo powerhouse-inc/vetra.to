@@ -43,13 +43,13 @@ export function useEnvironmentStatus(
   }, [subdomain, tenantId])
 
   useEffect(() => {
-    refresh()
-    const interval = setInterval(refresh, 15_000)
+    void refresh()
+    const interval = setInterval(() => void refresh(), 15_000)
     return () => clearInterval(interval)
   }, [refresh])
 
   // Subscribe to document changes via WebSocket — triggers refresh on any update
-  useDocumentSubscription(documentId ?? null, refresh)
+  useDocumentSubscription(documentId ?? null, () => void refresh())
 
   return { status, pods, isLoading, error, refresh }
 }

@@ -201,7 +201,7 @@ export function IsoGrid() {
     const cleanup = loadThreeJS()
 
     return () => {
-      cleanup.then((cleanupFn) => {
+      void cleanup.then((cleanupFn) => {
         if (cleanupFn) cleanupFn()
       })
     }

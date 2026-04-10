@@ -48,8 +48,8 @@ export function BuildersPageClient({ children }: BuildersPageClientProps) {
         throw new Error('Failed to fetch builders')
       }
 
-      const data = await response.json()
-      setBuilders(data.builders)
+      const data = await response.json() as { builders: BuilderTeam[] }
+      setBuilders(data.builders ?? [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
       console.error('Failed to fetch builders:', err)
@@ -62,12 +62,12 @@ export function BuildersPageClient({ children }: BuildersPageClientProps) {
   useEffect(() => {
     // Skip if searchTerm is empty (initial state) - let the initial load effect handle it
     if (searchTerm.trim() === '') {
-      fetchBuilders()
+      void fetchBuilders()
       return
     }
 
     const timeoutId = setTimeout(() => {
-      fetchBuilders(searchTerm)
+      void fetchBuilders(searchTerm)
     }, 300)
 
     return () => clearTimeout(timeoutId)

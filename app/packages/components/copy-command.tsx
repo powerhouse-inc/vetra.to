@@ -17,7 +17,7 @@ export function CopyCommand({ command }: { command: string }) {
       <span className="text-muted-foreground select-none">$</span>
       <code className="flex-1 truncate">{command}</code>
       <button
-        onClick={copy}
+        onClick={() => void copy()}
         className="text-muted-foreground hover:text-foreground shrink-0 transition-colors"
       >
         {copied ? <Check className="text-primary size-4" /> : <Copy className="size-4" />}

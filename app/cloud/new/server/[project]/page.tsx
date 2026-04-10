@@ -118,7 +118,7 @@ export default function AddPackagePage({ params }: PageProps) {
           </StripedCardHeader>
           <StripedCardContent className="p-4">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)}>
+              <form onSubmit={(e) => { e.preventDefault(); void form.handleSubmit(handleSubmit)(e); }}>
                 <div className="space-y-4">
                   <FormField
                     control={form.control}

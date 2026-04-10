@@ -28,22 +28,26 @@ export function useRegistryPackages(registryUrl: string | null, search: string) 
     const controller = new AbortController()
     abortRef.current = controller
 
-    const timeout = setTimeout(async () => {
-      setIsLoading(true)
-      try {
-        const params = new URLSearchParams({ registry: registryUrl })
-        if (search) params.set('search', search)
-        const res = await fetch(`/api/registry/packages?${params}`, {
-          signal: controller.signal,
-        })
-        if (res.ok) {
-          setPackages(await res.json())
+    const timeout = setTimeout(() => {
+      const searchPackages = async () => {
+        setIsLoading(true)
+        try {
+          const params = new URLSearchParams({ registry: registryUrl })
+          if (search) params.set('search', search)
+          const res = await fetch(`/api/registry/packages?${params}`, {
+            signal: controller.signal,
+          })
+          if (res.ok) {
+            const data = await res.json() as RegistryPackage[]
+            setPackages(data)
+          }
+        } catch (err) {
+          if (err instanceof DOMException && err.name === 'AbortError') return
+        } finally {
+          setIsLoading(false)
         }
-      } catch (err) {
-        if (err instanceof DOMException && err.name === 'AbortError') return
-      } finally {
-        setIsLoading(false)
       }
+      void searchPackages()
     }, 200)
 
     return () => {
@@ -59,25 +63,40 @@ export function useRegistryVersions(registryUrl: string | null, packageName: str
   const [info, setInfo] = useState<VersionInfo | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
+  // Reset info when conditions change
   useEffect(() => {
     if (!registryUrl || !packageName) {
       setInfo(null)
       return
     }
+  }, [registryUrl, packageName])
+
+  useEffect(() => {
+    if (!registryUrl || !packageName) {
+      return
+    }
 
     const controller = new AbortController()
-    setIsLoading(true)
-
-    fetch(
-      `/api/registry/versions?${new URLSearchParams({ registry: registryUrl, package: packageName })}`,
-      { signal: controller.signal },
-    )
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data) setInfo(data)
-      })
-      .catch(() => {})
-      .finally(() => setIsLoading(false))
+    
+    const fetchVersions = async () => {
+      setIsLoading(true)
+      try {
+        const res = await fetch(
+          `/api/registry/versions?${new URLSearchParams({ registry: registryUrl, package: packageName })}`,
+          { signal: controller.signal },
+        )
+        if (res.ok) {
+          const data = await res.json() as VersionInfo
+          setInfo(data)
+        }
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    void fetchVersions()
 
     return () => controller.abort()
   }, [registryUrl, packageName])

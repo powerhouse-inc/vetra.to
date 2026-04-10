@@ -55,7 +55,7 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
     if (!environment || subdomainHealedRef.current) return
     if (environment.state.genericSubdomain === null) {
       subdomainHealedRef.current = true
-      detail.setGenericSubdomain(generateSubdomain(environment.id))
+      void detail.setGenericSubdomain(generateSubdomain(environment.id))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [environment, detail.setGenericSubdomain])
@@ -66,7 +66,7 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
     if (!environment || registryHealedRef.current) return
     if (environment.state.defaultPackageRegistry === null) {
       registryHealedRef.current = true
-      detail.setDefaultPackageRegistry('https://registry.dev.vetra.io')
+      void detail.setDefaultPackageRegistry('https://registry.dev.vetra.io')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [environment, detail.setDefaultPackageRegistry])
@@ -113,7 +113,7 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
           {state?.status === 'DRAFT' && (
             <Button
               size="sm"
-              onClick={() => detail.approveChanges()}
+              onClick={() => void detail.approveChanges()}
               className="bg-emerald-600 hover:bg-emerald-700"
             >
               Deploy
@@ -122,7 +122,7 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
           {state?.status === 'CHANGES_PENDING' && (
             <Button
               size="sm"
-              onClick={() => detail.approveChanges()}
+              onClick={() => void detail.approveChanges()}
               className="bg-blue-600 hover:bg-blue-700"
             >
               Approve Changes

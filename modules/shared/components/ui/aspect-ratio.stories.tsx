@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 import { AspectRatio } from './aspect-ratio'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 
@@ -12,14 +13,15 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Image: Story = {
+export const ImageComponent: Story = {
   render: () => (
     <div style={{ width: 300 }}>
       <AspectRatio ratio={16 / 9}>
-        <img
+        <Image
           src="https://picsum.photos/seed/storybook/600/338"
           alt="Landscape image for aspect ratio demo"
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          fill
+          style={{ objectFit: 'cover' }}
         />
       </AspectRatio>
     </div>

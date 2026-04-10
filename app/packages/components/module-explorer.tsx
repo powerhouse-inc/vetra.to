@@ -192,7 +192,7 @@ export function ModuleExplorer({ modules, cdnBase }: ModuleExplorerProps) {
                 return (
                   <div key={mod.id} className="overflow-hidden rounded-lg border">
                     <button
-                      onClick={() => loadModuleFiles(type, mod)}
+                      onClick={() => void loadModuleFiles(type, mod)}
                       className="hover:bg-accent/50 flex w-full items-center gap-3 px-4 py-3 text-left transition-colors"
                     >
                       {isLoading ? (

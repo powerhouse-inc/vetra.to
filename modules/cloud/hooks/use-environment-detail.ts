@@ -55,15 +55,15 @@ export function useEnvironmentDetail(documentId: string) {
 
   // Initial load
   useEffect(() => {
-    refetch()
+    void refetch()
   }, [refetch])
 
   // Subscribe to document changes via WebSocket — triggers refetch on any update
-  useDocumentSubscription(documentId, refetch)
+  useDocumentSubscription(documentId, () => void refetch())
 
   // Fallback: poll every 30s in case WebSocket is disconnected
   useEffect(() => {
-    const interval = setInterval(refetch, 30_000)
+    const interval = setInterval(() => void refetch(), 30_000)
     return () => clearInterval(interval)
   }, [refetch])
 
@@ -73,7 +73,7 @@ export function useEnvironmentDetail(documentId: string) {
       const updated = await fn(token)
       setEnvironment(updated)
     },
-    [renown],
+    [],
   )
 
   const setLabel = useCallback(

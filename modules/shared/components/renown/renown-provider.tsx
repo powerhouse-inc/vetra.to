@@ -61,7 +61,7 @@ function RenownLoginGuard() {
     }
 
     // Give the SDK a moment to handle it first
-    const timeout = setTimeout(attempt, 1500)
+    const timeout = setTimeout(() => void attempt(), 1500)
 
     return () => {
       cancelled = true
@@ -76,7 +76,9 @@ export function RenownProvider({ appName, url }: { appName: string; url?: string
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
+    // Schedule mounting for next tick to avoid sync setState in effect
+    const timeout = setTimeout(() => setMounted(true), 0)
+    return () => clearTimeout(timeout)
   }, [])
 
   if (!mounted) return null

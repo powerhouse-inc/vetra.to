@@ -13,7 +13,6 @@ import {
   Plus,
   Zap,
   MoreHorizontal,
-  Search,
   Trash2,
   Pencil,
   Check,
@@ -72,13 +71,6 @@ import {
 } from '@/modules/shared/components/ui/dropdown-menu'
 import { Input } from '@/modules/shared/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/modules/shared/components/ui/popover'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/modules/shared/components/ui/select'
 import { Switch } from '@/modules/shared/components/ui/switch'
 import {
   Table,
@@ -315,7 +307,7 @@ function AddPackageModal({
           )}
         </div>
         <div className="mt-2 flex gap-2">
-          <Button onClick={handleSubmit} disabled={isSubmitting || !selectedPackage}>
+          <Button onClick={() => void handleSubmit()} disabled={isSubmitting || !selectedPackage}>
             {isSubmitting ? 'Adding...' : 'Add Package'}
           </Button>
           <Button variant="outline" onClick={() => setOpen(false)}>
@@ -380,7 +372,7 @@ function PackageRow({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem disabled>Upgrade to version...</DropdownMenuItem>
-            <DropdownMenuItem variant="destructive" onClick={handleUninstall}>
+            <DropdownMenuItem variant="destructive" onClick={() => void handleUninstall()}>
               Uninstall
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -506,7 +498,7 @@ function ServiceRow({
       </div>
       <Switch
         checked={isEnabled}
-        onCheckedChange={handleToggle}
+        onCheckedChange={(checked) => void handleToggle(checked)}
         disabled={isToggling}
         aria-label={`Toggle ${label}`}
         className={cn(
@@ -566,8 +558,8 @@ function CustomDomainSection({
         const res = await fetch(
           `https://dns.google/resolve?name=${encodeURIComponent(record.host)}&type=A`,
         )
-        const data = await res.json()
-        const answers = (data.Answer ?? []) as Array<{ data: string }>
+        const data = await res.json() as { Answer?: Array<{ data: string }> }
+        const answers = data.Answer ?? []
         results[record.host] = answers.some((a: { data: string }) => a.data === record.value)
       } catch {
         results[record.host] = null
@@ -584,7 +576,7 @@ function CustomDomainSection({
           <Checkbox
             id="custom-domain"
             checked={enabled}
-            onCheckedChange={(checked) => handleToggle(checked === true)}
+            onCheckedChange={(checked) => void handleToggle(checked === true)}
             disabled={isSaving}
           />
           <label htmlFor="custom-domain" className="text-sm font-medium">
@@ -598,13 +590,13 @@ function CustomDomainSection({
               value={domainInput}
               onChange={(e) => setDomainInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSaveDomain()
+                if (e.key === 'Enter') void handleSaveDomain()
               }}
               className="font-mono text-sm"
             />
             <Button
               size="sm"
-              onClick={handleSaveDomain}
+              onClick={() => void handleSaveDomain()}
               disabled={isSaving || !domainInput.trim() || domainInput === customDomain?.domain}
             >
               {isSaving ? 'Saving...' : 'Save'}
@@ -620,7 +612,7 @@ function CustomDomainSection({
             <Button
               variant="outline"
               size="sm"
-              onClick={handleVerifyDns}
+              onClick={() => void handleVerifyDns()}
               disabled={isVerifying}
               className="text-xs"
             >
@@ -717,7 +709,7 @@ export function InlineEditableTitle({
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleSave()
+    if (e.key === 'Enter') void handleSave()
     if (e.key === 'Escape') handleCancel()
   }
 
@@ -729,7 +721,7 @@ export function InlineEditableTitle({
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          onBlur={handleSave}
+          onBlur={() => void handleSave()}
           disabled={isSaving}
           className="h-9 text-2xl font-bold"
         />
@@ -737,7 +729,7 @@ export function InlineEditableTitle({
           variant="ghost"
           size="sm"
           className="h-8 w-8 p-0"
-          onClick={handleSave}
+          onClick={() => void handleSave()}
           disabled={isSaving}
         >
           <Check className="h-4 w-4" />
@@ -816,7 +808,6 @@ export function OverviewTab({
   const router = useRouter()
   const {
     status,
-    pods,
     isLoading: statusLoading,
   } = useEnvironmentStatus(subdomain, tenantId, environment.id)
   const { events, isLoading: eventsLoading } = useEnvironmentEvents(
@@ -1162,7 +1153,7 @@ export function OverviewTab({
                     termination.
                   </p>
                 </div>
-                <Button variant="destructive" size="sm" onClick={() => onTerminate()}>
+                <Button variant="destructive" size="sm" onClick={() => void onTerminate()}>
                   Terminate
                 </Button>
               </div>
@@ -1191,7 +1182,7 @@ export function OverviewTab({
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={handleDelete}
+                    onClick={() => void handleDelete()}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
                     Delete Environment

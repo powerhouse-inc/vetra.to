@@ -95,7 +95,7 @@ export function NewEnvironmentForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
+      <form onSubmit={(e) => { e.preventDefault(); void form.handleSubmit(handleSubmit)(e); }}>
         <div className="space-y-4">
           <FormField
             control={form.control}

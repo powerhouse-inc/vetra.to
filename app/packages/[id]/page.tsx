@@ -3,7 +3,6 @@ import {
   Calendar,
   Download,
   ExternalLink,
-  FileCode2,
   Github,
   PackageIcon,
   Scale,
@@ -33,7 +32,7 @@ import { ModuleExplorer } from '../components/module-explorer'
 import { AddToCloud } from '../components/add-to-cloud'
 
 interface PackageDetailPageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
   searchParams: Promise<{ v?: string }>
 }
 

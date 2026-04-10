@@ -41,7 +41,10 @@ const SUBSCRIPTION_QUERY = `
  */
 export function useDocumentSubscription(documentId: string | null, onEvent: () => void) {
   const onEventRef = useRef(onEvent)
-  onEventRef.current = onEvent
+  
+  useEffect(() => {
+    onEventRef.current = onEvent
+  })
 
   useEffect(() => {
     if (!documentId) return
@@ -54,9 +57,7 @@ export function useDocumentSubscription(documentId: string | null, onEvent: () =
       lazy: true,
     })
 
-    let unsubscribe: (() => void) | undefined
-
-    unsubscribe = client.subscribe(
+    const unsubscribe = client.subscribe(
       {
         query: SUBSCRIPTION_QUERY,
         variables: {
@@ -78,7 +79,7 @@ export function useDocumentSubscription(documentId: string | null, onEvent: () =
 
     return () => {
       unsubscribe?.()
-      client.dispose()
+      void client.dispose()
     }
   }, [documentId])
 }
@@ -89,7 +90,10 @@ export function useDocumentSubscription(documentId: string | null, onEvent: () =
  */
 export function useDocumentListSubscription(onEvent: () => void) {
   const onEventRef = useRef(onEvent)
-  onEventRef.current = onEvent
+  
+  useEffect(() => {
+    onEventRef.current = onEvent
+  })
 
   useEffect(() => {
     const url = getWsEndpoint()
@@ -119,7 +123,7 @@ export function useDocumentListSubscription(onEvent: () => void) {
 
     return () => {
       unsubscribe()
-      client.dispose()
+      void client.dispose()
     }
   }, [])
 }

@@ -42,21 +42,21 @@ export function useEnvironments(): CloudEnvironment[] {
 
   // Initial load
   useEffect(() => {
-    refetch()
+    void refetch()
   }, [refetch])
 
   // Subscribe to all document changes via WebSocket — triggers refetch on any update
-  useDocumentListSubscription(refetch)
+  useDocumentListSubscription(() => void refetch())
 
   // Fallback: poll every 30s in case WebSocket is disconnected
   useEffect(() => {
-    const interval = setInterval(refetch, 10_000)
+    const interval = setInterval(() => void refetch(), 10_000)
     return () => clearInterval(interval)
   }, [refetch])
 
   // Listen for manual refresh events (e.g. after deletion)
   useEffect(() => {
-    const handleRefresh = () => refetch()
+    const handleRefresh = () => void refetch()
     window.addEventListener('refresh-environments', handleRefresh)
     return () => window.removeEventListener('refresh-environments', handleRefresh)
   }, [refetch])

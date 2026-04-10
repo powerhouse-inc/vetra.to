@@ -117,7 +117,7 @@ export function LogsTab({ subdomain, tenantId, isStopped }: LogsTabProps) {
           variant="outline"
           size="sm"
           className="ml-auto flex items-center gap-1.5"
-          onClick={() => refresh()}
+          onClick={() => void refresh()}
         >
           <RefreshCw className="h-3.5 w-3.5" />
           Refresh
