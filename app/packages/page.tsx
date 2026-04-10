@@ -146,7 +146,6 @@ export default async function PackagesPage({ searchParams }: PageProps) {
           )}
         </div>
       </div>
-
     </div>
   )
 }

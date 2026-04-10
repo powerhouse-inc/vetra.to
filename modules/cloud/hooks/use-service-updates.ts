@@ -7,6 +7,24 @@ export type ServiceUpdate = {
   serviceType: CloudEnvironmentService['type']
   currentVersion: string | null
   latestVersion: string
+  channel: string
+}
+
+const SERVICE_NPM_PACKAGES: Record<string, string> = {
+  CONNECT: '@powerhousedao/connect',
+  SWITCHBOARD: '@powerhousedao/switchboard',
+}
+
+/**
+ * Detect which release channel a version belongs to.
+ * Strips leading "v" before matching.
+ * e.g. "v6.0.0-dev.164" -> "dev", "v5.3.6" -> "latest"
+ */
+function detectChannel(version: string | null): string {
+  if (!version) return 'latest'
+  const clean = version.replace(/^v/, '')
+  const match = clean.match(/-([a-zA-Z]+)\.?\d*$/)
+  return match ? match[1] : 'latest'
 }
 
 export function useServiceUpdates(services: CloudEnvironmentService[]) {
@@ -29,25 +47,33 @@ export function useServiceUpdates(services: CloudEnvironmentService[]) {
 
     Promise.all(
       enabledServices.map(async (service) => {
+        const npmPkg = SERVICE_NPM_PACKAGES[service.type]
+        if (!npmPkg) return null
+
         try {
-          const params = new URLSearchParams({ service: service.type })
-          const res = await fetch(`/api/registry/tags?${params}`, {
+          const res = await fetch(`https://registry.npmjs.org/${npmPkg}`, {
             signal: controller.signal,
           })
           if (!res.ok) return null
 
-          const data = (await res.json()) as { tags: string[] }
-          const tags = data.tags ?? []
-          if (tags.length === 0) return null
+          const data = (await res.json()) as {
+            'dist-tags': Record<string, string>
+          }
+          const distTags = data['dist-tags'] ?? {}
 
-          // Use the last tag in the list as "latest"
-          const latestTag = tags[tags.length - 1]
-          if (!latestTag || latestTag === service.version) return null
+          const channel = detectChannel(service.version)
+          const channelVersion = distTags[channel]
+          if (!channelVersion) return null
+
+          // Compare without v prefix
+          const currentClean = service.version?.replace(/^v/, '') ?? ''
+          if (channelVersion === currentClean) return null
 
           return {
             serviceType: service.type,
             currentVersion: service.version,
-            latestVersion: latestTag,
+            latestVersion: `v${channelVersion}`,
+            channel,
           } satisfies ServiceUpdate
         } catch {
           return null

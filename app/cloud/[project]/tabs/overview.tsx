@@ -612,7 +612,7 @@ function ServiceRow({
                           key={tag}
                           onClick={() => handleSetVersion(version)}
                           className={cn(
-                            'flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] transition-colors hover:border-primary hover:bg-primary/5',
+                            'hover:border-primary hover:bg-primary/5 flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] transition-colors',
                             version === currentVersion && 'border-primary bg-primary/5',
                           )}
                         >
@@ -623,7 +623,7 @@ function ServiceRow({
                     </div>
                   )}
                   {/* Full version list */}
-                  <div className="max-h-48 overflow-y-auto rounded-md border bg-card">
+                  <div className="bg-card max-h-48 overflow-y-auto rounded-md border">
                     {tagsLoading ? (
                       <div className="flex items-center justify-center p-4">
                         <Loader2 className="text-muted-foreground size-4 animate-spin" />
@@ -640,17 +640,21 @@ function ServiceRow({
                             key={tag}
                             onClick={() => handleSetVersion(tag)}
                             className={cn(
-                              'flex w-full items-center justify-between px-3 py-1.5 text-left text-xs transition-colors hover:bg-accent',
+                              'hover:bg-accent flex w-full items-center justify-between px-3 py-1.5 text-left text-xs transition-colors',
                               tag === currentVersion && 'bg-primary/5',
                             )}
                           >
                             <span className="font-mono">{tag}</span>
                             <div className="flex items-center gap-1">
                               {tagLabel && (
-                                <Badge variant="secondary" className="text-[9px]">{tagLabel}</Badge>
+                                <Badge variant="secondary" className="text-[9px]">
+                                  {tagLabel}
+                                </Badge>
                               )}
                               {tag === currentVersion && (
-                                <Badge variant="default" className="text-[9px]">current</Badge>
+                                <Badge variant="default" className="text-[9px]">
+                                  current
+                                </Badge>
                               )}
                             </div>
                           </button>
@@ -1164,9 +1168,7 @@ export function OverviewTab({
                       : disableService(type)
                   }
                   onSetVersion={
-                    setServiceVersion
-                      ? (version) => setServiceVersion(type, version)
-                      : undefined
+                    setServiceVersion ? (version) => setServiceVersion(type, version) : undefined
                   }
                 />
               )

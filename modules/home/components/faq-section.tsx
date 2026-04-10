@@ -26,7 +26,10 @@ const faqs = [
         >
           Vetra Academy
         </a>{' '}
-        for comprehensive developer documentation and tutorials. You can also get hands-on by trying Vetra Cloud for deployment or browsing the package ecosystem to see what others have built. The platform supports both technical builders and tech-enthusiasts through guided experiences.
+        for comprehensive developer documentation and tutorials. You can also get hands-on by trying
+        Vetra Cloud for deployment or browsing the package ecosystem to see what others have built.
+        The platform supports both technical builders and tech-enthusiasts through guided
+        experiences.
       </>
     ),
   },
@@ -53,7 +56,8 @@ const faqs = [
         >
           Powerhouse Discord server
         </a>{' '}
-        where you can directly communicate with the team and community. You can also find comprehensive documentation and tutorials at the{' '}
+        where you can directly communicate with the team and community. You can also find
+        comprehensive documentation and tutorials at the{' '}
         <a
           href="https://academy.vetra.io/"
           target="_blank"
@@ -68,7 +72,8 @@ const faqs = [
   },
   {
     question: 'Can I integrate other tools?',
-    answer: 'Absolutely! Vetra is designed as an open framework that welcomes integration with your preferred tools and services. The reactive document architecture and modular package system make it easy to extend and customize for your specific needs.',
+    answer:
+      'Absolutely! Vetra is designed as an open framework that welcomes integration with your preferred tools and services. The reactive document architecture and modular package system make it easy to extend and customize for your specific needs.',
   },
   {
     question: 'What is Vetra Cloud?',
@@ -84,7 +89,8 @@ const faqs = [
     question: 'How can I contribute?',
     answer: (
       <>
-        You can contribute to Vetra through the Powerhouse GitHub repository, join the community discussions on{' '}
+        You can contribute to Vetra through the Powerhouse GitHub repository, join the community
+        discussions on{' '}
         <a
           href="https://discord.com/invite/pwQJwgaQKd"
           target="_blank"
@@ -108,7 +114,8 @@ const faqs = [
   },
   {
     question: 'What blockchains do you integrate with?',
-    answer: 'Vetra currently supports Web3 authentication through Ethereum and Solana wallets via the Renown identity system. This enables blockchain-based login and identity management across all host applications in the ecosystem.',
+    answer:
+      'Vetra currently supports Web3 authentication through Ethereum and Solana wallets via the Renown identity system. This enables blockchain-based login and identity management across all host applications in the ecosystem.',
   },
 ]
 
