@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { GridBackground } from '@/modules/shared/components/ui/grid-background'
+import { CreatePackageModal } from '@/app/packages/components/create-package-modal'
 
 const phrases = ['Specification driven AI.', 'Web3 enabled features.', '100% open source.']
 
@@ -55,19 +56,14 @@ export function Hero() {
           software you create.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
-          <Link
-            href="/cloud"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center rounded-lg px-8 py-3.5 text-base font-semibold transition-colors"
-          >
-            Get Started
-          </Link>
+          <CreatePackageModal />
           <Link
             href="https://academy.vetra.io/"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-accent text-foreground hover:bg-accent/80 inline-flex items-center rounded-lg px-8 py-3.5 text-base font-semibold transition-colors"
+            className="bg-accent text-foreground hover:bg-accent/80 inline-flex items-center rounded-lg px-8 py-3.5 text-base font-semibold transition-colors h-10"
           >
-            Explore Academy
+            Explore Vetra Academy
           </Link>
         </div>
 

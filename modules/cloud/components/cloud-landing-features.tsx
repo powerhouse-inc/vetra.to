@@ -182,7 +182,7 @@ export function CloudLandingFeatures() {
             subtitle="Performance"
             title="Integrated RAD support"
             description="Purpose-built for the Reactive Document Architecture. Optimized for document sync, real-time collaboration, and event-driven workflows out of the box."
-            image="/images/cloud/cloud-studio.png"
+            image="/images/cloud/powerhouse-package.png"
           />
         </div>
       </section>

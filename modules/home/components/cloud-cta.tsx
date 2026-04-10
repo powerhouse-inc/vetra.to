@@ -17,7 +17,7 @@ export function CloudCta() {
             Documents as code, code as infrastructure.
           </p>
           <Button asChild size="lg">
-            <Link href="/cloud">Explore Open Cloud</Link>
+            <Link href="/cloud">Explore Vetra Cloud</Link>
           </Button>
         </div>
         <div className="flex-1">

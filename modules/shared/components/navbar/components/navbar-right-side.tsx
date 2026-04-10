@@ -81,12 +81,10 @@ function NavbarRightSide() {
         <ThemeToggle />
         <RenownButton />
         <Link
-          href="https://gmail.us21.list-manage.com/subscribe/post?u=a65ca7e437961008f5f5c1bad&id=c8ea339c46&f_id=00fda7e6f0"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="/packages"
           className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-5 py-2.5 text-sm font-semibold transition-all hover:-translate-y-px"
         >
-          Join Waitlist
+          Try Our Beta
         </Link>
       </div>
 

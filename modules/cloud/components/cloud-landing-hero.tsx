@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { IsoGrid } from '@/modules/shared/components/ui/iso-grid'
+import { CreatePackageModal } from '@/app/packages/components/create-package-modal'
 
 export function CloudLandingHero() {
   return (
@@ -16,12 +17,7 @@ export function CloudLandingHero() {
           of on-premise hosting.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
-          <Link
-            href="/cloud"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-8 py-3 text-sm font-semibold transition-colors"
-          >
-            Get Started
-          </Link>
+          <CreatePackageModal />
           <Link
             href="#features"
             className="bg-accent text-foreground hover:bg-accent/80 rounded-lg px-8 py-3 text-sm font-semibold transition-colors"

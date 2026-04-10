@@ -61,11 +61,11 @@ export function SpecToScale() {
       </div>
 
       <div className="flex items-center justify-center gap-4">
-        <Button asChild size="lg">
-          <Link href="https://academy.vetra.io/">Explore Academy</Link>
+      <Button asChild size="lg">
+          <Link href="/cloud">Explore Vetra Cloud</Link>
         </Button>
         <Button asChild size="lg">
-          <Link href="/cloud">Vetra Cloud</Link>
+          <Link href="https://academy.vetra.io/">Explore Vetra Academy</Link>
         </Button>
       </div>
     </section>
