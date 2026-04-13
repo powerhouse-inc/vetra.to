@@ -1,12 +1,12 @@
 'use client'
 
-import { useRenown } from '@powerhousedao/reactor-browser'
 import { Trash2, Server, Package } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { getAuthToken, deleteEnvironment } from '@/modules/cloud/graphql'
+import { loadEnvironmentController } from '@/modules/cloud/controller'
+import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
 import { useEnvironments, useRefreshEnvironments } from '@/modules/cloud/hooks/use-environment'
 import {
   AlertDialog,
@@ -49,7 +49,7 @@ function StatusDot({ status }: { status: string }) {
 }
 
 function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
-  const renown = useRenown()
+  const { signer, canSign } = useCanSign()
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const refreshEnvironments = useRefreshEnvironments()
@@ -57,10 +57,14 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
   const packageCount = env.state.packages.length
 
   const handleDelete = async () => {
+    if (!signer) {
+      toast.error('You must be logged in with Renown to delete an environment')
+      return
+    }
     try {
       setIsDeleting(true)
-      const token = await getAuthToken(renown)
-      await deleteEnvironment(env.id, token)
+      const ctrl = await loadEnvironmentController({ documentId: env.id, signer })
+      await ctrl.delete()
       toast.success('Environment deleted successfully')
       refreshEnvironments()
       setShowDeleteDialog(false)
@@ -106,7 +110,8 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
               size="icon"
               className="text-muted-foreground hover:text-destructive hover:border-destructive shrink-0"
               onClick={() => setShowDeleteDialog(true)}
-              disabled={isDeleting}
+              disabled={isDeleting || !canSign}
+              title={canSign ? 'Delete environment' : 'Log in with Renown to delete'}
             >
               <Trash2 className="h-4 w-4" />
             </Button>

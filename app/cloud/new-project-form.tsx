@@ -1,18 +1,14 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import {
-  getAuthToken,
-  createEnvironment,
-  setLabel,
-  initializeEnvironment,
-  enableService,
-} from '@/modules/cloud/graphql'
+import { loadEnvironmentController } from '@/modules/cloud/controller'
+import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
+import { useCreateEnvironment } from '@/modules/cloud/hooks/use-create-environment'
+import { RequireSigner } from '@/modules/cloud/components/require-signer'
 import { generateSubdomain } from '@/modules/cloud/subdomain'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
@@ -38,13 +34,22 @@ type NewEnvironmentFormProps = {
   onSuccess?: () => void
 }
 
-export function NewEnvironmentForm({
+export function NewEnvironmentForm(props: NewEnvironmentFormProps) {
+  return (
+    <RequireSigner>
+      <NewEnvironmentFormInner {...props} />
+    </RequireSigner>
+  )
+}
+
+function NewEnvironmentFormInner({
   docId,
   initialName,
   onCreated,
   onSuccess,
 }: NewEnvironmentFormProps) {
-  const renown = useRenown()
+  const { signer } = useCanSign()
+  const createEnv = useCreateEnvironment()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -64,23 +69,25 @@ export function NewEnvironmentForm({
       setError(null)
       setSuccess(false)
 
-      const token = await getAuthToken(renown)
-
       if (docId) {
-        await setLabel(docId, values.name, token)
+        // Rename existing environment via signed action
+        if (!signer) {
+          throw new Error('You must be logged in with Renown to rename an environment')
+        }
+        const ctrl = await loadEnvironmentController({ documentId: docId, signer })
+        ctrl.setLabel({ label: values.name })
+        await ctrl.push()
       } else {
-        const env = await createEnvironment(values.name, token)
-        const subdomain = generateSubdomain(env.id)
-        await initializeEnvironment(
-          env.id,
+        // Create new environment in a single signed batch
+        const subdomain = generateSubdomain(crypto.randomUUID())
+        const { documentId } = await createEnv({
+          label: values.name,
           subdomain,
-          'vetra.io',
-          'https://registry.dev.vetra.io',
-          token,
-        )
-        await enableService(env.id, 'CONNECT', 'connect', token)
-        await setLabel(env.id, values.name, token)
-        onCreated?.(env.id)
+          baseDomain: 'vetra.io',
+          defaultPackageRegistry: 'https://registry.dev.vetra.io',
+          enabledServices: [{ type: 'CONNECT', prefix: 'connect' }],
+        })
+        onCreated?.(documentId)
       }
 
       setSuccess(true)
