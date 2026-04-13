@@ -19,7 +19,7 @@ export const NAVBAR_CONFIGS: Record<string, NavbarConfig> = {
         isActive: (currentPath) => currentPath.includes('/builders'),
       },
       { label: 'Academy', href: 'https://staging.powerhouse.academy', isExternal: true },
-      { label: 'Cloud', href: 'https://vetra.io/cloud', isExternal: true },
+      { label: 'Cloud', href: '/cloud', isActive: (currentPath) => currentPath.includes('/cloud') },
     ],
     authComponent: 'loginButton',
   },
