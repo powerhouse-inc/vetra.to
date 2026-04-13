@@ -7,7 +7,12 @@ import { toast } from 'sonner'
 
 import { loadEnvironmentController } from '@/modules/cloud/controller'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
-import { useEnvironments, useRefreshEnvironments } from '@/modules/cloud/hooks/use-environment'
+import {
+  useEnvironments,
+  useRefreshEnvironments,
+  useViewer,
+} from '@/modules/cloud/hooks/use-environment'
+import type { ListScope } from '@/modules/cloud/graphql'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -142,27 +147,63 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
 }
 
 export function CloudEnvironments() {
-  const environments = useEnvironments()
-
-  if (environments.length === 0) {
-    return (
-      <div className="flex min-h-[300px] flex-col items-center justify-center space-y-4 py-12">
-        <Server className="text-muted-foreground h-12 w-12" />
-        <div className="text-center">
-          <h3 className="text-lg font-semibold">No environments yet</h3>
-          <p className="text-muted-foreground text-sm">
-            Create your first environment to get started.
-          </p>
-        </div>
-      </div>
-    )
-  }
+  const [scope, setScope] = useState<ListScope>('MINE')
+  const { viewer } = useViewer()
+  const environments = useEnvironments(scope)
+  const isAdmin = viewer?.isAdmin ?? false
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {environments.map((env) => (
-        <CloudEnvironmentCard key={env.id} env={env} />
-      ))}
+    <div className="space-y-4">
+      {/* Admin-only Mine | All toggle */}
+      {isAdmin && (
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-muted-foreground">View:</span>
+          <div className="bg-muted inline-flex rounded-md p-0.5">
+            <button
+              type="button"
+              onClick={() => setScope('MINE')}
+              className={`rounded px-3 py-1 transition-colors ${
+                scope === 'MINE'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Mine
+            </button>
+            <button
+              type="button"
+              onClick={() => setScope('ALL')}
+              className={`rounded px-3 py-1 transition-colors ${
+                scope === 'ALL'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              All
+            </button>
+          </div>
+        </div>
+      )}
+
+      {environments.length === 0 ? (
+        <div className="flex min-h-[300px] flex-col items-center justify-center space-y-4 py-12">
+          <Server className="text-muted-foreground h-12 w-12" />
+          <div className="text-center">
+            <h3 className="text-lg font-semibold">No environments yet</h3>
+            <p className="text-muted-foreground text-sm">
+              {scope === 'ALL'
+                ? 'No environments exist in the system.'
+                : 'Create your first environment to get started.'}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {environments.map((env) => (
+            <CloudEnvironmentCard key={env.id} env={env} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

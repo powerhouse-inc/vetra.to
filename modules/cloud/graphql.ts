@@ -187,6 +187,64 @@ export async function fetchEnvironment(
 }
 
 // ---------------------------------------------------------------------------
+// Per-user environment listing (vetra-cloud-observability subgraph)
+// ---------------------------------------------------------------------------
+
+export type ListScope = 'MINE' | 'ALL'
+
+export type EnvironmentSummary = {
+  id: string
+  name: string | null
+  subdomain: string | null
+  tenantId: string | null
+  customDomain: string | null
+  status: string | null
+  createdBy: string | null
+}
+
+export type Viewer = {
+  address: string | null
+  isAdmin: boolean
+}
+
+/**
+ * Fetch environments scoped to the calling user.
+ * - Without a token: returns an empty list (server-side enforced).
+ * - scope=MINE (default): returns only envs the caller created.
+ * - scope=ALL: requires admin status on switchboard; returns all envs.
+ */
+export async function fetchMyEnvironments(
+  scope: ListScope = 'MINE',
+  token?: string | null,
+): Promise<EnvironmentSummary[]> {
+  const data = await gql<{ myEnvironments: EnvironmentSummary[] }>(
+    `query ($scope: ListScope!) {
+      myEnvironments(scope: $scope) {
+        id
+        name
+        subdomain
+        tenantId
+        customDomain
+        status
+        createdBy
+      }
+    }`,
+    { scope },
+    token,
+  )
+  return data.myEnvironments
+}
+
+/**
+ * Fetch the caller's identity/admin status. Used by the UI to conditionally
+ * show the "Mine | All" toggle.
+ */
+export async function fetchViewer(token?: string | null): Promise<Viewer> {
+  const data = await gql<{ viewer: Viewer }>(`query { viewer { address isAdmin } }`, {}, token)
+  return data.viewer
+}
+
+// ---------------------------------------------------------------------------
 // Observability queries (same central Switchboard endpoint)
 // ---------------------------------------------------------------------------
 
