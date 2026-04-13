@@ -22,8 +22,46 @@ function getDriveId(): string {
   return readEnv('NEXT_PUBLIC_CLOUD_DRIVE_ID') || 'powerhouse'
 }
 
+/**
+ * A function that resolves the current user's Renown bearer token, or null
+ * if the user is not logged in. Set at runtime via `setAuthTokenProvider`
+ * (typically from a React component that has access to `useRenown()`).
+ */
+export type AuthTokenProvider = () => Promise<string | null>
+
+let authTokenProvider: AuthTokenProvider | null = null
+
+/**
+ * Register the bearer-token provider for all reactor client requests.
+ * Call this once at app startup (after Renown is available) so every
+ * request carries the caller's identity.
+ */
+export function setAuthTokenProvider(provider: AuthTokenProvider | null): void {
+  authTokenProvider = provider
+}
+
+/**
+ * SDK middleware that attaches an `Authorization: Bearer <renown-token>`
+ * header to every reactor GraphQL request. Requests proceed without the
+ * header if no provider has been registered yet (e.g. during SSR) — the
+ * server treats those as anonymous, which is fine for read queries on
+ * unprotected documents.
+ */
+async function withAuth<T>(
+  action: (requestHeaders?: Record<string, string>) => Promise<T>,
+): Promise<T> {
+  if (!authTokenProvider) return action()
+  try {
+    const token = await authTokenProvider()
+    if (!token) return action()
+    return action({ Authorization: `Bearer ${token}` })
+  } catch {
+    return action()
+  }
+}
+
 /** Reactor GraphQL client used for signed action push/pull. */
-export const client = createClient(getEndpoint())
+export const client = createClient(getEndpoint(), withAuth)
 
 /** ID of the drive that holds vetra-cloud-environment documents. */
 export const DRIVE_ID = getDriveId()
