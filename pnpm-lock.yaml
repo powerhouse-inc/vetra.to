@@ -23,6 +23,9 @@ importers:
       '@powerhousedao/shared':
         specifier: 6.0.0-dev.152
         version: 6.0.0-dev.152
+      '@powerhousedao/vetra-cloud-package':
+        specifier: link:../vetra-cloud-package
+        version: link:../vetra-cloud-package
       '@radix-ui/react-accordion':
         specifier: ^1.2.11
         version: 1.2.12(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
