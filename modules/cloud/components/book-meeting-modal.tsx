@@ -38,38 +38,38 @@ export function BookMeetingModal() {
             Schedule a Demo
           </DialogTitle>
           <DialogDescription>
-            Get a personalized demo of Vetra Cloud and discover how it can transform 
-            your development workflow.
+            Get a personalized demo of Vetra Cloud and discover how it can transform your
+            development workflow.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-4">
             <div className="flex items-start space-x-3 rounded-lg border p-4">
-              <Video className="size-5 mt-0.5 text-primary" />
+              <Video className="text-primary mt-0.5 size-5" />
               <div>
                 <h4 className="font-medium">Live Demo Session</h4>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   30-minute personalized walkthrough of Vetra Cloud features
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-3 rounded-lg border p-4">
-              <Users className="size-5 mt-0.5 text-primary" />
+              <Users className="text-primary mt-0.5 size-5" />
               <div>
                 <h4 className="font-medium">Solution Architecture</h4>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Discuss your specific use case and how Vetra can help
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-3 rounded-lg border p-4">
-              <Clock className="size-5 mt-0.5 text-primary" />
+              <Clock className="text-primary mt-0.5 size-5" />
               <div>
                 <h4 className="font-medium">Q&A Session</h4>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Get answers to technical questions and implementation details
                 </p>
               </div>
@@ -77,18 +77,11 @@ export function BookMeetingModal() {
           </div>
         </div>
 
-        <DialogFooter className="flex-col sm:flex-row gap-2">
-          <Button 
-            variant="outline" 
-            onClick={() => setIsOpen(false)}
-            className="w-full sm:w-auto"
-          >
+        <DialogFooter className="flex-col gap-2 sm:flex-row">
+          <Button variant="outline" onClick={() => setIsOpen(false)} className="w-full sm:w-auto">
             Maybe Later
           </Button>
-          <Button 
-            onClick={handleBookMeeting}
-            className="w-full sm:w-auto"
-          >
+          <Button onClick={handleBookMeeting} className="w-full sm:w-auto">
             <Calendar className="size-4" />
             Schedule Now
           </Button>

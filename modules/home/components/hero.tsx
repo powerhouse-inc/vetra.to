@@ -61,7 +61,7 @@ export function Hero() {
             href="https://academy.vetra.io/"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-accent text-foreground hover:bg-accent/80 inline-flex items-center rounded-lg px-8 py-3.5 text-base font-semibold transition-colors h-10"
+            className="bg-accent text-foreground hover:bg-accent/80 inline-flex h-10 items-center rounded-lg px-8 py-3.5 text-base font-semibold transition-colors"
           >
             Explore Vetra Academy
           </Link>

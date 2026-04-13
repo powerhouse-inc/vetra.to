@@ -82,11 +82,9 @@ function FeatureSection({
           {subtitle}
         </div>
         <h3 className="text-2xl leading-tight font-bold">{title}</h3>
-        <div className="text-foreground-70 leading-relaxed space-y-4">
+        <div className="text-foreground-70 space-y-4 leading-relaxed">
           {Array.isArray(description) ? (
-            description.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))
+            description.map((paragraph, index) => <p key={index}>{paragraph}</p>)
           ) : (
             <p>{description}</p>
           )}
@@ -111,7 +109,7 @@ export function CloudLandingFeatures() {
   return (
     <div id="features">
       {/* Infrastructure bar */}
-      <section className="bg-gradient-to-b from-primary-30/50 to-primary-30 px-6 py-12">
+      <section className="from-primary-30/50 to-primary-30 bg-gradient-to-b px-6 py-12">
         <div className="mx-auto max-w-screen-xl text-center">
           <p className="text-foreground text-3xl font-bold">Vetra Cloud runs on</p>
           <p className="text-foreground-70 mt-2 mb-16 text-2xl">
@@ -171,9 +169,23 @@ export function CloudLandingFeatures() {
             subtitle="Freedom"
             title="Cloud without Captivity."
             description={[
-              <>A <strong>pluggable anchoring layer</strong> that is storage-agnostic by design. Switch between storage backends, anchoring providers, and sync protocols without rewriting your application.</>,
-              <>Powerhouse Reactors are the nodes in the network that store documents, resolve conflicts and verify document event histories. Reactors can be configured for local storage, centralized cloud storage, or decentralized networks - giving you complete control over where and how your data is stored.</>,
-              <>Document histories are append-only, which means they can be stored in both <strong>mutable and immutable repositories</strong>. Whether as files, in browsers, databases, or on the blockchain - different storage options for different use cases, all accessible through the same unified interface.</>
+              <>
+                A <strong>pluggable anchoring layer</strong> that is storage-agnostic by design.
+                Switch between storage backends, anchoring providers, and sync protocols without
+                rewriting your application.
+              </>,
+              <>
+                Powerhouse Reactors are the nodes in the network that store documents, resolve
+                conflicts and verify document event histories. Reactors can be configured for local
+                storage, centralized cloud storage, or decentralized networks - giving you complete
+                control over where and how your data is stored.
+              </>,
+              <>
+                Document histories are append-only, which means they can be stored in both{' '}
+                <strong>mutable and immutable repositories</strong>. Whether as files, in browsers,
+                databases, or on the blockchain - different storage options for different use cases,
+                all accessible through the same unified interface.
+              </>,
             ]}
             image="/images/cloud/cloud-architecture.png"
             reversed
