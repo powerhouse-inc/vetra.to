@@ -111,7 +111,7 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
                 {member.isRenown && member.phid && (
                   <div className="mt-2">
                     <a
-                      href={`https://renown-staging.vetra.io/profile/${member.phid}`}
+                      href={`${process.env.NEXT_PUBLIC_RENOWN_URL}/profile/${member.phid}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-foreground flex items-center justify-center gap-2 rounded px-4 py-2 transition-opacity hover:opacity-80"

@@ -23,9 +23,8 @@ import {
   StripedCardHeader,
   StripedCardTitle,
 } from '@/modules/shared/components/striped-card'
-
-import { useEnvironments, useRefreshEnvironments } from './use-cloud-data'
-import { deleteDocument } from './lib/api'
+import { useEnvironments, useRefreshEnvironments } from '@/modules/cloud/hooks/use-environment'
+import { deleteDocument } from '@/modules/cloud/api'
 import type { CloudEnvironment } from './types'
 
 function StatusBadge({ status }: { status: string }) {
@@ -48,7 +47,7 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await deleteDocument({ docId: env.id })
+      await deleteDocument(env.id)
       toast.success('Environment deleted successfully')
       refreshEnvironments()
       setShowDeleteDialog(false)
