@@ -1,6 +1,7 @@
 'use client'
 
-import { useRenown } from '@powerhousedao/reactor-browser'
+import { loadEnvironmentController } from '@/modules/cloud/controller'
+import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
 import {
   CheckCircle,
   XCircle,
@@ -27,7 +28,6 @@ import { toast } from 'sonner'
 
 import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updates-card'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
-import { getAuthToken, deleteEnvironment } from '@/modules/cloud/graphql'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useEnvironmentStatus } from '@/modules/cloud/hooks/use-environment-status'
 import { usePackageUpdates } from '@/modules/cloud/hooks/use-package-updates'
@@ -965,7 +965,7 @@ export function OverviewTab({
   initialAddPackage,
   initialAddVersion,
 }: OverviewTabProps) {
-  const renown = useRenown()
+  const { signer } = useCanSign()
   const router = useRouter()
   const {
     status,
@@ -999,10 +999,14 @@ export function OverviewTab({
     state.services.find((s) => s.type === type)
 
   const handleDelete = async () => {
+    if (!signer) {
+      toast.error('You must be logged in with Renown to delete an environment')
+      return
+    }
     try {
       setIsDeleting(true)
-      const token = await getAuthToken(renown)
-      await deleteEnvironment(environment.id, token)
+      const ctrl = await loadEnvironmentController({ documentId: environment.id, signer })
+      await ctrl.delete()
       toast.success('Environment deleted')
       onDelete?.()
       router.push('/cloud')
