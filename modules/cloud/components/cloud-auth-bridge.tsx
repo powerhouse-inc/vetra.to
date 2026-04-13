@@ -20,21 +20,14 @@ export function CloudAuthBridge() {
       return
     }
 
-    const endpoint =
-      (typeof window !== 'undefined' &&
-        (window as unknown as { __ENV?: Record<string, string> }).__ENV?.[
-          'NEXT_PUBLIC_CLOUD_SWITCHBOARD_URL'
-        ]) ||
-      process.env.NEXT_PUBLIC_CLOUD_SWITCHBOARD_URL ||
-      process.env.NEXT_PUBLIC_SWITCHBOARD_URL ||
-      'https://switchboard.vetra.io/graphql'
-
+    // NOTE: we intentionally do NOT pass `aud` here. The server's
+    // `verifyAuthBearerToken` doesn't configure an expected audience, and
+    // did-jwt rejects tokens that carry an `aud` claim without matching
+    // audience config ("JWT audience is required but your app address has
+    // not been configured"). Omitting `aud` keeps the token valid.
     setAuthTokenProvider(async () => {
       try {
-        const token = await renown.getBearerToken({
-          expiresIn: 600,
-          aud: endpoint,
-        })
+        const token = await renown.getBearerToken({ expiresIn: 600 })
         return token ?? null
       } catch {
         return null
