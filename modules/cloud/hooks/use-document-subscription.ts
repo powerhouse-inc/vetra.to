@@ -1,7 +1,9 @@
 'use client'
 
+import { useRenown } from '@powerhousedao/reactor-browser'
 import { createClient } from 'graphql-ws'
 import { useEffect, useRef } from 'react'
+import { getAuthToken } from '../graphql'
 
 /**
  * Returns the WebSocket URL for the switchboard subscription endpoint.
@@ -25,6 +27,22 @@ function getWsEndpoint(): string {
   return `${wsOrigin}/graphql/subscriptions`
 }
 
+/**
+ * Builds the `connectionParams` callback graphql-ws uses to authenticate each
+ * new WS connection. Mints a fresh Renown bearer token per-connect so token
+ * rotation is handled transparently on reconnect.
+ *
+ * Returns `{}` (no auth) if renown is unavailable — the server will close the
+ * socket with code 4500 and the caller can treat it as "no subscription" and
+ * fall back to polling.
+ */
+function makeConnectionParams(renown: ReturnType<typeof useRenown>) {
+  return async () => {
+    const token = await getAuthToken(renown as never)
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
+}
+
 const SUBSCRIPTION_QUERY = `
   subscription DocumentChanges($search: SearchFilterInput) {
     documentChanges(search: $search) {
@@ -42,9 +60,12 @@ const SUBSCRIPTION_QUERY = `
 export function useDocumentSubscription(documentId: string | null, onEvent: () => void) {
   const onEventRef = useRef(onEvent)
   onEventRef.current = onEvent
+  const renown = useRenown()
 
   useEffect(() => {
     if (!documentId) return
+    // Server requires auth on WS; skip if we have no way to mint a token.
+    if (!renown) return
 
     const url = getWsEndpoint()
     const client = createClient({
@@ -52,11 +73,10 @@ export function useDocumentSubscription(documentId: string | null, onEvent: () =
       retryAttempts: 5,
       shouldRetry: () => true,
       lazy: true,
+      connectionParams: makeConnectionParams(renown),
     })
 
-    let unsubscribe: (() => void) | undefined
-
-    unsubscribe = client.subscribe(
+    const unsubscribe = client.subscribe(
       {
         query: SUBSCRIPTION_QUERY,
         variables: {
@@ -77,10 +97,10 @@ export function useDocumentSubscription(documentId: string | null, onEvent: () =
     )
 
     return () => {
-      unsubscribe?.()
-      client.dispose()
+      unsubscribe()
+      void client.dispose()
     }
-  }, [documentId])
+  }, [documentId, renown])
 }
 
 /**
@@ -90,14 +110,18 @@ export function useDocumentSubscription(documentId: string | null, onEvent: () =
 export function useDocumentListSubscription(onEvent: () => void) {
   const onEventRef = useRef(onEvent)
   onEventRef.current = onEvent
+  const renown = useRenown()
 
   useEffect(() => {
+    if (!renown) return
+
     const url = getWsEndpoint()
     const client = createClient({
       url,
       retryAttempts: 5,
       shouldRetry: () => true,
       lazy: true,
+      connectionParams: makeConnectionParams(renown),
     })
 
     const unsubscribe = client.subscribe(
@@ -119,7 +143,7 @@ export function useDocumentListSubscription(onEvent: () => void) {
 
     return () => {
       unsubscribe()
-      client.dispose()
+      void client.dispose()
     }
-  }, [])
+  }, [renown])
 }
