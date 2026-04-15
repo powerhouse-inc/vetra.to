@@ -50,6 +50,11 @@ export async function getAuthToken(renown: Renown | null | undefined): Promise<s
 // Generic GraphQL helper
 // ---------------------------------------------------------------------------
 
+type GqlResponse<T> = {
+  data?: T
+  errors?: Array<{ message?: string }>
+}
+
 async function gql<T>(
   query: string,
   variables?: Record<string, unknown>,
@@ -66,10 +71,10 @@ async function gql<T>(
     body: JSON.stringify({ query, variables }),
   })
 
-  const json = await res.json()
+  const json = (await res.json()) as GqlResponse<T>
 
   if (json.errors?.length) {
-    throw new Error(json.errors[0].message)
+    throw new Error(json.errors[0].message ?? 'GraphQL error')
   }
 
   return json.data as T
@@ -268,10 +273,10 @@ async function gqlObservability<T>(
     body: JSON.stringify({ query, variables }),
   })
 
-  const json = await res.json()
+  const json = (await res.json()) as GqlResponse<T>
 
   if (json.errors?.length) {
-    throw new Error(json.errors[0].message)
+    throw new Error(json.errors[0].message ?? 'GraphQL error')
   }
 
   return json.data as T
