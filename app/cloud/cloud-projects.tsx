@@ -2,7 +2,7 @@
 
 import { Trash2, Server, Package } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
 import { loadEnvironmentController } from '@/modules/cloud/controller'
@@ -151,6 +151,17 @@ export function CloudEnvironments() {
   const { viewer } = useViewer()
   const environments = useEnvironments(scope)
   const isAdmin = viewer?.isAdmin ?? false
+
+  // Admins default to ALL — they triage across tenants rather than manage a
+  // personal set of envs. One-shot flip once viewer resolves; the toggle is
+  // still exposed so they can narrow to MINE manually.
+  const adminDefaultedRef = useRef(false)
+  useEffect(() => {
+    if (isAdmin && !adminDefaultedRef.current) {
+      adminDefaultedRef.current = true
+      setScope('ALL')
+    }
+  }, [isAdmin])
 
   return (
     <div className="space-y-4">
