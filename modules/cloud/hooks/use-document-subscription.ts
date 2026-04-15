@@ -39,7 +39,12 @@ function getWsEndpoint(): string {
 function makeConnectionParams(renown: ReturnType<typeof useRenown>) {
   return async () => {
     const token = await getAuthToken(renown as never)
-    return token ? { Authorization: `Bearer ${token}` } : {}
+    // Key MUST be lowercase. Server reads connectionParams.authorization
+    // (see reactor-api authenticateWebSocketConnection). Unlike HTTP headers,
+    // connectionParams is a plain JSON object and property lookup is
+    // case-sensitive — sending `Authorization` silently fails with a
+    // CloseEvent(4500, "Missing authorization in connection parameters").
+    return token ? { authorization: `Bearer ${token}` } : {}
   }
 }
 
