@@ -28,22 +28,24 @@ export function useRegistryPackages(registryUrl: string | null, search: string) 
     const controller = new AbortController()
     abortRef.current = controller
 
-    const timeout = setTimeout(async () => {
-      setIsLoading(true)
-      try {
-        const params = new URLSearchParams({ registry: registryUrl })
-        if (search) params.set('search', search)
-        const res = await fetch(`/api/registry/packages?${params}`, {
-          signal: controller.signal,
-        })
-        if (res.ok) {
-          setPackages(await res.json())
+    const timeout = setTimeout(() => {
+      void (async () => {
+        setIsLoading(true)
+        try {
+          const params = new URLSearchParams({ registry: registryUrl })
+          if (search) params.set('search', search)
+          const res = await fetch(`/api/registry/packages?${params}`, {
+            signal: controller.signal,
+          })
+          if (res.ok) {
+            setPackages((await res.json()) as RegistryPackage[])
+          }
+        } catch (err) {
+          if (err instanceof DOMException && err.name === 'AbortError') return
+        } finally {
+          setIsLoading(false)
         }
-      } catch (err) {
-        if (err instanceof DOMException && err.name === 'AbortError') return
-      } finally {
-        setIsLoading(false)
-      }
+      })()
     }, 200)
 
     return () => {

@@ -39,8 +39,10 @@ export function useEnvironmentLogs(
   }, [subdomain, tenantId, service, range, errorsOnly])
 
   useEffect(() => {
-    refresh()
-    const interval = setInterval(refresh, 10_000)
+    void refresh()
+    const interval = setInterval(() => {
+      void refresh()
+    }, 10_000)
     return () => clearInterval(interval)
   }, [refresh])
 

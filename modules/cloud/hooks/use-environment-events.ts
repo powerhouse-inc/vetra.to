@@ -40,11 +40,13 @@ export function useEnvironmentEvents(
   }, [subdomain, tenantId, limit])
 
   useEffect(() => {
-    refresh()
+    void refresh()
   }, [refresh])
 
   // Subscribe to document changes via WebSocket — triggers refresh on any update
-  useDocumentSubscription(documentId ?? null, refresh)
+  useDocumentSubscription(documentId ?? null, () => {
+    void refresh()
+  })
 
   return { events, isLoading, error, refresh }
 }

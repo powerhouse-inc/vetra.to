@@ -81,21 +81,27 @@ export function useEnvironments(scope: ListScope = 'MINE'): CloudEnvironment[] {
 
   // Initial load + refetch when scope changes
   useEffect(() => {
-    refetch()
+    void refetch()
   }, [refetch])
 
   // Subscribe to all document changes via WebSocket — triggers refetch on any update
-  useDocumentListSubscription(refetch)
+  useDocumentListSubscription(() => {
+    void refetch()
+  })
 
   // Fallback: poll every 10s in case WebSocket is disconnected
   useEffect(() => {
-    const interval = setInterval(refetch, 10_000)
+    const interval = setInterval(() => {
+      void refetch()
+    }, 10_000)
     return () => clearInterval(interval)
   }, [refetch])
 
   // Listen for manual refresh events (e.g. after deletion)
   useEffect(() => {
-    const handleRefresh = () => refetch()
+    const handleRefresh = () => {
+      void refetch()
+    }
     window.addEventListener('refresh-environments', handleRefresh)
     return () => window.removeEventListener('refresh-environments', handleRefresh)
   }, [refetch])
@@ -135,7 +141,7 @@ export function useViewer(): { viewer: Viewer | null; isLoading: boolean } {
 
   useEffect(() => {
     let cancelled = false
-    ;(async () => {
+    void (async () => {
       try {
         const token = await getAuthToken(renownRef.current)
         const v = await fetchViewer(token)
