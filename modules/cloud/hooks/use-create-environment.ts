@@ -26,7 +26,16 @@ export function useCreateEnvironment() {
       if (!signer) {
         throw new Error('You must be logged in with Renown to create an environment')
       }
+      const ownerAddress = signer.user?.address
+      if (!ownerAddress) {
+        throw new Error('Signer has no user address — cannot claim ownership')
+      }
       const controller = createNewEnvironmentController({ signer })
+      // Claim ownership FIRST — every subsequent action (setLabel, initialize,
+      // enableService) is owner-gated, so ownership must exist before they
+      // reach the reducer. The signer's own address is used; the reducer
+      // enforces that user-signed claims can only set the signer's address.
+      controller.setOwner({ address: ownerAddress })
       controller.setLabel({ label: input.label })
       controller.initialize({
         genericSubdomain: input.subdomain,
