@@ -32,15 +32,23 @@ function getDriveId() {
 }
 
 // ---------------------------------------------------------------------------
-// Auth helper — call renown.getBearerToken() with the switchboard URL as aud
+// Auth helper — mint a Renown bearer token.
+//
+// IMPORTANT: do NOT pass `aud`. The switchboard's verifyAuthBearerToken does
+// not configure an expected audience, and did-jwt then rejects any token that
+// carries an `aud` claim with "JWT audience is required but your app address
+// has not been configured". Keeping aud unset keeps the token valid.
+// This mirrors cloud-auth-bridge.tsx (fix de289d6).
 // ---------------------------------------------------------------------------
 
-type Renown = { getBearerToken: (opts: { expiresIn: number; aud: string }) => Promise<string> }
+type Renown = {
+  getBearerToken: (opts: { expiresIn: number }) => Promise<string>
+}
 
 export async function getAuthToken(renown: Renown | null | undefined): Promise<string | null> {
   if (!renown) return null
   try {
-    return await renown.getBearerToken({ expiresIn: 600, aud: getEndpoint() })
+    return await renown.getBearerToken({ expiresIn: 600 })
   } catch {
     return null
   }
@@ -70,6 +78,13 @@ async function gql<T>(
     headers,
     body: JSON.stringify({ query, variables }),
   })
+
+  // Surface auth/transport failures as proper errors. Without this the
+  // response body is blank-ish for 401/403, `json.data` ends up undefined,
+  // and callers crash later with "Cannot read properties of undefined".
+  if (!res.ok) {
+    throw new Error(`GraphQL request failed: ${res.status} ${res.statusText}`)
+  }
 
   const json = (await res.json()) as GqlResponse<T>
 
@@ -272,6 +287,10 @@ async function gqlObservability<T>(
     headers,
     body: JSON.stringify({ query, variables }),
   })
+
+  if (!res.ok) {
+    throw new Error(`GraphQL request failed: ${res.status} ${res.statusText}`)
+  }
 
   const json = (await res.json()) as GqlResponse<T>
 
