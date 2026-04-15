@@ -43,6 +43,8 @@ export type CloudPackage = {
 }
 
 export type CloudEnvironmentState = {
+  /** Lowercased EthereumAddress of the owner; null until claimed via SET_OWNER. */
+  owner: string | null
   label: string | null
   genericSubdomain: string | null
   genericBaseDomain: string | null

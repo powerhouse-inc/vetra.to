@@ -22,6 +22,9 @@ function summaryToCloudEnvironment(summary: EnvironmentSummary): CloudEnvironmen
     lastModifiedAtUtcIso: '',
     revision: 0,
     state: {
+      // `owner` comes from document state via the processor; fall back to the
+      // legacy `createdBy` column for envs the backfill hasn't touched yet.
+      owner: summary.owner ?? summary.createdBy,
       label: summary.name,
       genericSubdomain: summary.subdomain,
       genericBaseDomain: 'vetra.io',
