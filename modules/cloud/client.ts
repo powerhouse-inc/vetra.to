@@ -1,3 +1,4 @@
+import { GraphQLClient } from 'graphql-request'
 import { createClient } from '@powerhousedao/reactor-browser'
 
 // Read env vars from window.__ENV (injected at runtime by the server layout)
@@ -41,27 +42,30 @@ export function setAuthTokenProvider(provider: AuthTokenProvider | null): void {
 }
 
 /**
- * SDK middleware that attaches an `Authorization: Bearer <renown-token>`
- * header to every reactor GraphQL request. Requests proceed without the
- * header if no provider has been registered yet (e.g. during SSR) — the
- * server treats those as anonymous, which is fine for read queries on
- * unprotected documents.
+ * Inject auth at the transport level so ALL requests — including batch
+ * methods that bypass the SDK wrapper — carry the bearer token.
  */
-async function withAuth<T>(
-  action: (requestHeaders?: Record<string, string>) => Promise<T>,
-): Promise<T> {
-  if (!authTokenProvider) return action()
-  try {
-    const token = await authTokenProvider()
-    if (!token) return action()
-    return action({ Authorization: `Bearer ${token}` })
-  } catch {
-    return action()
-  }
-}
+const gqlClient = new GraphQLClient(getEndpoint(), {
+  requestMiddleware: async (request) => {
+    if (!authTokenProvider) return request
+    try {
+      const token = await authTokenProvider()
+      if (!token) return request
+      return {
+        ...request,
+        headers: {
+          ...(request.headers as Record<string, string>),
+          authorization: `Bearer ${token}`,
+        },
+      }
+    } catch {
+      return request
+    }
+  },
+})
 
 /** Reactor GraphQL client used for signed action push/pull. */
-export const client = createClient(getEndpoint(), withAuth)
+export const client = createClient(gqlClient)
 
 /** ID of the drive that holds vetra-cloud-environment documents. */
 export const DRIVE_ID = getDriveId()
