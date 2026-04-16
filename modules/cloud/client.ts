@@ -1,4 +1,3 @@
-import { GraphQLClient } from 'graphql-request'
 import { createClient } from '@powerhousedao/reactor-browser'
 
 // Read env vars from window.__ENV (injected at runtime by the server layout)
@@ -42,30 +41,51 @@ export function setAuthTokenProvider(provider: AuthTokenProvider | null): void {
 }
 
 /**
- * Inject auth at the transport level so ALL requests — including batch
- * methods that bypass the SDK wrapper — carry the bearer token.
+ * Resolve a bearer token, trying the registered provider first, then
+ * falling back to the global Renown instance (window.ph.renown). The
+ * fallback covers the race where the signer/controller is ready before
+ * CloudAuthBridge's useEffect has fired.
  */
-const gqlClient = new GraphQLClient(getEndpoint(), {
-  requestMiddleware: async (request) => {
-    if (!authTokenProvider) return request
+async function resolveToken(): Promise<string | null> {
+  if (authTokenProvider) {
     try {
-      const token = await authTokenProvider()
-      if (!token) return request
-      return {
-        ...request,
-        headers: {
-          ...(request.headers as Record<string, string>),
-          authorization: `Bearer ${token}`,
-        },
-      }
+      return await authTokenProvider()
     } catch {
-      return request
+      /* fall through to global fallback */
     }
-  },
-})
+  }
+  if (typeof window !== 'undefined') {
+    try {
+      const renown = (
+        window as unknown as {
+          ph?: {
+            renown?: { getBearerToken: (opts: { expiresIn: number }) => Promise<string | null> }
+          }
+        }
+      ).ph?.renown
+      if (renown) return await renown.getBearerToken({ expiresIn: 600 })
+    } catch {
+      /* no token available */
+    }
+  }
+  return null
+}
+
+/**
+ * SDK middleware that attaches an `Authorization: Bearer <renown-token>`
+ * header to every reactor GraphQL request. Falls back to window.ph.renown
+ * when the React-level provider hasn't been registered yet.
+ */
+async function withAuth<T>(
+  action: (requestHeaders?: Record<string, string>) => Promise<T>,
+): Promise<T> {
+  const token = await resolveToken()
+  if (!token) return action()
+  return action({ authorization: `Bearer ${token}` })
+}
 
 /** Reactor GraphQL client used for signed action push/pull. */
-export const client = createClient(gqlClient)
+export const client = createClient(getEndpoint(), withAuth)
 
 /** ID of the drive that holds vetra-cloud-environment documents. */
 export const DRIVE_ID = getDriveId()
