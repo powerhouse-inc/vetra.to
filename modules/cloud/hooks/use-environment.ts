@@ -79,10 +79,13 @@ export function useEnvironments(scope: ListScope = 'MINE'): CloudEnvironment[] {
     }
   }, [scope])
 
-  // Initial load + refetch when scope changes
+  // Initial load + refetch when scope changes or auth becomes available.
+  // `renown` transitions from undefined → instance once the SDK initialises,
+  // ensuring we re-fetch with a valid bearer token instead of waiting for the
+  // 10-second polling fallback.
   useEffect(() => {
     void refetch()
-  }, [refetch])
+  }, [refetch, renown])
 
   // Subscribe to all document changes via WebSocket — triggers refetch on any update
   useDocumentListSubscription(() => {
