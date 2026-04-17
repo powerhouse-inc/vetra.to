@@ -11,27 +11,24 @@ import {
   Globe,
   Package,
   Server,
-  Plus,
   Zap,
-  MoreHorizontal,
-  Search,
   Trash2,
   Pencil,
   Check,
   X,
-  ChevronsUpDown,
   Loader2,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 
+import { AddPackageModal } from '@/modules/cloud/components/add-package-modal'
 import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updates-card'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
+import { PackageRow } from '@/modules/cloud/components/package-row'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useEnvironmentStatus } from '@/modules/cloud/hooks/use-environment-status'
 import { usePackageUpdates } from '@/modules/cloud/hooks/use-package-updates'
-import { useRegistryPackages, useRegistryVersions } from '@/modules/cloud/hooks/use-registry-search'
 import { useServiceUpdates } from '@/modules/cloud/hooks/use-service-updates'
 import type { CloudEnvironment, CloudEnvironmentServiceType } from '@/modules/cloud/types'
 import {
@@ -49,36 +46,7 @@ import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
 import { Checkbox } from '@/modules/shared/components/ui/checkbox'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/modules/shared/components/ui/command'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/modules/shared/components/ui/dialog'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/modules/shared/components/ui/dropdown-menu'
 import { Input } from '@/modules/shared/components/ui/input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/modules/shared/components/ui/popover'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/modules/shared/components/ui/select'
 import { Switch } from '@/modules/shared/components/ui/switch'
 import {
   Table,
@@ -107,287 +75,6 @@ function StatusDot({ status }: { status: string }) {
             : 'bg-muted-foreground'
 
   return <span className={`inline-block h-2 w-2 rounded-full ${colorClass}`} />
-}
-
-// ---------------------------------------------------------------------------
-// AddPackageModal
-// ---------------------------------------------------------------------------
-
-function AddPackageModal({
-  registryUrl,
-  onAdd,
-  initialPackage,
-  initialVersion,
-  initialOpen,
-}: {
-  registryUrl: string | null
-  onAdd: (packageName: string, version?: string) => Promise<void>
-  initialPackage?: string | null
-  initialVersion?: string | null
-  initialOpen?: boolean
-}) {
-  const [open, setOpen] = useState(initialOpen ?? false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const [packageSearch, setPackageSearch] = useState(initialPackage ?? '')
-  const [selectedPackage, setSelectedPackage] = useState<string | null>(initialPackage ?? null)
-  const [selectedVersion, setSelectedVersion] = useState<string>(initialVersion ?? '')
-  const [packagePopoverOpen, setPackagePopoverOpen] = useState(false)
-  const [versionPopoverOpen, setVersionPopoverOpen] = useState(false)
-
-  const { packages, isLoading: packagesLoading } = useRegistryPackages(registryUrl, packageSearch)
-  const { info: versionInfo, isLoading: versionsLoading } = useRegistryVersions(
-    registryUrl,
-    selectedPackage,
-  )
-
-  const resetForm = () => {
-    setPackageSearch('')
-    setSelectedPackage(null)
-    setSelectedVersion('')
-  }
-
-  const handleSubmit = async () => {
-    if (!selectedPackage) return
-    try {
-      setIsSubmitting(true)
-      await onAdd(selectedPackage, selectedVersion || undefined)
-      toast.success('Package added successfully')
-      resetForm()
-      setOpen(false)
-    } catch (error) {
-      console.error('Failed to add package:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to add package')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        setOpen(v)
-        if (!v) resetForm()
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="flex items-center gap-1">
-          <Plus className="h-3 w-3" />
-          Add
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add Package</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
-          {/* Package name combobox */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Package Name</label>
-            <Popover open={packagePopoverOpen} onOpenChange={setPackagePopoverOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={packagePopoverOpen}
-                  className="w-full justify-between font-normal"
-                >
-                  {selectedPackage ?? 'Select package...'}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-                <Command shouldFilter={false}>
-                  <CommandInput
-                    placeholder="Search packages..."
-                    value={packageSearch}
-                    onValueChange={setPackageSearch}
-                  />
-                  <CommandList>
-                    {packagesLoading && (
-                      <div className="flex items-center justify-center py-4">
-                        <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
-                      </div>
-                    )}
-                    {!packagesLoading && packages.length === 0 && (
-                      <CommandEmpty>
-                        {registryUrl ? 'No packages found.' : 'No registry configured.'}
-                      </CommandEmpty>
-                    )}
-                    <CommandGroup>
-                      {packages.map((pkg) => (
-                        <CommandItem
-                          key={pkg.name}
-                          value={pkg.name}
-                          onSelect={() => {
-                            setSelectedPackage(pkg.name)
-                            setSelectedVersion('')
-                            setPackagePopoverOpen(false)
-                          }}
-                        >
-                          <div className="flex flex-col">
-                            <span className="font-medium">{pkg.name}</span>
-                            <span className="text-muted-foreground text-xs">
-                              latest: {pkg.version}
-                            </span>
-                          </div>
-                          {selectedPackage === pkg.name && (
-                            <Check className="ml-auto h-4 w-4 shrink-0" />
-                          )}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          {/* Version combobox */}
-          {selectedPackage && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Version</label>
-              <Popover open={versionPopoverOpen} onOpenChange={setVersionPopoverOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={versionPopoverOpen}
-                    className="w-full justify-between font-mono text-sm font-normal"
-                    disabled={versionsLoading}
-                  >
-                    {versionsLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      selectedVersion || 'latest'
-                    )}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-                  <Command>
-                    <CommandInput placeholder="Search versions..." />
-                    <CommandList>
-                      <CommandEmpty>No versions found.</CommandEmpty>
-                      <CommandGroup heading="Tags">
-                        {Object.entries(versionInfo?.distTags ?? {}).map(([tag, ver]) => (
-                          <CommandItem
-                            key={tag}
-                            value={`tag:${tag}`}
-                            onSelect={() => {
-                              setSelectedVersion(ver)
-                              setVersionPopoverOpen(false)
-                            }}
-                          >
-                            <span className="font-medium">{tag}</span>
-                            <span className="text-muted-foreground ml-2 font-mono text-xs">
-                              {ver}
-                            </span>
-                            {selectedVersion === ver && (
-                              <Check className="ml-auto h-4 w-4 shrink-0" />
-                            )}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                      <CommandGroup heading="Versions">
-                        {(versionInfo?.versions ?? []).map((ver) => (
-                          <CommandItem
-                            key={ver}
-                            value={ver}
-                            onSelect={() => {
-                              setSelectedVersion(ver)
-                              setVersionPopoverOpen(false)
-                            }}
-                          >
-                            <span className="font-mono text-sm">{ver}</span>
-                            {selectedVersion === ver && (
-                              <Check className="ml-auto h-4 w-4 shrink-0" />
-                            )}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
-          )}
-        </div>
-        <div className="mt-2 flex gap-2">
-          <Button onClick={handleSubmit} disabled={isSubmitting || !selectedPackage}>
-            {isSubmitting ? 'Adding...' : 'Add Package'}
-          </Button>
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// PackageRow
-// ---------------------------------------------------------------------------
-
-function PackageRow({
-  pkg,
-  onRemove,
-}: {
-  pkg: { name: string; version: string | null | undefined }
-  onRemove: (name: string) => Promise<void>
-}) {
-  const [isRemoving, setIsRemoving] = useState(false)
-
-  const handleUninstall = async () => {
-    try {
-      setIsRemoving(true)
-      await onRemove(pkg.name)
-      toast.success(`Uninstalled ${pkg.name}`)
-    } catch (error) {
-      console.error('Failed to remove package:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to remove package')
-    } finally {
-      setIsRemoving(false)
-    }
-  }
-
-  return (
-    <TableRow>
-      <TableCell>
-        <div className="flex items-center gap-2">
-          <Package className="text-muted-foreground h-4 w-4 shrink-0" />
-          <span className="font-medium">{pkg.name}</span>
-        </div>
-      </TableCell>
-      <TableCell>
-        {pkg.version ? (
-          <Badge variant="secondary" className="font-mono text-xs">
-            {pkg.version}
-          </Badge>
-        ) : (
-          <span className="text-muted-foreground text-sm">&mdash;</span>
-        )}
-      </TableCell>
-      <TableCell className="text-right">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" disabled={isRemoving}>
-              <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">Actions</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem disabled>Upgrade to version...</DropdownMenuItem>
-            <DropdownMenuItem variant="destructive" onClick={handleUninstall}>
-              Uninstall
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </TableCell>
-    </TableRow>
-  )
 }
 
 // ---------------------------------------------------------------------------
@@ -1190,6 +877,8 @@ export function OverviewTab({
               </CardTitle>
               <AddPackageModal
                 registryUrl={state.defaultPackageRegistry ?? 'https://registry.dev.vetra.io'}
+                tenantId={tenantId}
+                installedPackages={state.packages}
                 onAdd={addPackage}
                 initialPackage={initialAddPackage}
                 initialVersion={initialAddVersion}
@@ -1209,7 +898,15 @@ export function OverviewTab({
                 </TableHeader>
                 <TableBody>
                   {state.packages.map((pkg) => (
-                    <PackageRow key={pkg.name} pkg={pkg} onRemove={removePackage} />
+                    <PackageRow
+                      key={pkg.name}
+                      pkg={pkg}
+                      tenantId={tenantId}
+                      registryUrl={state.defaultPackageRegistry ?? 'https://registry.dev.vetra.io'}
+                      installedPackages={state.packages}
+                      onRemove={removePackage}
+                      onSetVersion={setPackageVersion}
+                    />
                   ))}
                 </TableBody>
               </Table>
