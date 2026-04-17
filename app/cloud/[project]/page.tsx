@@ -19,6 +19,7 @@ import {
 } from '@/modules/shared/components/ui/dropdown-menu'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/shared/components/ui/tabs'
 
+import { ConfigurationTab } from './tabs/configuration'
 import { DeploymentsTab } from './tabs/deployments'
 import { LogsTab } from './tabs/logs'
 import { MetricsTab } from './tabs/metrics'
@@ -165,6 +166,7 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="configuration">Configuration</TabsTrigger>
             <TabsTrigger value="deployments">Deployments</TabsTrigger>
             <TabsTrigger value="logs">Logs</TabsTrigger>
             <TabsTrigger value="metrics">Metrics</TabsTrigger>
@@ -186,6 +188,9 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
               initialAddPackage={searchParams.get('addPackage')}
               initialAddVersion={searchParams.get('version')}
             />
+          </TabsContent>
+          <TabsContent value="configuration" className="pt-4">
+            <ConfigurationTab tenantId={tenantId} environment={environment} />
           </TabsContent>
           <TabsContent value="deployments" className="pt-4">
             <DeploymentsTab subdomain={subdomain} tenantId={tenantId} documentId={documentId} />
