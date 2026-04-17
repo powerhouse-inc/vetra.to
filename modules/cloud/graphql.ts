@@ -397,6 +397,99 @@ export async function fetchMetrics(
   }
 }
 
+// ---------------------------------------------------------------------------
+// Secrets subgraph queries + mutations (vetra-cloud-secrets)
+// ---------------------------------------------------------------------------
+
+export type TenantEnvVar = { key: string; value: string }
+export type TenantSecretEntry = { key: string }
+
+export async function fetchTenantEnvVars(
+  tenantId: string,
+  token?: string | null,
+): Promise<TenantEnvVar[]> {
+  const data = await gql<{ envVars: TenantEnvVar[] }>(
+    `query ($tenantId: String!) { envVars(tenantId: $tenantId) { key value } }`,
+    { tenantId },
+    token,
+  )
+  return data.envVars
+}
+
+export async function fetchTenantSecrets(
+  tenantId: string,
+  token?: string | null,
+): Promise<TenantSecretEntry[]> {
+  const data = await gql<{ secrets: TenantSecretEntry[] }>(
+    `query ($tenantId: String!) { secrets(tenantId: $tenantId) { key } }`,
+    { tenantId },
+    token,
+  )
+  return data.secrets
+}
+
+export async function setTenantEnvVar(
+  tenantId: string,
+  key: string,
+  value: string,
+  token?: string | null,
+): Promise<TenantEnvVar> {
+  const data = await gql<{ setEnvVar: TenantEnvVar }>(
+    `mutation ($tenantId: String!, $key: String!, $value: String!) {
+      setEnvVar(tenantId: $tenantId, key: $key, value: $value) { key value }
+    }`,
+    { tenantId, key, value },
+    token,
+  )
+  return data.setEnvVar
+}
+
+export async function setTenantSecret(
+  tenantId: string,
+  key: string,
+  value: string,
+  token?: string | null,
+): Promise<TenantSecretEntry> {
+  const data = await gql<{ setSecret: TenantSecretEntry }>(
+    `mutation ($tenantId: String!, $key: String!, $value: String!) {
+      setSecret(tenantId: $tenantId, key: $key, value: $value) { key }
+    }`,
+    { tenantId, key, value },
+    token,
+  )
+  return data.setSecret
+}
+
+export async function deleteTenantEnvVar(
+  tenantId: string,
+  key: string,
+  token?: string | null,
+): Promise<boolean> {
+  const data = await gql<{ deleteEnvVar: boolean }>(
+    `mutation ($tenantId: String!, $key: String!) {
+      deleteEnvVar(tenantId: $tenantId, key: $key)
+    }`,
+    { tenantId, key },
+    token,
+  )
+  return data.deleteEnvVar
+}
+
+export async function deleteTenantSecret(
+  tenantId: string,
+  key: string,
+  token?: string | null,
+): Promise<boolean> {
+  const data = await gql<{ deleteSecret: boolean }>(
+    `mutation ($tenantId: String!, $key: String!) {
+      deleteSecret(tenantId: $tenantId, key: $key)
+    }`,
+    { tenantId, key },
+    token,
+  )
+  return data.deleteSecret
+}
+
 export async function fetchLogs(
   subdomain: string,
   tenantId: string,
