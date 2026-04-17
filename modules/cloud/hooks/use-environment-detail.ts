@@ -83,10 +83,22 @@ export function useEnvironmentDetail(documentId: string) {
     }
   }, [canSign, refetchFallback])
 
-  // Subscribe to remote changes for the read-only fallback path
-  useDocumentSubscription(canSign ? null : documentId, refetchFallback)
+  // Subscribe to remote document changes in both paths. The controller does
+  // NOT poll/subscribe on its own — without this, a signed-in user never
+  // sees server-side state transitions (status flipping READY→DEPLOYING etc.)
+  // until they refresh the page.
+  const controllerRef = useRef(controller)
+  controllerRef.current = controller
 
-  // Polling fallback for read-only path
+  useDocumentSubscription(documentId, () => {
+    if (canSign && controllerRef.current) {
+      void controllerRef.current.pull()
+    } else {
+      void refetchFallback()
+    }
+  })
+
+  // Polling fallback for read-only path (WS requires auth; unauth viewers rely on polling)
   useEffect(() => {
     if (canSign) return
     const interval = setInterval(() => void refetchFallback(), 30_000)
