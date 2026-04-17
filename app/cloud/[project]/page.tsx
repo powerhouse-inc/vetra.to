@@ -176,6 +176,8 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
               subdomain={subdomain}
               tenantId={tenantId}
               environment={environment}
+              status={envStatus}
+              statusLoading={statusLoading}
               onTabChange={handleTabChange}
               enableService={detail.enableService}
               disableService={detail.disableService}

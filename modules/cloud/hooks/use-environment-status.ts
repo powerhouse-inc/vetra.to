@@ -2,7 +2,7 @@
 
 import { useRenown } from '@powerhousedao/reactor-browser'
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { getAuthToken, fetchEnvironmentStatus, fetchEnvironmentPods } from '../graphql'
+import { getAuthToken, fetchEnvironmentOverview } from '../graphql'
 import { useDocumentSubscription } from './use-document-subscription'
 import type { EnvironmentStatus, Pod } from '../types'
 
@@ -28,10 +28,7 @@ export function useEnvironmentStatus(
     if (!subdomain || !tenantId) return
     try {
       const token = await getAuthToken(renownRef.current)
-      const [s, p] = await Promise.all([
-        fetchEnvironmentStatus(subdomain, tenantId, token),
-        fetchEnvironmentPods(subdomain, tenantId, token),
-      ])
+      const { status: s, pods: p } = await fetchEnvironmentOverview(subdomain, tenantId, token)
       if (JSON.stringify(s) !== JSON.stringify(statusRef.current)) setStatus(s)
       if (JSON.stringify(p) !== JSON.stringify(podsRef.current)) setPods(p)
       setError(null)

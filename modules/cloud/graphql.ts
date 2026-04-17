@@ -343,6 +343,37 @@ export async function fetchEnvironmentPods(
   return data.environmentPods
 }
 
+/**
+ * Combined fetch for the environment overview — status + pods in a single
+ * HTTP round-trip. The overview/page polls both every 15s, so sending them
+ * together halves the request count and keeps the two views consistent.
+ */
+export async function fetchEnvironmentOverview(
+  subdomain: string,
+  tenantId: string,
+  token?: string | null,
+): Promise<{ status: EnvironmentStatus | null; pods: Pod[] }> {
+  const data = await gqlObservability<{
+    environmentStatus: EnvironmentStatus | null
+    environmentPods: Pod[]
+  }>(
+    subdomain,
+    `query ($tenantId: String!) {
+      environmentStatus(tenantId: $tenantId) {
+        tenantId argoSyncStatus argoHealthStatus argoLastSyncedAt
+        argoMessage configDriftDetected tlsCertValid tlsCertExpiresAt
+        domainResolves updatedAt
+      }
+      environmentPods(tenantId: $tenantId) {
+        name service phase ready restartCount updatedAt
+      }
+    }`,
+    { tenantId },
+    token,
+  )
+  return { status: data.environmentStatus, pods: data.environmentPods }
+}
+
 export async function fetchEnvironmentEvents(
   subdomain: string,
   tenantId: string,

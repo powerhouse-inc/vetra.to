@@ -27,10 +27,13 @@ import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updat
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
 import { PackageRow } from '@/modules/cloud/components/package-row'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
-import { useEnvironmentStatus } from '@/modules/cloud/hooks/use-environment-status'
 import { usePackageUpdates } from '@/modules/cloud/hooks/use-package-updates'
 import { useServiceUpdates } from '@/modules/cloud/hooks/use-service-updates'
-import type { CloudEnvironment, CloudEnvironmentServiceType } from '@/modules/cloud/types'
+import type {
+  CloudEnvironment,
+  CloudEnvironmentServiceType,
+  EnvironmentStatus,
+} from '@/modules/cloud/types'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -621,6 +624,13 @@ type OverviewTabProps = {
   subdomain: string | null
   tenantId: string | null
   environment: CloudEnvironment
+  /**
+   * Observability status for the environment. Passed in from the parent so
+   * the Overview tab and the page-level StatusBadge share a single polling
+   * subscription instead of firing the same query twice every 15s.
+   */
+  status: EnvironmentStatus | null
+  statusLoading: boolean
   onTabChange?: (tab: string) => void
   enableService: (type: CloudEnvironmentServiceType, prefix: string) => Promise<void>
   disableService: (type: CloudEnvironmentServiceType) => Promise<void>
@@ -639,6 +649,8 @@ export function OverviewTab({
   subdomain,
   tenantId,
   environment,
+  status,
+  statusLoading,
   onTabChange,
   enableService,
   disableService,
@@ -654,11 +666,6 @@ export function OverviewTab({
 }: OverviewTabProps) {
   const { signer } = useCanSign()
   const router = useRouter()
-  const {
-    status,
-    pods,
-    isLoading: statusLoading,
-  } = useEnvironmentStatus(subdomain, tenantId, environment.id)
   const { events, isLoading: eventsLoading } = useEnvironmentEvents(
     subdomain,
     tenantId,
