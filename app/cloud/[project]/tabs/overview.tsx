@@ -705,10 +705,17 @@ export function OverviewTab({
     }
   }
 
+  const hasCustomDomain = state.customDomain?.enabled ?? false
+
   return (
     <div className="space-y-6">
       {/* a. Status Row */}
-      <div className="grid grid-cols-3 gap-4">
+      <div
+        className={cn(
+          'grid gap-4',
+          hasCustomDomain ? 'grid-cols-3' : 'grid-cols-2',
+        )}
+      >
         {/* ArgoCD Card */}
         <Card>
           <CardContent className="pt-4">
@@ -767,51 +774,56 @@ export function OverviewTab({
           </CardContent>
         </Card>
 
-        {/* Domain Card */}
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2">
-              <Globe className="text-muted-foreground h-4 w-4" />
-              <span className="text-sm font-medium">Domain</span>
-            </div>
-            <div className="mt-2 space-y-1">
-              <p className="text-muted-foreground text-xs">
-                Resolves:{' '}
-                <span className="text-foreground font-medium">
-                  {statusLoading
-                    ? '...'
-                    : status?.domainResolves === null
-                      ? 'Unknown'
-                      : status?.domainResolves
-                        ? 'Yes'
-                        : 'No'}
-                </span>
-              </p>
-              <p className="text-muted-foreground flex items-center gap-1 text-xs">
-                TLS:{' '}
-                {status?.tlsCertValid ? (
-                  <ShieldCheck className="h-3 w-3 text-[#04c161]" />
-                ) : (
-                  <ShieldOff className="h-3 w-3 text-[#ea4335]" />
-                )}
-                <span className="text-foreground font-medium">
-                  {statusLoading
-                    ? '...'
-                    : status?.tlsCertValid === null
-                      ? 'Unknown'
-                      : status?.tlsCertValid
-                        ? 'Valid'
-                        : 'Invalid'}
-                </span>
-              </p>
-              {status?.tlsCertExpiresAt && (
+        {/* Domain Card — only shown when a custom domain is configured.
+            Without one, domainResolves/tlsCertValid come back null from
+            the observability subgraph (nothing to probe) and the card
+            would just render "Unknown" everywhere. */}
+        {hasCustomDomain && (
+          <Card>
+            <CardContent className="pt-4">
+              <div className="flex items-center gap-2">
+                <Globe className="text-muted-foreground h-4 w-4" />
+                <span className="text-sm font-medium">Domain</span>
+              </div>
+              <div className="mt-2 space-y-1">
                 <p className="text-muted-foreground text-xs">
-                  Expires: {new Date(status.tlsCertExpiresAt).toLocaleDateString()}
+                  Resolves:{' '}
+                  <span className="text-foreground font-medium">
+                    {statusLoading
+                      ? '...'
+                      : status?.domainResolves === null
+                        ? 'Checking...'
+                        : status?.domainResolves
+                          ? 'Yes'
+                          : 'No'}
+                  </span>
                 </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                <p className="text-muted-foreground flex items-center gap-1 text-xs">
+                  TLS:{' '}
+                  {status?.tlsCertValid ? (
+                    <ShieldCheck className="h-3 w-3 text-[#04c161]" />
+                  ) : (
+                    <ShieldOff className="h-3 w-3 text-[#ea4335]" />
+                  )}
+                  <span className="text-foreground font-medium">
+                    {statusLoading
+                      ? '...'
+                      : status?.tlsCertValid === null
+                        ? 'Checking...'
+                        : status?.tlsCertValid
+                          ? 'Valid'
+                          : 'Invalid'}
+                  </span>
+                </p>
+                {status?.tlsCertExpiresAt && (
+                  <p className="text-muted-foreground text-xs">
+                    Expires: {new Date(status.tlsCertExpiresAt).toLocaleDateString()}
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* b. Available Updates */}
