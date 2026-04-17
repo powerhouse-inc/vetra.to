@@ -710,12 +710,7 @@ export function OverviewTab({
   return (
     <div className="space-y-6">
       {/* a. Status Row */}
-      <div
-        className={cn(
-          'grid gap-4',
-          hasCustomDomain ? 'grid-cols-3' : 'grid-cols-2',
-        )}
-      >
+      <div className={cn('grid gap-4', hasCustomDomain ? 'grid-cols-3' : 'grid-cols-2')}>
         {/* ArgoCD Card */}
         <Card>
           <CardContent className="pt-4">
