@@ -92,10 +92,12 @@ export function UpgradePackageModal({
   //   (2) show collision labels.
   const otherInstalled = useMemo(
     () =>
-      installedPackages
-        .filter((p) => p.name !== packageName)
-        .map((p) => ({ name: p.name, version: p.version })),
-    [installedPackages, packageName],
+      open
+        ? installedPackages
+            .filter((p) => p.name !== packageName)
+            .map((p) => ({ name: p.name, version: p.version }))
+        : [],
+    [open, installedPackages, packageName],
   )
   const { manifests: otherManifests } = useRegistryManifests(registryUrl, otherInstalled)
 
@@ -105,7 +107,7 @@ export function UpgradePackageModal({
     currentVersion,
   )
 
-  const { envVars, secrets } = useTenantConfig(tenantId)
+  const { envVars, secrets } = useTenantConfig(open ? tenantId : null)
   const existingVarValues = useMemo(() => {
     const out: Record<string, string> = {}
     for (const v of envVars) out[v.key] = v.value

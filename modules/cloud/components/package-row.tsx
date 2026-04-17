@@ -162,9 +162,11 @@ function UninstallDialog({
   )
 
   // All installed manifests (including this one) for collision analysis.
+  // Gated on `open` — each PackageRow always mounts this dialog, so fetching
+  // unconditionally would hit the registry N² times per env page load.
   const packageSpecs = useMemo(
-    () => installedPackages.map((p) => ({ name: p.name, version: p.version })),
-    [installedPackages],
+    () => (open ? installedPackages.map((p) => ({ name: p.name, version: p.version })) : []),
+    [open, installedPackages],
   )
   const { manifests } = useRegistryManifests(registryUrl, packageSpecs)
 

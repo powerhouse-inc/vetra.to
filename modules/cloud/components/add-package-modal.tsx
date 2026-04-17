@@ -89,15 +89,17 @@ export function AddPackageModal({
     selectedVersion || null,
   )
 
-  // Installed packages' manifests for collision detection.
+  // Installed packages' manifests for collision detection. Only fetched while
+  // the modal is open — no point querying the registry when the dialog is closed.
   const installedForFetch = useMemo(
-    () => installedPackages.map((p) => ({ name: p.name, version: p.version })),
-    [installedPackages],
+    () => (open ? installedPackages.map((p) => ({ name: p.name, version: p.version })) : []),
+    [open, installedPackages],
   )
   const { manifests: installedManifests } = useRegistryManifests(registryUrl, installedForFetch)
 
-  // Tenant config (to prefill + satisfy required-field checks).
-  const { envVars, secrets } = useTenantConfig(tenantId)
+  // Tenant config (to prefill + satisfy required-field checks). Gated on
+  // `open` so we don't hit the secrets subgraph on every env page load.
+  const { envVars, secrets } = useTenantConfig(open ? tenantId : null)
   const existingVarValues = useMemo(() => {
     const out: Record<string, string> = {}
     for (const v of envVars) out[v.key] = v.value
