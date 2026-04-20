@@ -32,16 +32,25 @@ function filterByScope(
   if (viewScope === 'ALL') return envs
   const me = viewerAddress?.toLowerCase() ?? null
   if (viewScope === 'MINE') {
+    // Without a known identity we can't decide what is "mine"; returning
+    // nothing avoids the `null === null` trap where every unclaimed env would
+    // otherwise match. The hook re-filters once viewer resolves.
+    if (me === null) return []
     return envs.filter((e) => {
       const owner = e.owner?.toLowerCase() ?? null
       const createdBy = e.createdBy?.toLowerCase() ?? null
       return owner === me || (owner === null && createdBy === me)
     })
   }
+  // UNCLAIMED: owner == null. When we know the viewer, also exclude envs
+  // they created (those belong in MINE) so a pending-SET_OWNER env doesn't
+  // appear in both tabs.
   return envs.filter((e) => {
     const owner = e.owner?.toLowerCase() ?? null
+    if (owner !== null) return false
+    if (me === null) return true
     const createdBy = e.createdBy?.toLowerCase() ?? null
-    return owner === null && createdBy !== me
+    return createdBy !== me
   })
 }
 
