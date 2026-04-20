@@ -2,7 +2,7 @@
 
 import { Trash2, Server, Package } from 'lucide-react'
 import Link from 'next/link'
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { loadEnvironmentController } from '@/modules/cloud/controller'
@@ -11,8 +11,8 @@ import {
   useEnvironments,
   useRefreshEnvironments,
   useViewer,
+  type ViewScope,
 } from '@/modules/cloud/hooks/use-environment'
-import type { ListScope } from '@/modules/cloud/graphql'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -146,66 +146,54 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
   )
 }
 
+const SCOPE_LABELS: Record<ViewScope, string> = {
+  MINE: 'Mine',
+  UNCLAIMED: 'Unclaimed',
+  ALL: 'All',
+}
+
+const EMPTY_COPY: Record<ViewScope, string> = {
+  MINE: 'Create your first environment to get started.',
+  UNCLAIMED: 'No unclaimed environments available.',
+  ALL: 'No environments exist in the system.',
+}
+
 export function CloudEnvironments() {
-  const [scope, setScope] = useState<ListScope>('MINE')
+  const [scope, setScope] = useState<ViewScope>('MINE')
   const { viewer } = useViewer()
-  const environments = useEnvironments(scope)
+  const environments = useEnvironments(scope, viewer?.address ?? null)
   const isAdmin = viewer?.isAdmin ?? false
 
-  // Admins default to ALL — they triage across tenants rather than manage a
-  // personal set of envs. One-shot flip once viewer resolves; the toggle is
-  // still exposed so they can narrow to MINE manually.
-  const adminDefaultedRef = useRef(false)
-  useEffect(() => {
-    if (isAdmin && !adminDefaultedRef.current) {
-      adminDefaultedRef.current = true
-      setScope('ALL')
-    }
-  }, [isAdmin])
+  const scopeOptions: ViewScope[] = isAdmin ? ['MINE', 'UNCLAIMED', 'ALL'] : ['MINE', 'UNCLAIMED']
 
   return (
     <div className="space-y-4">
-      {/* Admin-only Mine | All toggle */}
-      {isAdmin && (
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-muted-foreground">View:</span>
-          <div className="bg-muted inline-flex rounded-md p-0.5">
+      <div className="flex items-center gap-2 text-sm">
+        <span className="text-muted-foreground">View:</span>
+        <div className="bg-muted inline-flex rounded-md p-0.5">
+          {scopeOptions.map((option) => (
             <button
+              key={option}
               type="button"
-              onClick={() => setScope('MINE')}
+              onClick={() => setScope(option)}
               className={`rounded px-3 py-1 transition-colors ${
-                scope === 'MINE'
+                scope === option
                   ? 'bg-background text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Mine
+              {SCOPE_LABELS[option]}
             </button>
-            <button
-              type="button"
-              onClick={() => setScope('ALL')}
-              className={`rounded px-3 py-1 transition-colors ${
-                scope === 'ALL'
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              All
-            </button>
-          </div>
+          ))}
         </div>
-      )}
+      </div>
 
       {environments.length === 0 ? (
         <div className="flex min-h-[300px] flex-col items-center justify-center space-y-4 py-12">
           <Server className="text-muted-foreground h-12 w-12" />
           <div className="text-center">
             <h3 className="text-lg font-semibold">No environments yet</h3>
-            <p className="text-muted-foreground text-sm">
-              {scope === 'ALL'
-                ? 'No environments exist in the system.'
-                : 'Create your first environment to get started.'}
-            </p>
+            <p className="text-muted-foreground text-sm">{EMPTY_COPY[scope]}</p>
           </div>
         </div>
       ) : (

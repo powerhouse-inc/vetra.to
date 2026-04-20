@@ -8,6 +8,44 @@ import { useDocumentListSubscription } from './use-document-subscription'
 import type { CloudEnvironment } from '../types'
 
 /**
+ * UI scope for the env list toggle. Maps to backend `ListScope` + client-side
+ * partition of the `owner` / `createdBy` fields (the backend's `MINE` scope
+ * returns the caller's envs plus any unclaimed env, so we split that bucket
+ * here rather than adding a new server enum).
+ *
+ * - `MINE`: owner == me, OR (owner == null AND createdBy == me). The second
+ *   clause covers the gap between a user creating an env and `SET_OWNER`
+ *   landing, so a newly-created env never disappears from its creator's view.
+ * - `UNCLAIMED`: owner == null AND createdBy != me. Envs available for anyone
+ *   to claim, with the caller's own pending creations filtered out (those
+ *   belong in MINE).
+ * - `ALL`: every env. Admin-only on the server — non-admins passing ALL get
+ *   the same results as MINE from the backend.
+ */
+export type ViewScope = 'MINE' | 'UNCLAIMED' | 'ALL'
+
+function filterByScope(
+  envs: EnvironmentSummary[],
+  viewScope: ViewScope,
+  viewerAddress: string | null,
+): EnvironmentSummary[] {
+  if (viewScope === 'ALL') return envs
+  const me = viewerAddress?.toLowerCase() ?? null
+  if (viewScope === 'MINE') {
+    return envs.filter((e) => {
+      const owner = e.owner?.toLowerCase() ?? null
+      const createdBy = e.createdBy?.toLowerCase() ?? null
+      return owner === me || (owner === null && createdBy === me)
+    })
+  }
+  return envs.filter((e) => {
+    const owner = e.owner?.toLowerCase() ?? null
+    const createdBy = e.createdBy?.toLowerCase() ?? null
+    return owner === null && createdBy !== me
+  })
+}
+
+/**
  * Convert an EnvironmentSummary (lightweight projection from the
  * vetra-cloud-observability subgraph) into the heavier CloudEnvironment shape
  * the existing UI expects. Fields not exposed by the summary are filled with
@@ -41,35 +79,40 @@ function summaryToCloudEnvironment(summary: EnvironmentSummary): CloudEnvironmen
 }
 
 /**
- * Hook to get cloud environments scoped to the calling user.
+ * Hook to get cloud environments scoped to the caller's view.
  *
- * Pass `scope: 'ALL'` to request all environments — the server enforces that
- * non-admins are silently restricted to their own envs even with this flag.
+ * Switching between `MINE` and `UNCLAIMED` filters in-memory (no refetch);
+ * switching to/from `ALL` triggers a new server query. `viewerAddress` is
+ * required to distinguish MINE from UNCLAIMED — pass `null` while the viewer
+ * is still loading and the hook will show an empty list until it resolves.
  *
  * Subscribes to document changes via WebSocket for real-time updates and
  * polls every 10s as fallback.
  */
-export function useEnvironments(scope: ListScope = 'MINE'): CloudEnvironment[] {
+export function useEnvironments(
+  viewScope: ViewScope = 'MINE',
+  viewerAddress: string | null = null,
+): CloudEnvironment[] {
   const renown = useRenown()
   const renownRef = useRef(renown)
   renownRef.current = renown
-  const [environments, setEnvironments] = useState<CloudEnvironment[]>([])
+  const backendScope: ListScope = viewScope === 'ALL' ? 'ALL' : 'MINE'
+  const [summaries, setSummaries] = useState<EnvironmentSummary[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
-  const envsRef = useRef(environments)
-  envsRef.current = environments
+  const summariesRef = useRef(summaries)
+  summariesRef.current = summaries
 
   const refetch = useCallback(async () => {
     try {
-      if (!envsRef.current.length) setIsLoading(true)
+      if (!summariesRef.current.length) setIsLoading(true)
       setError(null)
       const token = await getAuthToken(renownRef.current)
-      const summaries = await fetchMyEnvironments(scope, token)
-      const data = summaries.map(summaryToCloudEnvironment)
-      const prev = JSON.stringify(envsRef.current)
+      const data = await fetchMyEnvironments(backendScope, token)
+      const prev = JSON.stringify(summariesRef.current)
       if (JSON.stringify(data) !== prev) {
-        setEnvironments(data)
+        setSummaries(data)
       }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch environments'))
@@ -77,9 +120,9 @@ export function useEnvironments(scope: ListScope = 'MINE'): CloudEnvironment[] {
     } finally {
       setIsLoading(false)
     }
-  }, [scope])
+  }, [backendScope])
 
-  // Initial load + refetch when scope changes or auth becomes available.
+  // Initial load + refetch when backend scope changes or auth becomes available.
   // `renown` transitions from undefined → instance once the SDK initialises,
   // ensuring we re-fetch with a valid bearer token instead of waiting for the
   // 10-second polling fallback.
@@ -109,11 +152,10 @@ export function useEnvironments(scope: ListScope = 'MINE'): CloudEnvironment[] {
     return () => window.removeEventListener('refresh-environments', handleRefresh)
   }, [refetch])
 
-  if (isLoading || error) {
-    return []
-  }
-
-  return environments
+  return useMemo(() => {
+    if (isLoading || error) return []
+    return filterByScope(summaries, viewScope, viewerAddress).map(summaryToCloudEnvironment)
+  }, [isLoading, error, summaries, viewScope, viewerAddress])
 }
 
 /** Hook to refresh the environments list (e.g. after a delete). */
