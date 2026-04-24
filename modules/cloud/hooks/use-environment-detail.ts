@@ -15,8 +15,8 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { fetchEnvironment, getAuthToken } from '../graphql'
-import type { CloudEnvironment, CloudEnvironmentServiceType } from '../types'
+import { fetchEnvironment, getAuthToken, setCustomDomainMutation } from '../graphql'
+import type { CloudEnvironment, CloudEnvironmentServiceType, TenantService } from '../types'
 import { useDocumentSubscription } from './use-document-subscription'
 import { useEnvironmentController } from './use-environment-controller'
 import { useCanSign } from './use-can-sign'
@@ -143,10 +143,26 @@ export function useEnvironmentDetail(documentId: string) {
     (subdomain: string) => mutate((c) => c.setGenericSubdomain({ genericSubdomain: subdomain })),
     [mutate],
   )
+  // Custom domain writes go through the observability subgraph mutation
+  // rather than the local controller — the subgraph is what enforces
+  // cross-environment uniqueness and (optionally) pins a service to the
+  // apex of the domain. The subscription above picks up the state change
+  // once the mutation lands.
   const setCustomDomain = useCallback(
-    (enabled: boolean, domain?: string | null) =>
-      mutate((c) => c.setCustomDomain({ enabled, domain: domain ?? undefined })),
-    [mutate],
+    async (enabled: boolean, domain?: string | null, apexService?: TenantService | null) => {
+      const token = await getAuthToken(renownRef.current as never)
+      if (!token) {
+        throw new Error(NOT_LOGGED_IN_ERROR)
+      }
+      await setCustomDomainMutation(
+        documentId,
+        enabled,
+        domain?.trim() ? domain.trim() : null,
+        apexService ?? null,
+        token,
+      )
+    },
+    [documentId],
   )
   const setDefaultPackageRegistry = useCallback(
     (registry: string) =>

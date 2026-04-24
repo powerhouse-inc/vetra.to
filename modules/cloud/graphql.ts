@@ -235,6 +235,37 @@ export type Viewer = {
  * - scope=MINE (default): returns only envs the caller created.
  * - scope=ALL: requires admin status on switchboard; returns all envs.
  */
+/**
+ * Claim, update or clear a custom domain on an environment. Goes through the
+ * observability subgraph mutation — the subgraph enforces uniqueness against
+ * other live environments and, when `apexService` is set, pins that service
+ * to the apex of the domain (Connect served at `admin.vetra.io` rather than
+ * `connect.admin.vetra.io`).
+ *
+ * The mutation is privileged — the caller must own the environment or be an
+ * admin on switchboard. The signer on the resulting action is the subgraph's
+ * service identity, not the user; reducer-side ownership checks for
+ * SET_CUSTOM_DOMAIN are not enforced today.
+ */
+export async function setCustomDomainMutation(
+  documentId: string,
+  enabled: boolean,
+  domain: string | null,
+  apexService: TenantService | null | undefined,
+  token?: string | null,
+): Promise<EnvironmentSummary> {
+  const data = await gql<{ setCustomDomain: EnvironmentSummary }>(
+    `mutation ($documentId: String!, $enabled: Boolean!, $domain: String, $apexService: TenantService) {
+      setCustomDomain(documentId: $documentId, enabled: $enabled, domain: $domain, apexService: $apexService) {
+        id name subdomain tenantId customDomain status owner createdBy
+      }
+    }`,
+    { documentId, enabled, domain, apexService: apexService ?? null },
+    token,
+  )
+  return data.setCustomDomain
+}
+
 export async function fetchMyEnvironments(
   scope: ListScope = 'MINE',
   token?: string | null,
