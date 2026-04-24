@@ -7,6 +7,7 @@ import {
   ChevronRight,
   ExternalLink,
   History,
+  Loader2,
   Zap,
 } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -70,10 +71,21 @@ export function AutoUpdateCard({
   const serverChannel: AutoUpdateChannel | null = state.autoUpdateChannel ?? null
 
   // Channel flips instantly via the optimistic hook; reverts on error.
-  const { value: channel, set: commitChannel } = useOptimistic(serverChannel, onChangeChannel)
+  const {
+    value: channel,
+    set: commitChannel,
+    isPending: isChannelPending,
+  } = useOptimistic(serverChannel, onChangeChannel)
 
   const handleChannelChange = async (next: AutoUpdateChannel | 'OFF') => {
+    // Block further clicks while the mutation is in flight — stacking
+    // commits races the controller.push() queue and makes the radios
+    // visibly stutter between the previous committed value and the new
+    // optimistic one. Ignoring late clicks is less surprising than
+    // watching the selection bounce.
+    if (isChannelPending) return
     const nextChannel = next === 'OFF' ? null : next
+    if (nextChannel === channel) return
     try {
       await commitChannel(nextChannel)
     } catch (err) {
@@ -230,6 +242,9 @@ export function AutoUpdateCard({
           <Zap className="h-4 w-4" />
           Auto-Update
           {summaryBadge}
+          {isChannelPending && (
+            <Loader2 className="text-muted-foreground h-3.5 w-3.5 animate-spin" />
+          )}
         </CardTitle>
         {isOpen ? (
           <ChevronDown className="text-muted-foreground h-4 w-4" />
@@ -245,7 +260,11 @@ export function AutoUpdateCard({
             <RadioGroup
               value={channel ?? 'OFF'}
               onValueChange={(v) => void handleChannelChange(v as AutoUpdateChannel | 'OFF')}
-              className="grid grid-cols-4 gap-2"
+              disabled={isChannelPending}
+              className={cn(
+                'grid grid-cols-4 gap-2',
+                isChannelPending && 'pointer-events-none opacity-60',
+              )}
             >
               {CHANNEL_OPTIONS.map((opt) => {
                 const id = `auto-update-${opt.value.toLowerCase()}`
@@ -255,14 +274,15 @@ export function AutoUpdateCard({
                     key={opt.value}
                     htmlFor={id}
                     className={cn(
-                      'flex cursor-pointer flex-col gap-0.5 rounded-md border p-2 text-xs transition-colors',
+                      'flex flex-col gap-0.5 rounded-md border p-2 text-xs transition-colors',
+                      isChannelPending ? 'cursor-wait' : 'cursor-pointer',
                       active
                         ? 'border-primary bg-primary/5'
                         : 'border-border/50 hover:border-border',
                     )}
                   >
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value={opt.value} id={id} />
+                      <RadioGroupItem value={opt.value} id={id} disabled={isChannelPending} />
                       <span className="font-medium">{opt.label}</span>
                     </div>
                     <span className="text-muted-foreground pl-6 text-[10px]">
