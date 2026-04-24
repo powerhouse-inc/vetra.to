@@ -27,6 +27,7 @@ import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updat
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
 import { PackageRow } from '@/modules/cloud/components/package-row'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
+import { useOptimistic } from '@/modules/cloud/hooks/use-optimistic'
 import { usePackageUpdates } from '@/modules/cloud/hooks/use-package-updates'
 import { useServiceUpdates } from '@/modules/cloud/hooks/use-service-updates'
 import type {
@@ -116,7 +117,7 @@ function ServiceRow({
   customDomain,
   customDomainValid,
   isApexService,
-  isEnabled,
+  isEnabled: serverIsEnabled,
   serviceStatus,
   environmentStatus,
   currentVersion,
@@ -137,7 +138,6 @@ function ServiceRow({
   onToggle: (enabled: boolean) => Promise<void>
   onSetVersion?: (version: string) => Promise<void>
 }) {
-  const [isToggling, setIsToggling] = useState(false)
   const [showVersionPicker, setShowVersionPicker] = useState(false)
   const [tags, setTags] = useState<string[]>([])
   const [distTags, setDistTags] = useState<Record<string, string>>({})
@@ -157,16 +157,15 @@ function ServiceRow({
       : null
   const serviceUrl = customServiceUrl ?? defaultUrl
 
+  const { value: isEnabled, set: toggleEnabled } = useOptimistic(serverIsEnabled, onToggle)
+
   const handleToggle = async (checked: boolean) => {
     try {
-      setIsToggling(true)
-      await onToggle(checked)
+      await toggleEnabled(checked)
       toast.success(`${label} ${checked ? 'enabled' : 'disabled'}`)
     } catch (error) {
       console.error(`Failed to toggle ${label}:`, error)
       toast.error(error instanceof Error ? error.message : `Failed to toggle ${label}`)
-    } finally {
-      setIsToggling(false)
     }
   }
 
@@ -261,7 +260,6 @@ function ServiceRow({
         <Switch
           checked={isEnabled}
           onCheckedChange={handleToggle}
-          disabled={isToggling}
           aria-label={`Toggle ${label}`}
           className={cn(
             isEnabled
@@ -405,35 +403,27 @@ function CustomDomainSection({
   const [isSaving, setIsSaving] = useState(false)
   const [dnsResults, setDnsResults] = useState<Record<string, boolean | null>>({})
   const [isVerifying, setIsVerifying] = useState(false)
-  const serverEnabled = customDomain?.enabled ?? false
-  // Optimistic view of the checkbox: flips immediately on click, drops back to
-  // the server-reported value once state catches up (or on explicit revert).
-  const [pendingEnabled, setPendingEnabled] = useState<boolean | null>(null)
-  const enabled = pendingEnabled ?? serverEnabled
   const records = customDomain?.dnsRecords ?? []
   const domainIsOwned = isOwnedDomain(domainInput || customDomain?.domain)
 
-  // Clear the optimistic override once the server state has caught up.
-  useEffect(() => {
-    if (pendingEnabled !== null && pendingEnabled === serverEnabled) {
-      setPendingEnabled(null)
-    }
-  }, [pendingEnabled, serverEnabled])
+  const { value: enabled, set: setEnabledOptimistic } = useOptimistic(
+    customDomain?.enabled ?? false,
+    (next) =>
+      onSetCustomDomain(
+        next,
+        next ? domainInput || undefined : undefined,
+        next ? apexInput || null : null,
+      ),
+  )
 
   const handleToggle = async (checked: boolean) => {
-    setPendingEnabled(checked)
     try {
-      await onSetCustomDomain(
-        checked,
-        checked ? domainInput || undefined : undefined,
-        checked ? apexInput || null : null,
-      )
+      await setEnabledOptimistic(checked)
       if (!checked) {
         setDomainInput('')
         setApexInput('')
       }
     } catch (err) {
-      setPendingEnabled(null) // revert
       toast.error(err instanceof Error ? err.message : 'Failed to update custom domain')
     }
   }
