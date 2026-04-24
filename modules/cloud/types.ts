@@ -53,6 +53,13 @@ export type CloudEnvironmentState = {
   services: CloudEnvironmentService[]
   packages: CloudPackage[]
   status: CloudEnvironmentStatus
+  /**
+   * Service pinned to the apex of the custom domain — that service's ingress
+   * serves `customDomain.domain` directly instead of `<prefix>.<customDomain>`.
+   * Populated by the doc model once the `apexService` field is added (rolling
+   * update, read-tolerant for now).
+   */
+  apexService?: CloudEnvironmentServiceType | null
 }
 
 export type CloudEnvironment = {

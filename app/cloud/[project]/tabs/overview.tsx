@@ -115,6 +115,7 @@ function ServiceRow({
   subdomain,
   customDomain,
   customDomainValid,
+  isApexService,
   isEnabled,
   serviceStatus,
   environmentStatus,
@@ -127,6 +128,8 @@ function ServiceRow({
   subdomain: string | null
   customDomain?: string | null
   customDomainValid?: boolean
+  /** Whether this service is pinned to the apex of the custom domain. */
+  isApexService?: boolean
   isEnabled: boolean
   serviceStatus: string
   environmentStatus: string
@@ -146,8 +149,13 @@ function ServiceRow({
   const defaultUrl = subdomain
     ? `${prefix}.${subdomain}.vetra.io`
     : `${prefix}.<subdomain>.vetra.io`
-  const serviceUrl =
-    customDomain && customDomainValid !== false ? `${prefix}.${customDomain}` : defaultUrl
+  const customServiceUrl =
+    customDomain && customDomainValid !== false
+      ? isApexService
+        ? customDomain
+        : `${prefix}.${customDomain}`
+      : null
+  const serviceUrl = customServiceUrl ?? defaultUrl
 
   const handleToggle = async (checked: boolean) => {
     try {
@@ -366,25 +374,53 @@ function ServiceRow({
 // CustomDomainSection
 // ---------------------------------------------------------------------------
 
+/** Domains the cluster's external-dns provider controls directly. DNS A
+ * records for hosts under these zones are published automatically from
+ * Ingress annotations — no manual setup required on the user's side. */
+const OWNED_DNS_ZONES = ['.vetra.io']
+
+function isOwnedDomain(domain: string | null | undefined): boolean {
+  if (!domain) return false
+  const lower = domain.trim().toLowerCase()
+  return OWNED_DNS_ZONES.some((zone) => lower === zone.slice(1) || lower.endsWith(zone))
+}
+
 function CustomDomainSection({
   customDomain,
+  apexService,
+  enabledServices,
   onSetCustomDomain,
 }: {
   customDomain: CloudEnvironment['state']['customDomain']
-  onSetCustomDomain: (enabled: boolean, domain?: string | null) => Promise<void>
+  apexService: CloudEnvironmentServiceType | null
+  enabledServices: CloudEnvironmentServiceType[]
+  onSetCustomDomain: (
+    enabled: boolean,
+    domain?: string | null,
+    apexService?: CloudEnvironmentServiceType | null,
+  ) => Promise<void>
 }) {
   const [domainInput, setDomainInput] = useState(customDomain?.domain ?? '')
+  const [apexInput, setApexInput] = useState<CloudEnvironmentServiceType | ''>(apexService ?? '')
   const [isSaving, setIsSaving] = useState(false)
   const [dnsResults, setDnsResults] = useState<Record<string, boolean | null>>({})
   const [isVerifying, setIsVerifying] = useState(false)
   const enabled = customDomain?.enabled ?? false
   const records = customDomain?.dnsRecords ?? []
+  const domainIsOwned = isOwnedDomain(domainInput || customDomain?.domain)
 
   const handleToggle = async (checked: boolean) => {
     setIsSaving(true)
     try {
-      await onSetCustomDomain(checked, checked ? domainInput || undefined : undefined)
-      if (!checked) setDomainInput('')
+      await onSetCustomDomain(
+        checked,
+        checked ? domainInput || undefined : undefined,
+        checked ? apexInput || null : null,
+      )
+      if (!checked) {
+        setDomainInput('')
+        setApexInput('')
+      }
     } finally {
       setIsSaving(false)
     }
@@ -394,7 +430,7 @@ function CustomDomainSection({
     if (!domainInput.trim()) return
     setIsSaving(true)
     try {
-      await onSetCustomDomain(true, domainInput.trim())
+      await onSetCustomDomain(true, domainInput.trim(), apexInput || null)
     } finally {
       setIsSaving(false)
     }
@@ -456,7 +492,45 @@ function CustomDomainSection({
         )}
       </div>
 
-      {records.length > 0 && (
+      {/* Apex routing — only meaningful while a custom domain is set. */}
+      {enabled && (
+        <div className="space-y-1 pt-2">
+          <label htmlFor="apex-service" className="text-muted-foreground text-sm font-medium">
+            Serve at apex
+          </label>
+          <p className="text-muted-foreground text-xs">
+            Pin one enabled service to the apex of the custom domain — the service is served at the
+            domain itself instead of{' '}
+            <span className="font-mono">&lt;prefix&gt;.&lt;domain&gt;</span>.
+          </p>
+          <select
+            id="apex-service"
+            className="border-input bg-background h-9 w-full rounded-md border px-3 font-mono text-sm"
+            value={apexInput}
+            onChange={(e) => setApexInput(e.target.value as CloudEnvironmentServiceType | '')}
+            disabled={isSaving}
+          >
+            <option value="">None</option>
+            {enabledServices.map((s) => (
+              <option key={s} value={s}>
+                {SERVICE_LABELS[s]}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {enabled && domainIsOwned && (
+        <div className="space-y-1 pt-2">
+          <h4 className="text-muted-foreground text-sm font-medium">DNS</h4>
+          <p className="text-muted-foreground text-xs">
+            DNS is managed automatically for <span className="font-mono">.vetra.io</span> domains —
+            nothing to configure on your side.
+          </p>
+        </div>
+      )}
+
+      {enabled && !domainIsOwned && records.length > 0 && (
         <div className="space-y-2 pt-2">
           <div className="flex items-center justify-between">
             <h4 className="text-muted-foreground text-sm font-medium">DNS Records</h4>
@@ -863,6 +937,7 @@ export function OverviewTab({
                   customDomainValid={
                     status?.domainResolves === true && status?.tlsCertValid === true
                   }
+                  isApexService={(state.apexService ?? null) === type}
                   isEnabled={service?.enabled ?? false}
                   serviceStatus={service?.status ?? 'PROVISIONING'}
                   environmentStatus={state.status}
@@ -950,6 +1025,11 @@ export function OverviewTab({
 
           <CustomDomainSection
             customDomain={state.customDomain}
+            apexService={state.apexService ?? null}
+            enabledServices={state.services
+              .filter((s) => s.enabled)
+              .map((s) => s.type)
+              .filter((t): t is Exclude<CloudEnvironmentServiceType, 'FUSION'> => t !== 'FUSION')}
             onSetCustomDomain={setCustomDomain}
           />
         </CardContent>
