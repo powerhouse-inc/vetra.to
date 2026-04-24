@@ -449,20 +449,6 @@ function CustomDomainSection({
     }
   }
 
-  // Auto-commit apex changes — no separate Save click. Reverts the dropdown
-  // to the previous value on error so the UI stays in sync with the server.
-  const handleApexChange = async (next: CloudEnvironmentServiceType | '') => {
-    const previous = apexInput
-    setApexInput(next)
-    if (!enabled) return // no commit when custom domain isn't on
-    try {
-      await onSetCustomDomain(true, customDomain?.domain ?? null, next || null)
-    } catch (err) {
-      setApexInput(previous)
-      toast.error(err instanceof Error ? err.message : 'Failed to set apex service')
-    }
-  }
-
   const handleVerifyDns = async () => {
     if (records.length === 0) return
     setIsVerifying(true)
@@ -533,7 +519,7 @@ function CustomDomainSection({
             id="apex-service"
             className="border-input bg-background h-9 w-full rounded-md border px-3 font-mono text-sm"
             value={apexInput}
-            onChange={(e) => handleApexChange(e.target.value as CloudEnvironmentServiceType | '')}
+            onChange={(e) => setApexInput(e.target.value as CloudEnvironmentServiceType | '')}
           >
             <option value="">None</option>
             {enabledServices.map((s) => (
