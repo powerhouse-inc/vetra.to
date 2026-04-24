@@ -35,20 +35,27 @@ import { useRenown } from '@powerhousedao/reactor-browser'
 
 const NOT_LOGGED_IN_ERROR = 'You must be logged in with Renown to perform this action'
 
-/** Construct a CloudEnvironment-shaped object from controller state + id. */
+/**
+ * Construct a CloudEnvironment from controller state + optional metadata
+ * snapshot. Controller drives reactive state; metadata (timestamps, revision,
+ * documentType) isn't exposed by the controller so we borrow it from the
+ * metadata fetch. When metadata isn't available yet (first render before
+ * the fetch returns) we fall back to sensible placeholders so the page
+ * can render.
+ */
 function projectFromController(
   documentId: string,
   state: unknown,
-  revision: number,
+  metadata: CloudEnvironment | null,
 ): CloudEnvironment {
   const s = state as CloudEnvironment['state']
   return {
     id: documentId,
-    name: s?.label ?? documentId,
-    documentType: 'powerhouse/vetra-cloud-environment',
-    createdAtUtcIso: '',
-    lastModifiedAtUtcIso: '',
-    revision,
+    name: s?.label ?? metadata?.name ?? documentId,
+    documentType: metadata?.documentType ?? 'powerhouse/vetra-cloud-environment',
+    createdAtUtcIso: metadata?.createdAtUtcIso ?? '',
+    lastModifiedAtUtcIso: metadata?.lastModifiedAtUtcIso ?? '',
+    revision: metadata?.revision ?? 0,
     state: s,
   }
 }
@@ -62,7 +69,10 @@ export function useEnvironmentDetail(documentId: string) {
   const ctrlResult = useEnvironmentController(canSign ? documentId : null)
   const { controller, state: ctrlState, isLoading: ctrlLoading, error: ctrlError } = ctrlResult
 
-  // Read-only fallback for unauthenticated viewers (no controller available).
+  // Doubles as the read-only fallback for unauthenticated viewers AND as
+  // the source of metadata (createdAt, lastModifiedAt, revision,
+  // documentType) for signed-in users — the controller exposes reactive
+  // state but not the document header.
   const [fallbackEnv, setFallbackEnv] = useState<CloudEnvironment | null>(null)
   const [fallbackLoading, setFallbackLoading] = useState<boolean>(true)
   const [fallbackError, setFallbackError] = useState<Error | null>(null)
@@ -70,14 +80,18 @@ export function useEnvironmentDetail(documentId: string) {
   fallbackRef.current = fallbackEnv
 
   const refetchFallback = useCallback(async () => {
-    if (canSign) return // controller path handles state when signed in
     try {
       if (!fallbackRef.current) setFallbackLoading(true)
       const token = await getAuthToken(renownRef.current as never)
       const env = await fetchEnvironment(documentId, token)
       if (env) {
         const prev = fallbackRef.current
-        if (!prev || prev.revision !== env.revision || prev.state.status !== env.state.status) {
+        if (
+          !prev ||
+          prev.revision !== env.revision ||
+          prev.state.status !== env.state.status ||
+          prev.lastModifiedAtUtcIso !== env.lastModifiedAtUtcIso
+        ) {
           setFallbackEnv(env)
         }
       }
@@ -86,13 +100,11 @@ export function useEnvironmentDetail(documentId: string) {
     } finally {
       setFallbackLoading(false)
     }
-  }, [documentId, canSign])
+  }, [documentId])
 
   useEffect(() => {
-    if (!canSign) {
-      void refetchFallback()
-    }
-  }, [canSign, refetchFallback])
+    void refetchFallback()
+  }, [refetchFallback])
 
   // Subscribe to remote document changes in both paths. The controller does
   // NOT poll/subscribe on its own — without this, a signed-in user never
@@ -104,9 +116,10 @@ export function useEnvironmentDetail(documentId: string) {
   useDocumentSubscription(documentId, () => {
     if (canSign && controllerRef.current) {
       void controllerRef.current.pull()
-    } else {
-      void refetchFallback()
     }
+    // Refetch metadata regardless of auth — timestamps and revision bump on
+    // any remote change, and the signed-in path uses these for display.
+    void refetchFallback()
   })
 
   // Polling fallback for read-only path (WS requires auth; unauth viewers rely on polling)
@@ -126,14 +139,17 @@ export function useEnvironmentDetail(documentId: string) {
     }
   }, [controller])
 
-  // Effective environment: controller state when signed in, fallback otherwise
+  // Effective environment: controller state when signed in (reactive),
+  // fallback otherwise (read-only polling + subscription). Either way,
+  // metadata (timestamps, revision) comes from fallbackEnv — the controller
+  // doesn't expose the document header.
   const environment: CloudEnvironment | null = canSign
     ? ctrlState
-      ? projectFromController(documentId, ctrlState, 0)
-      : null
+      ? projectFromController(documentId, ctrlState, fallbackEnv)
+      : fallbackEnv // controller not ready yet — show what we have
     : fallbackEnv
 
-  const isLoading = canSign ? ctrlLoading : fallbackLoading
+  const isLoading = canSign ? ctrlLoading && !fallbackEnv : fallbackLoading
   const error = canSign ? ctrlError : fallbackError
 
   // ---- Mutations: dispatch on controller, then push (signed) ----
