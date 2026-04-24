@@ -421,6 +421,8 @@ function CustomDomainSection({
         setDomainInput('')
         setApexInput('')
       }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to update custom domain')
     } finally {
       setIsSaving(false)
     }
@@ -431,6 +433,9 @@ function CustomDomainSection({
     setIsSaving(true)
     try {
       await onSetCustomDomain(true, domainInput.trim(), apexInput || null)
+      toast.success('Custom domain saved')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to save custom domain')
     } finally {
       setIsSaving(false)
     }
