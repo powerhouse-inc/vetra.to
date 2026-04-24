@@ -3,7 +3,8 @@
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Suspense, use, useEffect, useRef } from 'react'
+import { Suspense, use, useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
 
 import { StatusBadge } from '@/modules/cloud/components/status-badge'
 import { useEnvironmentDetail } from '@/modules/cloud/hooks/use-environment-detail'
@@ -78,6 +79,30 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
     router.replace(`?${params.toString()}`, { scroll: false })
   }
 
+  // Approve/Deploy: local "just clicked" flag shields the button from the
+  // subscription-vs-push race. The controller updates local state
+  // optimistically (flipping status away from CHANGES_PENDING / DRAFT), but
+  // an incoming subscription notification can fetch the pre-push remote
+  // state and momentarily revert it — which reads as the button flickering
+  // back for 1-2s. Holding the flag until the server confirms any post-
+  // CHANGES_PENDING status keeps the button hidden through the race.
+  const [justApproved, setJustApproved] = useState(false)
+  const statusStr = state?.status ?? 'DRAFT'
+  useEffect(() => {
+    if (justApproved && statusStr !== 'CHANGES_PENDING' && statusStr !== 'DRAFT') {
+      setJustApproved(false)
+    }
+  }, [statusStr, justApproved])
+  const handleApprove = async () => {
+    setJustApproved(true)
+    try {
+      await detail.approveChanges()
+    } catch (err) {
+      setJustApproved(false)
+      toast.error(err instanceof Error ? err.message : 'Failed to approve changes')
+    }
+  }
+
   if (isLoading) {
     return <p className="text-muted-foreground">Loading environment...</p>
   }
@@ -110,22 +135,20 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
             />
           )}
 
-          {/* Deploy/Approve button */}
-          {state?.status === 'DRAFT' && (
+          {/* Deploy/Approve button — hidden instantly on click via
+              justApproved until the server confirms a post-CHANGES_PENDING
+              state, to mask the subscription-vs-push race. */}
+          {state?.status === 'DRAFT' && !justApproved && (
             <Button
               size="sm"
-              onClick={() => detail.approveChanges()}
+              onClick={handleApprove}
               className="bg-emerald-600 hover:bg-emerald-700"
             >
               Deploy
             </Button>
           )}
-          {state?.status === 'CHANGES_PENDING' && (
-            <Button
-              size="sm"
-              onClick={() => detail.approveChanges()}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
+          {state?.status === 'CHANGES_PENDING' && !justApproved && (
+            <Button size="sm" onClick={handleApprove} className="bg-blue-600 hover:bg-blue-700">
               Approve Changes
             </Button>
           )}
