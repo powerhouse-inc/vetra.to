@@ -1,6 +1,14 @@
 'use client'
 
-import { ArrowDownCircle, ArrowUpCircle, ExternalLink, History, Zap } from 'lucide-react'
+import {
+  ArrowDownCircle,
+  ArrowUpCircle,
+  ChevronDown,
+  ChevronRight,
+  ExternalLink,
+  History,
+  Zap,
+} from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -15,7 +23,7 @@ import type {
 } from '@/modules/cloud/types'
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
+import { Card, CardContent, CardTitle } from '@/modules/shared/components/ui/card'
 import { RadioGroup, RadioGroupItem } from '@/modules/shared/components/ui/radio-group'
 import { cn } from '@/shared/lib/utils'
 
@@ -185,183 +193,227 @@ export function AutoUpdateCard({
 
   const hasHistory = history.length > 0
 
+  // Collapsed by default — the card is useful but not essential for most
+  // envs, and rendering a radio group + per-service rows + activity feed
+  // pushes the surrounding sections down. Auto-open when the env actually
+  // has a channel set so the owner sees the state at a glance.
+  const [isOpen, setIsOpen] = useState<boolean>(serverChannel !== null)
+  const serverChannelRef = useRef(serverChannel)
+  useEffect(() => {
+    // If another writer flips the channel on (e.g. programmatic opt-in),
+    // expand the card so the owner sees what happened. Manual collapse
+    // from an open state is preserved — we only auto-open, never
+    // auto-close.
+    if (serverChannel && !serverChannelRef.current) setIsOpen(true)
+    serverChannelRef.current = serverChannel
+  }, [serverChannel])
+
+  const summaryBadge = channel ? (
+    <Badge variant="secondary" className="font-mono text-[10px]">
+      {channel.toLowerCase()}
+    </Badge>
+  ) : (
+    <Badge variant="outline" className="text-[10px]">
+      off
+    </Badge>
+  )
+
   return (
     <Card>
-      <CardHeader>
+      <button
+        type="button"
+        onClick={() => setIsOpen((o) => !o)}
+        aria-expanded={isOpen}
+        className="hover:bg-muted/30 flex w-full items-center justify-between rounded-t-xl px-6 py-4 text-left transition-colors"
+      >
         <CardTitle className="flex items-center gap-2 text-base">
           <Zap className="h-4 w-4" />
           Auto-Update
+          {summaryBadge}
         </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-5">
-        {/* Channel picker */}
-        <div>
-          <label className="text-muted-foreground mb-2 block text-sm font-medium">Channel</label>
-          <RadioGroup
-            value={channel ?? 'OFF'}
-            onValueChange={(v) => void handleChannelChange(v as AutoUpdateChannel | 'OFF')}
-            className="grid grid-cols-4 gap-2"
-          >
-            {CHANNEL_OPTIONS.map((opt) => {
-              const id = `auto-update-${opt.value.toLowerCase()}`
-              const active = (channel ?? 'OFF') === opt.value
-              return (
-                <label
-                  key={opt.value}
-                  htmlFor={id}
-                  className={cn(
-                    'flex cursor-pointer flex-col gap-0.5 rounded-md border p-2 text-xs transition-colors',
-                    active ? 'border-primary bg-primary/5' : 'border-border/50 hover:border-border',
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value={opt.value} id={id} />
-                    <span className="font-medium">{opt.label}</span>
-                  </div>
-                  <span className="text-muted-foreground pl-6 text-[10px]">{opt.description}</span>
-                </label>
-              )
-            })}
-          </RadioGroup>
-        </div>
-
-        {/* Per-service current vs latest */}
-        {channel && (
-          <div className="space-y-2">
-            <label className="text-muted-foreground block text-sm font-medium">Versions</label>
-            {enabledServices.length === 0 ? (
-              <p className="text-muted-foreground text-xs italic">No enabled services to track.</p>
-            ) : (
-              <div className="space-y-1.5">
-                {enabledServices.map((svc) => {
-                  const latest = latestByService[svc.type]
-                  const outOfDate =
-                    latest !== null && latest !== undefined && svc.version !== latest.tag
-                  return (
-                    <div
-                      key={svc.type}
-                      className="border-border/40 bg-muted/20 flex items-center justify-between rounded border px-3 py-1.5 text-xs"
-                    >
-                      <span className="font-medium">{SERVICE_LABELS[svc.type]}</span>
-                      <div className="flex items-center gap-2 font-mono">
-                        <span className={cn(outOfDate && 'text-muted-foreground line-through')}>
-                          {svc.version ?? '—'}
-                        </span>
-                        {outOfDate && latest && (
-                          <>
-                            <ArrowUpCircle className="h-3 w-3 text-emerald-500" />
-                            {latest.releaseUrl ? (
-                              <a
-                                href={latest.releaseUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:underline"
-                              >
-                                {latest.tag}
-                              </a>
-                            ) : (
-                              <span className="text-primary">{latest.tag}</span>
-                            )}
-                          </>
-                        )}
-                        {!outOfDate && latest && (
-                          <Badge variant="outline" className="text-[9px]">
-                            up to date
-                          </Badge>
-                        )}
-                        {!latest && (
-                          <Badge variant="outline" className="text-[9px]">
-                            no release seen
-                          </Badge>
-                        )}
-                      </div>
+        {isOpen ? (
+          <ChevronDown className="text-muted-foreground h-4 w-4" />
+        ) : (
+          <ChevronRight className="text-muted-foreground h-4 w-4" />
+        )}
+      </button>
+      {isOpen && (
+        <CardContent className="space-y-5">
+          {/* Channel picker */}
+          <div>
+            <label className="text-muted-foreground mb-2 block text-sm font-medium">Channel</label>
+            <RadioGroup
+              value={channel ?? 'OFF'}
+              onValueChange={(v) => void handleChannelChange(v as AutoUpdateChannel | 'OFF')}
+              className="grid grid-cols-4 gap-2"
+            >
+              {CHANNEL_OPTIONS.map((opt) => {
+                const id = `auto-update-${opt.value.toLowerCase()}`
+                const active = (channel ?? 'OFF') === opt.value
+                return (
+                  <label
+                    key={opt.value}
+                    htmlFor={id}
+                    className={cn(
+                      'flex cursor-pointer flex-col gap-0.5 rounded-md border p-2 text-xs transition-colors',
+                      active
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border/50 hover:border-border',
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value={opt.value} id={id} />
+                      <span className="font-medium">{opt.label}</span>
                     </div>
-                  )
-                })}
-              </div>
-            )}
+                    <span className="text-muted-foreground pl-6 text-[10px]">
+                      {opt.description}
+                    </span>
+                  </label>
+                )
+              })}
+            </RadioGroup>
+          </div>
 
-            {/* Actions */}
-            <div className="flex flex-wrap items-center gap-2 pt-2">
-              <Button
-                size="sm"
-                variant="default"
-                onClick={handleUpdateNow}
-                disabled={isUpdating}
-                className="gap-1.5"
-              >
-                <ArrowUpCircle className="h-3.5 w-3.5" />
-                {isUpdating ? 'Updating...' : 'Update now'}
-              </Button>
-              {hasHistory && (
+          {/* Per-service current vs latest */}
+          {channel && (
+            <div className="space-y-2">
+              <label className="text-muted-foreground block text-sm font-medium">Versions</label>
+              {enabledServices.length === 0 ? (
+                <p className="text-muted-foreground text-xs italic">
+                  No enabled services to track.
+                </p>
+              ) : (
+                <div className="space-y-1.5">
+                  {enabledServices.map((svc) => {
+                    const latest = latestByService[svc.type]
+                    const outOfDate =
+                      latest !== null && latest !== undefined && svc.version !== latest.tag
+                    return (
+                      <div
+                        key={svc.type}
+                        className="border-border/40 bg-muted/20 flex items-center justify-between rounded border px-3 py-1.5 text-xs"
+                      >
+                        <span className="font-medium">{SERVICE_LABELS[svc.type]}</span>
+                        <div className="flex items-center gap-2 font-mono">
+                          <span className={cn(outOfDate && 'text-muted-foreground line-through')}>
+                            {svc.version ?? '—'}
+                          </span>
+                          {outOfDate && latest && (
+                            <>
+                              <ArrowUpCircle className="h-3 w-3 text-emerald-500" />
+                              {latest.releaseUrl ? (
+                                <a
+                                  href={latest.releaseUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:underline"
+                                >
+                                  {latest.tag}
+                                </a>
+                              ) : (
+                                <span className="text-primary">{latest.tag}</span>
+                              )}
+                            </>
+                          )}
+                          {!outOfDate && latest && (
+                            <Badge variant="outline" className="text-[9px]">
+                              up to date
+                            </Badge>
+                          )}
+                          {!latest && (
+                            <Badge variant="outline" className="text-[9px]">
+                              no release seen
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex flex-wrap items-center gap-2 pt-2">
                 <Button
                   size="sm"
-                  variant="outline"
-                  onClick={handleRollback}
-                  disabled={isRollingBack}
+                  variant="default"
+                  onClick={handleUpdateNow}
+                  disabled={isUpdating}
                   className="gap-1.5"
                 >
-                  <ArrowDownCircle className="h-3.5 w-3.5" />
-                  {isRollingBack ? 'Rolling back...' : 'Rollback'}
+                  <ArrowUpCircle className="h-3.5 w-3.5" />
+                  {isUpdating ? 'Updating...' : 'Update now'}
                 </Button>
-              )}
+                {hasHistory && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleRollback}
+                    disabled={isRollingBack}
+                    className="gap-1.5"
+                  >
+                    <ArrowDownCircle className="h-3.5 w-3.5" />
+                    {isRollingBack ? 'Rolling back...' : 'Rollback'}
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Release history feed */}
-        {hasHistory && (
-          <div>
-            <div className="text-muted-foreground mb-2 flex items-center gap-1.5 text-sm font-medium">
-              <History className="h-3.5 w-3.5" />
-              Recent activity
-            </div>
-            <div className="space-y-1">
-              {history.map((h) => (
-                <div
-                  key={h.documentId + h.service + h.at}
-                  className="border-border/30 flex items-center justify-between gap-3 rounded border px-3 py-1.5 text-xs"
-                >
-                  <div className="flex min-w-0 items-center gap-2">
-                    <Badge
-                      variant={
-                        h.trigger === 'ROLLBACK'
-                          ? 'destructive'
-                          : h.trigger === 'MANUAL'
-                            ? 'default'
-                            : 'secondary'
-                      }
-                      className="shrink-0 text-[9px]"
-                    >
-                      {h.trigger}
-                    </Badge>
-                    <span className="text-muted-foreground shrink-0">
-                      {SERVICE_LABELS[h.service]}
-                    </span>
-                    <span className="truncate font-mono">
-                      {h.fromTag ?? '—'} → {h.toTag}
-                    </span>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    <span className="text-muted-foreground">{timeAgo(h.at)}</span>
-                    {h.releaseUrl && (
-                      <a
-                        href={h.releaseUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-muted-foreground hover:text-primary"
-                        aria-label="Release notes"
+          {/* Release history feed */}
+          {hasHistory && (
+            <div>
+              <div className="text-muted-foreground mb-2 flex items-center gap-1.5 text-sm font-medium">
+                <History className="h-3.5 w-3.5" />
+                Recent activity
+              </div>
+              <div className="space-y-1">
+                {history.map((h) => (
+                  <div
+                    key={h.documentId + h.service + h.at}
+                    className="border-border/30 flex items-center justify-between gap-3 rounded border px-3 py-1.5 text-xs"
+                  >
+                    <div className="flex min-w-0 items-center gap-2">
+                      <Badge
+                        variant={
+                          h.trigger === 'ROLLBACK'
+                            ? 'destructive'
+                            : h.trigger === 'MANUAL'
+                              ? 'default'
+                              : 'secondary'
+                        }
+                        className="shrink-0 text-[9px]"
                       >
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    )}
+                        {h.trigger}
+                      </Badge>
+                      <span className="text-muted-foreground shrink-0">
+                        {SERVICE_LABELS[h.service]}
+                      </span>
+                      <span className="truncate font-mono">
+                        {h.fromTag ?? '—'} → {h.toTag}
+                      </span>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <span className="text-muted-foreground">{timeAgo(h.at)}</span>
+                      {h.releaseUrl && (
+                        <a
+                          href={h.releaseUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-muted-foreground hover:text-primary"
+                          aria-label="Release notes"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </CardContent>
+          )}
+        </CardContent>
+      )}
     </Card>
   )
 }
