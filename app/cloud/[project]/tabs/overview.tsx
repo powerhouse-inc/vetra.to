@@ -412,7 +412,6 @@ function CustomDomainSection({
 }) {
   const [domainInput, setDomainInput] = useState(customDomain?.domain ?? '')
   const [apexInput, setApexInput] = useState<CloudEnvironmentServiceType | ''>(apexService ?? '')
-  const [isSaving, setIsSaving] = useState(false)
   const [dnsResults, setDnsResults] = useState<Record<string, boolean | null>>({})
   const [isVerifying, setIsVerifying] = useState(false)
   const records = customDomain?.dnsRecords ?? []
@@ -442,14 +441,25 @@ function CustomDomainSection({
 
   const handleSaveDomain = async () => {
     if (!domainInput.trim()) return
-    setIsSaving(true)
     try {
       await onSetCustomDomain(true, domainInput.trim(), apexInput || null)
       toast.success('Custom domain saved')
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to save custom domain')
-    } finally {
-      setIsSaving(false)
+    }
+  }
+
+  // Auto-commit apex changes — no separate Save click. Reverts the dropdown
+  // to the previous value on error so the UI stays in sync with the server.
+  const handleApexChange = async (next: CloudEnvironmentServiceType | '') => {
+    const previous = apexInput
+    setApexInput(next)
+    if (!enabled) return // no commit when custom domain isn't on
+    try {
+      await onSetCustomDomain(true, customDomain?.domain ?? null, next || null)
+    } catch (err) {
+      setApexInput(previous)
+      toast.error(err instanceof Error ? err.message : 'Failed to set apex service')
     }
   }
 
@@ -500,9 +510,9 @@ function CustomDomainSection({
             <Button
               size="sm"
               onClick={handleSaveDomain}
-              disabled={isSaving || !domainInput.trim() || domainInput === customDomain?.domain}
+              disabled={!domainInput.trim() || domainInput === customDomain?.domain}
             >
-              {isSaving ? 'Saving...' : 'Save'}
+              Save
             </Button>
           </div>
         )}
@@ -523,8 +533,7 @@ function CustomDomainSection({
             id="apex-service"
             className="border-input bg-background h-9 w-full rounded-md border px-3 font-mono text-sm"
             value={apexInput}
-            onChange={(e) => setApexInput(e.target.value as CloudEnvironmentServiceType | '')}
-            disabled={isSaving}
+            onChange={(e) => handleApexChange(e.target.value as CloudEnvironmentServiceType | '')}
           >
             <option value="">None</option>
             {enabledServices.map((s) => (
