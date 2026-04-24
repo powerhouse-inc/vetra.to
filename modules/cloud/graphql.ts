@@ -102,7 +102,7 @@ async function gql<T>(
 const SERVICE_FIELDS = `type prefix enabled url status version`
 const PACKAGE_FIELDS = `registry name version`
 const CUSTOM_DOMAIN_FIELDS = `enabled domain dnsRecords { type host value }`
-const STATE_FIELDS = `owner label genericSubdomain genericBaseDomain customDomain { ${CUSTOM_DOMAIN_FIELDS} } defaultPackageRegistry status services { ${SERVICE_FIELDS} } packages { ${PACKAGE_FIELDS} }`
+const STATE_FIELDS = `owner label genericSubdomain genericBaseDomain customDomain { ${CUSTOM_DOMAIN_FIELDS} } defaultPackageRegistry status apexService services { ${SERVICE_FIELDS} } packages { ${PACKAGE_FIELDS} }`
 const DOCUMENT_FIELDS = `id documentType createdAtUtcIso lastModifiedAtUtcIso revisionsList { scope revision } state { global { ${STATE_FIELDS} } }`
 const LIST_ITEM_FIELDS = `id state { global { ${STATE_FIELDS} } }`
 
