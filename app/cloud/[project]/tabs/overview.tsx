@@ -405,12 +405,23 @@ function CustomDomainSection({
   const [isSaving, setIsSaving] = useState(false)
   const [dnsResults, setDnsResults] = useState<Record<string, boolean | null>>({})
   const [isVerifying, setIsVerifying] = useState(false)
-  const enabled = customDomain?.enabled ?? false
+  const serverEnabled = customDomain?.enabled ?? false
+  // Optimistic view of the checkbox: flips immediately on click, drops back to
+  // the server-reported value once state catches up (or on explicit revert).
+  const [pendingEnabled, setPendingEnabled] = useState<boolean | null>(null)
+  const enabled = pendingEnabled ?? serverEnabled
   const records = customDomain?.dnsRecords ?? []
   const domainIsOwned = isOwnedDomain(domainInput || customDomain?.domain)
 
+  // Clear the optimistic override once the server state has caught up.
+  useEffect(() => {
+    if (pendingEnabled !== null && pendingEnabled === serverEnabled) {
+      setPendingEnabled(null)
+    }
+  }, [pendingEnabled, serverEnabled])
+
   const handleToggle = async (checked: boolean) => {
-    setIsSaving(true)
+    setPendingEnabled(checked)
     try {
       await onSetCustomDomain(
         checked,
@@ -422,9 +433,8 @@ function CustomDomainSection({
         setApexInput('')
       }
     } catch (err) {
+      setPendingEnabled(null) // revert
       toast.error(err instanceof Error ? err.message : 'Failed to update custom domain')
-    } finally {
-      setIsSaving(false)
     }
   }
 
@@ -469,7 +479,6 @@ function CustomDomainSection({
             id="custom-domain"
             checked={enabled}
             onCheckedChange={(checked) => handleToggle(checked === true)}
-            disabled={isSaving}
           />
           <label htmlFor="custom-domain" className="text-sm font-medium">
             Custom Domain
