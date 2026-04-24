@@ -23,6 +23,7 @@ import { useCallback, useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { AddPackageModal } from '@/modules/cloud/components/add-package-modal'
+import { AutoUpdateCard } from '@/modules/cloud/components/auto-update-card'
 import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updates-card'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
 import { PackageRow } from '@/modules/cloud/components/package-row'
@@ -708,6 +709,11 @@ type OverviewTabProps = {
   onDelete?: () => void
   setServiceVersion?: (type: CloudEnvironmentServiceType, version: string) => Promise<void>
   setPackageVersion?: (packageName: string, version: string) => Promise<void>
+  setAutoUpdateChannel?: (
+    channel: import('@/modules/cloud/types').AutoUpdateChannel | null,
+  ) => Promise<void>
+  updateToLatest?: () => Promise<string[]>
+  rollbackRelease?: () => Promise<string[]>
   initialAddPackage?: string | null
   initialAddVersion?: string | null
 }
@@ -728,6 +734,9 @@ export function OverviewTab({
   onDelete,
   setServiceVersion,
   setPackageVersion,
+  setAutoUpdateChannel,
+  updateToLatest,
+  rollbackRelease,
   initialAddPackage,
   initialAddVersion,
 }: OverviewTabProps) {
@@ -904,6 +913,18 @@ export function OverviewTab({
             setServiceVersion(type as CloudEnvironmentServiceType, version)
           }
           onUpdatePackage={setPackageVersion}
+        />
+      )}
+
+      {/* b.2 Auto-Update — owner-facing channel subscription, update-now,
+          rollback, and release history. Only rendered when the detail
+          hook provided its wrappers (signed-in owner path). */}
+      {setAutoUpdateChannel && updateToLatest && rollbackRelease && (
+        <AutoUpdateCard
+          environment={environment}
+          onChangeChannel={setAutoUpdateChannel}
+          onUpdateNow={updateToLatest}
+          onRollback={rollbackRelease}
         />
       )}
 

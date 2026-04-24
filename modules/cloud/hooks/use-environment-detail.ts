@@ -15,8 +15,19 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { fetchEnvironment, getAuthToken, setCustomDomainMutation } from '../graphql'
-import type { CloudEnvironment, CloudEnvironmentServiceType, TenantService } from '../types'
+import {
+  fetchEnvironment,
+  getAuthToken,
+  rollbackEnvironmentRelease,
+  setCustomDomainMutation,
+  updateEnvironmentToLatest,
+} from '../graphql'
+import type {
+  AutoUpdateChannel,
+  CloudEnvironment,
+  CloudEnvironmentServiceType,
+  TenantService,
+} from '../types'
 import { useDocumentSubscription } from './use-document-subscription'
 import { useEnvironmentController } from './use-environment-controller'
 import { useCanSign } from './use-can-sign'
@@ -214,6 +225,25 @@ export function useEnvironmentDetail(documentId: string) {
       mutate((c) => c.setPackageVersion({ packageName, version })),
     [mutate],
   )
+  const setAutoUpdateChannel = useCallback(
+    (channel: AutoUpdateChannel | null) => mutate((c) => c.setAutoUpdateChannel({ channel })),
+    [mutate],
+  )
+
+  /** Owner-triggered "update to latest" — pulls the env's subscribed
+   *  channel's latest known tag and bumps all enabled services. */
+  const updateToLatest = useCallback(async () => {
+    const token = await getAuthToken(renownRef.current as never)
+    if (!token) throw new Error(NOT_LOGGED_IN_ERROR)
+    return updateEnvironmentToLatest(documentId, token)
+  }, [documentId])
+
+  /** Owner-triggered revert to previous tag per enabled service. */
+  const rollbackRelease = useCallback(async () => {
+    const token = await getAuthToken(renownRef.current as never)
+    if (!token) throw new Error(NOT_LOGGED_IN_ERROR)
+    return rollbackEnvironmentRelease(documentId, token)
+  }, [documentId])
 
   return {
     environment,
@@ -233,5 +263,8 @@ export function useEnvironmentDetail(documentId: string) {
     terminate,
     setServiceVersion,
     setPackageVersion,
+    setAutoUpdateChannel,
+    updateToLatest,
+    rollbackRelease,
   }
 }

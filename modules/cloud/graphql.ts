@@ -1,4 +1,5 @@
 import type {
+  AutoUpdateChannel,
   CloudEnvironment,
   EnvironmentStatus,
   Pod,
@@ -6,6 +7,8 @@ import type {
   MetricSeries,
   LogEntry,
   MetricRange,
+  ReleaseHistoryEntry,
+  ReleaseIndexEntry,
   TenantService,
 } from './types'
 
@@ -102,7 +105,7 @@ async function gql<T>(
 const SERVICE_FIELDS = `type prefix enabled url status version`
 const PACKAGE_FIELDS = `registry name version`
 const CUSTOM_DOMAIN_FIELDS = `enabled domain dnsRecords { type host value }`
-const STATE_FIELDS = `owner label genericSubdomain genericBaseDomain customDomain { ${CUSTOM_DOMAIN_FIELDS} } defaultPackageRegistry status apexService services { ${SERVICE_FIELDS} } packages { ${PACKAGE_FIELDS} }`
+const STATE_FIELDS = `owner label genericSubdomain genericBaseDomain customDomain { ${CUSTOM_DOMAIN_FIELDS} } defaultPackageRegistry status apexService autoUpdateChannel services { ${SERVICE_FIELDS} } packages { ${PACKAGE_FIELDS} }`
 const DOCUMENT_FIELDS = `id documentType createdAtUtcIso lastModifiedAtUtcIso revisionsList { scope revision } state { global { ${STATE_FIELDS} } }`
 const LIST_ITEM_FIELDS = `id state { global { ${STATE_FIELDS} } }`
 
@@ -264,6 +267,88 @@ export async function setCustomDomainMutation(
     token,
   )
   return data.setCustomDomain
+}
+
+// ---------------------------------------------------------------------------
+// Auto-update channel + release feed (vetra-cloud-observability subgraph)
+// ---------------------------------------------------------------------------
+
+/**
+ * Latest known image tag on a release channel. Returns null if the subgraph
+ * has not yet observed any release for that (channel, image) pair — e.g.
+ * when the feature was first deployed and no monorepo release has fired.
+ */
+export async function fetchLatestRelease(
+  channel: AutoUpdateChannel,
+  image: TenantService,
+  token?: string | null,
+): Promise<ReleaseIndexEntry | null> {
+  const data = await gql<{ latestRelease: ReleaseIndexEntry | null }>(
+    `query ($channel: AutoUpdateChannel!, $image: TenantService!) {
+      latestRelease(channel: $channel, image: $image) {
+        channel image tag publishedAt releaseUrl
+      }
+    }`,
+    { channel, image },
+    token,
+  )
+  return data.latestRelease
+}
+
+/**
+ * Recent SET_SERVICE_VERSION events dispatched by the observability subgraph
+ * against this env — whether automatic, manual update-now, or rollback.
+ * Newest first.
+ */
+export async function fetchEnvironmentReleaseHistory(
+  documentId: string,
+  limit: number,
+  token?: string | null,
+): Promise<ReleaseHistoryEntry[]> {
+  const data = await gql<{ environmentReleaseHistory: ReleaseHistoryEntry[] }>(
+    `query ($documentId: String!, $limit: Int) {
+      environmentReleaseHistory(documentId: $documentId, limit: $limit) {
+        documentId tenantId service fromTag toTag trigger channel at releaseUrl
+      }
+    }`,
+    { documentId, limit },
+    token,
+  )
+  return data.environmentReleaseHistory
+}
+
+/** Owner-triggered immediate bump to the channel's latest known tag. */
+export async function updateEnvironmentToLatest(
+  documentId: string,
+  token?: string | null,
+): Promise<string[]> {
+  const data = await gql<{
+    updateEnvironmentToLatest: { updatedEnvironments: string[] }
+  }>(
+    `mutation ($documentId: String!) {
+      updateEnvironmentToLatest(documentId: $documentId) { updatedEnvironments }
+    }`,
+    { documentId },
+    token,
+  )
+  return data.updateEnvironmentToLatest.updatedEnvironments
+}
+
+/** Owner-triggered rollback to the previous tag per enabled service. */
+export async function rollbackEnvironmentRelease(
+  documentId: string,
+  token?: string | null,
+): Promise<string[]> {
+  const data = await gql<{
+    rollbackEnvironmentRelease: { updatedEnvironments: string[] }
+  }>(
+    `mutation ($documentId: String!) {
+      rollbackEnvironmentRelease(documentId: $documentId) { updatedEnvironments }
+    }`,
+    { documentId },
+    token,
+  )
+  return data.rollbackEnvironmentRelease.updatedEnvironments
 }
 
 export async function fetchMyEnvironments(

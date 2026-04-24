@@ -60,6 +60,36 @@ export type CloudEnvironmentState = {
    * update, read-tolerant for now).
    */
   apexService?: CloudEnvironmentServiceType | null
+  /**
+   * Release channel the environment is subscribed to for auto-updates.
+   * When the monorepo publishes a new image on this channel, the observability
+   * subgraph dispatches SET_SERVICE_VERSION + APPROVE_CHANGES on this env.
+   * null (or undefined on envs created before the field existed) = off.
+   */
+  autoUpdateChannel?: AutoUpdateChannel | null
+}
+
+export type AutoUpdateChannel = 'DEV' | 'STAGING' | 'LATEST'
+export type ReleaseTrigger = 'AUTO' | 'MANUAL' | 'ROLLBACK'
+
+export type ReleaseIndexEntry = {
+  channel: AutoUpdateChannel
+  image: TenantService
+  tag: string
+  publishedAt: string
+  releaseUrl: string | null
+}
+
+export type ReleaseHistoryEntry = {
+  documentId: string
+  tenantId: string | null
+  service: TenantService
+  fromTag: string | null
+  toTag: string
+  trigger: ReleaseTrigger
+  channel: AutoUpdateChannel | null
+  at: string
+  releaseUrl: string | null
 }
 
 export type CloudEnvironment = {

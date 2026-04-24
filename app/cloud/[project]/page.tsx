@@ -210,6 +210,9 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
               onTerminate={detail.terminate}
               setServiceVersion={detail.setServiceVersion}
               setPackageVersion={detail.setPackageVersion}
+              setAutoUpdateChannel={detail.setAutoUpdateChannel}
+              updateToLatest={detail.updateToLatest}
+              rollbackRelease={detail.rollbackRelease}
               initialAddPackage={searchParams.get('addPackage')}
               initialAddVersion={searchParams.get('version')}
             />
