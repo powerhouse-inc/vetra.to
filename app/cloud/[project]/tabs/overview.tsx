@@ -19,7 +19,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState, useRef, useEffect } from 'react'
+import { useCallback, useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { AddPackageModal } from '@/modules/cloud/components/add-package-modal'
@@ -159,6 +159,18 @@ function ServiceRow({
 
   const { value: isEnabled, set: toggleEnabled } = useOptimistic(serverIsEnabled, onToggle)
 
+  const commitVersion = useCallback(
+    async (next: string | null) => {
+      if (next === null || !onSetVersion) return
+      await onSetVersion(next)
+    },
+    [onSetVersion],
+  )
+  const { value: displayedVersion, set: setVersionOptimistic } = useOptimistic(
+    currentVersion,
+    commitVersion,
+  )
+
   const handleToggle = async (checked: boolean) => {
     try {
       await toggleEnabled(checked)
@@ -195,10 +207,10 @@ function ServiceRow({
   const handleSetVersion = async (version: string) => {
     if (!onSetVersion) return
     const versionWithPrefix = version.startsWith('v') ? version : `v${version}`
+    setShowVersionPicker(false) // close immediately; the version flips via useOptimistic
     try {
-      await onSetVersion(versionWithPrefix)
+      await setVersionOptimistic(versionWithPrefix)
       toast.success(`${label} version set to ${versionWithPrefix}`)
-      setShowVersionPicker(false)
     } catch (error) {
       toast.error(error instanceof Error ? error.message : `Failed to set ${label} version`)
     }
@@ -287,7 +299,7 @@ function ServiceRow({
             )}
             <span className="text-muted-foreground">
               <span className="font-medium">Version:</span>{' '}
-              <span className="font-mono">{currentVersion ?? 'not set'}</span>
+              <span className="font-mono">{displayedVersion ?? 'not set'}</span>
             </span>
           </div>
           {onSetVersion && (
@@ -309,7 +321,7 @@ function ServiceRow({
                           onClick={() => handleSetVersion(version)}
                           className={cn(
                             'hover:border-primary hover:bg-primary/5 flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] transition-colors',
-                            version === currentVersion && 'border-primary bg-primary/5',
+                            version === displayedVersion && 'border-primary bg-primary/5',
                           )}
                         >
                           <span className="font-semibold">{tag}</span>
@@ -337,7 +349,7 @@ function ServiceRow({
                             onClick={() => handleSetVersion(tag)}
                             className={cn(
                               'hover:bg-accent flex w-full items-center justify-between px-3 py-1.5 text-left text-xs transition-colors',
-                              tag === currentVersion && 'bg-primary/5',
+                              tag === displayedVersion && 'bg-primary/5',
                             )}
                           >
                             <span className="font-mono">{tag}</span>
@@ -347,7 +359,7 @@ function ServiceRow({
                                   {tagLabel}
                                 </Badge>
                               )}
-                              {tag === currentVersion && (
+                              {tag === displayedVersion && (
                                 <Badge variant="default" className="text-[9px]">
                                   current
                                 </Badge>
@@ -598,9 +610,9 @@ export function InlineEditableTitle({
   value: string
   onSave: (name: string) => Promise<void>
 }) {
+  const { value: displayValue, set: commitValue } = useOptimistic(value, onSave)
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState(value)
-  const [isSaving, setIsSaving] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -612,28 +624,23 @@ export function InlineEditableTitle({
 
   const handleSave = async () => {
     const trimmed = editValue.trim()
-    if (!trimmed || trimmed === value) {
-      setEditValue(value)
+    if (!trimmed || trimmed === displayValue) {
+      setEditValue(displayValue)
       setIsEditing(false)
       return
     }
+    setIsEditing(false) // close immediately; the title flips via useOptimistic
     try {
-      setIsSaving(true)
-      await onSave(trimmed)
+      await commitValue(trimmed)
       toast.success('Name updated')
-      setIsEditing(false)
     } catch (error) {
       console.error('Failed to update name:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to update name')
-      setEditValue(value)
-      setIsEditing(false)
-    } finally {
-      setIsSaving(false)
     }
   }
 
   const handleCancel = () => {
-    setEditValue(value)
+    setEditValue(displayValue)
     setIsEditing(false)
   }
 
@@ -651,25 +658,12 @@ export function InlineEditableTitle({
           onChange={(e) => setEditValue(e.target.value)}
           onKeyDown={handleKeyDown}
           onBlur={handleSave}
-          disabled={isSaving}
           className="h-9 text-2xl font-bold"
         />
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
-          onClick={handleSave}
-          disabled={isSaving}
-        >
+        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={handleSave}>
           <Check className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
-          onClick={handleCancel}
-          disabled={isSaving}
-        >
+        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={handleCancel}>
           <X className="h-4 w-4" />
         </Button>
       </div>
@@ -678,13 +672,13 @@ export function InlineEditableTitle({
 
   return (
     <div className="flex items-center gap-2">
-      <h2 className="text-2xl font-bold">{value}</h2>
+      <h2 className="text-2xl font-bold">{displayValue}</h2>
       <Button
         variant="ghost"
         size="sm"
         className="text-muted-foreground hover:text-foreground h-8 w-8 p-0"
         onClick={() => {
-          setEditValue(value)
+          setEditValue(displayValue)
           setIsEditing(true)
         }}
       >
