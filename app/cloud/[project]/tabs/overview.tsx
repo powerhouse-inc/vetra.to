@@ -104,6 +104,10 @@ const SERVICE_ICONS: Record<
 const SERVICE_IMAGES: Record<string, string> = {
   CONNECT: 'cr.vetra.io/powerhouse-inc-powerhouse/connect',
   SWITCHBOARD: 'cr.vetra.io/powerhouse-inc-powerhouse/switchboard',
+  // FUSION services are arbitrary front-ends. The default points at the
+  // DeFi United landing app published from defi-united-web. Operators can
+  // swap this once a per-service image override lands on the doc model.
+  FUSION: 'cr.vetra.io/defi-united/web',
 }
 
 const SERVICE_NPM_PACKAGES: Record<string, string> = {
@@ -1040,10 +1044,7 @@ export function OverviewTab({
           <CustomDomainSection
             customDomain={state.customDomain}
             apexService={state.apexService ?? null}
-            enabledServices={state.services
-              .filter((s) => s.enabled)
-              .map((s) => s.type)
-              .filter((t): t is Exclude<CloudEnvironmentServiceType, 'FUSION'> => t !== 'FUSION')}
+            enabledServices={state.services.filter((s) => s.enabled).map((s) => s.type)}
             onSetCustomDomain={setCustomDomain}
           />
         </CardContent>
