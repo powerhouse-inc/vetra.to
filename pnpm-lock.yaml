@@ -24,8 +24,8 @@ importers:
         specifier: 6.0.0-dev.179
         version: 6.0.0-dev.179
       '@powerhousedao/vetra-cloud-package':
-        specifier: https://registry.dev.vetra.io/@powerhousedao/vetra-cloud-package/-/vetra-cloud-package-0.0.3-dev.43.tgz
-        version: https://registry.dev.vetra.io/@powerhousedao/vetra-cloud-package/-/vetra-cloud-package-0.0.3-dev.43.tgz(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@lezer/highlight@1.2.3)(@tanstack/query-core@5.90.2)(@types/node@24.12.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(encoding@0.1.13)(jiti@2.6.1)(ox@0.14.15(typescript@6.0.2)(zod@4.3.6))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.52.3)(synckit@0.11.12)(terser@5.44.0)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.1)
+        specifier: https://registry.dev.vetra.io/@powerhousedao/vetra-cloud-package/-/vetra-cloud-package-0.0.3-dev.46.tgz
+        version: https://registry.dev.vetra.io/@powerhousedao/vetra-cloud-package/-/vetra-cloud-package-0.0.3-dev.46.tgz(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@lezer/highlight@1.2.3)(@tanstack/query-core@5.90.2)(@types/node@24.12.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(encoding@0.1.13)(jiti@2.6.1)(ox@0.14.15(typescript@6.0.2)(zod@4.3.6))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.52.3)(synckit@0.11.12)(terser@5.44.0)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.1)
       '@radix-ui/react-accordion':
         specifier: ^1.2.11
         version: 1.2.12(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -2782,9 +2782,9 @@ packages:
   '@powerhousedao/shared@6.0.0-dev.179':
     resolution: {integrity: sha512-m+pLJCJ4pdXIEbktREQYnCrRKlEZFh5/SbdYxgK+f/C9dI+ww2gsdszp31/W137b/LIYkyRNSyLKyQxZrrrxZg==}
 
-  '@powerhousedao/vetra-cloud-package@https://registry.dev.vetra.io/@powerhousedao/vetra-cloud-package/-/vetra-cloud-package-0.0.3-dev.43.tgz':
-    resolution: {integrity: sha512-6T5l5Rlkf9lOoHm87y41LgUTv22LP2eFj3mfGqHYttLwAFB/IXIYrFq3uBF2PRrwblcaDJylMrMFFljGMhgo7Q==, tarball: https://registry.dev.vetra.io/@powerhousedao/vetra-cloud-package/-/vetra-cloud-package-0.0.3-dev.43.tgz}
-    version: 0.0.3-dev.43
+  '@powerhousedao/vetra-cloud-package@https://registry.dev.vetra.io/@powerhousedao/vetra-cloud-package/-/vetra-cloud-package-0.0.3-dev.46.tgz':
+    resolution: {integrity: sha512-L1JY7pywbqDZKq+VKgzCK3lDATYLUJmg3PBAFNQBfD1fRXEZYIFvss5fUIFRmo95C6HSgjqjvELZFHfi/VGrig==, tarball: https://registry.dev.vetra.io/@powerhousedao/vetra-cloud-package/-/vetra-cloud-package-0.0.3-dev.46.tgz}
+    version: 0.0.3-dev.46
     peerDependencies:
       react: ^19.2.0
       react-dom: ^19.2.0
@@ -15090,7 +15090,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@powerhousedao/vetra-cloud-package@https://registry.dev.vetra.io/@powerhousedao/vetra-cloud-package/-/vetra-cloud-package-0.0.3-dev.43.tgz(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@lezer/highlight@1.2.3)(@tanstack/query-core@5.90.2)(@types/node@24.12.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(encoding@0.1.13)(jiti@2.6.1)(ox@0.14.15(typescript@6.0.2)(zod@4.3.6))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.52.3)(synckit@0.11.12)(terser@5.44.0)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.1)':
+  '@powerhousedao/vetra-cloud-package@https://registry.dev.vetra.io/@powerhousedao/vetra-cloud-package/-/vetra-cloud-package-0.0.3-dev.46.tgz(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@lezer/highlight@1.2.3)(@tanstack/query-core@5.90.2)(@types/node@24.12.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(encoding@0.1.13)(jiti@2.6.1)(ox@0.14.15(typescript@6.0.2)(zod@4.3.6))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.52.3)(synckit@0.11.12)(terser@5.44.0)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.1)':
     dependencies:
       '@kubernetes/client-node': 1.4.0(encoding@0.1.13)
       '@powerhousedao/builder-tools': 6.0.0-dev.159(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@24.12.0)(encoding@0.1.13)(jiti@2.6.1)(rollup@4.52.3)(synckit@0.11.12)(terser@5.44.0)(tsx@4.21.0)(typescript@6.0.2)(yaml@2.8.1)
