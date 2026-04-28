@@ -24,6 +24,7 @@ import { useCallback, useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { AddPackageModal } from '@/modules/cloud/components/add-package-modal'
+import { AgentsSection } from '@/modules/cloud/components/agents-section'
 import { AutoUpdateCard } from '@/modules/cloud/components/auto-update-card'
 import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updates-card'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
@@ -747,7 +748,7 @@ export function OverviewTab({
   initialAddPackage,
   initialAddVersion,
 }: OverviewTabProps) {
-  const { signer } = useCanSign()
+  const { signer, canSign } = useCanSign()
   const router = useRouter()
   const { events, isLoading: eventsLoading } = useEnvironmentEvents(
     subdomain,
@@ -1030,6 +1031,13 @@ export function OverviewTab({
           </CardContent>
         </Card>
       </div>
+
+      {/* c.5 Agents (CLINT services) */}
+      <Card>
+        <CardContent className="pt-6">
+          <AgentsSection services={state.services} env={environment ?? null} canEdit={canSign} />
+        </CardContent>
+      </Card>
 
       {/* d. Domain Configuration */}
       <Card>
