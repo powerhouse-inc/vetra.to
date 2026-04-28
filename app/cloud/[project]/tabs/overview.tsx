@@ -20,7 +20,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useCallback, useState, useRef, useEffect } from 'react'
+import { useCallback, useMemo, useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { AddPackageModal } from '@/modules/cloud/components/add-package-modal'
@@ -30,6 +30,7 @@ import { AutoUpdateCard } from '@/modules/cloud/components/auto-update-card'
 import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updates-card'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
 import { PackageRow } from '@/modules/cloud/components/package-row'
+import { useClintPackages } from '@/modules/cloud/hooks/use-clint-packages'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useOptimistic } from '@/modules/cloud/hooks/use-optimistic'
 import { usePackageUpdates } from '@/modules/cloud/hooks/use-package-updates'
@@ -775,6 +776,14 @@ export function OverviewTab({
     state.packages,
     state.defaultPackageRegistry ?? null,
   )
+  const { clintPackages } = useClintPackages({
+    registry: state.defaultPackageRegistry ?? null,
+    packages: state.packages,
+  })
+  const clintManifestsByName = useMemo(
+    () => Object.fromEntries(clintPackages.map((p) => [p.package.name, p.manifest])),
+    [clintPackages],
+  )
   const baseDomain = state.genericBaseDomain ?? 'vetra.io'
   const genericDomain = subdomain ? `${subdomain}.${baseDomain}` : `<subdomain>.${baseDomain}`
 
@@ -1051,6 +1060,21 @@ export function OverviewTab({
             env={environment ?? null}
             canEdit={canSign}
             onAddAgent={() => setEnableClintOpen(true)}
+            manifests={clintManifestsByName}
+            onSaveConfig={
+              setServiceConfig
+                ? async (prefix, config) => {
+                    await setServiceConfig(prefix, config)
+                    toast.success('Agent updated')
+                  }
+                : undefined
+            }
+            onDisable={async (prefix) => {
+              const svc = state.services.find((s) => s.prefix === prefix)
+              if (!svc) return
+              await disableService(svc.type)
+              toast.success('Agent disabled')
+            }}
           />
         </CardContent>
       </Card>

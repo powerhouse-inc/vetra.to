@@ -2,7 +2,12 @@
 
 import { Bot, Plus } from 'lucide-react'
 import { useMemo } from 'react'
-import type { CloudEnvironment, CloudEnvironmentService } from '@/modules/cloud/types'
+import type { PackageManifest } from '@/modules/cloud/config/types'
+import type {
+  CloudEnvironment,
+  CloudEnvironmentService,
+  CloudServiceClintConfig,
+} from '@/modules/cloud/types'
 import { Button } from '@/modules/shared/components/ui/button'
 import { AgentCard } from './agent-card'
 
@@ -11,9 +16,20 @@ type Props = {
   env: CloudEnvironment | null
   canEdit: boolean
   onAddAgent?: () => void
+  manifests?: Record<string, PackageManifest>
+  onSaveConfig?: (prefix: string, config: CloudServiceClintConfig) => Promise<void>
+  onDisable?: (prefix: string) => Promise<void>
 }
 
-export function AgentsSection({ services, env, canEdit, onAddAgent }: Props) {
+export function AgentsSection({
+  services,
+  env,
+  canEdit,
+  onAddAgent,
+  manifests,
+  onSaveConfig,
+  onDisable,
+}: Props) {
   const clintServices = useMemo(
     () =>
       services.filter((s) => s.type === 'CLINT').sort((a, b) => a.prefix.localeCompare(b.prefix)),
@@ -38,7 +54,15 @@ export function AgentsSection({ services, env, canEdit, onAddAgent }: Props) {
       ) : (
         <div className="space-y-2">
           {clintServices.map((s) => (
-            <AgentCard key={s.prefix} service={s} env={env} canEdit={canEdit} />
+            <AgentCard
+              key={s.prefix}
+              service={s}
+              env={env}
+              canEdit={canEdit}
+              manifest={s.config ? (manifests?.[s.config.package.name] ?? null) : null}
+              onSave={onSaveConfig ? (cfg) => onSaveConfig(s.prefix, cfg) : undefined}
+              onDisable={onDisable ? () => onDisable(s.prefix) : undefined}
+            />
           ))}
         </div>
       )}
