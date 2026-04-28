@@ -1,4 +1,4 @@
-import { ExternalLink, Globe, Server, Zap } from 'lucide-react'
+import { Bot, ExternalLink, Globe, Server, Zap } from 'lucide-react'
 
 import type { CloudEnvironmentServiceType, Pod } from '@/modules/cloud/types'
 import { Badge } from '@/modules/shared/components/ui/badge'
@@ -21,6 +21,7 @@ const SERVICE_ICONS: Record<
   CONNECT: Globe,
   SWITCHBOARD: Server,
   FUSION: Zap,
+  CLINT: Bot,
 }
 
 export function ServiceCard({

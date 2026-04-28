@@ -8,6 +8,7 @@ import {
   AlertTriangle,
   ShieldCheck,
   ShieldOff,
+  Bot,
   Globe,
   Package,
   Server,
@@ -90,6 +91,7 @@ const SERVICE_LABELS: Record<CloudEnvironmentServiceType, string> = {
   CONNECT: 'Powerhouse Connect',
   SWITCHBOARD: 'Powerhouse Switchboard',
   FUSION: 'Powerhouse Fusion',
+  CLINT: 'Agent',
 }
 
 const SERVICE_ICONS: Record<
@@ -99,6 +101,7 @@ const SERVICE_ICONS: Record<
   CONNECT: Globe,
   SWITCHBOARD: Server,
   FUSION: Zap,
+  CLINT: Bot,
 }
 
 const SERVICE_IMAGES: Record<string, string> = {
@@ -767,6 +770,7 @@ export function OverviewTab({
     CONNECT: 'connect',
     SWITCHBOARD: 'switchboard',
     FUSION: 'fusion',
+    CLINT: 'agent',
   }
 
   const getServiceEnabled = (type: CloudEnvironmentServiceType) =>

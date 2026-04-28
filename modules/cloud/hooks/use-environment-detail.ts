@@ -198,15 +198,18 @@ export function useEnvironmentDetail(documentId: string) {
   )
   const enableService = useCallback(
     (type: CloudEnvironmentServiceType, prefix: string) =>
-      mutate((c) => c.enableService({ type, prefix })),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      mutate((c) => c.enableService({ type: type as any, prefix })),
     [mutate],
   )
   const disableService = useCallback(
-    (type: CloudEnvironmentServiceType) => mutate((c) => c.disableService({ type })),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (type: CloudEnvironmentServiceType) => mutate((c) => c.disableService({ type: type as any })),
     [mutate],
   )
   const toggleServiceEnabled = useCallback(
-    (type: CloudEnvironmentServiceType) => mutate((c) => c.toggleService({ type })),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (type: CloudEnvironmentServiceType) => mutate((c) => c.toggleService({ type: type as any })),
     [mutate],
   )
   const addPackage = useCallback(
@@ -233,7 +236,8 @@ export function useEnvironmentDetail(documentId: string) {
   const terminate = useCallback(() => mutate((c) => c.terminateEnvironment({})), [mutate])
   const setServiceVersion = useCallback(
     (type: CloudEnvironmentServiceType, version: string) =>
-      mutate((c) => c.setServiceVersion({ type, version })),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      mutate((c) => c.setServiceVersion({ type: type as any, version })),
     [mutate],
   )
   const setPackageVersion = useCallback(
