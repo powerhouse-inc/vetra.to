@@ -204,6 +204,7 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
               onTabChange={handleTabChange}
               enableService={detail.enableService}
               disableService={detail.disableService}
+              setServiceConfig={detail.setServiceConfig}
               addPackage={detail.addPackage}
               removePackage={detail.removePackage}
               setCustomDomain={detail.setCustomDomain}

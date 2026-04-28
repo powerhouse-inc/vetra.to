@@ -25,6 +25,7 @@ import { toast } from 'sonner'
 
 import { AddPackageModal } from '@/modules/cloud/components/add-package-modal'
 import { AgentsSection } from '@/modules/cloud/components/agents-section'
+import { EnableClintModal } from '@/modules/cloud/components/enable-clint-modal'
 import { AutoUpdateCard } from '@/modules/cloud/components/auto-update-card'
 import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updates-card'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
@@ -708,8 +709,16 @@ type OverviewTabProps = {
   status: EnvironmentStatus | null
   statusLoading: boolean
   onTabChange?: (tab: string) => void
-  enableService: (type: CloudEnvironmentServiceType, prefix: string) => Promise<void>
+  enableService: (
+    type: CloudEnvironmentServiceType,
+    prefix: string,
+    clintConfig?: import('@/modules/cloud/types').CloudServiceClintConfig,
+  ) => Promise<void>
   disableService: (type: CloudEnvironmentServiceType) => Promise<void>
+  setServiceConfig?: (
+    prefix: string,
+    config: import('@/modules/cloud/types').CloudServiceClintConfig,
+  ) => Promise<void>
   addPackage: (name: string, version?: string) => Promise<void>
   removePackage: (name: string) => Promise<void>
   setCustomDomain: (enabled: boolean, domain?: string | null) => Promise<void>
@@ -735,6 +744,7 @@ export function OverviewTab({
   onTabChange,
   enableService,
   disableService,
+  setServiceConfig,
   addPackage,
   removePackage,
   setCustomDomain,
@@ -757,6 +767,7 @@ export function OverviewTab({
     environment.id,
   )
   const [isDeleting, setIsDeleting] = useState(false)
+  const [enableClintOpen, setEnableClintOpen] = useState(false)
 
   const state = environment.state
   const { updates: serviceUpdates } = useServiceUpdates(state.services)
@@ -1035,9 +1046,25 @@ export function OverviewTab({
       {/* c.5 Agents (CLINT services) */}
       <Card>
         <CardContent className="pt-6">
-          <AgentsSection services={state.services} env={environment ?? null} canEdit={canSign} />
+          <AgentsSection
+            services={state.services}
+            env={environment ?? null}
+            canEdit={canSign}
+            onAddAgent={() => setEnableClintOpen(true)}
+          />
         </CardContent>
       </Card>
+      {canSign && (
+        <EnableClintModal
+          open={enableClintOpen}
+          onOpenChange={setEnableClintOpen}
+          env={environment}
+          onSubmit={async ({ prefix, clintConfig }) => {
+            await enableService('CLINT', prefix, clintConfig)
+            toast.success('Agent enabled')
+          }}
+        />
+      )}
 
       {/* d. Domain Configuration */}
       <Card>
