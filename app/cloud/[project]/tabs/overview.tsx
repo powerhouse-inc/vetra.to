@@ -31,6 +31,7 @@ import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updat
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
 import { PackageRow } from '@/modules/cloud/components/package-row'
 import { useClintPackages } from '@/modules/cloud/hooks/use-clint-packages'
+import { useClintRuntimeEndpoints } from '@/modules/cloud/hooks/use-clint-runtime-endpoints'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useOptimistic } from '@/modules/cloud/hooks/use-optimistic'
 import { usePackageUpdates } from '@/modules/cloud/hooks/use-package-updates'
@@ -784,6 +785,10 @@ export function OverviewTab({
     () => Object.fromEntries(clintPackages.map((p) => [p.package.name, p.manifest])),
     [clintPackages],
   )
+  const { byPrefix: clintRuntimeEndpointsByPrefix } = useClintRuntimeEndpoints(
+    subdomain,
+    environment.id,
+  )
   const baseDomain = state.genericBaseDomain ?? 'vetra.io'
   const genericDomain = subdomain ? `${subdomain}.${baseDomain}` : `<subdomain>.${baseDomain}`
 
@@ -1061,6 +1066,7 @@ export function OverviewTab({
             canEdit={canSign}
             onAddAgent={() => setEnableClintOpen(true)}
             manifests={clintManifestsByName}
+            runtimeEndpointsByPrefix={clintRuntimeEndpointsByPrefix}
             onSaveConfig={
               setServiceConfig
                 ? async (prefix, config) => {

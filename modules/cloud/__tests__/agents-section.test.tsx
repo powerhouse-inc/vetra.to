@@ -15,7 +15,6 @@ const clint = (prefix: string): CloudEnvironmentService => ({
     env: [],
     serviceCommand: null,
     selectedRessource: 'VETRA_AGENT_S',
-    enabledEndpoints: [],
   },
 })
 

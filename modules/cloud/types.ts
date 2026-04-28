@@ -25,7 +25,6 @@ export type CloudServiceClintConfig = {
   env: CloudServiceEnv[]
   serviceCommand: string | null
   selectedRessource: CloudResourceSize | null
-  enabledEndpoints: string[]
 }
 
 export type CloudEnvironmentService = {
@@ -187,4 +186,23 @@ export type Datapoint = {
 export type LogEntry = {
   timestamp: number
   line: string
+}
+
+/**
+ * Endpoints announced by a clint agent at runtime, sourced from the
+ * vetra-cloud-observability subgraph's `clintRuntimeEndpointsByEnv`
+ * query. The doc model intentionally does not mirror this state.
+ */
+export type ClintRuntimeEndpointReport = {
+  id: string
+  type: ClintEndpointType
+  port: string
+  status: 'enabled' | 'disabled'
+  /** ISO timestamp of the most recent announcement. */
+  lastSeen: string
+}
+
+export type ClintRuntimeEndpointsForPrefix = {
+  prefix: string
+  endpoints: ClintRuntimeEndpointReport[]
 }

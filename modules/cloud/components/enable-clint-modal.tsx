@@ -110,7 +110,6 @@ export function EnableClintModal({ open, onOpenChange, env, onSubmit }: Props) {
           env: envVars.filter((v) => v.name.trim()),
           serviceCommand: serviceCommand.trim() || null,
           selectedRessource,
-          enabledEndpoints: [],
         },
       })
       onOpenChange(false)

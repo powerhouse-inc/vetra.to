@@ -672,3 +672,30 @@ export async function fetchLogs(
   )
   return data.logs
 }
+
+// ---------------------------------------------------------------------------
+// Clint runtime-announced endpoints (vetra-cloud-observability subgraph)
+// ---------------------------------------------------------------------------
+
+import type { ClintRuntimeEndpointsForPrefix } from './types'
+
+export async function fetchClintRuntimeEndpointsByEnv(
+  subdomain: string,
+  documentId: string,
+  token?: string | null,
+): Promise<ClintRuntimeEndpointsForPrefix[]> {
+  const data = await gqlObservability<{
+    clintRuntimeEndpointsByEnv: ClintRuntimeEndpointsForPrefix[]
+  }>(
+    subdomain,
+    `query ($documentId: String!) {
+      clintRuntimeEndpointsByEnv(documentId: $documentId) {
+        prefix
+        endpoints { id type port status lastSeen }
+      }
+    }`,
+    { documentId },
+    token,
+  )
+  return data.clintRuntimeEndpointsByEnv
+}

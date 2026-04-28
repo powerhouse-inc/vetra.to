@@ -4,6 +4,7 @@ import { Bot, ChevronDown, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { PackageManifest } from '@/modules/cloud/config/types'
 import type {
+  ClintRuntimeEndpointsForPrefix,
   CloudEnvironment,
   CloudEnvironmentService,
   CloudResourceSize,
@@ -11,10 +12,12 @@ import type {
   CloudServiceEnv,
   ServiceStatus,
 } from '@/modules/cloud/types'
+import { composeClintEndpointUrl } from '@/modules/cloud/lib/clint-endpoint-url'
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import { Label } from '@/modules/shared/components/ui/label'
 import { Textarea } from '@/modules/shared/components/ui/textarea'
+import { EndpointRow } from './endpoint-row'
 import { EnvVarsEditor } from './env-vars-editor'
 import { ResourceSizePicker } from './resource-size-picker'
 
@@ -46,11 +49,26 @@ type Props = {
   env: CloudEnvironment | null
   canEdit: boolean
   manifest?: PackageManifest | null
+  /**
+   * Endpoints announced by the agent at runtime (sourced from the
+   * observability subgraph). Read-only: we display them but the user
+   * can't toggle them in v1. Empty/undefined when the agent has not
+   * announced yet.
+   */
+  runtimeEndpoints?: ClintRuntimeEndpointsForPrefix | null
   onSave?: (config: CloudServiceClintConfig) => Promise<void>
   onDisable?: () => Promise<void>
 }
 
-export function AgentCard({ service, canEdit, manifest, onSave, onDisable }: Props) {
+export function AgentCard({
+  service,
+  env,
+  canEdit,
+  manifest,
+  runtimeEndpoints,
+  onSave,
+  onDisable,
+}: Props) {
   const [expanded, setExpanded] = useState(false)
   const cfg = service.config
 
@@ -106,8 +124,6 @@ export function AgentCard({ service, canEdit, manifest, onSave, onDisable }: Pro
         env: envVars.filter((v) => v.name.trim()),
         serviceCommand: serviceCommand.trim() || null,
         selectedRessource,
-        // Endpoints are runtime-announced; preserve whatever was last persisted.
-        enabledEndpoints: cfg.enabledEndpoints,
       })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save')
@@ -234,10 +250,40 @@ export function AgentCard({ service, canEdit, manifest, onSave, onDisable }: Pro
             </div>
           </div>
 
-          <p className="text-muted-foreground text-xs">
-            Endpoints are reported by the agent at runtime via its announcement callback. Once
-            present, they will appear here.
-          </p>
+          <div>
+            <Label>Endpoints</Label>
+            {runtimeEndpoints && runtimeEndpoints.endpoints.length > 0 ? (
+              <div className="mt-2 space-y-2">
+                {runtimeEndpoints.endpoints.map((ep) => (
+                  <EndpointRow
+                    key={ep.id}
+                    endpoint={{
+                      id: ep.id,
+                      type: ep.type,
+                      port: ep.port,
+                      status: ep.status,
+                    }}
+                    url={composeClintEndpointUrl({
+                      serviceUrl: service.url,
+                      prefix: service.prefix,
+                      genericSubdomain: env?.state.genericSubdomain ?? null,
+                      genericBaseDomain: env?.state.genericBaseDomain ?? null,
+                      endpoint: { id: ep.id },
+                    })}
+                    checked={ep.status === 'enabled'}
+                    onCheckedChange={() => {
+                      /* read-only in v1 — endpoints are runtime-announced state */
+                    }}
+                    disabled
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground mt-2 text-xs">
+                Endpoints are reported by the agent at runtime. Waiting for the first announcement…
+              </p>
+            )}
+          </div>
 
           {error && <p className="text-destructive text-sm">{error}</p>}
 

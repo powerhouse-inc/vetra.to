@@ -4,6 +4,7 @@ import { Bot, Plus } from 'lucide-react'
 import { useMemo } from 'react'
 import type { PackageManifest } from '@/modules/cloud/config/types'
 import type {
+  ClintRuntimeEndpointsForPrefix,
   CloudEnvironment,
   CloudEnvironmentService,
   CloudServiceClintConfig,
@@ -17,6 +18,8 @@ type Props = {
   canEdit: boolean
   onAddAgent?: () => void
   manifests?: Record<string, PackageManifest>
+  /** prefix → runtime-announced endpoints (from observability subgraph). */
+  runtimeEndpointsByPrefix?: Record<string, ClintRuntimeEndpointsForPrefix>
   onSaveConfig?: (prefix: string, config: CloudServiceClintConfig) => Promise<void>
   onDisable?: (prefix: string) => Promise<void>
 }
@@ -27,6 +30,7 @@ export function AgentsSection({
   canEdit,
   onAddAgent,
   manifests,
+  runtimeEndpointsByPrefix,
   onSaveConfig,
   onDisable,
 }: Props) {
@@ -60,6 +64,7 @@ export function AgentsSection({
               env={env}
               canEdit={canEdit}
               manifest={s.config ? (manifests?.[s.config.package.name] ?? null) : null}
+              runtimeEndpoints={runtimeEndpointsByPrefix?.[s.prefix] ?? null}
               onSave={onSaveConfig ? (cfg) => onSaveConfig(s.prefix, cfg) : undefined}
               onDisable={onDisable ? () => onDisable(s.prefix) : undefined}
             />

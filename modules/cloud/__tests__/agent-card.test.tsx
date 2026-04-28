@@ -16,7 +16,6 @@ const service: CloudEnvironmentService = {
     env: [],
     serviceCommand: null,
     selectedRessource: 'VETRA_AGENT_XXL',
-    enabledEndpoints: [],
   },
 }
 
