@@ -8,6 +8,7 @@ import {
   AlertTriangle,
   ShieldCheck,
   ShieldOff,
+  Bot,
   Globe,
   Package,
   Server,
@@ -19,14 +20,18 @@ import {
   Loader2,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useCallback, useState, useRef, useEffect } from 'react'
+import { useCallback, useMemo, useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { AddPackageModal } from '@/modules/cloud/components/add-package-modal'
+import { AgentsSection } from '@/modules/cloud/components/agents-section'
+import { EnableClintModal } from '@/modules/cloud/components/enable-clint-modal'
 import { AutoUpdateCard } from '@/modules/cloud/components/auto-update-card'
 import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updates-card'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
 import { PackageRow } from '@/modules/cloud/components/package-row'
+import { useClintPackages } from '@/modules/cloud/hooks/use-clint-packages'
+import { useClintRuntimeEndpoints } from '@/modules/cloud/hooks/use-clint-runtime-endpoints'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useOptimistic } from '@/modules/cloud/hooks/use-optimistic'
 import { usePackageUpdates } from '@/modules/cloud/hooks/use-package-updates'
@@ -90,6 +95,7 @@ const SERVICE_LABELS: Record<CloudEnvironmentServiceType, string> = {
   CONNECT: 'Powerhouse Connect',
   SWITCHBOARD: 'Powerhouse Switchboard',
   FUSION: 'Powerhouse Fusion',
+  CLINT: 'Agent',
 }
 
 const SERVICE_ICONS: Record<
@@ -99,6 +105,7 @@ const SERVICE_ICONS: Record<
   CONNECT: Globe,
   SWITCHBOARD: Server,
   FUSION: Zap,
+  CLINT: Bot,
 }
 
 const SERVICE_IMAGES: Record<string, string> = {
@@ -704,8 +711,16 @@ type OverviewTabProps = {
   status: EnvironmentStatus | null
   statusLoading: boolean
   onTabChange?: (tab: string) => void
-  enableService: (type: CloudEnvironmentServiceType, prefix: string) => Promise<void>
+  enableService: (
+    type: CloudEnvironmentServiceType,
+    prefix: string,
+    clintConfig?: import('@/modules/cloud/types').CloudServiceClintConfig,
+  ) => Promise<void>
   disableService: (type: CloudEnvironmentServiceType) => Promise<void>
+  setServiceConfig?: (
+    prefix: string,
+    config: import('@/modules/cloud/types').CloudServiceClintConfig,
+  ) => Promise<void>
   addPackage: (name: string, version?: string) => Promise<void>
   removePackage: (name: string) => Promise<void>
   setCustomDomain: (enabled: boolean, domain?: string | null) => Promise<void>
@@ -731,6 +746,7 @@ export function OverviewTab({
   onTabChange,
   enableService,
   disableService,
+  setServiceConfig,
   addPackage,
   removePackage,
   setCustomDomain,
@@ -744,7 +760,7 @@ export function OverviewTab({
   initialAddPackage,
   initialAddVersion,
 }: OverviewTabProps) {
-  const { signer } = useCanSign()
+  const { signer, canSign } = useCanSign()
   const router = useRouter()
   const { events, isLoading: eventsLoading } = useEnvironmentEvents(
     subdomain,
@@ -753,12 +769,25 @@ export function OverviewTab({
     environment.id,
   )
   const [isDeleting, setIsDeleting] = useState(false)
+  const [enableClintOpen, setEnableClintOpen] = useState(false)
 
   const state = environment.state
   const { updates: serviceUpdates } = useServiceUpdates(state.services)
   const { updates: packageUpdates } = usePackageUpdates(
     state.packages,
     state.defaultPackageRegistry ?? null,
+  )
+  const { clintPackages } = useClintPackages({
+    registry: state.defaultPackageRegistry ?? null,
+    packages: state.packages,
+  })
+  const clintManifestsByName = useMemo(
+    () => Object.fromEntries(clintPackages.map((p) => [p.package.name, p.manifest])),
+    [clintPackages],
+  )
+  const { byPrefix: clintRuntimeEndpointsByPrefix } = useClintRuntimeEndpoints(
+    subdomain,
+    environment.id,
   )
   const baseDomain = state.genericBaseDomain ?? 'vetra.io'
   const genericDomain = subdomain ? `${subdomain}.${baseDomain}` : `<subdomain>.${baseDomain}`
@@ -767,6 +796,7 @@ export function OverviewTab({
     CONNECT: 'connect',
     SWITCHBOARD: 'switchboard',
     FUSION: 'fusion',
+    CLINT: 'agent',
   }
 
   const getServiceEnabled = (type: CloudEnvironmentServiceType) =>
@@ -1026,6 +1056,45 @@ export function OverviewTab({
           </CardContent>
         </Card>
       </div>
+
+      {/* c.5 Agents (CLINT services) */}
+      <Card>
+        <CardContent className="pt-6">
+          <AgentsSection
+            services={state.services}
+            env={environment ?? null}
+            canEdit={canSign}
+            onAddAgent={() => setEnableClintOpen(true)}
+            manifests={clintManifestsByName}
+            runtimeEndpointsByPrefix={clintRuntimeEndpointsByPrefix}
+            onSaveConfig={
+              setServiceConfig
+                ? async (prefix, config) => {
+                    await setServiceConfig(prefix, config)
+                    toast.success('Agent updated')
+                  }
+                : undefined
+            }
+            onDisable={async (prefix) => {
+              const svc = state.services.find((s) => s.prefix === prefix)
+              if (!svc) return
+              await disableService(svc.type)
+              toast.success('Agent disabled')
+            }}
+          />
+        </CardContent>
+      </Card>
+      {canSign && (
+        <EnableClintModal
+          open={enableClintOpen}
+          onOpenChange={setEnableClintOpen}
+          env={environment}
+          onSubmit={async ({ prefix, clintConfig }) => {
+            await enableService('CLINT', prefix, clintConfig)
+            toast.success('Agent enabled')
+          }}
+        />
+      )}
 
       {/* d. Domain Configuration */}
       <Card>

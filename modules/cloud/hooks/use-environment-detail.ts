@@ -26,6 +26,7 @@ import type {
   AutoUpdateChannel,
   CloudEnvironment,
   CloudEnvironmentServiceType,
+  CloudServiceClintConfig,
   TenantService,
 } from '../types'
 import { useDocumentSubscription } from './use-document-subscription'
@@ -197,8 +198,8 @@ export function useEnvironmentDetail(documentId: string) {
     [mutate],
   )
   const enableService = useCallback(
-    (type: CloudEnvironmentServiceType, prefix: string) =>
-      mutate((c) => c.enableService({ type, prefix })),
+    (type: CloudEnvironmentServiceType, prefix: string, clintConfig?: CloudServiceClintConfig) =>
+      mutate((c) => c.enableService({ type, prefix, clintConfig })),
     [mutate],
   )
   const disableService = useCallback(
@@ -207,6 +208,11 @@ export function useEnvironmentDetail(documentId: string) {
   )
   const toggleServiceEnabled = useCallback(
     (type: CloudEnvironmentServiceType) => mutate((c) => c.toggleService({ type })),
+    [mutate],
+  )
+  const setServiceConfig = useCallback(
+    (prefix: string, config: CloudServiceClintConfig) =>
+      mutate((c) => c.setServiceConfig({ prefix, config })),
     [mutate],
   )
   const addPackage = useCallback(
@@ -233,7 +239,8 @@ export function useEnvironmentDetail(documentId: string) {
   const terminate = useCallback(() => mutate((c) => c.terminateEnvironment({})), [mutate])
   const setServiceVersion = useCallback(
     (type: CloudEnvironmentServiceType, version: string) =>
-      mutate((c) => c.setServiceVersion({ type, version })),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      mutate((c) => c.setServiceVersion({ type: type as any, version })),
     [mutate],
   )
   const setPackageVersion = useCallback(
@@ -272,6 +279,7 @@ export function useEnvironmentDetail(documentId: string) {
     enableService,
     disableService,
     toggleServiceEnabled,
+    setServiceConfig,
     addPackage,
     removePackage,
     initialize,
