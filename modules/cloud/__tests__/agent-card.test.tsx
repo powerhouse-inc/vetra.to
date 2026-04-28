@@ -16,17 +16,35 @@ const service: CloudEnvironmentService = {
     env: [],
     serviceCommand: null,
     selectedRessource: 'VETRA_AGENT_XXL',
-    enabledEndpoints: ['ep-1', 'ep-2'],
+    enabledEndpoints: [],
   },
 }
 
 describe('AgentCard collapsed', () => {
-  it('renders package name@version, prefix, resource size, endpoint count', () => {
+  it('renders package label and resource size when no manifest', () => {
     render(<AgentCard service={service} env={null} canEdit={false} />)
     expect(screen.queryByText(/ph-rupert@1\.2\.3/)).not.toBeNull()
     expect(screen.queryByText('rupert')).not.toBeNull()
     expect(screen.queryByText('2X-Large')).not.toBeNull()
-    expect(screen.queryByText(/2 endpoints/)).not.toBeNull()
+  })
+
+  it('prefers agent name + image from manifest features when available', () => {
+    render(
+      <AgentCard
+        service={service}
+        env={null}
+        canEdit={false}
+        manifest={{
+          name: 'ph-rupert',
+          type: 'clint-project',
+          features: {
+            agent: { id: 'ph-rupert', name: 'Agent Rupert', image: 'https://x/a.png' },
+          },
+        }}
+      />,
+    )
+    expect(screen.queryByText('Agent Rupert')).not.toBeNull()
+    expect(screen.queryByAltText('Agent Rupert')).not.toBeNull()
   })
 
   it('hides Configure button when canEdit is false', () => {

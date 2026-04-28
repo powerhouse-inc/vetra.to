@@ -1,5 +1,6 @@
 'use client'
 
+import { Bot } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type {
   CloudEnvironment,
@@ -8,7 +9,6 @@ import type {
   CloudServiceEnv,
 } from '@/modules/cloud/types'
 import { useClintPackages } from '@/modules/cloud/hooks/use-clint-packages'
-import { composeClintEndpointUrl } from '@/modules/cloud/lib/clint-endpoint-url'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
   Dialog,
@@ -20,7 +20,6 @@ import {
 import { Input } from '@/modules/shared/components/ui/input'
 import { Label } from '@/modules/shared/components/ui/label'
 import { Textarea } from '@/modules/shared/components/ui/textarea'
-import { EndpointRow } from './endpoint-row'
 import { EnvVarsEditor } from './env-vars-editor'
 import { ResourceSizePicker } from './resource-size-picker'
 
@@ -57,7 +56,6 @@ export function EnableClintModal({ open, onOpenChange, env, onSubmit }: Props) {
   const [prefix, setPrefix] = useState('')
   const [serviceCommand, setServiceCommand] = useState('')
   const [selectedRessource, setSelectedRessource] = useState<CloudResourceSize | null>(null)
-  const [enabledEndpoints, setEnabledEndpoints] = useState<Set<string>>(new Set())
   const [envVars, setEnvVars] = useState<CloudServiceEnv[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -65,22 +63,19 @@ export function EnableClintModal({ open, onOpenChange, env, onSubmit }: Props) {
   // Reset form whenever the selected package changes (or modal opens fresh).
   useEffect(() => {
     if (!selected || !open) return
-    setPrefix(
-      selected.package.name
+    const agent = selected.manifest.features?.agent || null
+    const sanitize = (s: string) =>
+      s
         .toLowerCase()
         .replace(/[^a-z0-9-]+/g, '-')
-        .replace(/^-+|-+$/g, ''),
-    )
+        .replace(/^-+|-+$/g, '')
+    const defaultPrefix = agent ? sanitize(agent.id) : sanitize(selected.package.name)
+    setPrefix(defaultPrefix)
     setServiceCommand(selected.manifest.serviceCommand ?? '')
     const supported = (selected.manifest.supportedResources ?? [])
       .map((s) => SIZE_TO_TS[s])
       .filter(Boolean)
     setSelectedRessource(supported[0] ?? null)
-    setEnabledEndpoints(
-      new Set(
-        (selected.manifest.endpoints ?? []).filter((e) => e.status === 'enabled').map((e) => e.id),
-      ),
-    )
     setEnvVars([])
     setError(null)
   }, [selected, open])
@@ -115,7 +110,7 @@ export function EnableClintModal({ open, onOpenChange, env, onSubmit }: Props) {
           env: envVars.filter((v) => v.name.trim()),
           serviceCommand: serviceCommand.trim() || null,
           selectedRessource,
-          enabledEndpoints: Array.from(enabledEndpoints),
+          enabledEndpoints: [],
         },
       })
       onOpenChange(false)
@@ -125,6 +120,9 @@ export function EnableClintModal({ open, onOpenChange, env, onSubmit }: Props) {
       setSubmitting(false)
     }
   }
+
+  const agentFeature = selected?.manifest.features?.agent
+  const agentInfo = agentFeature || null
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -156,6 +154,39 @@ export function EnableClintModal({ open, onOpenChange, env, onSubmit }: Props) {
                 ))}
               </select>
             </div>
+
+            {agentInfo && (
+              <div className="bg-muted/40 flex items-start gap-3 rounded-md border p-3">
+                <div className="bg-muted flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md">
+                  {agentInfo.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={agentInfo.image}
+                      alt={agentInfo.name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <Bot className="text-muted-foreground h-6 w-6" />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-medium">{agentInfo.name}</div>
+                  {agentInfo.description && (
+                    <p className="text-muted-foreground mt-0.5 text-xs leading-relaxed">
+                      {agentInfo.description}
+                    </p>
+                  )}
+                  {agentInfo.models && agentInfo.models.length > 0 && (
+                    <div className="text-muted-foreground mt-1 font-mono text-[10px]">
+                      models:{' '}
+                      {agentInfo.models
+                        .map((m) => `${m.id}${m.default ? ' (default)' : ''}`)
+                        .join(', ')}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div>
               <Label htmlFor="prefix">Prefix</Label>
@@ -205,42 +236,17 @@ export function EnableClintModal({ open, onOpenChange, env, onSubmit }: Props) {
                     )}
                 </div>
 
-                {(selected.manifest.endpoints ?? []).length > 0 && (
-                  <div>
-                    <Label>Endpoints</Label>
-                    <div className="mt-2 space-y-2">
-                      {(selected.manifest.endpoints ?? []).map((ep) => (
-                        <EndpointRow
-                          key={ep.id}
-                          endpoint={ep}
-                          url={composeClintEndpointUrl({
-                            serviceUrl: null,
-                            prefix: prefix || '<prefix>',
-                            genericSubdomain: env.state.genericSubdomain,
-                            genericBaseDomain: env.state.genericBaseDomain,
-                            endpoint: ep,
-                          })}
-                          checked={enabledEndpoints.has(ep.id)}
-                          onCheckedChange={(checked) => {
-                            setEnabledEndpoints((prev) => {
-                              const next = new Set(prev)
-                              if (checked) next.add(ep.id)
-                              else next.delete(ep.id)
-                              return next
-                            })
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 <div>
                   <Label>Environment variables</Label>
                   <div className="mt-2">
                     <EnvVarsEditor value={envVars} onChange={setEnvVars} />
                   </div>
                 </div>
+
+                <p className="text-muted-foreground text-xs">
+                  Endpoints are reported by the agent at runtime once it starts. They will appear on
+                  the agent card after the first announcement.
+                </p>
               </>
             )}
             {error && <p className="text-destructive text-sm">{error}</p>}

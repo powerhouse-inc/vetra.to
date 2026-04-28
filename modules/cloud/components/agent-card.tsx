@@ -11,12 +11,10 @@ import type {
   CloudServiceEnv,
   ServiceStatus,
 } from '@/modules/cloud/types'
-import { composeClintEndpointUrl } from '@/modules/cloud/lib/clint-endpoint-url'
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import { Label } from '@/modules/shared/components/ui/label'
 import { Textarea } from '@/modules/shared/components/ui/textarea'
-import { EndpointRow } from './endpoint-row'
 import { EnvVarsEditor } from './env-vars-editor'
 import { ResourceSizePicker } from './resource-size-picker'
 
@@ -52,21 +50,21 @@ type Props = {
   onDisable?: () => Promise<void>
 }
 
-export function AgentCard({ service, env, canEdit, manifest, onSave, onDisable }: Props) {
+export function AgentCard({ service, canEdit, manifest, onSave, onDisable }: Props) {
   const [expanded, setExpanded] = useState(false)
   const cfg = service.config
 
-  const pkgLabel = cfg ? `${cfg.package.name}@${cfg.package.version ?? 'latest'}` : 'unconfigured'
+  const agentFeature = manifest?.features?.agent
+  const agentInfo = agentFeature || null
+  const cardLabel =
+    agentInfo?.name ??
+    (cfg ? `${cfg.package.name}@${cfg.package.version ?? 'latest'}` : 'unconfigured')
   const sizeLabel = cfg?.selectedRessource ? SIZE_LABELS[cfg.selectedRessource] : null
-  const endpointCount = cfg?.enabledEndpoints.length ?? 0
 
   // Local form state (only meaningful when expanded + has cfg + manifest).
   const [serviceCommand, setServiceCommand] = useState<string>(cfg?.serviceCommand ?? '')
   const [selectedRessource, setSelectedRessource] = useState<CloudResourceSize | null>(
     cfg?.selectedRessource ?? null,
-  )
-  const [enabledEndpoints, setEnabledEndpoints] = useState<Set<string>>(
-    new Set(cfg?.enabledEndpoints ?? []),
   )
   const [envVars, setEnvVars] = useState<CloudServiceEnv[]>(cfg?.env ?? [])
   const [saving, setSaving] = useState(false)
@@ -78,7 +76,6 @@ export function AgentCard({ service, env, canEdit, manifest, onSave, onDisable }
   useEffect(() => {
     setServiceCommand(cfg?.serviceCommand ?? '')
     setSelectedRessource(cfg?.selectedRessource ?? null)
-    setEnabledEndpoints(new Set(cfg?.enabledEndpoints ?? []))
     setEnvVars(cfg?.env ?? [])
   }, [cfg])
 
@@ -91,16 +88,13 @@ export function AgentCard({ service, env, canEdit, manifest, onSave, onDisable }
     if (!cfg) return false
     if ((serviceCommand || null) !== (cfg.serviceCommand || null)) return true
     if (selectedRessource !== cfg.selectedRessource) return true
-    const a = new Set(cfg.enabledEndpoints)
-    if (a.size !== enabledEndpoints.size) return true
-    for (const id of enabledEndpoints) if (!a.has(id)) return true
     if (envVars.length !== cfg.env.length) return true
     for (let i = 0; i < envVars.length; i++) {
       if (envVars[i].name !== cfg.env[i]?.name) return true
       if (envVars[i].value !== cfg.env[i]?.value) return true
     }
     return false
-  }, [cfg, serviceCommand, selectedRessource, enabledEndpoints, envVars])
+  }, [cfg, serviceCommand, selectedRessource, envVars])
 
   const handleSave = async () => {
     if (!cfg || !onSave || !dirty) return
@@ -112,7 +106,8 @@ export function AgentCard({ service, env, canEdit, manifest, onSave, onDisable }
         env: envVars.filter((v) => v.name.trim()),
         serviceCommand: serviceCommand.trim() || null,
         selectedRessource,
-        enabledEndpoints: Array.from(enabledEndpoints),
+        // Endpoints are runtime-announced; preserve whatever was last persisted.
+        enabledEndpoints: cfg.enabledEndpoints,
       })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save')
@@ -135,7 +130,6 @@ export function AgentCard({ service, env, canEdit, manifest, onSave, onDisable }
   const handleCancel = () => {
     setServiceCommand(cfg?.serviceCommand ?? '')
     setSelectedRessource(cfg?.selectedRessource ?? null)
-    setEnabledEndpoints(new Set(cfg?.enabledEndpoints ?? []))
     setEnvVars(cfg?.env ?? [])
     setError(null)
     setExpanded(false)
@@ -145,12 +139,21 @@ export function AgentCard({ service, env, canEdit, manifest, onSave, onDisable }
     <div className="rounded-lg border">
       <div className="flex items-center justify-between gap-4 p-4">
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <div className="bg-muted flex h-9 w-9 shrink-0 items-center justify-center rounded-md">
-            <Bot className="text-muted-foreground h-5 w-5" />
+          <div className="bg-muted flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md">
+            {agentInfo?.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={agentInfo.image}
+                alt={agentInfo.name}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <Bot className="text-muted-foreground h-5 w-5" />
+            )}
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-medium">{pkgLabel}</span>
+              <span className="text-sm font-medium">{cardLabel}</span>
               <Badge
                 variant="secondary"
                 className={`rounded-full border-transparent ${STATUS_CLASSES[service.status]}`}
@@ -165,10 +168,12 @@ export function AgentCard({ service, env, canEdit, manifest, onSave, onDisable }
                   {sizeLabel}
                 </Badge>
               )}
-              <span className="text-muted-foreground text-xs">
-                {endpointCount} endpoint{endpointCount === 1 ? '' : 's'}
-              </span>
             </div>
+            {agentInfo?.description && !expanded && (
+              <p className="text-muted-foreground mt-1 line-clamp-1 text-xs">
+                {agentInfo.description}
+              </p>
+            )}
           </div>
         </div>
         {canEdit && (
@@ -183,6 +188,10 @@ export function AgentCard({ service, env, canEdit, manifest, onSave, onDisable }
 
       {expanded && canEdit && cfg && manifest && (
         <div className="space-y-4 border-t p-4">
+          {agentInfo?.description && (
+            <p className="text-muted-foreground text-xs leading-relaxed">{agentInfo.description}</p>
+          )}
+
           {supportedSizes.length > 0 && (
             <div>
               <Label>Resource size</Label>
@@ -218,43 +227,17 @@ export function AgentCard({ service, env, canEdit, manifest, onSave, onDisable }
             )}
           </div>
 
-          {(manifest.endpoints ?? []).length > 0 && (
-            <div>
-              <Label>Endpoints</Label>
-              <div className="mt-2 space-y-2">
-                {(manifest.endpoints ?? []).map((ep) => (
-                  <EndpointRow
-                    key={ep.id}
-                    endpoint={ep}
-                    url={composeClintEndpointUrl({
-                      serviceUrl: service.url,
-                      prefix: service.prefix,
-                      genericSubdomain: env?.state.genericSubdomain ?? null,
-                      genericBaseDomain: env?.state.genericBaseDomain ?? null,
-                      endpoint: ep,
-                    })}
-                    checked={enabledEndpoints.has(ep.id)}
-                    onCheckedChange={(checked) => {
-                      setEnabledEndpoints((prev) => {
-                        const next = new Set(prev)
-                        if (checked) next.add(ep.id)
-                        else next.delete(ep.id)
-                        return next
-                      })
-                    }}
-                    disabled={saving || disabling}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
           <div>
             <Label>Environment variables</Label>
             <div className="mt-2">
               <EnvVarsEditor value={envVars} onChange={setEnvVars} disabled={saving || disabling} />
             </div>
           </div>
+
+          <p className="text-muted-foreground text-xs">
+            Endpoints are reported by the agent at runtime via its announcement callback. Once
+            present, they will appear here.
+          </p>
 
           {error && <p className="text-destructive text-sm">{error}</p>}
 
