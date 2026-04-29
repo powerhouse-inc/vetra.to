@@ -80,16 +80,28 @@ export function EnableClintModal({ open, onOpenChange, env, onSubmit }: Props) {
     setError(null)
   }, [selected, open])
 
-  const existingPrefixes = useMemo(
-    () => new Set(env.state.services.map((s) => s.prefix)),
+  const existingByPrefix = useMemo(
+    () => new Map(env.state.services.map((s) => [s.prefix, s])),
     [env.state.services],
   )
-  const prefixError = useMemo(() => {
+  const prefixError = useMemo<{
+    kind: 'format' | 'collision'
+    message: string
+    collidesWith?: { type: string; status: string }
+  } | null>(() => {
     if (!prefix) return null
-    if (!PREFIX_RE.test(prefix)) return 'lowercase letters, digits, and hyphens only'
-    if (existingPrefixes.has(prefix)) return 'prefix already in use'
+    if (!PREFIX_RE.test(prefix))
+      return { kind: 'format', message: 'lowercase letters, digits, and hyphens only' }
+    const collide = existingByPrefix.get(prefix)
+    if (collide) {
+      return {
+        kind: 'collision',
+        message: `Prefix '${prefix}' is used by an existing ${collide.type.toLowerCase()} service`,
+        collidesWith: { type: collide.type, status: collide.status },
+      }
+    }
     return null
-  }, [prefix, existingPrefixes])
+  }, [prefix, existingByPrefix])
 
   const supportedSizes = useMemo<CloudResourceSize[]>(
     () => (selected?.manifest.supportedResources ?? []).map((s) => SIZE_TO_TS[s]).filter(Boolean),
@@ -196,7 +208,18 @@ export function EnableClintModal({ open, onOpenChange, env, onSubmit }: Props) {
                 aria-invalid={!!prefixError}
                 placeholder="agent"
               />
-              {prefixError && <p className="text-destructive mt-1 text-xs">{prefixError}</p>}
+              {prefixError && (
+                <div className="mt-1 space-y-0.5 text-xs">
+                  <p className="text-destructive">{prefixError.message}</p>
+                  {prefixError.kind === 'collision' && prefixError.collidesWith && (
+                    <p className="text-muted-foreground">
+                      Status: <span className="font-mono">{prefixError.collidesWith.status}</span>.
+                      If the existing service isn&apos;t healthy, check it on the Overview tab — you
+                      may want to resize or delete it instead of creating a new one.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             {selected && (
