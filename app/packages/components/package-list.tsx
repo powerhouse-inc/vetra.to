@@ -61,7 +61,7 @@ export function PackageList({ results }: PackageListProps) {
       let cmp = 0
       switch (sortKey) {
         case 'name':
-          cmp = a.manifest.name.localeCompare(b.manifest.name)
+          cmp = (a.manifest.name ?? '').localeCompare(b.manifest.name ?? '')
           break
         case 'category':
           cmp = (a.manifest.category ?? '').localeCompare(b.manifest.category ?? '')
