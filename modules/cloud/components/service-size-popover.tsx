@@ -1,10 +1,9 @@
 'use client'
 
-import { ChevronDown } from 'lucide-react'
+import { Check, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { ResourceSizePicker } from '@/modules/cloud/components/resource-size-picker'
 import {
   ALL_SIZES,
   APP_RESOURCE_MAP,
@@ -64,53 +63,68 @@ export function ServiceSizePopover({ serviceType, prefix, currentSize, canEdit, 
           <ChevronDown className="h-3 w-3" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-80 space-y-3">
-        <ResourceSizePicker supported={ALL_SIZES} value={display} onChange={handleChange} />
-        <ResourceTable map={map} highlight={display} />
+      <PopoverContent align="end" className="w-96 space-y-3 p-3">
+        <SelectableSizeTable map={map} value={display} pending={pending} onSelect={handleChange} />
         <p className="text-muted-foreground text-[11px] leading-snug">
-          Saving moves the environment to <code className="font-mono">CHANGES_PENDING</code>.
-          Approve from the Overview tab to deploy.
+          Picking a size moves the environment to <code className="font-mono">CHANGES_PENDING</code>
+          . Approve from the Overview tab to deploy.
         </p>
       </PopoverContent>
     </Popover>
   )
 }
 
-function ResourceTable({
+function SelectableSizeTable({
   map,
-  highlight,
+  value,
+  pending,
+  onSelect,
 }: {
   map: Record<CloudResourceSize, ResourceSpec>
-  highlight: CloudResourceSize
+  value: CloudResourceSize
+  pending: CloudResourceSize | null
+  onSelect: (size: CloudResourceSize) => void
 }) {
   return (
     <div className="overflow-hidden rounded border">
-      <table className="w-full text-[11px]">
-        <thead className="bg-muted/50">
-          <tr>
-            <th className="px-2 py-1 text-left font-medium">Size</th>
-            <th className="px-2 py-1 text-left font-medium">Requests</th>
-            <th className="px-2 py-1 text-left font-medium">Limits</th>
-          </tr>
-        </thead>
-        <tbody>
-          {ALL_SIZES.map((s) => {
-            const r = map[s]
-            const isCurrent = s === highlight
-            return (
-              <tr key={s} className={cn('font-mono', isCurrent && 'bg-accent')}>
-                <td className="px-2 py-1">{SIZE_LABELS[s]}</td>
-                <td className="px-2 py-1">
-                  {r.requests.cpu} / {r.requests.memory}
-                </td>
-                <td className="px-2 py-1">
-                  {r.limits.cpu} / {r.limits.memory}
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      <div className="bg-muted/40 grid grid-cols-[2.5rem_2rem_1fr_1fr] items-center gap-2 px-3 py-1.5 text-[11px] font-medium">
+        <span />
+        <span>Size</span>
+        <span>Requests (cpu / mem)</span>
+        <span>Limits (cpu / mem)</span>
+      </div>
+      <div className="divide-y">
+        {ALL_SIZES.map((s) => {
+          const r = map[s]
+          const isSelected = s === value
+          const isPending = pending === s
+          return (
+            <button
+              key={s}
+              type="button"
+              onClick={() => onSelect(s)}
+              disabled={pending !== null}
+              className={cn(
+                'grid w-full grid-cols-[2.5rem_2rem_1fr_1fr] items-center gap-2 px-3 py-2 text-left text-xs transition-colors',
+                'hover:bg-accent/60 focus:bg-accent/60 focus:outline-none',
+                isSelected && 'bg-accent',
+                pending !== null && !isPending && 'opacity-50',
+              )}
+            >
+              <span className="flex h-4 w-4 items-center justify-center">
+                {isSelected && <Check className="h-4 w-4 text-emerald-500" />}
+              </span>
+              <span className="font-medium">{SIZE_LABELS[s]}</span>
+              <span className="text-muted-foreground font-mono">
+                {r.requests.cpu} / {r.requests.memory}
+              </span>
+              <span className="text-muted-foreground font-mono">
+                {r.limits.cpu} / {r.limits.memory}
+              </span>
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }
