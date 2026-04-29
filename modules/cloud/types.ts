@@ -35,6 +35,7 @@ export type CloudEnvironmentService = {
   status: ServiceStatus
   version: string | null
   config?: CloudServiceClintConfig | null
+  selectedRessource: CloudResourceSize | null
 }
 
 export type CloudEnvironmentStatus =

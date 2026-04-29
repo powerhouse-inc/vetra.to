@@ -205,6 +205,7 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
               enableService={detail.enableService}
               disableService={detail.disableService}
               setServiceConfig={detail.setServiceConfig}
+              setServiceSize={detail.setServiceSize}
               addPackage={detail.addPackage}
               removePackage={detail.removePackage}
               setCustomDomain={detail.setCustomDomain}

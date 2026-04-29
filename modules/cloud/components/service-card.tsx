@@ -1,6 +1,7 @@
 import { Bot, ExternalLink, Globe, Server, Zap } from 'lucide-react'
 
-import type { CloudEnvironmentServiceType, Pod } from '@/modules/cloud/types'
+import { ServiceSizePopover } from '@/modules/cloud/components/service-size-popover'
+import type { CloudEnvironmentServiceType, CloudResourceSize, Pod } from '@/modules/cloud/types'
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import { cn } from '@/shared/lib/utils'
@@ -12,6 +13,9 @@ type ServiceCardProps = {
   prefix: string
   pods: Pod[]
   isEnabled: boolean
+  selectedRessource: CloudResourceSize | null
+  canEdit: boolean
+  onResize: (size: CloudResourceSize) => Promise<void>
 }
 
 const SERVICE_ICONS: Record<
@@ -31,6 +35,9 @@ export function ServiceCard({
   prefix,
   pods,
   isEnabled,
+  selectedRessource,
+  canEdit,
+  onResize,
 }: ServiceCardProps) {
   const Icon = SERVICE_ICONS[serviceName] ?? Server
   const serviceUrl = subdomain
@@ -75,17 +82,26 @@ export function ServiceCard({
         </div>
       </div>
 
-      <Button variant="outline" size="sm" asChild>
-        <a
-          href={serviceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1.5"
-        >
-          <ExternalLink className="h-3.5 w-3.5" />
-          Visit
-        </a>
-      </Button>
+      <div className="flex items-center gap-2">
+        <ServiceSizePopover
+          serviceType={serviceName}
+          prefix={prefix}
+          currentSize={selectedRessource}
+          canEdit={canEdit && isEnabled}
+          onSave={onResize}
+        />
+        <Button variant="outline" size="sm" asChild>
+          <a
+            href={serviceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+            Visit
+          </a>
+        </Button>
+      </div>
     </div>
   )
 }

@@ -26,6 +26,7 @@ import type {
   AutoUpdateChannel,
   CloudEnvironment,
   CloudEnvironmentServiceType,
+  CloudResourceSize,
   CloudServiceClintConfig,
   TenantService,
 } from '../types'
@@ -215,6 +216,10 @@ export function useEnvironmentDetail(documentId: string) {
       mutate((c) => c.setServiceConfig({ prefix, config })),
     [mutate],
   )
+  const setServiceSize = useCallback(
+    (prefix: string, size: CloudResourceSize) => mutate((c) => c.setServiceSize({ prefix, size })),
+    [mutate],
+  )
   const addPackage = useCallback(
     (name: string, version?: string) =>
       mutate((c) => c.addPackage({ packageName: name, version: version ?? undefined })),
@@ -280,6 +285,7 @@ export function useEnvironmentDetail(documentId: string) {
     disableService,
     toggleServiceEnabled,
     setServiceConfig,
+    setServiceSize,
     addPackage,
     removePackage,
     initialize,

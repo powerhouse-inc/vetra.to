@@ -16,6 +16,7 @@ const clint = (prefix: string): CloudEnvironmentService => ({
     serviceCommand: null,
     selectedRessource: 'VETRA_AGENT_S',
   },
+  selectedRessource: 'VETRA_AGENT_S',
 })
 
 const nonClint: CloudEnvironmentService = {
@@ -25,6 +26,7 @@ const nonClint: CloudEnvironmentService = {
   url: null,
   status: 'ACTIVE',
   version: null,
+  selectedRessource: 'VETRA_AGENT_S',
 }
 
 describe('AgentsSection', () => {

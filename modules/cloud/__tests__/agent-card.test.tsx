@@ -17,6 +17,7 @@ const service: CloudEnvironmentService = {
     serviceCommand: null,
     selectedRessource: 'VETRA_AGENT_XXL',
   },
+  selectedRessource: 'VETRA_AGENT_XXL',
 }
 
 describe('AgentCard collapsed', () => {

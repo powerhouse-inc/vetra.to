@@ -30,6 +30,7 @@ import { AutoUpdateCard } from '@/modules/cloud/components/auto-update-card'
 import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updates-card'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
 import { PackageRow } from '@/modules/cloud/components/package-row'
+import { ServiceSizePopover } from '@/modules/cloud/components/service-size-popover'
 import { useClintPackages } from '@/modules/cloud/hooks/use-clint-packages'
 import { useClintRuntimeEndpoints } from '@/modules/cloud/hooks/use-clint-runtime-endpoints'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
@@ -133,8 +134,11 @@ function ServiceRow({
   serviceStatus,
   environmentStatus,
   currentVersion,
+  selectedRessource,
+  canResize,
   onToggle,
   onSetVersion,
+  onResize,
 }: {
   serviceType: CloudEnvironmentServiceType
   prefix: string
@@ -147,8 +151,11 @@ function ServiceRow({
   serviceStatus: string
   environmentStatus: string
   currentVersion: string | null
+  selectedRessource: import('@/modules/cloud/types').CloudResourceSize | null
+  canResize: boolean
   onToggle: (enabled: boolean) => Promise<void>
   onSetVersion?: (version: string) => Promise<void>
+  onResize?: (size: import('@/modules/cloud/types').CloudResourceSize) => Promise<void>
 }) {
   const [showVersionPicker, setShowVersionPicker] = useState(false)
   const [tags, setTags] = useState<string[]>([])
@@ -281,16 +288,27 @@ function ServiceRow({
             )}
           </div>
         </div>
-        <Switch
-          checked={isEnabled}
-          onCheckedChange={handleToggle}
-          aria-label={`Toggle ${label}`}
-          className={cn(
-            isEnabled
-              ? 'data-[state=checked]:bg-emerald-500'
-              : 'data-[state=unchecked]:bg-zinc-400 dark:data-[state=unchecked]:bg-zinc-600',
+        <div className="flex items-center gap-2">
+          {isEnabled && onResize && (
+            <ServiceSizePopover
+              serviceType={serviceType}
+              prefix={prefix}
+              currentSize={selectedRessource}
+              canEdit={canResize}
+              onSave={onResize}
+            />
           )}
-        />
+          <Switch
+            checked={isEnabled}
+            onCheckedChange={handleToggle}
+            aria-label={`Toggle ${label}`}
+            className={cn(
+              isEnabled
+                ? 'data-[state=checked]:bg-emerald-500'
+                : 'data-[state=unchecked]:bg-zinc-400 dark:data-[state=unchecked]:bg-zinc-600',
+            )}
+          />
+        </div>
       </div>
 
       {/* Version & image info */}
@@ -721,6 +739,10 @@ type OverviewTabProps = {
     prefix: string,
     config: import('@/modules/cloud/types').CloudServiceClintConfig,
   ) => Promise<void>
+  setServiceSize?: (
+    prefix: string,
+    size: import('@/modules/cloud/types').CloudResourceSize,
+  ) => Promise<void>
   addPackage: (name: string, version?: string) => Promise<void>
   removePackage: (name: string) => Promise<void>
   setCustomDomain: (enabled: boolean, domain?: string | null) => Promise<void>
@@ -747,6 +769,7 @@ export function OverviewTab({
   enableService,
   disableService,
   setServiceConfig,
+  setServiceSize,
   addPackage,
   removePackage,
   setCustomDomain,
@@ -990,6 +1013,8 @@ export function OverviewTab({
                   serviceStatus={service?.status ?? 'PROVISIONING'}
                   environmentStatus={state.status}
                   currentVersion={service?.version ?? null}
+                  selectedRessource={service?.selectedRessource ?? null}
+                  canResize={canSign}
                   onToggle={(enabled) =>
                     enabled
                       ? enableService(type, service?.prefix ?? defaultPrefixes[type])
@@ -997,6 +1022,11 @@ export function OverviewTab({
                   }
                   onSetVersion={
                     setServiceVersion ? (version) => setServiceVersion(type, version) : undefined
+                  }
+                  onResize={
+                    setServiceSize && service
+                      ? (size) => setServiceSize(service.prefix, size)
+                      : undefined
                   }
                 />
               )
