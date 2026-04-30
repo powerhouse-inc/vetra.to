@@ -32,7 +32,7 @@ const nonClint: CloudEnvironmentService = {
 describe('AgentsSection', () => {
   it('renders empty state when no CLINT services', () => {
     render(<AgentsSection services={[nonClint]} env={null} canEdit={false} />)
-    expect(screen.queryByText(/run ai agents/i)).not.toBeNull()
+    expect(screen.queryByText(/install your first agent/i)).not.toBeNull()
   })
 
   it('renders one card per CLINT service, sorted by prefix', () => {

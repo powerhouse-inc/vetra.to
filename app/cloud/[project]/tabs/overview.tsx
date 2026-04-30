@@ -25,7 +25,7 @@ import { toast } from 'sonner'
 
 import { AddPackageModal } from '@/modules/cloud/components/add-package-modal'
 import { AgentsSection } from '@/modules/cloud/components/agents-section'
-import { EnableClintModal } from '@/modules/cloud/components/enable-clint-modal'
+import { AddAgentModal } from '@/modules/cloud/components/add-agent-modal'
 import { AutoUpdateCard } from '@/modules/cloud/components/auto-update-card'
 import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updates-card'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
@@ -33,6 +33,7 @@ import { PackageRow } from '@/modules/cloud/components/package-row'
 import { ServiceSizePopover } from '@/modules/cloud/components/service-size-popover'
 import { useClintPackages } from '@/modules/cloud/hooks/use-clint-packages'
 import { useClintRuntimeEndpoints } from '@/modules/cloud/hooks/use-clint-runtime-endpoints'
+import { partitionPackagesByManifestType } from '@/modules/cloud/lib/module-package-filter'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useOptimistic } from '@/modules/cloud/hooks/use-optimistic'
 import { usePackageUpdates } from '@/modules/cloud/hooks/use-package-updates'
@@ -792,14 +793,10 @@ export function OverviewTab({
     environment.id,
   )
   const [isDeleting, setIsDeleting] = useState(false)
-  const [enableClintOpen, setEnableClintOpen] = useState(false)
+  const [addAgentOpen, setAddAgentOpen] = useState(false)
 
   const state = environment.state
   const { updates: serviceUpdates } = useServiceUpdates(state.services)
-  const { updates: packageUpdates } = usePackageUpdates(
-    state.packages,
-    state.defaultPackageRegistry ?? null,
-  )
   const { clintPackages } = useClintPackages({
     registry: state.defaultPackageRegistry ?? null,
     packages: state.packages,
@@ -807,6 +804,14 @@ export function OverviewTab({
   const clintManifestsByName = useMemo(
     () => Object.fromEntries(clintPackages.map((p) => [p.package.name, p.manifest])),
     [clintPackages],
+  )
+  const { modules: modulePackages } = useMemo(
+    () => partitionPackagesByManifestType(state.packages, clintManifestsByName),
+    [state.packages, clintManifestsByName],
+  )
+  const { updates: packageUpdates } = usePackageUpdates(
+    modulePackages,
+    state.defaultPackageRegistry ?? null,
   )
   const { byPrefix: clintRuntimeEndpointsByPrefix } = useClintRuntimeEndpoints(
     subdomain,
@@ -1054,7 +1059,7 @@ export function OverviewTab({
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {state.packages.length > 0 ? (
+            {modulePackages.length > 0 ? (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -1064,7 +1069,7 @@ export function OverviewTab({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {state.packages.map((pkg) => (
+                  {modulePackages.map((pkg) => (
                     <PackageRow
                       key={pkg.name}
                       pkg={pkg}
@@ -1080,7 +1085,7 @@ export function OverviewTab({
             ) : (
               <div className="flex flex-col items-center justify-center gap-2 py-8">
                 <Package className="text-muted-foreground h-8 w-8" />
-                <p className="text-muted-foreground text-sm">No packages installed</p>
+                <p className="text-muted-foreground text-sm">No reactor modules installed</p>
               </div>
             )}
           </CardContent>
@@ -1094,7 +1099,7 @@ export function OverviewTab({
             services={state.services}
             env={environment ?? null}
             canEdit={canSign}
-            onAddAgent={() => setEnableClintOpen(true)}
+            onAddAgent={() => setAddAgentOpen(true)}
             manifests={clintManifestsByName}
             runtimeEndpointsByPrefix={clintRuntimeEndpointsByPrefix}
             onSaveConfig={
@@ -1115,13 +1120,17 @@ export function OverviewTab({
         </CardContent>
       </Card>
       {canSign && (
-        <EnableClintModal
-          open={enableClintOpen}
-          onOpenChange={setEnableClintOpen}
+        <AddAgentModal
+          open={addAgentOpen}
+          onOpenChange={setAddAgentOpen}
           env={environment}
-          onSubmit={async ({ prefix, clintConfig }) => {
+          registryUrl={state.defaultPackageRegistry ?? 'https://registry.dev.vetra.io'}
+          tenantId={tenantId}
+          installedPackages={state.packages}
+          onSubmit={async ({ packageName, version, prefix, clintConfig }) => {
+            await addPackage(packageName, version)
             await enableService('CLINT', prefix, clintConfig)
-            toast.success('Agent enabled')
+            toast.success('Agent installed')
           }}
         />
       )}
