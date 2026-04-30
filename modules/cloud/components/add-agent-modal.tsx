@@ -1,11 +1,20 @@
 'use client'
 
-import { Bot, Loader2 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { Bot, Check, ChevronsUpDown, Loader2 } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { isAgentPackageName, validateAgentManifest } from '@/modules/cloud/lib/agent-discovery'
-import { useRegistryManifest, useRegistryPackages } from '@/modules/cloud/hooks/use-registry-search'
-import type { CloudEnvironment, CloudPackage, CloudServiceClintConfig } from '@/modules/cloud/types'
+import {
+  useRegistryManifest,
+  useRegistryPackages,
+  useRegistryVersions,
+} from '@/modules/cloud/hooks/use-registry-search'
+import type {
+  CloudEnvironment,
+  CloudPackage,
+  CloudResourceSize,
+  CloudServiceClintConfig,
+} from '@/modules/cloud/types'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
   Command,
@@ -22,6 +31,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/modules/shared/components/ui/dialog'
+import { Input } from '@/modules/shared/components/ui/input'
+import { Label } from '@/modules/shared/components/ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from '@/modules/shared/components/ui/popover'
+import { Textarea } from '@/modules/shared/components/ui/textarea'
+import { ResourceSizePicker } from './resource-size-picker'
+
+const PREFIX_RE = /^[a-z0-9-]+$/
+
+const SIZE_TO_TS: Record<string, CloudResourceSize> = {
+  'vetra-agent-s': 'VETRA_AGENT_S',
+  'vetra-agent-m': 'VETRA_AGENT_M',
+  'vetra-agent-l': 'VETRA_AGENT_L',
+  'vetra-agent-xl': 'VETRA_AGENT_XL',
+  'vetra-agent-xxl': 'VETRA_AGENT_XXL',
+}
+
+function sanitize(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
 
 export type AddAgentSubmitPayload = {
   packageName: string
@@ -46,8 +77,7 @@ export function AddAgentModal({
   open,
   onOpenChange,
   registryUrl,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  env: _env,
+  env,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   tenantId: _tenantId,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -60,11 +90,21 @@ export function AddAgentModal({
   const [selectedPackage, setSelectedPackage] = useState<string | null>(
     defaultSelectedPackage ?? null,
   )
+  const [selectedVersion, setSelectedVersion] = useState<string>('')
+  const [versionPopoverOpen, setVersionPopoverOpen] = useState(false)
+  const [prefix, setPrefix] = useState('')
+  const [serviceCommand, setServiceCommand] = useState('')
+  const [selectedRessource, setSelectedRessource] = useState<CloudResourceSize | null>(null)
 
   const { packages, isLoading: packagesLoading } = useRegistryPackages(registryUrl, search)
   const agentPackages = useMemo(
     () => packages.filter((p) => isAgentPackageName(p.name)),
     [packages],
+  )
+
+  const { info: versionInfo, isLoading: versionsLoading } = useRegistryVersions(
+    registryUrl,
+    selectedPackage,
   )
 
   const { manifest, isLoading: manifestLoading } = useRegistryManifest(
@@ -80,6 +120,45 @@ export function AddAgentModal({
     validation?.ok && validation.manifest.features?.agent
       ? validation.manifest.features.agent
       : null
+
+  useEffect(() => {
+    if (!validation?.ok) return
+    const m = validation.manifest
+    const agent = m.features?.agent || null
+    const agentId = agent && typeof agent === 'object' ? agent.id : null
+    const defaultPrefix = agentId ? sanitize(agentId) : sanitize(m.name)
+    setPrefix(defaultPrefix)
+    setServiceCommand(m.serviceCommand ?? '')
+    const supported = (m.supportedResources ?? []).map((s) => SIZE_TO_TS[s]).filter(Boolean)
+    setSelectedRessource(supported[0] ?? null)
+    setSelectedVersion('')
+  }, [validation])
+
+  const existingByPrefix = useMemo(
+    () => new Map(env.state.services.map((s) => [s.prefix, s])),
+    [env.state.services],
+  )
+  const prefixError = useMemo<{ kind: 'format' | 'collision'; message: string } | null>(() => {
+    if (!prefix) return null
+    if (!PREFIX_RE.test(prefix))
+      return { kind: 'format', message: 'lowercase letters, digits, and hyphens only' }
+    const collide = existingByPrefix.get(prefix)
+    if (collide) {
+      return {
+        kind: 'collision',
+        message: `Prefix '${prefix}' is used by an existing ${collide.type.toLowerCase()} service`,
+      }
+    }
+    return null
+  }, [prefix, existingByPrefix])
+
+  const supportedSizes = useMemo<CloudResourceSize[]>(
+    () =>
+      validation?.ok
+        ? (validation.manifest.supportedResources ?? []).map((s) => SIZE_TO_TS[s]).filter(Boolean)
+        : [],
+    [validation],
+  )
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -158,6 +237,127 @@ export function AddAgentModal({
                   </p>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Version */}
+          {selectedPackage && (
+            <div className="space-y-2">
+              <Label>Version</Label>
+              <Popover open={versionPopoverOpen} onOpenChange={setVersionPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={versionPopoverOpen}
+                    className="w-full justify-between font-mono text-sm font-normal"
+                    disabled={versionsLoading}
+                  >
+                    {versionsLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      selectedVersion || 'latest'
+                    )}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search versions..." />
+                    <CommandList>
+                      <CommandEmpty>No versions found.</CommandEmpty>
+                      <CommandGroup heading="Tags">
+                        {Object.entries(versionInfo?.distTags ?? {}).map(([tag, ver]) => (
+                          <CommandItem
+                            key={tag}
+                            value={`tag:${tag}`}
+                            onSelect={() => {
+                              setSelectedVersion(ver)
+                              setVersionPopoverOpen(false)
+                            }}
+                          >
+                            <span className="font-medium">{tag}</span>
+                            <span className="text-muted-foreground ml-2 font-mono text-xs">
+                              {ver}
+                            </span>
+                            {selectedVersion === ver && (
+                              <Check className="ml-auto h-4 w-4 shrink-0" />
+                            )}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                      <CommandGroup heading="Versions">
+                        {(versionInfo?.versions ?? []).map((ver) => (
+                          <CommandItem
+                            key={ver}
+                            value={ver}
+                            onSelect={() => {
+                              setSelectedVersion(ver)
+                              setVersionPopoverOpen(false)
+                            }}
+                          >
+                            <span className="font-mono text-sm">{ver}</span>
+                            {selectedVersion === ver && (
+                              <Check className="ml-auto h-4 w-4 shrink-0" />
+                            )}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
+
+          {/* Prefix */}
+          {validation?.ok && (
+            <div className="space-y-2">
+              <Label htmlFor="prefix">Prefix</Label>
+              <Input
+                id="prefix"
+                value={prefix}
+                onChange={(e) => setPrefix(e.target.value)}
+                aria-invalid={!!prefixError}
+                placeholder="agent"
+              />
+              {prefixError && <p className="text-destructive text-xs">{prefixError.message}</p>}
+            </div>
+          )}
+
+          {/* Resource size */}
+          {validation?.ok && supportedSizes.length > 0 && (
+            <div className="space-y-2">
+              <Label>Resource size</Label>
+              <ResourceSizePicker
+                supported={supportedSizes}
+                value={selectedRessource}
+                onChange={setSelectedRessource}
+              />
+            </div>
+          )}
+
+          {/* Service command */}
+          {validation?.ok && (
+            <div className="space-y-2">
+              <Label htmlFor="cmd">Service command</Label>
+              <Textarea
+                id="cmd"
+                value={serviceCommand}
+                onChange={(e) => setServiceCommand(e.target.value)}
+                className="font-mono text-sm"
+                rows={2}
+              />
+              {validation.manifest.serviceCommand &&
+                serviceCommand !== validation.manifest.serviceCommand && (
+                  <button
+                    type="button"
+                    className="text-primary mt-1 text-xs underline-offset-2 hover:underline"
+                    onClick={() => setServiceCommand(validation.manifest.serviceCommand ?? '')}
+                  >
+                    Reset to default
+                  </button>
+                )}
             </div>
           )}
         </div>

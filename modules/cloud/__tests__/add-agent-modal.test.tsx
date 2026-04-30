@@ -126,4 +126,39 @@ describe('AddAgentModal', () => {
     expect(screen.queryByText('Foo Agent')).not.toBeNull()
     expect(screen.queryByText('does foo')).not.toBeNull()
   })
+
+  it('defaults the prefix to the agent id and resource size to first supported', () => {
+    vi.mocked(useRegistryPackages).mockReturnValue({
+      packages: [{ name: '@x/foo-cli', version: '1.0.0', description: null }],
+      isLoading: false,
+    })
+    vi.mocked(useRegistryManifest).mockReturnValue({
+      manifest: {
+        name: '@x/foo-cli',
+        type: 'clint-project',
+        features: { agent: { id: 'foo', name: 'Foo' } },
+        supportedResources: ['vetra-agent-m', 'vetra-agent-l'],
+        serviceCommand: 'foo --run',
+      },
+      isLoading: false,
+      error: null,
+    })
+    render(
+      <AddAgentModal
+        open
+        onOpenChange={() => {}}
+        env={fakeEnv}
+        registryUrl="https://registry.dev.vetra.io"
+        tenantId={null}
+        installedPackages={[]}
+        onSubmit={async () => {}}
+        defaultSelectedPackage="@x/foo-cli"
+      />,
+    )
+    expect((screen.getByLabelText(/prefix/i) as HTMLInputElement).value).toBe('foo')
+    expect(screen.queryByText('Medium')).not.toBeNull() // first supported size label from ResourceSizePicker
+    expect((screen.getByLabelText(/service command/i) as HTMLTextAreaElement).value).toBe(
+      'foo --run',
+    )
+  })
 })
