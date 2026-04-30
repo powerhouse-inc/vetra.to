@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useRenown } from '@powerhousedao/reactor-browser'
 import { isAgentPackageName, validateAgentManifest } from '@/modules/cloud/lib/agent-discovery'
-import { buildSystemEnvPreview } from '@/modules/cloud/lib/system-env-vars'
+import { buildSystemEnvPreview, isReservedEnvName } from '@/modules/cloud/lib/system-env-vars'
 import {
   useRegistryManifest,
   useRegistryManifests,
@@ -24,6 +24,7 @@ import type {
   CloudPackage,
   CloudResourceSize,
   CloudServiceClintConfig,
+  CloudServiceEnv,
 } from '@/modules/cloud/types'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
@@ -46,6 +47,7 @@ import { Label } from '@/modules/shared/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/modules/shared/components/ui/popover'
 import { Textarea } from '@/modules/shared/components/ui/textarea'
 import { ResourceSizePicker } from './resource-size-picker'
+import { EnvVarsEditor } from './env-vars-editor'
 
 const PREFIX_RE = /^[a-z0-9-]+$/
 
@@ -168,6 +170,9 @@ export function AddAgentModal({
     [validation],
   )
 
+  const [customEnvVars, setCustomEnvVars] = useState<CloudServiceEnv[]>([])
+  const [submitError, setSubmitError] = useState<string | null>(null)
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _renown = useRenown() // wired up in B.9 (submit flow)
   const [configState, setConfigState] = useState<ConfigFormState>({})
@@ -177,6 +182,26 @@ export function AddAgentModal({
     [envVars],
   )
   const existingSecretKeys = useMemo(() => new Set(secrets.map((s) => s.key)), [secrets])
+
+  const manifestConfigNames = useMemo(
+    () => new Set(validation?.ok ? (validation.manifest.config ?? []).map((c) => c.name) : []),
+    [validation],
+  )
+
+  const handleSubmit = () => {
+    setSubmitError(null)
+    // Reservation check
+    const shadowed = customEnvVars.find(
+      (v) => v.name && (isReservedEnvName(v.name) || manifestConfigNames.has(v.name)),
+    )
+    if (shadowed) {
+      setSubmitError(
+        `"${shadowed.name}" is reserved (set by the platform or declared by the agent). Pick another name.`,
+      )
+      return
+    }
+    // Full submit flow added in B.9. For now, no-op when validation passes.
+  }
 
   const installedForFetch = useMemo(
     () => (open ? installedPackages.map((p) => ({ name: p.name, version: p.version })) : []),
@@ -454,12 +479,23 @@ export function AddAgentModal({
               />
             </div>
           )}
+
+          {/* Custom env vars */}
+          {validation?.ok && (
+            <div className="space-y-2">
+              <Label>Custom environment variables</Label>
+              <EnvVarsEditor value={customEnvVars} onChange={setCustomEnvVars} />
+            </div>
+          )}
+          {submitError && <p className="text-destructive text-sm">{submitError}</p>}
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button disabled>Install agent</Button>
+          <Button onClick={handleSubmit} disabled={!validation?.ok || !!prefixError || !prefix}>
+            Install agent
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

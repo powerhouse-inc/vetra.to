@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { AddAgentModal } from '@/modules/cloud/components/add-agent-modal'
 import type { CloudEnvironment } from '@/modules/cloud/types'
 import { useRegistryManifest, useRegistryPackages } from '@/modules/cloud/hooks/use-registry-search'
@@ -227,5 +227,41 @@ describe('AddAgentModal', () => {
     )
     expect(screen.queryByText('MODEL')).not.toBeNull()
     expect(screen.queryByText('API_KEY')).not.toBeNull()
+  })
+
+  it('blocks submit when a custom env var name collides with a SERVICE_* var', async () => {
+    vi.mocked(useRegistryManifest).mockReturnValue({
+      manifest: {
+        name: '@x/foo-cli',
+        type: 'clint-project',
+        features: { agent: { id: 'foo', name: 'Foo' } },
+        supportedResources: ['vetra-agent-s'],
+      },
+      isLoading: false,
+      error: null,
+    })
+    vi.mocked(useRegistryPackages).mockReturnValue({
+      packages: [{ name: '@x/foo-cli', version: '1.0.0', description: null }],
+      isLoading: false,
+    })
+    const onSubmit = vi.fn()
+    render(
+      <AddAgentModal
+        open
+        onOpenChange={() => {}}
+        env={fakeEnv}
+        registryUrl="https://registry.dev.vetra.io"
+        tenantId={null}
+        installedPackages={[]}
+        onSubmit={onSubmit}
+        defaultSelectedPackage="@x/foo-cli"
+      />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: /add env var/i }))
+    fireEvent.change(screen.getByLabelText('env-name-0'), { target: { value: 'SERVICE_PREFIX' } })
+    fireEvent.change(screen.getByLabelText('env-value-0'), { target: { value: 'oops' } })
+    fireEvent.click(screen.getByRole('button', { name: /install agent/i }))
+    expect(screen.queryByText(/reserved/i)).not.toBeNull()
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 })
