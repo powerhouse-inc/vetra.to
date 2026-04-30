@@ -54,7 +54,7 @@ export function AgentsSection({
         <div className="text-muted-foreground flex flex-col items-center gap-2 rounded-lg border border-dashed p-8 text-center">
           <Bot className="h-8 w-8" />
           <p className="text-sm">
-            Install your first agent — they're packages whose name ends in -cli.
+            Install your first agent — they&rsquo;re packages whose name ends in -cli.
           </p>
         </div>
       ) : (
