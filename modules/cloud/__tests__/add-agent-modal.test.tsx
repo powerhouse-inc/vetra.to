@@ -161,4 +161,37 @@ describe('AddAgentModal', () => {
       'foo --run',
     )
   })
+
+  it('renders the four SERVICE_* env vars in the System block', () => {
+    vi.mocked(useRegistryPackages).mockReturnValue({
+      packages: [{ name: '@x/foo-cli', version: '1.0.0', description: null }],
+      isLoading: false,
+    })
+    vi.mocked(useRegistryManifest).mockReturnValue({
+      manifest: {
+        name: '@x/foo-cli',
+        type: 'clint-project',
+        features: { agent: { id: 'foo', name: 'Foo' } },
+      },
+      isLoading: false,
+      error: null,
+    })
+    render(
+      <AddAgentModal
+        open
+        onOpenChange={() => {}}
+        env={fakeEnv}
+        registryUrl="https://registry.dev.vetra.io"
+        tenantId={null}
+        installedPackages={[]}
+        onSubmit={async () => {}}
+        defaultSelectedPackage="@x/foo-cli"
+      />,
+    )
+    expect(screen.queryByText('SERVICE_ANNOUNCE_URL')).not.toBeNull()
+    expect(screen.queryByText('SERVICE_ANNOUNCE_TOKEN')).not.toBeNull()
+    expect(screen.queryByText('SERVICE_DOCUMENT_ID')).not.toBeNull()
+    expect(screen.queryByText('SERVICE_PREFIX')).not.toBeNull()
+    expect(screen.queryByText('env-doc-1')).not.toBeNull() // SERVICE_DOCUMENT_ID preview = fakeEnv.id
+  })
 })

@@ -4,6 +4,7 @@ import { Bot, Check, ChevronsUpDown, Loader2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 
 import { isAgentPackageName, validateAgentManifest } from '@/modules/cloud/lib/agent-discovery'
+import { buildSystemEnvPreview } from '@/modules/cloud/lib/system-env-vars'
 import {
   useRegistryManifest,
   useRegistryPackages,
@@ -358,6 +359,25 @@ export function AddAgentModal({
                     Reset to default
                   </button>
                 )}
+            </div>
+          )}
+
+          {/* System env vars */}
+          {validation?.ok && (
+            <div className="space-y-2">
+              <Label>System (set by the platform)</Label>
+              <dl className="bg-muted/30 divide-border divide-y rounded-md border text-xs">
+                {buildSystemEnvPreview({ environmentId: env.id, prefix }).map((row) => (
+                  <div key={row.name} className="grid grid-cols-[max-content_1fr] gap-3 px-3 py-2">
+                    <dt className="text-muted-foreground font-mono">{row.name}</dt>
+                    <dd className="font-mono break-all">{row.preview}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="text-muted-foreground text-xs">
+                These are set automatically when the agent runs. Listed here so you can see what the
+                agent will receive.
+              </p>
             </div>
           )}
         </div>
