@@ -7,7 +7,7 @@
  * not derived per-environment, so we render it as a static informational
  * preview. See spec §9 for the open question.
  */
-export const SERVICE_ANNOUNCE_URL_PREVIEW = 'https://admin-dev.vetra.io/graphql'
+export const SERVICE_ANNOUNCE_URL_PREVIEW = 'https://switchboard.staging.vetra.io/graphql'
 
 export const RESERVED_ENV_NAMES: readonly string[] = [
   'SERVICE_ANNOUNCE_URL',
