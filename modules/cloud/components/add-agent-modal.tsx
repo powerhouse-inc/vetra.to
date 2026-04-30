@@ -3,13 +3,22 @@
 import { Bot, Check, ChevronsUpDown, Loader2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 
+import { useRenown } from '@powerhousedao/reactor-browser'
 import { isAgentPackageName, validateAgentManifest } from '@/modules/cloud/lib/agent-discovery'
 import { buildSystemEnvPreview } from '@/modules/cloud/lib/system-env-vars'
 import {
   useRegistryManifest,
+  useRegistryManifests,
   useRegistryPackages,
   useRegistryVersions,
 } from '@/modules/cloud/hooks/use-registry-search'
+import { buildCollisionMap } from '@/modules/cloud/config/collisions'
+import {
+  initialConfigFormState,
+  PackageConfigForm,
+  type ConfigFormState,
+} from '@/modules/cloud/components/package-config-form'
+import { useTenantConfig } from '@/modules/cloud/hooks/use-tenant-config'
 import type {
   CloudEnvironment,
   CloudPackage,
@@ -79,10 +88,8 @@ export function AddAgentModal({
   onOpenChange,
   registryUrl,
   env,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  tenantId: _tenantId,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  installedPackages: _installedPackages,
+  tenantId,
+  installedPackages,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onSubmit: _onSubmit,
   defaultSelectedPackage,
@@ -160,6 +167,55 @@ export function AddAgentModal({
         : [],
     [validation],
   )
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _renown = useRenown() // wired up in B.9 (submit flow)
+  const [configState, setConfigState] = useState<ConfigFormState>({})
+  const { envVars, secrets } = useTenantConfig(open ? tenantId : null)
+  const existingVarValues = useMemo(
+    () => Object.fromEntries(envVars.map((v) => [v.key, v.value])),
+    [envVars],
+  )
+  const existingSecretKeys = useMemo(() => new Set(secrets.map((s) => s.key)), [secrets])
+
+  const installedForFetch = useMemo(
+    () => (open ? installedPackages.map((p) => ({ name: p.name, version: p.version })) : []),
+    [open, installedPackages],
+  )
+  const { manifests: installedManifests } = useRegistryManifests(registryUrl, installedForFetch)
+
+  const collisions = useMemo(() => {
+    const fromInstalled = installedManifests.map((m) => ({
+      packageName: m.packageName,
+      manifest: m.manifest,
+    }))
+    const candidate =
+      selectedPackage && validation?.ok
+        ? [{ packageName: selectedPackage, manifest: validation.manifest }]
+        : []
+    return buildCollisionMap([...fromInstalled, ...candidate])
+  }, [installedManifests, validation, selectedPackage])
+
+  useEffect(() => {
+    if (!validation?.ok || !selectedPackage) {
+      setConfigState({})
+      return
+    }
+    const entries = validation.manifest.config ?? []
+    if (entries.length === 0) {
+      setConfigState({})
+      return
+    }
+    setConfigState(
+      initialConfigFormState(entries, {
+        existingVarValues,
+        existingSecretKeys,
+        collisions,
+        ownerPackageName: selectedPackage,
+      }),
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [validation, selectedPackage])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -378,6 +434,24 @@ export function AddAgentModal({
                 These are set automatically when the agent runs. Listed here so you can see what the
                 agent will receive.
               </p>
+            </div>
+          )}
+
+          {/* Manifest config */}
+          {validation?.ok && (validation.manifest.config?.length ?? 0) > 0 && tenantId !== null && (
+            <div className="space-y-2">
+              <Label>Required by the agent</Label>
+              <PackageConfigForm
+                manifest={validation.manifest}
+                state={configState}
+                onChange={setConfigState}
+                ctx={{
+                  existingVarValues,
+                  existingSecretKeys,
+                  collisions,
+                  ownerPackageName: selectedPackage!,
+                }}
+              />
             </div>
           )}
         </div>
