@@ -53,7 +53,9 @@ export function AgentsSection({
       {clintServices.length === 0 ? (
         <div className="text-muted-foreground flex flex-col items-center gap-2 rounded-lg border border-dashed p-8 text-center">
           <Bot className="h-8 w-8" />
-          <p className="text-sm">Run AI agents in this environment</p>
+          <p className="text-sm">
+            Install your first agent — they're packages whose name ends in -cli.
+          </p>
         </div>
       ) : (
         <div className="space-y-2">

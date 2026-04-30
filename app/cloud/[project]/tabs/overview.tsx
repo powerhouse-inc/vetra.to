@@ -25,7 +25,7 @@ import { toast } from 'sonner'
 
 import { AddPackageModal } from '@/modules/cloud/components/add-package-modal'
 import { AgentsSection } from '@/modules/cloud/components/agents-section'
-import { EnableClintModal } from '@/modules/cloud/components/enable-clint-modal'
+import { AddAgentModal } from '@/modules/cloud/components/add-agent-modal'
 import { AutoUpdateCard } from '@/modules/cloud/components/auto-update-card'
 import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updates-card'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
@@ -792,7 +792,7 @@ export function OverviewTab({
     environment.id,
   )
   const [isDeleting, setIsDeleting] = useState(false)
-  const [enableClintOpen, setEnableClintOpen] = useState(false)
+  const [addAgentOpen, setAddAgentOpen] = useState(false)
 
   const state = environment.state
   const { updates: serviceUpdates } = useServiceUpdates(state.services)
@@ -1094,7 +1094,7 @@ export function OverviewTab({
             services={state.services}
             env={environment ?? null}
             canEdit={canSign}
-            onAddAgent={() => setEnableClintOpen(true)}
+            onAddAgent={() => setAddAgentOpen(true)}
             manifests={clintManifestsByName}
             runtimeEndpointsByPrefix={clintRuntimeEndpointsByPrefix}
             onSaveConfig={
@@ -1115,13 +1115,17 @@ export function OverviewTab({
         </CardContent>
       </Card>
       {canSign && (
-        <EnableClintModal
-          open={enableClintOpen}
-          onOpenChange={setEnableClintOpen}
+        <AddAgentModal
+          open={addAgentOpen}
+          onOpenChange={setAddAgentOpen}
           env={environment}
-          onSubmit={async ({ prefix, clintConfig }) => {
+          registryUrl={state.defaultPackageRegistry ?? 'https://registry.dev.vetra.io'}
+          tenantId={tenantId}
+          installedPackages={state.packages}
+          onSubmit={async ({ packageName, version, prefix, clintConfig }) => {
+            await addPackage(packageName, version)
             await enableService('CLINT', prefix, clintConfig)
-            toast.success('Agent enabled')
+            toast.success('Agent installed')
           }}
         />
       )}
