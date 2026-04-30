@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { AddAgentModal } from '@/modules/cloud/components/add-agent-modal'
+import {
+  AddAgentModal,
+  type AddAgentSubmitPayload,
+} from '@/modules/cloud/components/add-agent-modal'
 import type { CloudEnvironment } from '@/modules/cloud/types'
 import { useRegistryManifest, useRegistryPackages } from '@/modules/cloud/hooks/use-registry-search'
 
@@ -263,5 +266,82 @@ describe('AddAgentModal', () => {
     fireEvent.click(screen.getByRole('button', { name: /install agent/i }))
     expect(screen.queryByText(/reserved/i)).not.toBeNull()
     expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('calls onSubmit with packageName, version, prefix, clintConfig in order', async () => {
+    vi.mocked(useRegistryManifest).mockReturnValue({
+      manifest: {
+        name: '@x/foo-cli',
+        type: 'clint-project',
+        features: { agent: { id: 'foo', name: 'Foo' } },
+        supportedResources: ['vetra-agent-s'],
+      },
+      isLoading: false,
+      error: null,
+    })
+    vi.mocked(useRegistryPackages).mockReturnValue({
+      packages: [{ name: '@x/foo-cli', version: '1.0.0', description: null }],
+      isLoading: false,
+    })
+    const onSubmit = vi.fn<(payload: AddAgentSubmitPayload) => Promise<void>>(async () => {})
+    const onOpenChange = vi.fn()
+    render(
+      <AddAgentModal
+        open
+        onOpenChange={onOpenChange}
+        env={fakeEnv}
+        registryUrl="https://registry.dev.vetra.io"
+        tenantId={null}
+        installedPackages={[]}
+        onSubmit={onSubmit}
+        defaultSelectedPackage="@x/foo-cli"
+      />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: /install agent/i }))
+    await new Promise((r) => setTimeout(r, 10))
+    expect(onSubmit).toHaveBeenCalledOnce()
+    const payload = onSubmit.mock.calls[0][0]
+    expect(payload.packageName).toBe('@x/foo-cli')
+    expect(payload.prefix).toBe('foo')
+    expect(payload.clintConfig.selectedRessource).toBe('VETRA_AGENT_S')
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+  })
+
+  it('shows an error and stays open when onSubmit throws', async () => {
+    vi.mocked(useRegistryManifest).mockReturnValue({
+      manifest: {
+        name: '@x/foo-cli',
+        type: 'clint-project',
+        features: { agent: { id: 'foo', name: 'Foo' } },
+        supportedResources: ['vetra-agent-s'],
+      },
+      isLoading: false,
+      error: null,
+    })
+    vi.mocked(useRegistryPackages).mockReturnValue({
+      packages: [{ name: '@x/foo-cli', version: '1.0.0', description: null }],
+      isLoading: false,
+    })
+    const onOpenChange = vi.fn()
+    const onSubmit = vi.fn(async () => {
+      throw new Error('addPackage failed')
+    })
+    render(
+      <AddAgentModal
+        open
+        onOpenChange={onOpenChange}
+        env={fakeEnv}
+        registryUrl="https://registry.dev.vetra.io"
+        tenantId={null}
+        installedPackages={[]}
+        onSubmit={onSubmit}
+        defaultSelectedPackage="@x/foo-cli"
+      />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: /install agent/i }))
+    await new Promise((r) => setTimeout(r, 10))
+    expect(onSubmit).toHaveBeenCalledOnce()
+    expect(onOpenChange).not.toHaveBeenCalledWith(false)
+    expect(screen.queryByText(/addPackage failed/i)).not.toBeNull()
   })
 })

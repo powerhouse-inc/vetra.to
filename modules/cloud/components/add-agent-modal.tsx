@@ -12,10 +12,12 @@ import {
   useRegistryPackages,
   useRegistryVersions,
 } from '@/modules/cloud/hooks/use-registry-search'
+import { applyConfigChanges, computeConfigChanges } from '@/modules/cloud/config/apply'
 import { buildCollisionMap } from '@/modules/cloud/config/collisions'
 import {
   initialConfigFormState,
   PackageConfigForm,
+  validateConfigForm,
   type ConfigFormState,
 } from '@/modules/cloud/components/package-config-form'
 import { useTenantConfig } from '@/modules/cloud/hooks/use-tenant-config'
@@ -92,8 +94,7 @@ export function AddAgentModal({
   env,
   tenantId,
   installedPackages,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onSubmit: _onSubmit,
+  onSubmit,
   defaultSelectedPackage,
 }: Props) {
   const [search, setSearch] = useState('')
@@ -173,8 +174,7 @@ export function AddAgentModal({
   const [customEnvVars, setCustomEnvVars] = useState<CloudServiceEnv[]>([])
   const [submitError, setSubmitError] = useState<string | null>(null)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _renown = useRenown() // wired up in B.9 (submit flow)
+  const renown = useRenown()
   const [configState, setConfigState] = useState<ConfigFormState>({})
   const { envVars, secrets } = useTenantConfig(open ? tenantId : null)
   const existingVarValues = useMemo(
@@ -188,8 +188,12 @@ export function AddAgentModal({
     [validation],
   )
 
-  const handleSubmit = () => {
+  const [submitting, setSubmitting] = useState(false)
+
+  const handleSubmit = async () => {
+    if (!validation?.ok || !selectedPackage || !prefix || prefixError || !selectedRessource) return
     setSubmitError(null)
+
     // Reservation check
     const shadowed = customEnvVars.find(
       (v) => v.name && (isReservedEnvName(v.name) || manifestConfigNames.has(v.name)),
@@ -200,7 +204,54 @@ export function AddAgentModal({
       )
       return
     }
-    // Full submit flow added in B.9. For now, no-op when validation passes.
+
+    // Required manifest-config check
+    if ((validation.manifest.config?.length ?? 0) > 0 && tenantId) {
+      const missing = validateConfigForm(validation.manifest.config ?? [], configState, {
+        existingVarValues,
+        existingSecretKeys,
+        collisions,
+        ownerPackageName: selectedPackage,
+      })
+      if (missing.length > 0) {
+        setSubmitError(`Missing required config: ${missing.join(', ')}`)
+        return
+      }
+    }
+
+    setSubmitting(true)
+    try {
+      if ((validation.manifest.config?.length ?? 0) > 0 && tenantId) {
+        const changes = computeConfigChanges(
+          validation.manifest.config ?? [],
+          configState,
+          existingVarValues,
+        )
+        if (changes.length > 0) {
+          await applyConfigChanges(tenantId, changes, renown)
+        }
+      }
+      await onSubmit({
+        packageName: selectedPackage,
+        version: selectedVersion || undefined,
+        prefix,
+        clintConfig: {
+          package: {
+            registry: registryUrl ?? '',
+            name: selectedPackage,
+            version: selectedVersion || null,
+          },
+          env: customEnvVars.filter((v) => v.name.trim()),
+          serviceCommand: serviceCommand.trim() || null,
+          selectedRessource,
+        },
+      })
+      onOpenChange(false)
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Failed to install agent')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const installedForFetch = useMemo(
@@ -493,8 +544,13 @@ export function AddAgentModal({
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={!validation?.ok || !!prefixError || !prefix}>
-            Install agent
+          <Button
+            onClick={handleSubmit}
+            disabled={
+              !validation?.ok || !!prefixError || !prefix || !selectedRessource || submitting
+            }
+          >
+            {submitting ? 'Installing…' : 'Install agent'}
           </Button>
         </DialogFooter>
       </DialogContent>
