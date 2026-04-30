@@ -3,7 +3,7 @@
 **Status:** Draft
 **Date:** 2026-04-30
 **Owner:** Frank (vetra.to)
-**Cross-repo dependency:** `ph-clint` (announce-URL env var contract), `vetra-cloud-package` (system env var injection on CLINT pods, ph-pirate-cli manifest)
+**Cross-repo dependency:** `vetra-cloud-package` (ph-pirate-cli manifest fix + publish). The system env var contract and chart injection (`SERVICE_ANNOUNCE_URL`, `SERVICE_ANNOUNCE_TOKEN`, `SERVICE_DOCUMENT_ID`, `SERVICE_PREFIX`) already exist in ph-clint + powerhouse-chart and need no changes.
 **Supersedes:** N/A — extends [`2026-04-28-clint-service-vetra-to-design.md`](./2026-04-28-clint-service-vetra-to-design.md)
 
 ## 1. Summary
@@ -39,29 +39,20 @@ A clint-project package is still a package in `state.packages[]`, and a CLINT se
 
 ## 5. Cross-repo prerequisites
 
-### 5.1 ph-clint
+### 5.1 System env var contract (already in place — no code changes)
 
-Define the announce-URL env var contract. The published library reads, in order:
+ph-clint's `core/announce.ts` already reads four env vars when announcing:
 
-1. `VETRA_SERVICE_ANNOUNCE_URL` — explicit URL for the announce endpoint. This is the new contract and the only one new agents should rely on.
-2. (fallback) Whatever derivation logic ph-clint uses today (likely from `VETRA_SWITCHBOARD_URL` or another already-injected var). Kept only so existing pods that haven't been redeployed since the env var injection lands continue to work; can be removed once all CLINT services have cycled at least once.
+- `SERVICE_ANNOUNCE_URL` — GraphQL endpoint where the agent posts its endpoints.
+- `SERVICE_ANNOUNCE_TOKEN` — bearer token, minted per-pod by `ensureClintAnnounceTokens` in `vetra-cloud-package/processors/vetra-cloud-environment/gitops.ts`.
+- `SERVICE_DOCUMENT_ID` — vetra cloud env doc id.
+- `SERVICE_PREFIX` — service prefix.
 
-Document the four system env vars (see §7) the platform guarantees on every CLINT pod. Update the ph-pirate-cli scaffold's `framework.ts`/`cli.ts` to consume `VETRA_SERVICE_ANNOUNCE_URL` rather than relying on a derived default.
+The `powerhouse-chart` template at `powerhouse-k8s-hosting/powerhouse-chart/templates/clint-deployment.yaml` already injects all four onto every CLINT pod, sourcing from the gitops `announce:` block. The agent is a no-op when any are missing.
 
-### 5.2 vetra-cloud-package — system env var injection
+This contract is documented here as the source of truth for the modal's read-only "System" section in §6.4.a, but no infrastructure changes are needed.
 
-Whatever component renders the k8s pod spec for a CLINT service (controller / processor / gitops template) must inject these env vars into the pod, computed per environment:
-
-- `VETRA_SERVICE_ANNOUNCE_URL` — see §7 for the canonical formula.
-- `VETRA_SERVICE_PREFIX` — the service prefix (e.g. `ph-pirate`).
-- `VETRA_TENANT_ID` — for scoping cross-subgraph calls.
-- `VETRA_ENV_DOCUMENT_ID` — the cloud-environment doc id, so observability can correlate.
-
-These are not part of `VetraCloudServiceClint.env[]` (which is user-managed config). They live in the gitops template as platform-injected env, evaluated at deploy time.
-
-User-supplied env vars (manifest `config[]` plus the modal's "Custom" block) are layered on top and may not reuse the `VETRA_*` prefix — the gitops layer rejects/ignores user-set vars whose names collide with the system set.
-
-### 5.3 vetra-cloud-package — ph-pirate-cli manifest fix
+### 5.2 vetra-cloud-package — ph-pirate-cli manifest fix
 
 `vetra-cloud-package/ph-pirate/ph-pirate-cli/powerhouse.manifest.json` currently has `"agent": false` and no `config` declarations. Before publishing:
 
@@ -71,7 +62,7 @@ User-supplied env vars (manifest `config[]` plus the modal's "Custom" block) are
    - `ANTHROPIC_API_KEY` — type `secret`, required true, description "Anthropic API key for the agent".
 3. Verify `serviceCommand: "ph-pirate"`, `serviceAnnouncement: true`, and `supportedResources` are intact.
 
-### 5.4 Publish ph-pirate-cli
+### 5.3 Publish ph-pirate-cli
 
 From `vetra-cloud-package/ph-pirate`, locally (not via CI):
 
@@ -116,7 +107,14 @@ The modal's env-var section is split into three visually distinct blocks. All th
 
 **a. System (auto-injected, read-only)**
 
-A non-editable `dl`-style list rendering the four `VETRA_*` vars defined in §5.2. Values shown as preview strings — for the announce URL, computed from the env's subdomain + base domain (matches the gitops injection logic). Help text below the list:
+A non-editable `dl`-style list rendering the four `SERVICE_*` vars from §5.1. Values shown as preview strings:
+
+- `SERVICE_ANNOUNCE_URL` — read from the env's `CLINT_ANNOUNCE_URL` (today the gitops emits a single value per deployment, defaulting to `https://admin-dev.vetra.io/graphql`). The modal can show this as a static informational string for v1; once the announce URL becomes per-environment, the modal switches to deriving from env state. **Open in §9.**
+- `SERVICE_ANNOUNCE_TOKEN` — masked as `••••••` with helper text "minted per-agent on first deploy".
+- `SERVICE_DOCUMENT_ID` — `environment.id`.
+- `SERVICE_PREFIX` — the prefix the user just entered above (live preview).
+
+Help text below the list:
 
 > These environment variables are set automatically by the platform when the agent runs. They are listed here so you can see what the agent will receive.
 
@@ -130,7 +128,7 @@ This block is hidden when `manifest.config` is empty or absent.
 
 Renders the existing `EnvVarsEditor` component. State stored separately from the manifest-declared block. Empty by default.
 
-Validation: at submit time, reject any custom var whose name collides with a `VETRA_*` system var or a manifest-declared var (inline error, focus the offending row).
+Validation: at submit time, reject any custom var whose name collides with a `SERVICE_*` system var, `NODE_OPTIONS`, or a manifest-declared var (inline error, focus the offending row). The chart already emits `NODE_OPTIONS` for V8 heap sizing; user overrides would be silently lost.
 
 ### 6.5 Submit flow
 
@@ -160,16 +158,16 @@ True atomicity is out of scope; if needed, a future v2 controller-side `installA
 
 ## 7. System env var contract (canonical reference)
 
-Reproduced for both ph-clint and vetra-cloud-package implementers:
+These are **already injected today** by `powerhouse-chart/templates/clint-deployment.yaml` from values produced by `vetra-cloud-package/processors/vetra-cloud-environment/gitops.ts`. Reproduced here for the modal's read-only display:
 
-| Var name                     | Source             | Computed as                                                                                    |
-| ---------------------------- | ------------------ | ---------------------------------------------------------------------------------------------- |
-| `VETRA_SERVICE_ANNOUNCE_URL` | gitops / processor | `https://switchboard.<subdomain>.<basedomain>/graphql` (announce mutation invoked at this URL) |
-| `VETRA_SERVICE_PREFIX`       | gitops / processor | `<service.prefix>`                                                                             |
-| `VETRA_TENANT_ID`            | gitops / processor | `<tenantId>` (subdomain-derived)                                                               |
-| `VETRA_ENV_DOCUMENT_ID`      | gitops / processor | `<environment.id>`                                                                             |
+| Var name                 | Source (today)               | Computed as                                                                                              |
+| ------------------------ | ---------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `SERVICE_ANNOUNCE_URL`   | gitops `announce.url`        | `process.env.CLINT_ANNOUNCE_URL` in the processor; default `https://admin-dev.vetra.io/graphql`          |
+| `SERVICE_ANNOUNCE_TOKEN` | gitops `announce.token`      | minted per-agent by `ensureClintAnnounceTokens` (random base64url, persisted in `clint_announce_tokens`) |
+| `SERVICE_DOCUMENT_ID`    | gitops `announce.documentId` | `environment.id`                                                                                         |
+| `SERVICE_PREFIX`         | gitops agent name            | `service.prefix`                                                                                         |
 
-ph-clint reads `VETRA_SERVICE_ANNOUNCE_URL` directly. The other three are available to user code but ph-clint does not depend on them. Names are reserved — user-set env vars matching `VETRA_*` are rejected (gitops side) and warned about (UI side).
+ph-clint's `core/announce.ts` reads all four; the agent is a no-op when any are missing. Names are reserved — the modal rejects user-set env vars matching `SERVICE_*` or `NODE_OPTIONS` to prevent shadowing.
 
 ## 8. UI changes outside the modal
 
@@ -211,23 +209,21 @@ The "Add Agent" button copy stays. Empty-state text in the Agents section can be
 
 ## 9. Open questions
 
-- **Announce mutation path** — the §7 table assumes the announce URL is the env's switchboard `/graphql` endpoint. Need to confirm with the observability subgraph owner that announces target switchboard's GraphQL (vs. a dedicated mutation endpoint). If different, update the table and the gitops template accordingly.
+- **Per-env announce URL** — today `CLINT_ANNOUNCE_URL` is one global value (`admin-dev.vetra.io/graphql` in dev) shared by every CLINT pod, regardless of environment. The receiving observability subgraph keys announcements by `(documentId, prefix)` so the global URL works fine. The modal therefore shows the announce URL as static informational copy in v1. If/when announce becomes per-env, the modal switches to deriving it from env state.
 - **`-cli` filter strictness** — should we hard-block names not matching `*-cli` from the search dropdown, or surface them with a "this looks unusual" warning? Spec assumes hard-block in the dropdown filter; manifest validation handles edge cases.
-- **Custom env var name reservation** — spec rejects user vars matching `VETRA_*`. Should we also reserve the manifest-declared names (so a user can't shadow a `config` entry via the Custom block)? Probably yes; cleanest is to reject any custom name that collides with system vars OR manifest-declared vars at submit time.
+- **Custom env var name reservation** — spec rejects user vars matching `SERVICE_*` and `NODE_OPTIONS`. Should we also reserve the manifest-declared names (so a user can't shadow a `config` entry via the Custom block)? Probably yes; cleanest is to reject any custom name that collides with system vars OR manifest-declared vars at submit time.
 
 ## 10. Implementation order
 
 This becomes the writing-plans input. Sketched here to validate scope:
 
-1. **vetra-cloud-package** — fix `ph-pirate-cli/powerhouse.manifest.json` (agent block + config entries). No code change.
-2. **vetra-cloud-package** — implement system env var injection in the gitops template / processor (§5.2).
-3. **ph-clint** — read `VETRA_SERVICE_ANNOUNCE_URL` with fallback (§5.1).
-4. **Publish** — `ph build && ph publish` for ph-pirate-cli to `registry.dev.vetra.io`.
-5. **vetra.to** — write `AddAgentModal`, replacing `EnableClintModal`. Reuse `PackageConfigForm`, `EnvVarsEditor`, `useRegistryPackages`, `useRegistryManifest`, `useRegistryVersions`, `applyConfigChanges`.
-6. **vetra.to** — wire `AddAgentModal` into `tabs/overview.tsx`. Pass `addPackage` + `enableService` through the submit handler.
-7. **vetra.to** — filter clint-project packages out of Reactor Modules section + cards (§8.1).
-8. **vetra.to** — system env var preview in the modal (§6.4.a). Pull computed values from the env state (subdomain, baseDomain, tenantId, env.id).
-9. **vetra.to** — tests: `add-agent-modal.test.tsx` covers the three-section layout, manifest validation, system env preview, submit ordering, and the failure-mode toasts. `tabs/overview.tsx` test covers the modules-section filter.
-10. **Validation** — install ph-pirate-cli end-to-end via the new modal in a dev environment. Confirm the agent boots, reads `VETRA_SERVICE_ANNOUNCE_URL`, and announces endpoints visible in `AgentCard`.
+1. **vetra-cloud-package** — fix `ph-pirate/ph-pirate-cli/powerhouse.manifest.json` (agent block + config entries). No code change.
+2. **Publish** — `pnpm publish:dev` from `vetra-cloud-package/ph-pirate` to `registry.dev.vetra.io`. Verify manifest fetch and search.
+3. **vetra.to** — write `AddAgentModal`, replacing `EnableClintModal`. Reuse `PackageConfigForm`, `EnvVarsEditor`, `useRegistryPackages`, `useRegistryManifest`, `useRegistryVersions`, `applyConfigChanges`.
+4. **vetra.to** — wire `AddAgentModal` into `tabs/overview.tsx`. Pass `addPackage` + `enableService` through the submit handler.
+5. **vetra.to** — filter clint-project packages out of Reactor Modules section + cards (§8.1).
+6. **vetra.to** — system env var preview in the modal (§6.4.a). Static for v1 per §9.
+7. **vetra.to** — tests: `add-agent-modal.test.tsx` covers the three-section layout, manifest validation, system env preview, submit ordering, and the failure-mode toasts. `tabs/overview.tsx` test covers the modules-section filter.
+8. **Validation** — install ph-pirate-cli end-to-end via the new modal in a dev environment. Confirm the agent boots, the chart-injected `SERVICE_ANNOUNCE_*` env vars are present, and announces appear in `AgentCard`.
 
-Steps 1–4 are blocking for step 10 but not for steps 5–9 (the UI can be built and tested against a mocked registry/manifest).
+Steps 1–2 are blocking for step 8 but not for steps 3–7 (the UI can be built and tested against a mocked registry/manifest).
