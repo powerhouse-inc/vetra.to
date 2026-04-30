@@ -33,6 +33,7 @@ import { PackageRow } from '@/modules/cloud/components/package-row'
 import { ServiceSizePopover } from '@/modules/cloud/components/service-size-popover'
 import { useClintPackages } from '@/modules/cloud/hooks/use-clint-packages'
 import { useClintRuntimeEndpoints } from '@/modules/cloud/hooks/use-clint-runtime-endpoints'
+import { partitionPackagesByManifestType } from '@/modules/cloud/lib/module-package-filter'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useOptimistic } from '@/modules/cloud/hooks/use-optimistic'
 import { usePackageUpdates } from '@/modules/cloud/hooks/use-package-updates'
@@ -796,10 +797,6 @@ export function OverviewTab({
 
   const state = environment.state
   const { updates: serviceUpdates } = useServiceUpdates(state.services)
-  const { updates: packageUpdates } = usePackageUpdates(
-    state.packages,
-    state.defaultPackageRegistry ?? null,
-  )
   const { clintPackages } = useClintPackages({
     registry: state.defaultPackageRegistry ?? null,
     packages: state.packages,
@@ -807,6 +804,14 @@ export function OverviewTab({
   const clintManifestsByName = useMemo(
     () => Object.fromEntries(clintPackages.map((p) => [p.package.name, p.manifest])),
     [clintPackages],
+  )
+  const { modules: modulePackages } = useMemo(
+    () => partitionPackagesByManifestType(state.packages, clintManifestsByName),
+    [state.packages, clintManifestsByName],
+  )
+  const { updates: packageUpdates } = usePackageUpdates(
+    modulePackages,
+    state.defaultPackageRegistry ?? null,
   )
   const { byPrefix: clintRuntimeEndpointsByPrefix } = useClintRuntimeEndpoints(
     subdomain,
@@ -1054,7 +1059,7 @@ export function OverviewTab({
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {state.packages.length > 0 ? (
+            {modulePackages.length > 0 ? (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -1064,7 +1069,7 @@ export function OverviewTab({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {state.packages.map((pkg) => (
+                  {modulePackages.map((pkg) => (
                     <PackageRow
                       key={pkg.name}
                       pkg={pkg}
@@ -1080,7 +1085,7 @@ export function OverviewTab({
             ) : (
               <div className="flex flex-col items-center justify-center gap-2 py-8">
                 <Package className="text-muted-foreground h-8 w-8" />
-                <p className="text-muted-foreground text-sm">No packages installed</p>
+                <p className="text-muted-foreground text-sm">No reactor modules installed</p>
               </div>
             )}
           </CardContent>
