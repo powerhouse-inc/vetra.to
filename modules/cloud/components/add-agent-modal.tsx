@@ -3,8 +3,8 @@
 import { Bot, Loader2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
-import { isAgentPackageName } from '@/modules/cloud/lib/agent-discovery'
-import { useRegistryPackages } from '@/modules/cloud/hooks/use-registry-search'
+import { isAgentPackageName, validateAgentManifest } from '@/modules/cloud/lib/agent-discovery'
+import { useRegistryManifest, useRegistryPackages } from '@/modules/cloud/hooks/use-registry-search'
 import type { CloudEnvironment, CloudPackage, CloudServiceClintConfig } from '@/modules/cloud/types'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
@@ -67,6 +67,20 @@ export function AddAgentModal({
     [packages],
   )
 
+  const { manifest, isLoading: manifestLoading } = useRegistryManifest(
+    registryUrl,
+    selectedPackage,
+    null, // version selected later in B.5
+  )
+  const validation = useMemo(
+    () => (selectedPackage ? validateAgentManifest(manifest) : null),
+    [selectedPackage, manifest],
+  )
+  const agentInfo =
+    validation?.ok && validation.manifest.features?.agent
+      ? validation.manifest.features.agent
+      : null
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
@@ -111,6 +125,41 @@ export function AddAgentModal({
               </CommandList>
             </Command>
           </div>
+          {selectedPackage && manifestLoading && (
+            <div className="text-muted-foreground flex items-center gap-2 text-xs">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Loading manifest…
+            </div>
+          )}
+          {validation && !validation.ok && validation.reason === 'not-clint' && (
+            <p className="text-destructive text-xs">
+              {"This package isn't a Powerhouse agent. Pick another or contact the package author."}
+            </p>
+          )}
+          {agentInfo && (
+            <div className="bg-muted/40 flex items-start gap-3 rounded-md border p-3">
+              <div className="bg-muted flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md">
+                {agentInfo.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={agentInfo.image}
+                    alt={agentInfo.name}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <Bot className="text-muted-foreground h-6 w-6" />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-medium">{agentInfo.name}</div>
+                {agentInfo.description && (
+                  <p className="text-muted-foreground mt-0.5 text-xs leading-relaxed">
+                    {agentInfo.description}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>

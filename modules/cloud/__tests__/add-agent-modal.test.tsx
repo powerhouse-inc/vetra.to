@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { AddAgentModal } from '@/modules/cloud/components/add-agent-modal'
 import type { CloudEnvironment } from '@/modules/cloud/types'
+import { useRegistryManifest, useRegistryPackages } from '@/modules/cloud/hooks/use-registry-search'
 
 vi.mock('@/modules/cloud/hooks/use-registry-search', () => ({
   useRegistryPackages: vi.fn(() => ({ packages: [], isLoading: false })),
@@ -69,5 +70,60 @@ describe('AddAgentModal', () => {
       />,
     )
     expect(screen.queryByText(/no agents found/i)).not.toBeNull()
+  })
+
+  it('renders manifest-not-clint error when type is wrong', () => {
+    vi.mocked(useRegistryPackages).mockReturnValue({
+      packages: [{ name: '@x/foo-cli', version: '1.0.0', description: null }],
+      isLoading: false,
+    })
+    vi.mocked(useRegistryManifest).mockReturnValue({
+      manifest: { name: '@x/foo-cli', type: 'doc-model' },
+      isLoading: false,
+      error: null,
+    })
+    render(
+      <AddAgentModal
+        open
+        onOpenChange={() => {}}
+        env={fakeEnv}
+        registryUrl="https://registry.dev.vetra.io"
+        tenantId={null}
+        installedPackages={[]}
+        onSubmit={async () => {}}
+        defaultSelectedPackage="@x/foo-cli"
+      />,
+    )
+    expect(screen.queryByText(/isn['']t a powerhouse agent/i)).not.toBeNull()
+  })
+
+  it('renders agent preview when manifest is clint-project', () => {
+    vi.mocked(useRegistryPackages).mockReturnValue({
+      packages: [{ name: '@x/foo-cli', version: '1.0.0', description: null }],
+      isLoading: false,
+    })
+    vi.mocked(useRegistryManifest).mockReturnValue({
+      manifest: {
+        name: '@x/foo-cli',
+        type: 'clint-project',
+        features: { agent: { id: 'foo', name: 'Foo Agent', description: 'does foo' } },
+      },
+      isLoading: false,
+      error: null,
+    })
+    render(
+      <AddAgentModal
+        open
+        onOpenChange={() => {}}
+        env={fakeEnv}
+        registryUrl="https://registry.dev.vetra.io"
+        tenantId={null}
+        installedPackages={[]}
+        onSubmit={async () => {}}
+        defaultSelectedPackage="@x/foo-cli"
+      />,
+    )
+    expect(screen.queryByText('Foo Agent')).not.toBeNull()
+    expect(screen.queryByText('does foo')).not.toBeNull()
   })
 })
