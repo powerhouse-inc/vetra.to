@@ -200,7 +200,20 @@ export function useEnvironmentDetail(documentId: string) {
   )
   const enableService = useCallback(
     (type: CloudEnvironmentServiceType, prefix: string, clintConfig?: CloudServiceClintConfig) =>
-      mutate((c) => c.enableService({ type, prefix, clintConfig })),
+      mutate((c) =>
+        c.enableService({
+          type,
+          prefix,
+          clintConfig,
+          // gitops.readServiceSize reads top-level selectedRessource first
+          // and falls back to clintConfig.selectedRessource only as a
+          // legacy transition path. The reducer always populates the
+          // top-level field (defaulting to VETRA_AGENT_S when absent),
+          // so the user's CLINT picker choice is silently overridden
+          // unless we lift it here.
+          selectedRessource: clintConfig?.selectedRessource ?? undefined,
+        }),
+      ),
     [mutate],
   )
   const disableService = useCallback(
