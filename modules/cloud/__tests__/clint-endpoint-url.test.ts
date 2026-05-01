@@ -58,4 +58,26 @@ describe('composeClintEndpointUrl', () => {
     })
     expect(url).toBe('https://rupert.demo.vetra.io/agent-graphql')
   })
+
+  it('does not double the slash when endpoint.id is a proxy path', () => {
+    const url = composeClintEndpointUrl({
+      serviceUrl: null,
+      prefix: 'ph-pirate-wouter',
+      genericSubdomain: 'sure-fawn-71',
+      genericBaseDomain: 'vetra.io',
+      endpoint: { id: '/switchboard/graphql' },
+    })
+    expect(url).toBe('https://ph-pirate-wouter.sure-fawn-71.vetra.io/switchboard/graphql')
+  })
+
+  it('does not double the slash when service.url is provided and id is a path', () => {
+    const url = composeClintEndpointUrl({
+      serviceUrl: 'https://ph-pirate-wouter.sure-fawn-71.vetra.io/',
+      prefix: 'ph-pirate-wouter',
+      genericSubdomain: 'sure-fawn-71',
+      genericBaseDomain: 'vetra.io',
+      endpoint: { id: '/switchboard/mcp' },
+    })
+    expect(url).toBe('https://ph-pirate-wouter.sure-fawn-71.vetra.io/switchboard/mcp')
+  })
 })

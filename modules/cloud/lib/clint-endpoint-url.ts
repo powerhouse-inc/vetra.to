@@ -10,10 +10,14 @@ export type ComposeClintEndpointUrlInput = {
 
 export function composeClintEndpointUrl(input: ComposeClintEndpointUrlInput): string {
   const { serviceUrl, prefix, genericSubdomain, genericBaseDomain, endpoint } = input
+  // The pull-worker stores endpoint.id as the proxy path prefix
+  // (e.g. "/switchboard/graphql"), so it already starts with "/".
+  // Use it verbatim — joining with "/" would produce "//".
+  const id = endpoint.id.startsWith('/') ? endpoint.id : `/${endpoint.id}`
   if (serviceUrl) {
-    return `${serviceUrl.replace(/\/$/, '')}/${endpoint.id}`
+    return `${serviceUrl.replace(/\/$/, '')}${id}`
   }
   const sub = genericSubdomain ?? '<subdomain>'
   const base = genericBaseDomain ?? 'vetra.io'
-  return `https://${prefix}.${sub}.${base}/${endpoint.id}`
+  return `https://${prefix}.${sub}.${base}${id}`
 }

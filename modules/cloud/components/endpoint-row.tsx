@@ -46,7 +46,14 @@ export function EndpointRow({ endpoint, url, checked, onCheckedChange, disabled 
       </div>
       {endpoint.type === 'api-graphql' && (
         <Button variant="outline" size="sm" asChild>
-          <a href={`${url}/graphql`} target="_blank" rel="noopener noreferrer">
+          {/* Path-style endpoint ids (e.g. "/switchboard/graphql") already
+              point at the GraphQL route. Only suffix /graphql for legacy
+              opaque ids that don't include the path themselves. */}
+          <a
+            href={endpoint.id.includes('/graphql') ? url : `${url}/graphql`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
             Playground
           </a>
