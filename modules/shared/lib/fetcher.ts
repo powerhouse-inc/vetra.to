@@ -20,6 +20,11 @@ export const switchboardFetcher = <TData, TVariables>(
   )
 }
 
+type GraphQLResponse<TData> = {
+  data?: TData
+  errors?: Array<{ message?: string }>
+}
+
 const graphqlFetcher = <TData, TVariables>(
   url: string,
   query: string,
@@ -39,14 +44,12 @@ const graphqlFetcher = <TData, TVariables>(
       cache,
     })
 
-    const json = await res.json()
+    const json = (await res.json()) as GraphQLResponse<TData>
 
-    if (json.errors) {
-      const { message } = json.errors[0]
-
-      throw new Error(message)
+    if (json.errors?.length) {
+      throw new Error(json.errors[0].message ?? 'GraphQL error')
     }
 
-    return json.data
+    return json.data as TData
   }
 }

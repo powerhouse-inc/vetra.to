@@ -1,16 +1,11 @@
 'use client'
 
-import { Copy, Plus, User } from 'lucide-react'
+import { Copy, User } from 'lucide-react'
 import React from 'react'
 
-import {
-  StripedCard,
-  StripedCardContent,
-  StripedCardHeader,
-  StripedCardTitle,
-} from '@/modules/shared/components/striped-card/striped-card'
 import RenownSvg from '@/modules/shared/components/svgs/renown.svg'
 import { Avatar, AvatarFallback, AvatarImage } from '@/modules/shared/components/ui/avatar'
+import { Card, CardContent } from '@/modules/shared/components/ui/card'
 import { cn } from '@/modules/shared/lib/utils'
 
 interface TeamMember {
@@ -47,7 +42,6 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
   // Generate a name from eth address if not provided
   const getDisplayName = (member: TeamMember) => {
     if (member.name) return member.name
-    // Use first part of eth address as display name
     return member.ethAddress?.slice(2, 8) || member.id.slice(0, 6)
   }
 
@@ -65,80 +59,50 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
   }
 
   return (
-    <StripedCard className={cn('w-full', className)}>
-      <StripedCardHeader>
-        <StripedCardTitle className="text-center">Team Members</StripedCardTitle>
-      </StripedCardHeader>
-      <StripedCardContent>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
-          {members.map((member) => (
-            <StripedCard
-              key={member.id}
-              className="flex flex-col items-center space-y-4 text-center transition-shadow hover:shadow-md"
-            >
-              <StripedCardHeader className="w-full">
-                <StripedCardTitle className="text-center">
-                  {getDisplayName(member)}
-                </StripedCardTitle>
-              </StripedCardHeader>
-              <StripedCardContent className="flex flex-col items-center space-y-4">
-                {/* Avatar */}
-                <Avatar className="size-16">
-                  {member.avatar && (
-                    <AvatarImage src={member.avatar} alt={getDisplayName(member)} />
-                  )}
-                  <AvatarFallback>
-                    <User className="text-muted-foreground size-8" />
-                  </AvatarFallback>
-                </Avatar>
+    <div className={cn('grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3', className)}>
+      {members.map((member) => (
+        <Card key={member.id} className="transition-shadow hover:shadow-md">
+          <CardContent className="flex items-center gap-4 p-5">
+            {/* Avatar */}
+            <Avatar className="size-12 flex-shrink-0">
+              {member.avatar && <AvatarImage src={member.avatar} alt={getDisplayName(member)} />}
+              <AvatarFallback>
+                <User className="text-foreground-70 size-6" />
+              </AvatarFallback>
+            </Avatar>
 
-                {/* ETH Address with Copy Icon */}
-                <div className="flex items-center gap-2">
-                  <p className="text-muted-foreground text-sm">{getDisplayEthAddress(member)}</p>
-                  <Copy
-                    className="size-4 cursor-pointer hover:text-gray-700"
-                    onClick={(e) => copyToClipboard(member.ethAddress, e)}
-                  />
-                </div>
+            {/* Info */}
+            <div className="min-w-0 flex-1">
+              <h4 className="truncate font-semibold">{getDisplayName(member)}</h4>
+              <p className="text-foreground-70 text-sm">{member.role || 'Developer'}</p>
 
-                {/* Role with Icon */}
-                <div className="flex items-center gap-2">
-                  <User className="text-muted-foreground size-4" />
-                  <p className="text-sm">{member.role || 'Developer'}</p>
-                </div>
-
-                {/* Renown Button */}
-                {member.isRenown && member.phid && (
-                  <div className="mt-2">
-                    <a
-                      href={`https://renown-staging.vetra.io/profile/${member.phid}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-foreground flex items-center justify-center gap-2 rounded px-4 py-2 transition-opacity hover:opacity-80"
-                    >
-                      <RenownSvg className="" />
-                    </a>
-                  </div>
-                )}
-              </StripedCardContent>
-            </StripedCard>
-          ))}
-
-          {/* Spare Card - Add New Member */}
-          <StripedCard className="flex cursor-pointer flex-col items-center justify-center space-y-4 border-2 border-dashed border-gray-300 text-center transition-all hover:border-gray-400">
-            <StripedCardHeader className="w-full">
-              <StripedCardTitle className="text-center">Add Member</StripedCardTitle>
-            </StripedCardHeader>
-            <StripedCardContent className="flex h-50 flex-col items-center space-y-3 pt-10">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200">
-                <Plus className="h-8 w-8 text-gray-500" />
+              {/* ETH Address */}
+              <div className="mt-1 flex items-center gap-1.5">
+                <span className="text-foreground-70 font-mono text-xs">
+                  {getDisplayEthAddress(member)}
+                </span>
+                <Copy
+                  className="text-foreground-70 hover:text-foreground size-3 cursor-pointer transition-colors"
+                  onClick={(e) => copyToClipboard(member.ethAddress, e)}
+                />
               </div>
-              <p className="text-sm text-gray-500">Invite a new team member</p>
-            </StripedCardContent>
-          </StripedCard>
-        </div>
-      </StripedCardContent>
-    </StripedCard>
+            </div>
+
+            {/* Renown Link */}
+            {member.isRenown && member.phid && (
+              <a
+                href={`${process.env.NEXT_PUBLIC_RENOWN_URL}/profile/${member.phid}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 transition-opacity hover:opacity-80"
+              >
+                <RenownSvg />
+              </a>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   )
 }
 

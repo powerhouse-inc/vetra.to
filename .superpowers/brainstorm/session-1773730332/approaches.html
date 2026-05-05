@@ -1,0 +1,122 @@
+<h2>Vetra UI Overhaul — 3 Approaches</h2>
+<p class="subtitle">How should we structure this mega-redesign across all 4 workstreams?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Design System First, Then Pages</h3>
+      <p>
+        <strong>Recommended.</strong> Start by aligning globals.css + Tailwind tokens to the design
+        system (colors, typography, spacing, borders). Then rebuild pages on top of the updated
+        foundation.
+      </p>
+      <div
+        style="
+          margin-top: 12px;
+          padding: 12px;
+          background: rgba(4, 193, 97, 0.08);
+          border-radius: 8px;
+          font-size: 13px;
+        "
+      >
+        <strong>Order:</strong><br />
+        1. Design tokens & globals.css alignment<br />
+        2. Shared components (Navbar, Footer, Cards)<br />
+        3. Homepage rebuild (from design system landing template + Framer content)<br />
+        4. Cloud landing page rebuild<br />
+        5. Cloud management pages UX rethink<br />
+        6. Builder pages rethink (listing + profiles)<br />
+        7. Remove Framer rewrites
+      </div>
+      <div style="margin-top: 8px">
+        <strong style="color: #04c161">Pros:</strong> Every page benefits from the token work. No
+        rework. Clean dependency chain.<br />
+        <strong style="color: #ea4335">Cons:</strong> Slower to see full-page results. Token work
+        isn't flashy.
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Homepage First, Pull Tokens As Needed</h3>
+      <p>
+        Start with the most visible page — the homepage. Extract tokens from the design system as
+        you go, let the design system alignment emerge organically from building real pages.
+      </p>
+      <div
+        style="
+          margin-top: 12px;
+          padding: 12px;
+          background: rgba(50, 157, 255, 0.08);
+          border-radius: 8px;
+          font-size: 13px;
+        "
+      >
+        <strong>Order:</strong><br />
+        1. Homepage rebuild (tokens extracted inline)<br />
+        2. Cloud landing page rebuild<br />
+        3. Consolidate tokens into globals.css<br />
+        4. Cloud management pages<br />
+        5. Builder pages<br />
+        6. Polish pass across all pages
+      </div>
+      <div style="margin-top: 8px">
+        <strong style="color: #04c161">Pros:</strong> Fastest to a "wow" moment. Homepage drives
+        token decisions with real context.<br />
+        <strong style="color: #ea4335">Cons:</strong> Risk of inconsistency. Needs a consolidation
+        pass later. May duplicate token work.
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Parallel Tracks with Merge</h3>
+      <p>
+        Split into two parallel tracks: one person does tokens + shared components, another does
+        page layouts. Merge at the end.
+      </p>
+      <div
+        style="
+          margin-top: 12px;
+          padding: 12px;
+          background: rgba(142, 85, 234, 0.08);
+          border-radius: 8px;
+          font-size: 13px;
+        "
+      >
+        <strong>Track A:</strong> Design tokens → Shared components → Navbar/Footer<br />
+        <strong>Track B:</strong> Homepage layout → Cloud landing → Cloud mgmt → Builders<br />
+        <strong>Merge:</strong> Apply tokens to Track B pages
+      </div>
+      <div style="margin-top: 8px">
+        <strong style="color: #04c161">Pros:</strong> Fastest overall if you have parallelism. Both
+        tracks make progress simultaneously.<br />
+        <strong style="color: #ea4335">Cons:</strong> Merge conflicts. Track B may build on wrong
+        assumptions. Coordination overhead.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  style="
+    margin-top: 24px;
+    padding: 16px;
+    border: 1px solid var(--border, #d7d8d9);
+    border-radius: 12px;
+    background: var(--card, #fff);
+  "
+>
+  <h3 style="margin-bottom: 8px">My Recommendation: Approach A</h3>
+  <p style="font-size: 14px; opacity: 0.8">
+    The design system is comprehensive and well-defined. Building on solid tokens means every page
+    we touch automatically looks right. The Framer content is already captured — we have all the
+    copy, sections, and visual structure. The design system even has a landing page template we can
+    adapt. This is the cleanest path.
+  </p>
+</div>

@@ -1,24 +1,58 @@
-// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+// @ts-check
+
+import eslint from '@eslint/js'
+import { defineConfig, globalIgnores } from 'eslint/config'
+import tseslint from 'typescript-eslint'
+import nextVitals from 'eslint-config-next/core-web-vitals'
+import nextTs from 'eslint-config-next/typescript'
+import prettier from 'eslint-config-prettier/flat'
 import storybook from 'eslint-plugin-storybook'
 
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
-import { FlatCompat } from '@eslint/eslintrc'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-})
-
-const eslintConfig = [
+export default defineConfig(
+  eslint.configs.recommended,
+  tseslint.configs.recommendedTypeChecked,
+  ...nextVitals,
+  ...nextTs,
+  ...storybook.configs['flat/recommended'],
   {
-    ignores: ['modules/__generated__/**'],
+    languageOptions: {
+      parserOptions: {
+        projectService: {
+          allowDefaultProject: ['tests/*', '.storybook/*'],
+        },
+      },
+    },
   },
-  ...compat.extends('next/core-web-vitals', 'next/typescript', 'plugin:prettier/recommended'),
+  globalIgnores([
+    'eslint.config.mjs',
+    'playwright.config.ts',
+    'postcss.config.mjs',
+    'tailwind.config.js',
+    'modules/__generated__/**',
+    '.next/**',
+    'out/**',
+    'build/**',
+    'next-env.d.ts',
+  ]),
+  prettier,
   {
     rules: {
+      'prefer-const': 'warn',
+      'react-hooks/purity': 'warn',
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/refs': 'warn',
+      '@typescript-eslint/require-await': 'warn',
+      '@typescript-eslint/await-thenable': 'warn',
+      '@typescript-eslint/no-misused-promises': 'warn',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
+      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'warn',
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-expressions': 'warn',
       '@typescript-eslint/consistent-type-imports': [
         'error',
         {
@@ -27,23 +61,6 @@ const eslintConfig = [
           fixStyle: 'inline-type-imports',
         },
       ],
-      'import/order': [
-        'error',
-        {
-          groups: ['builtin', 'external', 'parent', 'sibling', 'index', 'object', 'type'],
-          pathGroups: [
-            {
-              pattern: '@/**/**',
-              group: 'parent',
-              position: 'before',
-            },
-          ],
-          alphabetize: { order: 'asc' },
-        },
-      ],
     },
   },
-  ...storybook.configs['flat/recommended'],
-]
-
-export default eslintConfig
+)

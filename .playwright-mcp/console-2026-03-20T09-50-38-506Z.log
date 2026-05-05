@@ -1,0 +1,14 @@
+[     414ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ https://staging.vetra.io/_next/static/chunks/1af3a1eabe0f6390.js:0
+[     894ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ https://staging.vetra.io/_next/static/chunks/3d60f73c26f083de.js:0
+[     894ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ https://staging.vetra.io/_next/static/chunks/3d60f73c26f083de.js:0
+[    1288ms] TypeError: (0 , rU.jsxDEV) is not a function
+    at PQ (https://staging.vetra.io/_next/static/chunks/3d60f73c26f083de.js:1:1977670)
+    at l8 (https://staging.vetra.io/_next/static/chunks/5c17313588ed9e42.js:1:59455)
+    at o_ (https://staging.vetra.io/_next/static/chunks/5c17313588ed9e42.js:1:78860)
+    at o$ (https://staging.vetra.io/_next/static/chunks/5c17313588ed9e42.js:1:89030)
+    at ig (https://staging.vetra.io/_next/static/chunks/5c17313588ed9e42.js:1:122559)
+    at https://staging.vetra.io/_next/static/chunks/5c17313588ed9e42.js:1:122404
+    at ih (https://staging.vetra.io/_next/static/chunks/5c17313588ed9e42.js:1:122412)
+    at ir (https://staging.vetra.io/_next/static/chunks/5c17313588ed9e42.js:1:119495)
+    at iW (https://staging.vetra.io/_next/static/chunks/5c17313588ed9e42.js:1:140805)
+    at MessagePort.T (https://staging.vetra.io/_next/static/chunks/5c17313588ed9e42.js:1:6514)

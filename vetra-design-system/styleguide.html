@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vetra Styleguide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="colors.css" />
+    <link rel="stylesheet" href="typography.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background: var(--background);
+        color: var(--foreground);
+        padding: 48px;
+        transition:
+          background 0.3s,
+          color 0.3s;
+      }
+
+      .styleguide {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* Header */
+      .sg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 64px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid var(--border);
+      }
+      .sg-header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .sg-header-title {
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--muted-foreground);
+      }
+
+      /* Theme toggle */
+      .theme-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--foreground-70);
+        cursor: pointer;
+        user-select: none;
+      }
+      .theme-toggle input {
+        display: none;
+      }
+      .toggle-track {
+        width: 44px;
+        height: 24px;
+        background: var(--muted);
+        border-radius: 12px;
+        position: relative;
+        transition: background 0.2s;
+      }
+      .toggle-track::after {
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+        background: var(--primary);
+        border-radius: 50%;
+        transition: transform 0.2s;
+      }
+      .theme-toggle input:checked + .toggle-track {
+        background: var(--accent);
+      }
+      .theme-toggle input:checked + .toggle-track::after {
+        transform: translateX(20px);
+      }
+
+      /* Sections */
+      .sg-section {
+        margin-bottom: 64px;
+      }
+      .sg-section-title {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: var(--primary);
+        margin-bottom: 32px;
+      }
+
+      /* Logo section */
+      .logo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 24px;
+      }
+      .logo-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        transition:
+          background 0.3s,
+          border-color 0.3s;
+      }
+      .logo-card img {
+        max-width: 100%;
+        height: 48px;
+        object-fit: contain;
+      }
+      .logo-card .logo-light {
+        display: block;
+      }
+      .logo-card .logo-dark {
+        display: none;
+      }
+      .dark .logo-card .logo-light {
+        display: none;
+      }
+      .dark .logo-card .logo-dark {
+        display: block;
+      }
+      .logo-label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--muted-foreground);
+      }
+
+      /* Color palette */
+      .color-group-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--foreground);
+        margin-bottom: 12px;
+        margin-top: 24px;
+      }
+      .color-group-title:first-child {
+        margin-top: 0;
+      }
+      .color-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+      }
+      .color-swatch {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        transition: border-color 0.3s;
+      }
+      .color-swatch-preview {
+        height: 72px;
+        position: relative;
+      }
+      .color-swatch-info {
+        padding: 10px 12px;
+        background: var(--card);
+        transition: background 0.3s;
+      }
+      .color-swatch-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--foreground);
+        margin-bottom: 2px;
+      }
+      .color-swatch-value {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--muted-foreground);
+        font-family: 'Inter', monospace;
+      }
+
+      /* Typography section */
+      .type-row {
+        display: flex;
+        align-items: baseline;
+        gap: 32px;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--border);
+        transition: border-color 0.3s;
+      }
+      .type-row:last-child {
+        border-bottom: none;
+      }
+      .type-label {
+        width: 100px;
+        flex-shrink: 0;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .type-sample {
+        flex: 1;
+        color: var(--foreground);
+      }
+      .type-meta {
+        width: 200px;
+        flex-shrink: 0;
+        font-size: 12px;
+        color: var(--muted-foreground);
+        line-height: 1.6;
+        text-align: right;
+      }
+
+      /* Status colors */
+      .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+      }
+      .status-pill {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      /* Buttons */
+      .button-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .btn:hover {
+        opacity: 0.85;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: var(--primary-foreground);
+      }
+      .btn-secondary {
+        background: var(--secondary);
+        color: var(--secondary-foreground);
+      }
+      .btn-destructive {
+        background: var(--destructive);
+        color: var(--destructive-foreground);
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--foreground);
+        border: 1px solid var(--border);
+      }
+      .btn-muted {
+        background: var(--muted);
+        color: var(--foreground);
+      }
+
+      /* Cards demo */
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+      }
+      .demo-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px;
+        transition:
+          background 0.3s,
+          border-color 0.3s;
+      }
+      .demo-card h4 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--card-foreground);
+      }
+      .demo-card p {
+        font-size: 14px;
+        color: var(--card-foreground-50);
+        line-height: 1.6;
+        margin-bottom: 16px;
+      }
+      .demo-card .tag {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: var(--primary-30);
+        color: var(--primary);
+      }
+
+      /* Input demo */
+      .input-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+      }
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .input-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--foreground);
+      }
+      .input-field {
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--input);
+        color: var(--foreground);
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        outline: none;
+        width: 240px;
+        transition:
+          border-color 0.2s,
+          background 0.3s;
+      }
+      .input-field:focus {
+        border-color: var(--ring);
+      }
+      .input-field::placeholder {
+        color: var(--muted-foreground);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="styleguide">
+      <!-- Header -->
+      <header class="sg-header">
+        <div class="sg-header-left">
+          <img src="logos/vetra-icon.svg" alt="Vetra" height="36" />
+          <img
+            src="logos/vetra-logo-light-text.svg"
+            alt="Vetra"
+            height="24"
+            class="logo-light-mode"
+          />
+          <img
+            src="logos/vetra-logo-dark-text.svg"
+            alt="Vetra"
+            height="24"
+            class="logo-dark-mode"
+            style="display: none"
+          />
+          <span class="sg-header-title">Styleguide</span>
+        </div>
+        <label class="theme-toggle">
+          <span>Light</span>
+          <input type="checkbox" id="themeSwitch" />
+          <span class="toggle-track"></span>
+          <span>Dark</span>
+        </label>
+      </header>
+
+      <!-- Logos -->
+      <section class="sg-section">
+        <h2 class="sg-section-title">Logo</h2>
+        <div class="logo-grid">
+          <div class="logo-card">
+            <img src="logos/vetra-icon.svg" alt="Vetra Icon" />
+            <span class="logo-label">Icon (Colored)</span>
+          </div>
+          <div class="logo-card">
+            <img
+              src="logos/vetra-full-logo.svg"
+              alt="Full Logo"
+              style="height: 32px"
+              class="logo-light"
+            />
+            <img
+              src="logos/vetra-full-logo-light.svg"
+              alt="Full Logo Light"
+              style="height: 32px"
+              class="logo-dark"
+            />
+            <span class="logo-label">Full Logo</span>
+          </div>
+          <div class="logo-card" style="background: #04c161; border-color: #04c161">
+            <img src="logos/vetra-full-logo-white.svg" alt="Full Logo White" style="height: 32px" />
+            <span class="logo-label" style="color: rgba(255, 255, 255, 0.6)"
+              >Full Logo - Primary BG</span
+            >
+          </div>
+          <div class="logo-card">
+            <img
+              src="logos/vetra-logo-light-text.svg"
+              alt="Vetra Wordmark Dark"
+              class="logo-light"
+            />
+            <img
+              src="logos/vetra-logo-dark-text.svg"
+              alt="Vetra Wordmark Light"
+              class="logo-dark"
+            />
+            <span class="logo-label">Wordmark</span>
+          </div>
+          <div class="logo-card">
+            <img src="logos/vetra-icon-black.svg" alt="Vetra Icon Black" class="logo-light" />
+            <img src="logos/vetra-icon-dark.svg" alt="Vetra Icon White" class="logo-dark" />
+            <span class="logo-label logo-light">Icon (Black)</span>
+            <span class="logo-label logo-dark">Icon (White)</span>
+          </div>
+          <div class="logo-card">
+            <img
+              src="logos/vetra-full-logo-black.svg"
+              alt="Full Logo Black"
+              style="height: 32px"
+              class="logo-light"
+            />
+            <img
+              src="logos/vetra-full-logo-white.svg"
+              alt="Full Logo White"
+              style="height: 32px"
+              class="logo-dark"
+            />
+            <span class="logo-label logo-light">Full Logo (Black)</span>
+            <span class="logo-label logo-dark">Full Logo (White)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Color Palette -->
+      <section class="sg-section">
+        <h2 class="sg-section-title">Color Palette</h2>
+
+        <h3 class="color-group-title">Core</h3>
+        <div class="color-grid">
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--primary)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Primary</div>
+              <div class="color-swatch-value">#04C161</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--primary-30)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Primary 30%</div>
+              <div class="color-swatch-value">rgba(4,193,97,0.3)</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--secondary)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Secondary</div>
+              <div class="color-swatch-value" data-light="#F4F4F4" data-dark="#4F596F">#F4F4F4</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--accent)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Accent</div>
+              <div class="color-swatch-value" data-light="#F3F5F7" data-dark="#373E4D">#F3F5F7</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="color-group-title">Surfaces</h3>
+        <div class="color-grid">
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--background)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Background</div>
+              <div class="color-swatch-value" data-light="#FCFCFC" data-dark="#1B1E24">#FCFCFC</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--card)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Card</div>
+              <div class="color-swatch-value" data-light="#FCFCFC" data-dark="#252A34">#FCFCFC</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--popover)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Popover</div>
+              <div class="color-swatch-value" data-light="#FFFFFF" data-dark="#1E222B">#FFFFFF</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--muted)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Muted</div>
+              <div class="color-swatch-value" data-light="#EFEFEF" data-dark="#343839">#EFEFEF</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div
+              class="color-swatch-preview"
+              style="background: var(--input); border: 1px solid var(--border)"
+            ></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Input</div>
+              <div class="color-swatch-value" data-light="#FFFFFF" data-dark="#1B1E24">#FFFFFF</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--border)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Border</div>
+              <div class="color-swatch-value" data-light="#D7D8D9" data-dark="#485265">#D7D8D9</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="color-group-title">Text</h3>
+        <div class="color-grid">
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--foreground)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Foreground</div>
+              <div class="color-swatch-value" data-light="#343839" data-dark="#FCFCFC">#343839</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--foreground-70)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Foreground 70%</div>
+              <div class="color-swatch-value">50% opacity</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--foreground-50)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Foreground 50%</div>
+              <div class="color-swatch-value">30% opacity</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--muted-foreground)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Muted FG</div>
+              <div class="color-swatch-value" data-light="#9EA0A1" data-dark="#6C7275">#9EA0A1</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="color-group-title">Semantic</h3>
+        <div class="color-grid">
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--destructive)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Destructive</div>
+              <div class="color-swatch-value">#EA4335</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--success)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Success</div>
+              <div class="color-swatch-value">#4FC86F</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--progress)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Progress</div>
+              <div class="color-swatch-value">#329DFF</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--todo)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">To Do</div>
+              <div class="color-swatch-value">#FFA132</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--yellow)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Yellow</div>
+              <div class="color-swatch-value">#FAC400</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--purple)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Purple</div>
+              <div class="color-swatch-value">#8E55EA</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Typography -->
+      <section class="sg-section">
+        <h2 class="sg-section-title">Typography</h2>
+        <div class="type-row">
+          <span class="type-label">H1</span>
+          <span class="type-sample" style="font-size: 64px; font-weight: 700; line-height: 1.2"
+            >Almost before</span
+          >
+          <span class="type-meta">64px / 700<br />line-height: 1.2</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">H2</span>
+          <span class="type-sample" style="font-size: 40px; font-weight: 700; line-height: 1.2"
+            >Almost before we knew</span
+          >
+          <span class="type-meta">40px / 700<br />line-height: 1.2</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">H3</span>
+          <span class="type-sample" style="font-size: 32px; font-weight: 700; line-height: 1.2"
+            >Almost before we knew it</span
+          >
+          <span class="type-meta">32px / 700<br />line-height: 1.2</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">H4</span>
+          <span class="type-sample" style="font-size: 24px; font-weight: 700; line-height: 1.2"
+            >Almost before we knew it, we had</span
+          >
+          <span class="type-meta">24px / 700<br />line-height: 1.2</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">H5</span>
+          <span class="type-sample" style="font-size: 20px; font-weight: 700; line-height: 1.2"
+            >Almost before we knew it, we had left the ground</span
+          >
+          <span class="type-meta">20px / 700<br />line-height: 1.2</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">H6</span>
+          <span class="type-sample" style="font-size: 18px; font-weight: 700; line-height: 1.2"
+            >Almost before we knew it, we had left the ground</span
+          >
+          <span class="type-meta">18px / 700<br />line-height: 1.2</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">Subtitle 1</span>
+          <span class="type-sample" style="font-size: 16px; font-weight: 600; line-height: 24px"
+            >Almost before we knew it, we had left the ground.</span
+          >
+          <span class="type-meta">16px / 600<br />line-height: 24px</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">Subtitle 2</span>
+          <span class="type-sample" style="font-size: 14px; font-weight: 600; line-height: 22px"
+            >Almost before we knew it, we had left the ground.</span
+          >
+          <span class="type-meta">14px / 600<br />line-height: 22px</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">Body</span>
+          <span class="type-sample" style="font-size: 16px; font-weight: 400; line-height: 24px"
+            >Almost before we knew it, we had left the ground.</span
+          >
+          <span class="type-meta">16px / 400<br />line-height: 24px</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">Small</span>
+          <span class="type-sample" style="font-size: 14px; font-weight: 400; line-height: 22px"
+            >Almost before we knew it, we had left the ground.</span
+          >
+          <span class="type-meta">14px / 400<br />line-height: 22px</span>
+        </div>
+        <div class="type-row">
+          <span class="type-label">Caption</span>
+          <span class="type-sample" style="font-size: 12px; font-weight: 500; line-height: 18px"
+            >Almost before we knew it, we had left the ground.</span
+          >
+          <span class="type-meta">12px / 500<br />line-height: 18px</span>
+        </div>
+      </section>
+
+      <!-- Status Colors -->
+      <section class="sg-section">
+        <h2 class="sg-section-title">Status Indicators</h2>
+        <div class="status-grid">
+          <div class="status-pill" style="background: var(--success-30); color: var(--success)">
+            <span class="status-dot" style="background: var(--success)"></span> Success
+          </div>
+          <div class="status-pill" style="background: var(--progress-30); color: var(--progress)">
+            <span class="status-dot" style="background: var(--progress)"></span> In Progress
+          </div>
+          <div class="status-pill" style="background: var(--todo-30); color: var(--todo)">
+            <span class="status-dot" style="background: var(--todo)"></span> To Do
+          </div>
+          <div
+            class="status-pill"
+            style="background: var(--destructive-30); color: var(--destructive)"
+          >
+            <span class="status-dot" style="background: var(--destructive)"></span> Error
+          </div>
+          <div class="status-pill" style="background: var(--yellow-30); color: #b08a00">
+            <span class="status-dot" style="background: var(--yellow)"></span> Warning
+          </div>
+          <div class="status-pill" style="background: var(--purple-30); color: var(--purple)">
+            <span class="status-dot" style="background: var(--purple)"></span> Info
+          </div>
+        </div>
+      </section>
+
+      <!-- Buttons -->
+      <section class="sg-section">
+        <h2 class="sg-section-title">Buttons</h2>
+        <div class="button-row">
+          <button class="btn btn-primary">Primary</button>
+          <button class="btn btn-secondary">Secondary</button>
+          <button class="btn btn-destructive">Destructive</button>
+          <button class="btn btn-outline">Outline</button>
+          <button class="btn btn-muted">Muted</button>
+        </div>
+      </section>
+
+      <!-- Cards -->
+      <section class="sg-section">
+        <h2 class="sg-section-title">Cards</h2>
+        <div class="card-grid">
+          <div class="demo-card">
+            <h4>Component Library</h4>
+            <p>
+              A shared set of reusable components built to the Vetra design system specifications.
+            </p>
+            <span class="tag">Design System</span>
+          </div>
+          <div class="demo-card">
+            <h4>Token Integration</h4>
+            <p>
+              Design tokens that bridge Figma variables to CSS custom properties for consistency.
+            </p>
+            <span class="tag">Tokens</span>
+          </div>
+          <div class="demo-card">
+            <h4>Theme Support</h4>
+            <p>Full light and dark mode support using CSS custom properties and semantic naming.</p>
+            <span class="tag">Theming</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Inputs -->
+      <section class="sg-section">
+        <h2 class="sg-section-title">Inputs</h2>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Name</label>
+            <input class="input-field" type="text" placeholder="Enter your name" />
+          </div>
+          <div class="input-group">
+            <label>Email</label>
+            <input class="input-field" type="email" placeholder="you@example.com" />
+          </div>
+          <button class="btn btn-primary">Submit</button>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const toggle = document.getElementById('themeSwitch')
+      const body = document.body
+      const lightModeLogo = document.querySelector('.logo-light-mode')
+      const darkModeLogo = document.querySelector('.logo-dark-mode')
+
+      toggle.addEventListener('change', () => {
+        if (toggle.checked) {
+          body.classList.add('dark')
+          if (lightModeLogo) lightModeLogo.style.display = 'none'
+          if (darkModeLogo) darkModeLogo.style.display = ''
+        } else {
+          body.classList.remove('dark')
+          if (lightModeLogo) lightModeLogo.style.display = ''
+          if (darkModeLogo) darkModeLogo.style.display = 'none'
+        }
+
+        // Update swatch hex values for theme
+        const mode = toggle.checked ? 'dark' : 'light'
+        document.querySelectorAll('.color-swatch-value[data-' + mode + ']').forEach((el) => {
+          el.textContent = el.dataset[mode]
+        })
+      })
+    </script>
+  </body>
+</html>

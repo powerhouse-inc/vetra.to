@@ -1,24 +1,19 @@
 import { notFound } from 'next/navigation'
+
 import { BuilderProfile } from '@/modules/builders/components/builder-profile'
+import { BuilderProfileTabs } from '@/modules/builders/components/builder-profile-tabs'
 import { BuilderSpaces } from '@/modules/builders/components/builder-spaces'
 import { TeamMembers } from '@/modules/builders/components/team-members'
 import { fetchBuilderTeamBySlug, type BuilderSpace } from '@/modules/builders/lib/server-data'
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/modules/shared/components/ui/breadcrumb'
+import { Badge } from '@/modules/shared/components/ui/badge'
 
 // Force dynamic rendering to prevent build-time API requests
 export const dynamic = 'force-dynamic'
 
 interface TeamPageProps {
-  params: {
+  params: Promise<{
     'team-name': string
-  }
+  }>
 }
 
 export async function generateMetadata({ params }: TeamPageProps): Promise<unknown> {
@@ -131,24 +126,8 @@ export default async function TeamPage({ params }: TeamPageProps) {
   ).filter((expertise): expertise is string => expertise !== undefined)
 
   return (
-    <main className="container mx-auto mt-[80px] max-w-[var(--container-width)] space-y-8 p-8">
-      {/* Page Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">Builder Profile - {teamData.profileName}</h1>
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/builders">Builders</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Profile</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
-
-      {/* Builder Profile Section */}
+    <main className="container mx-auto mt-20 max-w-screen-xl px-6 py-12">
+      {/* Profile Header */}
       <BuilderProfile
         profileName={teamData.profileName}
         profileLogo={teamData.profileLogo}
@@ -159,15 +138,49 @@ export default async function TeamPage({ params }: TeamPageProps) {
         industryExpertise={industryExpertise}
       />
 
-      {/* Team Members Section */}
-      {teamMembers.length > 0 && <TeamMembers members={teamMembers} />}
-
-      {/* Builder Spaces Section */}
-      <BuilderSpaces
-        spaces={spaces}
-        teamName={teamData.profileName || teamSlug}
-        discordUrl="https://discord.com/invite/powerhouse"
-      />
+      {/* Tabbed Content */}
+      <div className="mt-10">
+        <BuilderProfileTabs
+          packagesContent={
+            <BuilderSpaces
+              spaces={spaces}
+              teamName={teamData.profileName || teamSlug}
+              discordUrl="https://discord.com/invite/powerhouse"
+            />
+          }
+          teamContent={
+            teamMembers.length > 0 ? (
+              <TeamMembers members={teamMembers} />
+            ) : (
+              <p className="text-foreground-70 py-8 text-center">No team members listed yet.</p>
+            )
+          }
+          aboutContent={
+            <div className="space-y-6">
+              {teamData.profileDescription && (
+                <div>
+                  <h3 className="mb-3 text-lg font-semibold">About {teamData.profileName}</h3>
+                  <p className="text-foreground-70 leading-relaxed">
+                    {teamData.profileDescription}
+                  </p>
+                </div>
+              )}
+              {industryExpertise.length > 0 && (
+                <div>
+                  <h3 className="mb-3 text-lg font-semibold">Industry Expertise</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {industryExpertise.map((expertise, index) => (
+                      <Badge key={index} className="bg-primary-30 text-primary">
+                        {expertise}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          }
+        />
+      </div>
     </main>
   )
 }

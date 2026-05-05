@@ -108,7 +108,7 @@ function Carousel({
         api,
         opts,
         // keep it as it comes from shadcn
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+
         orientation: orientation || (opts?.axis === 'y' ? 'vertical' : 'horizontal'),
         scrollPrev,
         scrollNext,

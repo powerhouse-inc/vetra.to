@@ -1,5 +1,5 @@
 // This is a generated component from shadcn/ui so keep it as is
-/* eslint-disable react/no-unstable-nested-components */
+
 'use client'
 
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'

@@ -1,0 +1,20 @@
+[    1127ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:3000/_next/static/chunks/109fa_%40lottiefiles_dotlottie-react_dist_browser_index_654fe729.js:708
+[    1135ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1137ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1181ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1183ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1184ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1184ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1185ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1185ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1185ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1185ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1209ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1209ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1210ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1210ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1210ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1210ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1210ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1211ms] [WARNING] ph global store is not initialized. Did you call setRenown? @ http://localhost:3000/_next/static/chunks/9ccb7_%40powerhousedao_reactor-browser_dist_src_index_9e116c92.js:9328
+[    1302ms] [ERROR] Cannot update a component (`%s`) while rendering a different component (`%s`). To locate the bad setState() call inside `%s`, follow the stack trace as described in https://react.dev/link/setstate-in-render RenownButton Renown2 Renown2 @ http://localhost:3000/_next/static/chunks/72df0_next_dist_1bfa0e99._.js:2248

@@ -8,10 +8,14 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
+# Install dependencies based on the preferred package manager. BuildKit cache
+# mount preserves the pnpm store across builds (and across GHA runs when the
+# cache backend supports it), so only new/changed packages get refetched when
+# the lockfile changes — the common case in our CI.
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
 RUN corepack enable pnpm && corepack install --global pnpm@10.1.0
-RUN pnpm i --frozen-lockfile
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store,sharing=locked \
+    pnpm i --frozen-lockfile
 
 
 # Rebuild the source code only when needed
@@ -25,7 +29,11 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN  corepack enable pnpm && pnpm run build
+# Preserve .next/cache across builds so turbopack/swc artifacts are reused
+# when most of the source is unchanged — typical incremental build is 1-2min
+# faster with a warm cache.
+RUN --mount=type=cache,target=/app/.next/cache \
+    corepack enable pnpm && pnpm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner

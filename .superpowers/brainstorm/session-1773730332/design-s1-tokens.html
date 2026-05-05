@@ -1,0 +1,430 @@
+<h2>Section 1: Design Token Alignment</h2>
+<p class="subtitle">Mapping the Vetra design system to globals.css + Tailwind</p>
+
+<div class="section">
+  <h3>Color Token Changes</h3>
+  <p>
+    Replace current oklch generic values with design system values. Keep oklch format where it makes
+    sense for dark mode interpolation, but use exact hex for brand colors.
+  </p>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px">
+    <!-- Light Theme -->
+    <div style="padding: 16px; border: 1px solid #d7d8d9; border-radius: 12px">
+      <div
+        style="
+          font-size: 12px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 12px;
+          opacity: 0.6;
+        "
+      >
+        Light Theme
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px">
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div
+            style="
+              width: 24px;
+              height: 24px;
+              border-radius: 6px;
+              background: #fcfcfc;
+              border: 1px solid #ddd;
+            "
+          ></div>
+          <code>--background: #FCFCFC</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 24px; height: 24px; border-radius: 6px; background: #343839"></div>
+          <code>--foreground: #343839</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 24px; height: 24px; border-radius: 6px; background: #04c161"></div>
+          <code>--primary: #04C161</code>
+          <span style="color: #04c161; font-size: 11px">✓ already correct</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div
+            style="
+              width: 24px;
+              height: 24px;
+              border-radius: 6px;
+              background: #f4f4f4;
+              border: 1px solid #ddd;
+            "
+          ></div>
+          <code>--secondary: #F4F4F4</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div
+            style="
+              width: 24px;
+              height: 24px;
+              border-radius: 6px;
+              background: #f3f5f7;
+              border: 1px solid #ddd;
+            "
+          ></div>
+          <code>--accent: #F3F5F7</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div
+            style="
+              width: 24px;
+              height: 24px;
+              border-radius: 6px;
+              background: #ffffff;
+              border: 1px solid #ddd;
+            "
+          ></div>
+          <code>--card: #FCFCFC</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div
+            style="
+              width: 24px;
+              height: 24px;
+              border-radius: 6px;
+              background: #d7d8d9;
+              border: 1px solid #ddd;
+            "
+          ></div>
+          <code>--border: #D7D8D9</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div
+            style="
+              width: 24px;
+              height: 24px;
+              border-radius: 6px;
+              background: #efefef;
+              border: 1px solid #ddd;
+            "
+          ></div>
+          <code>--muted: #EFEFEF</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 24px; height: 24px; border-radius: 6px; background: #9ea0a1"></div>
+          <code>--muted-foreground: #9EA0A1</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 24px; height: 24px; border-radius: 6px; background: #ea4335"></div>
+          <code>--destructive: #EA4335</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dark Theme -->
+    <div
+      style="
+        padding: 16px;
+        border: 1px solid #485265;
+        border-radius: 12px;
+        background: #1b1e24;
+        color: #fcfcfc;
+      "
+    >
+      <div
+        style="
+          font-size: 12px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 12px;
+          opacity: 0.6;
+        "
+      >
+        Dark Theme
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px">
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div
+            style="
+              width: 24px;
+              height: 24px;
+              border-radius: 6px;
+              background: #1b1e24;
+              border: 1px solid #485265;
+            "
+          ></div>
+          <code style="color: #fcfcfc">--background: #1B1E24</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 24px; height: 24px; border-radius: 6px; background: #fcfcfc"></div>
+          <code style="color: #fcfcfc">--foreground: #FCFCFC</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 24px; height: 24px; border-radius: 6px; background: #04c161"></div>
+          <code style="color: #fcfcfc">--primary: #04C161</code>
+          <span style="color: #04c161; font-size: 11px">✓ same</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 24px; height: 24px; border-radius: 6px; background: #4f596f"></div>
+          <code style="color: #fcfcfc">--secondary: #4F596F</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 24px; height: 24px; border-radius: 6px; background: #373e4d"></div>
+          <code style="color: #fcfcfc">--accent: #373E4D</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div
+            style="
+              width: 24px;
+              height: 24px;
+              border-radius: 6px;
+              background: #252a34;
+              border: 1px solid #485265;
+            "
+          ></div>
+          <code style="color: #fcfcfc">--card: #252A34</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 24px; height: 24px; border-radius: 6px; background: #485265"></div>
+          <code style="color: #fcfcfc">--border: #485265</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 24px; height: 24px; border-radius: 6px; background: #343839"></div>
+          <code style="color: #fcfcfc">--muted: #343839</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 24px; height: 24px; border-radius: 6px; background: #6c7275"></div>
+          <code style="color: #fcfcfc">--muted-foreground: #6C7275</code>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 24px; height: 24px; border-radius: 6px; background: #ea4335"></div>
+          <code style="color: #fcfcfc">--destructive: #EA4335</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>New Semantic Colors (additions)</h3>
+  <p>The design system defines semantic status colors not currently in the app:</p>
+  <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px">
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 100px;
+        background: rgba(79, 200, 111, 0.15);
+        color: #4fc86f;
+        font-size: 13px;
+        font-weight: 600;
+      "
+    >
+      <div style="width: 8px; height: 8px; border-radius: 50%; background: #4fc86f"></div>
+      success: #4FC86F
+    </div>
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 100px;
+        background: rgba(50, 157, 255, 0.15);
+        color: #329dff;
+        font-size: 13px;
+        font-weight: 600;
+      "
+    >
+      <div style="width: 8px; height: 8px; border-radius: 50%; background: #329dff"></div>
+      info: #329DFF
+    </div>
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 100px;
+        background: rgba(255, 161, 50, 0.15);
+        color: #ffa132;
+        font-size: 13px;
+        font-weight: 600;
+      "
+    >
+      <div style="width: 8px; height: 8px; border-radius: 50%; background: #ffa132"></div>
+      warning: #FFA132
+    </div>
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 100px;
+        background: rgba(142, 85, 234, 0.15);
+        color: #8e55ea;
+        font-size: 13px;
+        font-weight: 600;
+      "
+    >
+      <div style="width: 8px; height: 8px; border-radius: 50%; background: #8e55ea"></div>
+      purple: #8E55EA
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Typography</h3>
+  <p>
+    Switch from system font stack to Inter as primary. Add responsive type scale based on design
+    system spec:
+  </p>
+  <div style="margin-top: 16px; padding: 16px; border: 1px solid #d7d8d9; border-radius: 12px">
+    <div style="font-family: Inter, sans-serif">
+      <div
+        style="
+          font-size: clamp(40px, 5vw, 64px);
+          font-weight: 700;
+          line-height: 1.2;
+          margin-bottom: 8px;
+        "
+      >
+        H1 — 64px / 700
+      </div>
+      <div
+        style="
+          font-size: clamp(28px, 3.5vw, 40px);
+          font-weight: 700;
+          line-height: 1.2;
+          margin-bottom: 8px;
+        "
+      >
+        H2 — 40px / 700
+      </div>
+      <div
+        style="
+          font-size: clamp(24px, 2.5vw, 32px);
+          font-weight: 700;
+          line-height: 1.2;
+          margin-bottom: 8px;
+        "
+      >
+        H3 — 32px / 700
+      </div>
+      <div style="font-size: 24px; font-weight: 700; line-height: 1.2; margin-bottom: 8px">
+        H4 — 24px / 700
+      </div>
+      <div style="font-size: 20px; font-weight: 700; line-height: 1.2; margin-bottom: 8px">
+        H5 — 20px / 700
+      </div>
+      <div style="font-size: 18px; font-weight: 700; line-height: 1.2; margin-bottom: 16px">
+        H6 — 18px / 700
+      </div>
+      <hr style="border: none; border-top: 1px solid #d7d8d9; margin: 16px 0" />
+      <div style="font-size: 16px; font-weight: 600; line-height: 24px; margin-bottom: 4px">
+        Subtitle 1 — 16px / 600
+      </div>
+      <div style="font-size: 14px; font-weight: 600; line-height: 22px; margin-bottom: 4px">
+        Subtitle 2 — 14px / 600
+      </div>
+      <div style="font-size: 16px; font-weight: 400; line-height: 24px; margin-bottom: 4px">
+        Body — 16px / 400
+      </div>
+      <div style="font-size: 14px; font-weight: 400; line-height: 22px; margin-bottom: 4px">
+        Small — 14px / 400
+      </div>
+      <div style="font-size: 12px; font-weight: 500; line-height: 18px">Caption — 12px / 500</div>
+    </div>
+  </div>
+  <p style="margin-top: 8px; font-size: 13px; opacity: 0.7">
+    Using clamp() for H1-H3 to stay responsive. Fixed px for H4+ and body text as they don't need
+    scaling.
+  </p>
+</div>
+
+<div class="section">
+  <h3>Spacing & Border Radius</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px">
+    <div style="padding: 16px; border: 1px solid #d7d8d9; border-radius: 12px">
+      <div
+        style="
+          font-size: 12px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 12px;
+          opacity: 0.6;
+        "
+      >
+        Border Radius
+      </div>
+      <div style="font-size: 13px; display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 32px; height: 32px; background: #04c161; border-radius: 100px"></div>
+          <code>--radius-full: 100px</code> <span style="opacity: 0.6">pills, badges</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 32px; height: 32px; background: #04c161; border-radius: 16px"></div>
+          <code>--radius-xl: 16px</code> <span style="opacity: 0.6">large cards, hero images</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 32px; height: 32px; background: #04c161; border-radius: 12px"></div>
+          <code>--radius-lg: 12px</code> <span style="opacity: 0.6">cards, containers</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 32px; height: 32px; background: #04c161; border-radius: 8px"></div>
+          <code>--radius-md: 8px</code> <span style="opacity: 0.6">buttons, inputs</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <div style="width: 32px; height: 32px; background: #04c161; border-radius: 6px"></div>
+          <code>--radius-sm: 6px</code> <span style="opacity: 0.6">small elements</span>
+        </div>
+      </div>
+    </div>
+    <div style="padding: 16px; border: 1px solid #d7d8d9; border-radius: 12px">
+      <div
+        style="
+          font-size: 12px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 12px;
+          opacity: 0.6;
+        "
+      >
+        Key Spacing
+      </div>
+      <div style="font-size: 13px; display: flex; flex-direction: column; gap: 6px">
+        <code>Section padding: 48px–96px</code>
+        <code>Container max-width: 1200px</code>
+        <code>Card padding: 20px–32px</code>
+        <code>Component gap: 8px–32px</code>
+        <code>Navbar height: 64px</code>
+        <code>Input padding: 10px 14px</code>
+        <code>Button padding: 10px 24px (default)</code>
+        <code>Button padding: 14px 32px (large)</code>
+        <code>Button padding: 8px 16px (small)</code>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  style="
+    margin-top: 24px;
+    padding: 16px;
+    border: 2px solid #04c161;
+    border-radius: 12px;
+    background: rgba(4, 193, 97, 0.05);
+  "
+>
+  <h3 style="margin-bottom: 4px">What changes in the codebase</h3>
+  <p style="font-size: 13px">
+    <strong>globals.css</strong> — Replace all color values, add semantic colors, update radius
+    values, update font-sans to Inter<br />
+    <strong>tailwind.config.js</strong> — Update container max-width to 1200px<br />
+    <strong>layout.tsx</strong> — Ensure Inter font is loaded with weights 400–800<br />
+    <strong>No component changes yet</strong> — tokens flow through CSS variables automatically
+  </p>
+</div>

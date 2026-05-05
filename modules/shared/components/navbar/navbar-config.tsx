@@ -1,5 +1,5 @@
-import VetraIcon from '@/modules/shared/components/svgs/vetra-logo.svg'
 import VetraLogoWithText from '@/modules/shared/components/svgs/vetra-logo-with-vetra.svg'
+import VetraIcon from '@/modules/shared/components/svgs/vetra-logo.svg'
 import type { NavbarConfig } from './types'
 
 export const NAVBAR_CONFIGS: Record<string, NavbarConfig> = {
@@ -18,8 +18,8 @@ export const NAVBAR_CONFIGS: Record<string, NavbarConfig> = {
         href: '/builders',
         isActive: (currentPath) => currentPath.includes('/builders'),
       },
-      { label: 'Academy', href: 'https://staging.powerhouse.academy', isExternal: true },
-      { label: 'Cloud', href: 'https://vetra.io/cloud', isExternal: true },
+      { label: 'Academy', href: 'https://academy.vetra.io/', isExternal: true },
+      { label: 'Cloud', href: '/cloud', isActive: (currentPath) => currentPath.includes('/cloud') },
     ],
     authComponent: 'loginButton',
   },

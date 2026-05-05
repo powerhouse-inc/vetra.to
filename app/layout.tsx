@@ -1,16 +1,21 @@
 import { Inter } from 'next/font/google'
-import Image from 'next/image'
-import { RenownProvider } from '@/modules/shared/providers/renown-provider'
+import { headers } from 'next/headers'
+import { CloudAuthBridge } from '@/modules/cloud/components/cloud-auth-bridge'
+import { RenownProvider } from '@/modules/shared/components/renown/renown-provider'
+import { Toaster } from '@/modules/shared/components/ui/sonner'
 import { ThemeProvider } from '@/modules/shared/providers/theme-provider'
 import { Footer } from '@/shared/components/footer/footer'
 import Navbar from '@/shared/components/navbar/navbar'
 import { QueryClientProvider } from '@/shared/providers/query-client'
 import type { Metadata } from 'next'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
+
 import './globals.css'
 
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
 })
 
 export const metadata: Metadata = {
@@ -18,39 +23,53 @@ export const metadata: Metadata = {
   description: 'Vetra',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Calling headers() opts this layout into dynamic rendering,
+  // ensuring process.env is read at request time, not build time.
+  await headers()
+
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} bg-muted/30 antialiased`}>
-        {/* Background SVG - positioned at the highest level */}
-        {/* <div className="fixed inset-0 -z-10">
-          <BackgroundSvg className="h-full w-full object-cover" />
-        </div> */}
-        <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
-          <QueryClientProvider>
-            <RenownProvider renownUrl={process.env.NEXT_PUBLIC_RENOWN_URL}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__ENV=${JSON.stringify({
+              NEXT_PUBLIC_SWITCHBOARD_URL:
+                process.env.SWITCHBOARD_URL ||
+                process.env.GRAPHQL_ENDPOINT ||
+                process.env.NEXT_PUBLIC_SWITCHBOARD_URL ||
+                '',
+              NEXT_PUBLIC_CLOUD_SWITCHBOARD_URL:
+                process.env.CLOUD_SWITCHBOARD_URL ||
+                process.env.NEXT_PUBLIC_CLOUD_SWITCHBOARD_URL ||
+                '',
+              NEXT_PUBLIC_CLOUD_DRIVE_ID:
+                process.env.CLOUD_DRIVE_ID || process.env.NEXT_PUBLIC_CLOUD_DRIVE_ID || '',
+              NEXT_PUBLIC_RENOWN_URL:
+                process.env.RENOWN_URL || process.env.NEXT_PUBLIC_RENOWN_URL || '',
+            })}`,
+          }}
+        />
+      </head>
+      <body className={`${inter.variable} bg-background antialiased`}>
+        <NuqsAdapter>
+          <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+            <QueryClientProvider>
+              <RenownProvider appName="vetra" url={process.env.NEXT_PUBLIC_RENOWN_URL} />
+              <CloudAuthBridge />
               <div className="items-right flex min-h-screen flex-col">
                 <Navbar />
-                <div className="pointer-events-none fixed top-[100px] right-0 z-0 h-[480px] w-full overflow-hidden">
-                  <Image
-                    src="/Vetra-background.png"
-                    alt=""
-                    width={1024}
-                    height={600}
-                    className="float-right h-auto w-[1024px]"
-                    priority
-                  />
-                </div>
-                <main className="z-10 flex-1">{children}</main>
+                <main className="flex-1">{children}</main>
                 <Footer />
               </div>
-            </RenownProvider>
-          </QueryClientProvider>
-        </ThemeProvider>
+              <Toaster />
+            </QueryClientProvider>
+          </ThemeProvider>
+        </NuqsAdapter>
       </body>
     </html>
   )

@@ -8,15 +8,15 @@ export function BuilderList() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <div className="text-muted-foreground">Loading Builder Teams...</div>
+      <div className="flex items-center justify-center py-12">
+        <div className="text-foreground-70">Loading Builder Teams...</div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center py-8">
+      <div className="flex items-center justify-center py-12">
         <div className="text-destructive">Error: {error}</div>
       </div>
     )
@@ -24,14 +24,14 @@ export function BuilderList() {
 
   if (builders.length === 0) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <div className="text-muted-foreground">No builder team found :(</div>
+      <div className="flex items-center justify-center py-12">
+        <div className="text-foreground-70">No builder team found :(</div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {builders.map((team) => (
         <BuilderTeamCard
           key={team.id}
