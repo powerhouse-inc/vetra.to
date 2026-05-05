@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/modules/shared/components/ui/dropdown-menu'
+import { HeroCard } from '@/modules/shared/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/shared/components/ui/tabs'
 
 import { ConfigurationTab } from './tabs/configuration'
@@ -115,8 +116,10 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
 
   return (
     <>
-      {/* Header */}
-      <div className="space-y-3">
+      {/* Header — HeroCard with glass surface so it lifts off the
+          ambient background and reads as the page's anchor. The "Back
+          to Cloud" link sits outside the card as a breadcrumb. */}
+      <div className="space-y-4">
         <Link
           href="/cloud"
           className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
@@ -124,64 +127,78 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
           <ArrowLeft className="h-4 w-4" />
           Back to Cloud
         </Link>
-        <div className="flex items-center gap-3">
-          <InlineEditableTitle value={displayName} onSave={detail.setLabel} />
-          {state && (
-            <StatusBadge
-              environmentStatus={state.status}
-              argoHealthStatus={envStatus?.argoHealthStatus}
-              argoSyncStatus={envStatus?.argoSyncStatus}
-              isLoading={statusLoading && !envStatus}
-            />
-          )}
+        <HeroCard glass>
+          <div className="flex flex-wrap items-center gap-3 p-6">
+            <div className="min-w-0 flex-1 space-y-1">
+              <div className="flex items-center gap-3">
+                <InlineEditableTitle value={displayName} onSave={detail.setLabel} />
+                {state && (
+                  <StatusBadge
+                    environmentStatus={state.status}
+                    argoHealthStatus={envStatus?.argoHealthStatus}
+                    argoSyncStatus={envStatus?.argoSyncStatus}
+                    isLoading={statusLoading && !envStatus}
+                  />
+                )}
+              </div>
+              {subdomain && (
+                <p className="text-muted-foreground truncate font-mono text-xs">
+                  {subdomain}.{baseDomain}
+                </p>
+              )}
+            </div>
 
-          {/* Deploy/Approve button — hidden instantly on click via
-              justApproved until the server confirms a post-CHANGES_PENDING
-              state, to mask the subscription-vs-push race. */}
-          {state?.status === 'DRAFT' && !justApproved && (
-            <Button
-              size="sm"
-              onClick={handleApprove}
-              className="bg-emerald-600 hover:bg-emerald-700"
-            >
-              Deploy
-            </Button>
-          )}
-          {state?.status === 'CHANGES_PENDING' && !justApproved && (
-            <Button size="sm" onClick={handleApprove} className="bg-blue-600 hover:bg-blue-700">
-              Approve Changes
-            </Button>
-          )}
-
-          {/* Visit dropdown */}
-          {subdomain && enabledServices.length > 0 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-1.5">
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  Visit
+            <div className="flex items-center gap-2">
+              {/* Deploy/Approve button — hidden instantly on click via
+                  justApproved until the server confirms a
+                  post-CHANGES_PENDING state, to mask the
+                  subscription-vs-push race. */}
+              {state?.status === 'DRAFT' && !justApproved && (
+                <Button
+                  size="sm"
+                  onClick={handleApprove}
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  Deploy
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {enabledServices.map((svc) => (
-                  <DropdownMenuItem key={svc.type} asChild>
-                    <a
-                      href={`https://${svc.prefix}.${subdomain}.${baseDomain}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {svc.type === 'CONNECT'
-                        ? 'Connect'
-                        : svc.type === 'SWITCHBOARD'
-                          ? 'Switchboard'
-                          : 'Fusion'}
-                    </a>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
+              )}
+              {state?.status === 'CHANGES_PENDING' && !justApproved && (
+                <Button size="sm" onClick={handleApprove} className="bg-blue-600 hover:bg-blue-700">
+                  Approve Changes
+                </Button>
+              )}
+
+              {/* Visit dropdown */}
+              {subdomain && enabledServices.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="flex items-center gap-1.5">
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Visit
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    {enabledServices.map((svc) => (
+                      <DropdownMenuItem key={svc.type} asChild>
+                        <a
+                          href={`https://${svc.prefix}.${subdomain}.${baseDomain}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {svc.type === 'CONNECT'
+                            ? 'Connect'
+                            : svc.type === 'SWITCHBOARD'
+                              ? 'Switchboard'
+                              : 'Fusion'}
+                        </a>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
+          </div>
+        </HeroCard>
       </div>
 
       {/* Tabs */}
