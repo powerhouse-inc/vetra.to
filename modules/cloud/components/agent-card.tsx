@@ -1,8 +1,13 @@
 'use client'
 
-import { Bot, ChevronDown, Trash2 } from 'lucide-react'
+import { Bot, ChevronDown, RefreshCw, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { PackageManifest } from '@/modules/cloud/config/types'
+import {
+  type ClintAgentStatusTone,
+  deriveClintAgentStatus,
+  findClintAgentPods,
+} from '@/modules/cloud/lib/clint-agent-status'
 import type {
   ClintRuntimeEndpointsForPrefix,
   CloudEnvironment,
@@ -10,13 +15,15 @@ import type {
   CloudResourceSize,
   CloudServiceClintConfig,
   CloudServiceEnv,
-  ServiceStatus,
+  Pod,
 } from '@/modules/cloud/types'
 import { composeClintEndpointUrl } from '@/modules/cloud/lib/clint-endpoint-url'
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import { Label } from '@/modules/shared/components/ui/label'
+import { Separator } from '@/modules/shared/components/ui/separator'
 import { Textarea } from '@/modules/shared/components/ui/textarea'
+import { cn } from '@/shared/lib/utils'
 import { EndpointRow } from './endpoint-row'
 import { EnvVarsEditor } from './env-vars-editor'
 import { ResourceSizePicker } from './resource-size-picker'
@@ -37,11 +44,20 @@ const SIZE_TO_TS: Record<string, CloudResourceSize> = {
   'vetra-agent-xxl': 'VETRA_AGENT_XXL',
 }
 
-const STATUS_CLASSES: Record<ServiceStatus, string> = {
-  ACTIVE: 'bg-[#04c161]/20 text-[#04c161]',
-  PROVISIONING: 'bg-[#ffa132]/20 text-[#ffa132] animate-pulse',
-  SUSPENDED: 'bg-muted text-muted-foreground',
-  BILLING_ISSUE: 'bg-[#ea4335]/20 text-[#ea4335]',
+const STATUS_DOT: Record<ClintAgentStatusTone, string> = {
+  healthy: 'bg-emerald-500',
+  starting: 'bg-amber-500 animate-pulse',
+  restarting: 'bg-amber-500 animate-pulse',
+  failed: 'bg-rose-500',
+  stopped: 'bg-gray-400',
+}
+
+const STATUS_PILL: Record<ClintAgentStatusTone, string> = {
+  healthy: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
+  starting: 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
+  restarting: 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
+  failed: 'bg-rose-500/15 text-rose-700 dark:text-rose-400',
+  stopped: 'bg-muted text-muted-foreground',
 }
 
 type Props = {
@@ -56,6 +72,14 @@ type Props = {
    * announced yet.
    */
   runtimeEndpoints?: ClintRuntimeEndpointsForPrefix | null
+  /**
+   * Pods in the env namespace. The card filters down to this agent's
+   * pods (chart names them `<fullname>-clint-<prefix>-<hash>`) and
+   * derives a live status from phase / ready / restartCount instead of
+   * trusting the doc-model `service.status` (which has no path to flip
+   * to ACTIVE). Empty array is fine — we render "Not running".
+   */
+  pods?: readonly Pod[]
   onSave?: (config: CloudServiceClintConfig) => Promise<void>
   onDisable?: () => Promise<void>
 }
@@ -66,6 +90,7 @@ export function AgentCard({
   canEdit,
   manifest,
   runtimeEndpoints,
+  pods,
   onSave,
   onDisable,
 }: Props) {
@@ -78,6 +103,18 @@ export function AgentCard({
     agentInfo?.name ??
     (cfg ? `${cfg.package.name}@${cfg.package.version ?? 'latest'}` : 'unconfigured')
   const sizeLabel = cfg?.selectedRessource ? SIZE_LABELS[cfg.selectedRessource] : null
+
+  const agentPods = useMemo(
+    () => findClintAgentPods(pods ?? [], service.prefix),
+    [pods, service.prefix],
+  )
+  const liveStatus = useMemo(
+    () => deriveClintAgentStatus(agentPods, runtimeEndpoints ?? null),
+    [agentPods, runtimeEndpoints],
+  )
+  const latestPod = agentPods[0]
+  const restartCount = latestPod?.restartCount ?? 0
+  const endpointCount = runtimeEndpoints?.endpoints.length ?? 0
 
   // Local form state (only meaningful when expanded + has cfg + manifest).
   const [serviceCommand, setServiceCommand] = useState<string>(cfg?.serviceCommand ?? '')
@@ -152,50 +189,73 @@ export function AgentCard({
   }
 
   return (
-    <div className="rounded-lg border">
-      <div className="flex items-center justify-between gap-4 p-4">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
-          <div className="bg-muted flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md">
-            {agentInfo?.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={agentInfo.image}
-                alt={agentInfo.name}
-                className="h-full w-full object-cover"
+    <div className="bg-card overflow-hidden rounded-xl border shadow-sm transition-shadow hover:shadow">
+      <div className="flex items-center gap-4 p-4">
+        {/* Agent avatar */}
+        <div className="bg-muted flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg">
+          {agentInfo?.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={agentInfo.image}
+              alt={agentInfo.name}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <Bot className="text-muted-foreground h-6 w-6" />
+          )}
+        </div>
+
+        {/* Identity + status + summary */}
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="truncate text-sm font-semibold">{cardLabel}</span>
+            <Badge
+              variant="secondary"
+              className={cn('rounded-full border-transparent', STATUS_PILL[liveStatus.tone])}
+              title={liveStatus.reason}
+            >
+              <span
+                className={cn('mr-1.5 h-1.5 w-1.5 rounded-full', STATUS_DOT[liveStatus.tone])}
               />
-            ) : (
-              <Bot className="text-muted-foreground h-5 w-5" />
+              {liveStatus.label}
+            </Badge>
+            <Badge variant="outline" className="font-mono text-xs">
+              {service.prefix}
+            </Badge>
+            {sizeLabel && (
+              <Badge variant="outline" className="text-xs">
+                {sizeLabel}
+              </Badge>
             )}
           </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-medium">{cardLabel}</span>
-              <Badge
-                variant="secondary"
-                className={`rounded-full border-transparent ${STATUS_CLASSES[service.status]}`}
-              >
-                {service.status.toLowerCase().replace('_', ' ')}
-              </Badge>
-              <Badge variant="secondary" className="font-mono text-xs">
-                {service.prefix}
-              </Badge>
-              {sizeLabel && (
-                <Badge variant="outline" className="text-xs">
-                  {sizeLabel}
-                </Badge>
-              )}
-            </div>
+          <div className="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
             {agentInfo?.description && !expanded && (
-              <p className="text-muted-foreground mt-1 line-clamp-1 text-xs">
-                {agentInfo.description}
-              </p>
+              <span className="line-clamp-1">{agentInfo.description}</span>
+            )}
+            {endpointCount > 0 && (
+              <span>
+                {endpointCount} endpoint{endpointCount === 1 ? '' : 's'}
+              </span>
+            )}
+            {restartCount > 0 && (
+              <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
+                <RefreshCw className="h-3 w-3" /> {restartCount} restart
+                {restartCount === 1 ? '' : 's'}
+              </span>
             )}
           </div>
         </div>
+
         {canEdit && (
-          <Button variant="outline" size="sm" onClick={() => setExpanded((e) => !e)}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setExpanded((e) => !e)}
+            aria-expanded={expanded}
+            aria-label="Configure"
+          >
             <ChevronDown
-              className={`mr-1.5 h-3.5 w-3.5 transition-transform ${expanded ? 'rotate-180' : ''}`}
+              className={cn('mr-1.5 h-3.5 w-3.5 transition-transform', expanded && 'rotate-180')}
             />
             Configure
           </Button>
@@ -203,57 +263,21 @@ export function AgentCard({
       </div>
 
       {expanded && canEdit && cfg && manifest && (
-        <div className="space-y-4 border-t p-4">
+        <div className="bg-muted/30 space-y-6 border-t p-6">
           {agentInfo?.description && (
-            <p className="text-muted-foreground text-xs leading-relaxed">{agentInfo.description}</p>
+            <p className="text-muted-foreground text-sm leading-relaxed">{agentInfo.description}</p>
           )}
 
-          {supportedSizes.length > 0 && (
-            <div>
-              <Label>Resource size</Label>
-              <div className="mt-2">
-                <ResourceSizePicker
-                  supported={supportedSizes}
-                  value={selectedRessource}
-                  onChange={setSelectedRessource}
-                  disabled={saving || disabling}
-                />
-              </div>
+          {/* Endpoints — what users care about most when expanding. */}
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <Label>Endpoints</Label>
+              <span className="text-muted-foreground text-xs">
+                Reported by the agent at runtime
+              </span>
             </div>
-          )}
-
-          <div>
-            <Label htmlFor={`cmd-${service.prefix}`}>Service command</Label>
-            <Textarea
-              id={`cmd-${service.prefix}`}
-              value={serviceCommand}
-              onChange={(e) => setServiceCommand(e.target.value)}
-              className="font-mono text-sm"
-              rows={2}
-              disabled={saving || disabling}
-            />
-            {manifest.serviceCommand && serviceCommand !== manifest.serviceCommand && (
-              <button
-                type="button"
-                className="text-primary mt-1 text-xs underline-offset-2 hover:underline"
-                onClick={() => setServiceCommand(manifest.serviceCommand ?? '')}
-              >
-                Reset to default
-              </button>
-            )}
-          </div>
-
-          <div>
-            <Label>Environment variables</Label>
-            <div className="mt-2">
-              <EnvVarsEditor value={envVars} onChange={setEnvVars} disabled={saving || disabling} />
-            </div>
-          </div>
-
-          <div>
-            <Label>Endpoints</Label>
             {runtimeEndpoints && runtimeEndpoints.endpoints.length > 0 ? (
-              <div className="mt-2 space-y-2">
+              <div className="space-y-2">
                 {runtimeEndpoints.endpoints.map((ep) => (
                   <EndpointRow
                     key={ep.id}
@@ -272,22 +296,75 @@ export function AgentCard({
                     })}
                     checked={ep.status === 'enabled'}
                     onCheckedChange={() => {
-                      /* read-only in v1 — endpoints are runtime-announced state */
+                      /* read-only in v1 — endpoints are runtime state */
                     }}
                     disabled
                   />
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground mt-2 text-xs">
-                Endpoints are reported by the agent at runtime. Waiting for the first announcement…
+              <p className="text-muted-foreground rounded-md border border-dashed p-3 text-xs">
+                Waiting for the first announcement…
               </p>
             )}
           </div>
 
+          <Separator />
+
+          {supportedSizes.length > 0 && (
+            <>
+              <div>
+                <Label>Resource size</Label>
+                <div className="mt-2">
+                  <ResourceSizePicker
+                    supported={supportedSizes}
+                    value={selectedRessource}
+                    onChange={setSelectedRessource}
+                    disabled={saving || disabling}
+                  />
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
+
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor={`cmd-${service.prefix}`}>Service command</Label>
+              <Textarea
+                id={`cmd-${service.prefix}`}
+                value={serviceCommand}
+                onChange={(e) => setServiceCommand(e.target.value)}
+                className="mt-2 font-mono text-sm"
+                rows={2}
+                disabled={saving || disabling}
+              />
+              {manifest.serviceCommand && serviceCommand !== manifest.serviceCommand && (
+                <button
+                  type="button"
+                  className="text-primary mt-1 text-xs underline-offset-2 hover:underline"
+                  onClick={() => setServiceCommand(manifest.serviceCommand ?? '')}
+                >
+                  Reset to default
+                </button>
+              )}
+            </div>
+
+            <div>
+              <Label>Environment variables</Label>
+              <div className="mt-2">
+                <EnvVarsEditor
+                  value={envVars}
+                  onChange={setEnvVars}
+                  disabled={saving || disabling}
+                />
+              </div>
+            </div>
+          </div>
+
           {error && <p className="text-destructive text-sm">{error}</p>}
 
-          <div className="flex items-center justify-between gap-2 pt-2">
+          <div className="flex items-center justify-between gap-2 border-t pt-4">
             <Button
               variant="ghost"
               size="sm"
@@ -320,7 +397,7 @@ export function AgentCard({
       )}
 
       {expanded && canEdit && (!cfg || !manifest) && (
-        <div className="text-muted-foreground border-t p-4 text-sm">
+        <div className="text-muted-foreground border-t p-6 text-sm">
           {!cfg ? 'This service has no config to edit.' : 'Loading package manifest…'}
         </div>
       )}
