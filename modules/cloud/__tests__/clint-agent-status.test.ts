@@ -5,6 +5,8 @@ import type { ClintRuntimeEndpointsForPrefix, Pod } from '@/modules/cloud/types'
 const pod = (over: Partial<Pod> = {}): Pod => ({
   name: 'tenant-clint-rupert-7d8c9b6f5abcde',
   service: null,
+  component: 'clint',
+  agent: 'rupert',
   phase: 'RUNNING',
   ready: true,
   restartCount: 0,
@@ -24,29 +26,40 @@ const endpoints = (count: number, lastSeen?: string): ClintRuntimeEndpointsForPr
 })
 
 describe('findClintAgentPods', () => {
-  it('matches pods by clint-<prefix>- substring in name', () => {
+  it('matches pods by `clint.vetra.io/agent` label, not by pod name', () => {
     const pods = [
-      pod({ name: 'tenant-clint-rupert-abcxyz' }),
-      pod({ name: 'tenant-clint-other-defxyz' }),
-      pod({ name: 'tenant-connect-abc' }),
+      pod({ name: 'tenant-clint-rupert-abcxyz', agent: 'rupert' }),
+      pod({ name: 'tenant-clint-other-defxyz', agent: 'other' }),
+      pod({ name: 'tenant-connect-abc', component: 'connect', agent: null }),
     ]
     const matched = findClintAgentPods(pods, 'rupert')
     expect(matched.map((p) => p.name)).toEqual(['tenant-clint-rupert-abcxyz'])
   })
 
-  it('matches across hyphenated prefixes without partial collisions', () => {
-    // Realistic clint pod names: <fullname>-clint-<prefix>-<hash>, hash is
-    // a single dash-free alphanumeric segment.
-    const pods = [
-      pod({ name: 'tenant-clint-ph-pirate-7ddbd67d9c5ps' }),
-      pod({ name: 'tenant-clint-ph-pirate-wouter-abc1234567' }),
-    ]
-    expect(findClintAgentPods(pods, 'ph-pirate').map((p) => p.name)).toEqual([
-      'tenant-clint-ph-pirate-7ddbd67d9c5ps',
+  it('disambiguates prefixes that overlap (one is a strict prefix of another)', () => {
+    // The label is set verbatim by the chart, so prefix-collision (the bug
+    // the regex matcher had with `ph-pirate-cli` vs `ph-pirate-cli-agent`)
+    // is impossible: equality is exact.
+    const pods = [pod({ agent: 'ph-pirate-cli' }), pod({ agent: 'ph-pirate-cli-agent' })]
+    expect(findClintAgentPods(pods, 'ph-pirate-cli').map((p) => p.agent)).toEqual(['ph-pirate-cli'])
+    expect(findClintAgentPods(pods, 'ph-pirate-cli-agent').map((p) => p.agent)).toEqual([
+      'ph-pirate-cli-agent',
     ])
-    expect(findClintAgentPods(pods, 'ph-pirate-wouter').map((p) => p.name)).toEqual([
-      'tenant-clint-ph-pirate-wouter-abc1234567',
-    ])
+  })
+
+  it('still matches when k8s truncates the pod name at 63 chars and drops the dash', () => {
+    // The truncated case that broke the regex matcher: pod name ends
+    // `…-clint-ph-pirate-cli-agent6ff6x` (no dash before the hash). The
+    // label is unaffected by name truncation.
+    const truncated = pod({
+      name: 'powerhouse-keen-lark-10-07b51285-clint-ph-pirate-cli-agent6ff6x',
+      agent: 'ph-pirate-cli-agent',
+    })
+    expect(findClintAgentPods([truncated], 'ph-pirate-cli-agent')).toEqual([truncated])
+  })
+
+  it('returns no match when the label is null (legacy pods predating the label)', () => {
+    expect(findClintAgentPods([pod({ agent: null })], 'rupert')).toEqual([])
   })
 })
 

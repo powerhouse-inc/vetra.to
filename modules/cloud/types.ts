@@ -160,6 +160,17 @@ export type EnvironmentStatus = {
 export type Pod = {
   name: string
   service: TenantService | null
+  /**
+   * Value of the `app.kubernetes.io/component` label set by the chart on every
+   * pod it deploys (connect, switchboard, clint, fusion, registry, …). Null
+   * for pods that don't carry the label.
+   */
+  component: string | null
+  /**
+   * Value of the `clint.vetra.io/agent` label set by the chart on every clint
+   * pod. Equals the agent's `prefix`. Non-null only for clint pods.
+   */
+  agent: string | null
   phase: PodPhase
   ready: boolean
   restartCount: number
