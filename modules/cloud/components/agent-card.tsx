@@ -1,6 +1,6 @@
 'use client'
 
-import { Bot, ChevronDown, RefreshCw, Trash2 } from 'lucide-react'
+import { Bot, ChevronDown, MoreVertical, RefreshCw, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { PackageManifest } from '@/modules/cloud/config/types'
 import { deriveClintAgentStatus, findClintAgentPods } from '@/modules/cloud/lib/clint-agent-status'
@@ -14,8 +14,24 @@ import type {
   Pod,
 } from '@/modules/cloud/types'
 import { composeClintEndpointUrl } from '@/modules/cloud/lib/clint-endpoint-url'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/modules/shared/components/ui/alert-dialog'
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/modules/shared/components/ui/dropdown-menu'
 import { Label } from '@/modules/shared/components/ui/label'
 import { Separator } from '@/modules/shared/components/ui/separator'
 import { Textarea } from '@/modules/shared/components/ui/textarea'
@@ -105,6 +121,7 @@ export function AgentCard({
   const [envVars, setEnvVars] = useState<CloudServiceEnv[]>(cfg?.env ?? [])
   const [saving, setSaving] = useState(false)
   const [disabling, setDisabling] = useState(false)
+  const [confirmDisableOpen, setConfirmDisableOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   // When the service's persisted config changes (e.g. after a save), resync
@@ -223,18 +240,41 @@ export function AgentCard({
         </div>
 
         {canEdit && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setExpanded((e) => !e)}
-            aria-expanded={expanded}
-            aria-label="Configure"
-          >
-            <ChevronDown
-              className={cn('mr-1.5 h-3.5 w-3.5 transition-transform', expanded && 'rotate-180')}
-            />
-            Configure
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setExpanded((e) => !e)}
+              aria-expanded={expanded}
+              aria-label="Configure"
+            >
+              <ChevronDown
+                className={cn('mr-1.5 h-3.5 w-3.5 transition-transform', expanded && 'rotate-180')}
+              />
+              Configure
+            </Button>
+            {onDisable && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" aria-label="Agent actions">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    className="text-destructive focus:text-destructive"
+                    onSelect={(e) => {
+                      e.preventDefault()
+                      setConfirmDisableOpen(true)
+                    }}
+                  >
+                    <Trash2 className="mr-2 h-3.5 w-3.5" />
+                    Remove agent
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
         )}
       </div>
 
@@ -344,12 +384,12 @@ export function AgentCard({
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleDisable}
+              onClick={() => setConfirmDisableOpen(true)}
               disabled={!onDisable || saving || disabling}
               className="text-destructive hover:text-destructive gap-1.5"
             >
               <Trash2 className="h-3.5 w-3.5" />
-              {disabling ? 'Disabling…' : 'Disable agent'}
+              {disabling ? 'Disabling…' : 'Remove agent'}
             </Button>
             <div className="flex items-center gap-2">
               <Button
@@ -373,10 +413,50 @@ export function AgentCard({
       )}
 
       {expanded && canEdit && (!cfg || !manifest) && (
-        <div className="text-muted-foreground border-foreground/10 border-t p-6 text-sm">
-          {!cfg ? 'This service has no config to edit.' : 'Loading package manifest…'}
+        <div className="border-foreground/10 space-y-3 border-t p-6">
+          <p className="text-muted-foreground text-sm">
+            {!cfg ? 'This service has no config to edit.' : 'Loading package manifest…'}
+          </p>
+          {onDisable && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setConfirmDisableOpen(true)}
+              disabled={disabling}
+              className="text-destructive hover:text-destructive gap-1.5"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              {disabling ? 'Removing…' : 'Remove agent'}
+            </Button>
+          )}
         </div>
       )}
+
+      <AlertDialog open={confirmDisableOpen} onOpenChange={setConfirmDisableOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this agent?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This stops <span className="font-mono">{service.prefix}</span> and removes it from the
+              environment. The agent&rsquo;s package data persists in the registry; you can add it
+              back later. Pod state and any in-flight work are lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={disabling}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault()
+                void handleDisable().then(() => setConfirmDisableOpen(false))
+              }}
+              disabled={disabling}
+              className="bg-destructive hover:bg-destructive/90 text-white"
+            >
+              {disabling ? 'Removing…' : 'Remove agent'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
