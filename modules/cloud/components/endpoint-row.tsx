@@ -28,7 +28,7 @@ export function EndpointRow({ endpoint, url, checked, onCheckedChange, disabled 
   }, [endpoint.id, url])
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-md border p-3">
+    <div className="bg-background/40 flex items-center justify-between gap-3 rounded-lg p-3">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <Checkbox
           checked={checked}

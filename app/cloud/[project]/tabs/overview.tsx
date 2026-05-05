@@ -728,6 +728,8 @@ type OverviewTabProps = {
    * subscription instead of firing the same query twice every 15s.
    */
   status: EnvironmentStatus | null
+  /** Pods in the env namespace, shared from the same observability subscription as `status`. */
+  pods?: readonly import('@/modules/cloud/types').Pod[]
   statusLoading: boolean
   onTabChange?: (tab: string) => void
   enableService: (
@@ -765,6 +767,7 @@ export function OverviewTab({
   tenantId,
   environment,
   status,
+  pods,
   statusLoading,
   onTabChange,
   enableService,
@@ -1102,6 +1105,7 @@ export function OverviewTab({
             onAddAgent={() => setAddAgentOpen(true)}
             manifests={clintManifestsByName}
             runtimeEndpointsByPrefix={clintRuntimeEndpointsByPrefix}
+            pods={pods}
             onSaveConfig={
               setServiceConfig
                 ? async (prefix, config) => {
