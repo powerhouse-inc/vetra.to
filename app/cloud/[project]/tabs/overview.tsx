@@ -737,7 +737,7 @@ type OverviewTabProps = {
     prefix: string,
     clintConfig?: import('@/modules/cloud/types').CloudServiceClintConfig,
   ) => Promise<void>
-  disableService: (type: CloudEnvironmentServiceType) => Promise<void>
+  disableService: (type: CloudEnvironmentServiceType, prefix?: string) => Promise<void>
   setServiceConfig?: (
     prefix: string,
     config: import('@/modules/cloud/types').CloudServiceClintConfig,
@@ -1117,8 +1117,8 @@ export function OverviewTab({
             onDisable={async (prefix) => {
               const svc = state.services.find((s) => s.prefix === prefix)
               if (!svc) return
-              await disableService(svc.type)
-              toast.success('Agent disabled')
+              await disableService(svc.type, prefix)
+              toast.success('Agent removed')
             }}
           />
         </CardContent>
