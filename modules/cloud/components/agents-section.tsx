@@ -41,7 +41,13 @@ export function AgentsSection({
 }: Props) {
   const clintServices = useMemo(
     () =>
-      services.filter((s) => s.type === 'CLINT').sort((a, b) => a.prefix.localeCompare(b.prefix)),
+      services
+        // Disabled clints stay in the doc model (no remove operation exists
+        // — disable just flips enabled=false), but for the user "Remove
+        // agent" should make them disappear. Filter them out here so the
+        // list reflects what's actually deployed.
+        .filter((s) => s.type === 'CLINT' && s.enabled)
+        .sort((a, b) => a.prefix.localeCompare(b.prefix)),
     [services],
   )
 

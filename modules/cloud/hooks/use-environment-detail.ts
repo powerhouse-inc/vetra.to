@@ -217,7 +217,12 @@ export function useEnvironmentDetail(documentId: string) {
     [mutate],
   )
   const disableService = useCallback(
-    (type: CloudEnvironmentServiceType) => mutate((c) => c.disableService({ type })),
+    // CLINT supports multiple services per env keyed by prefix; without a
+    // prefix the doc-model reducer falls back to first-by-type, which
+    // silently disables the wrong agent in multi-clint envs. Always pass
+    // prefix when we have one.
+    (type: CloudEnvironmentServiceType, prefix?: string) =>
+      mutate((c) => c.disableService({ type, prefix })),
     [mutate],
   )
   const toggleServiceEnabled = useCallback(
