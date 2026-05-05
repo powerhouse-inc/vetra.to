@@ -1,3 +1,9 @@
+## [1.15.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.14.2...v1.15.0) (2026-05-05)
+
+### Features
+
+- **cloud:** redesign agent section with derived live status ([#31](https://github.com/powerhouse-inc/vetra.to/issues/31)) ([f310d0b](https://github.com/powerhouse-inc/vetra.to/commit/f310d0b19b9861f91ef428411f0fb23eb8977900)), closes [#04c161](https://github.com/powerhouse-inc/vetra.to/issues/04c161)
+
 ## [1.14.2](https://github.com/powerhouse-inc/vetra.to/compare/v1.14.1...v1.14.2) (2026-01-28)
 
 ### Bug Fixes
