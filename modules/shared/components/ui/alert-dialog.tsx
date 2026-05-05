@@ -28,7 +28,9 @@ function AlertDialogOverlay({
     <AlertDialogPrimitive.Overlay
       data-slot="alert-dialog-overlay"
       className={cn(
-        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50',
+        // Mirrors Dialog: frosted-glass overlay, dim *plus* backdrop blur.
+        'bg-background/40 fixed inset-0 z-50 backdrop-blur-md',
+        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         className,
       )}
       {...props}
@@ -46,7 +48,14 @@ function AlertDialogContent({
       <AlertDialogPrimitive.Content
         data-slot="alert-dialog-content"
         className={cn(
-          'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg',
+          // Layout
+          'fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-xl p-6 sm:max-w-lg',
+          // Glass surface
+          'bg-card/85 border-border/40 border shadow-2xl backdrop-blur-xl',
+          // Top accent stripe (brand color, low opacity)
+          'before:via-primary before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:to-transparent before:opacity-60',
+          // Animations
+          'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200',
           className,
         )}
         {...props}
@@ -55,13 +64,25 @@ function AlertDialogContent({
   )
 }
 
-function AlertDialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
+function AlertDialogHeader({
+  icon,
+  className,
+  children,
+  ...props
+}: React.ComponentProps<'div'> & { icon?: React.ReactNode }) {
   return (
     <div
       data-slot="alert-dialog-header"
       className={cn('flex flex-col gap-2 text-center sm:text-left', className)}
       {...props}
-    />
+    >
+      {icon && (
+        <div className="bg-primary/10 text-primary mb-1 flex h-10 w-10 items-center justify-center rounded-full [&>svg]:h-5 [&>svg]:w-5">
+          {icon}
+        </div>
+      )}
+      {children}
+    </div>
   )
 }
 

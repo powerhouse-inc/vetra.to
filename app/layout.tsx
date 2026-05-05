@@ -2,6 +2,7 @@ import { Inter } from 'next/font/google'
 import { headers } from 'next/headers'
 import { CloudAuthBridge } from '@/modules/cloud/components/cloud-auth-bridge'
 import { RenownProvider } from '@/modules/shared/components/renown/renown-provider'
+import { AmbientBackground } from '@/modules/shared/components/ui/ambient-background'
 import { Toaster } from '@/modules/shared/components/ui/sonner'
 import { ThemeProvider } from '@/modules/shared/providers/theme-provider'
 import { Footer } from '@/shared/components/footer/footer'
@@ -56,6 +57,7 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${inter.variable} bg-background antialiased`}>
+        <AmbientBackground />
         <NuqsAdapter>
           <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
             <QueryClientProvider>
