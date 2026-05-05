@@ -3,11 +3,7 @@
 import { Bot, ChevronDown, RefreshCw, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { PackageManifest } from '@/modules/cloud/config/types'
-import {
-  type ClintAgentStatusTone,
-  deriveClintAgentStatus,
-  findClintAgentPods,
-} from '@/modules/cloud/lib/clint-agent-status'
+import { deriveClintAgentStatus, findClintAgentPods } from '@/modules/cloud/lib/clint-agent-status'
 import type {
   ClintRuntimeEndpointsForPrefix,
   CloudEnvironment,
@@ -26,6 +22,7 @@ import { Textarea } from '@/modules/shared/components/ui/textarea'
 import { cn } from '@/shared/lib/utils'
 import { EndpointRow } from './endpoint-row'
 import { EnvVarsEditor } from './env-vars-editor'
+import { LiveStatusPill } from './live-status-pill'
 import { ResourceSizePicker } from './resource-size-picker'
 
 const SIZE_LABELS: Record<CloudResourceSize, string> = {
@@ -42,22 +39,6 @@ const SIZE_TO_TS: Record<string, CloudResourceSize> = {
   'vetra-agent-l': 'VETRA_AGENT_L',
   'vetra-agent-xl': 'VETRA_AGENT_XL',
   'vetra-agent-xxl': 'VETRA_AGENT_XXL',
-}
-
-const STATUS_DOT: Record<ClintAgentStatusTone, string> = {
-  healthy: 'bg-emerald-500',
-  starting: 'bg-amber-500 animate-pulse',
-  restarting: 'bg-amber-500 animate-pulse',
-  failed: 'bg-rose-500',
-  stopped: 'bg-gray-400',
-}
-
-const STATUS_PILL: Record<ClintAgentStatusTone, string> = {
-  healthy: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
-  starting: 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
-  restarting: 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
-  failed: 'bg-rose-500/15 text-rose-700 dark:text-rose-400',
-  stopped: 'bg-muted text-muted-foreground',
 }
 
 type Props = {
@@ -189,7 +170,7 @@ export function AgentCard({
   }
 
   return (
-    <div className="bg-card overflow-hidden rounded-xl border shadow-sm transition-shadow hover:shadow">
+    <div className="bg-background/40 hover:bg-background/60 overflow-hidden rounded-lg transition-colors">
       <div className="flex items-center gap-4 p-4">
         {/* Agent avatar */}
         <div className="bg-muted flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg">
@@ -209,16 +190,11 @@ export function AgentCard({
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="truncate text-sm font-semibold">{cardLabel}</span>
-            <Badge
-              variant="secondary"
-              className={cn('rounded-full border-transparent', STATUS_PILL[liveStatus.tone])}
-              title={liveStatus.reason}
-            >
-              <span
-                className={cn('mr-1.5 h-1.5 w-1.5 rounded-full', STATUS_DOT[liveStatus.tone])}
-              />
-              {liveStatus.label}
-            </Badge>
+            <LiveStatusPill
+              tone={liveStatus.tone}
+              label={liveStatus.label}
+              reason={liveStatus.reason}
+            />
             <Badge variant="outline" className="font-mono text-xs">
               {service.prefix}
             </Badge>
@@ -263,7 +239,7 @@ export function AgentCard({
       </div>
 
       {expanded && canEdit && cfg && manifest && (
-        <div className="bg-muted/30 space-y-6 border-t p-6">
+        <div className="border-foreground/10 space-y-6 border-t p-6">
           {agentInfo?.description && (
             <p className="text-muted-foreground text-sm leading-relaxed">{agentInfo.description}</p>
           )}
@@ -397,7 +373,7 @@ export function AgentCard({
       )}
 
       {expanded && canEdit && (!cfg || !manifest) && (
-        <div className="text-muted-foreground border-t p-6 text-sm">
+        <div className="text-muted-foreground border-foreground/10 border-t p-6 text-sm">
           {!cfg ? 'This service has no config to edit.' : 'Loading package manifest…'}
         </div>
       )}
