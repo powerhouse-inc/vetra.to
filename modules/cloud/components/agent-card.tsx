@@ -1,6 +1,6 @@
 'use client'
 
-import { Bot, ChevronDown, MoreVertical, RefreshCw, Trash2 } from 'lucide-react'
+import { Bot, ChevronDown, ExternalLink, MoreVertical, RefreshCw, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { PackageManifest } from '@/modules/cloud/config/types'
 import { deriveClintAgentStatus, findClintAgentPods } from '@/modules/cloud/lib/clint-agent-status'
@@ -77,6 +77,20 @@ type Props = {
    * to ACTIVE). Empty array is fine — we render "Not running".
    */
   pods?: readonly Pod[]
+  /**
+   * When true the configure panel renders open on first paint (used inside
+   * the per-agent detail drawer where the card IS the form). Defaults to
+   * false on the env page so cards collapse to a status row.
+   */
+  defaultExpanded?: boolean
+  /**
+   * If provided, the card renders an "Open" button instead of an inline
+   * "Configure" expand. Click handlers route to the per-agent drawer
+   * (logs/metrics/activity/config). The inline expand panel is hidden when
+   * `onOpenDetail` is set, since the drawer's Config tab is the authoritative
+   * edit surface.
+   */
+  onOpenDetail?: () => void
   onSave?: (config: CloudServiceClintConfig) => Promise<void>
   onDisable?: () => Promise<void>
 }
@@ -88,10 +102,12 @@ export function AgentCard({
   manifest,
   runtimeEndpoints,
   pods,
+  defaultExpanded = false,
+  onOpenDetail,
   onSave,
   onDisable,
 }: Props) {
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(defaultExpanded)
   const cfg = service.config
 
   const agentFeature = manifest?.features?.agent
@@ -239,21 +255,38 @@ export function AgentCard({
           </div>
         </div>
 
-        {canEdit && (
+        {(canEdit || onOpenDetail) && (
           <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setExpanded((e) => !e)}
-              aria-expanded={expanded}
-              aria-label="Configure"
-            >
-              <ChevronDown
-                className={cn('mr-1.5 h-3.5 w-3.5 transition-transform', expanded && 'rotate-180')}
-              />
-              Configure
-            </Button>
-            {onDisable && (
+            {onOpenDetail ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onOpenDetail}
+                aria-label="Open agent details"
+              >
+                <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
+                Open
+              </Button>
+            ) : (
+              canEdit && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setExpanded((e) => !e)}
+                  aria-expanded={expanded}
+                  aria-label="Configure"
+                >
+                  <ChevronDown
+                    className={cn(
+                      'mr-1.5 h-3.5 w-3.5 transition-transform',
+                      expanded && 'rotate-180',
+                    )}
+                  />
+                  Configure
+                </Button>
+              )
+            )}
+            {canEdit && onDisable && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" aria-label="Agent actions">

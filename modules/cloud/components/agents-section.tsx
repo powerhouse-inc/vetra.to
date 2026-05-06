@@ -24,6 +24,12 @@ type Props = {
   runtimeEndpointsByPrefix?: Record<string, ClintRuntimeEndpointsForPrefix>
   /** All pods in the env namespace; each card filters to its own. */
   pods?: readonly Pod[]
+  /**
+   * If set, each agent card renders an "Open" button that calls this with the
+   * agent's prefix instead of inline-expanding. The drawer is the new edit
+   * surface for logs/metrics/activity/config.
+   */
+  onOpenDetail?: (prefix: string) => void
   onSaveConfig?: (prefix: string, config: CloudServiceClintConfig) => Promise<void>
   onDisable?: (prefix: string) => Promise<void>
 }
@@ -36,6 +42,7 @@ export function AgentsSection({
   manifests,
   runtimeEndpointsByPrefix,
   pods,
+  onOpenDetail,
   onSaveConfig,
   onDisable,
 }: Props) {
@@ -96,6 +103,7 @@ export function AgentsSection({
               manifest={s.config ? (manifests?.[s.config.package.name] ?? null) : null}
               runtimeEndpoints={runtimeEndpointsByPrefix?.[s.prefix] ?? null}
               pods={pods}
+              onOpenDetail={onOpenDetail ? () => onOpenDetail(s.prefix) : undefined}
               onSave={onSaveConfig ? (cfg) => onSaveConfig(s.prefix, cfg) : undefined}
               onDisable={onDisable ? () => onDisable(s.prefix) : undefined}
             />
