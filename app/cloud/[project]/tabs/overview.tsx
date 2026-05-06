@@ -283,15 +283,19 @@ function ServiceRow({
             </div>
             {isEnabled && environmentStatus === 'READY' ? (
               <a
-                href={`https://${serviceUrl}`}
+                href={`https://${serviceUrl}${serviceType === 'SWITCHBOARD' ? '/graphql' : ''}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:text-primary/80 truncate font-mono text-xs underline underline-offset-2"
               >
                 https://{serviceUrl}
+                {serviceType === 'SWITCHBOARD' && '/graphql'}
               </a>
             ) : (
-              <span className="text-muted-foreground/60 font-mono text-xs">{serviceUrl}</span>
+              <span className="text-muted-foreground/60 font-mono text-xs">
+                {serviceUrl}
+                {serviceType === 'SWITCHBOARD' && '/graphql'}
+              </span>
             )}
           </div>
         </div>

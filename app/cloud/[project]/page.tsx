@@ -206,21 +206,28 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    {enabledServices.map((svc) => (
-                      <DropdownMenuItem key={svc.type} asChild>
-                        <a
-                          href={`https://${svc.prefix}.${subdomain}.${baseDomain}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {svc.type === 'CONNECT'
-                            ? 'Connect'
-                            : svc.type === 'SWITCHBOARD'
-                              ? 'Switchboard'
-                              : 'Fusion'}
-                        </a>
-                      </DropdownMenuItem>
-                    ))}
+                    {enabledServices.map((svc) => {
+                      // Switchboard's only useful entry-point is the GraphQL
+                      // playground — the bare host returns a default page with
+                      // no playground link. Append /graphql so "Visit" lands
+                      // somewhere meaningful.
+                      const path = svc.type === 'SWITCHBOARD' ? '/graphql' : ''
+                      return (
+                        <DropdownMenuItem key={svc.type} asChild>
+                          <a
+                            href={`https://${svc.prefix}.${subdomain}.${baseDomain}${path}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {svc.type === 'CONNECT'
+                              ? 'Connect'
+                              : svc.type === 'SWITCHBOARD'
+                                ? 'Switchboard'
+                                : 'Fusion'}
+                          </a>
+                        </DropdownMenuItem>
+                      )
+                    })}
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
