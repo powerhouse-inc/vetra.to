@@ -9,18 +9,19 @@ export type ClintAgentStatus = {
 }
 
 export function findClintAgentPods(pods: readonly Pod[], prefix: string): Pod[] {
-  // Chart deploys clint with strategy Recreate, so pod names look like
-  //   <fullname>-clint-<prefix>-<podhash>
-  // where <podhash> is alphanumeric without dashes. Anchor on that
-  // terminating hash so longer prefixes (ph-pirate-wouter) don't get
-  // matched by a shorter one (ph-pirate). RollingUpdate's two-segment tail
-  // (<rs-hash>-<pod-hash>) is also handled.
-  const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  // Single trailing dash-free hash. Allowing an optional second segment
-  // would let `ph-pirate-wouter-abc` match as if `wouter` were the hash for
-  // prefix `ph-pirate`, defeating the disambiguation.
-  const re = new RegExp(`-clint-${escaped}-[a-z0-9]+$`)
-  return pods.filter((p) => re.test(p.name))
+  // The chart labels every clint pod with `clint.vetra.io/agent: <prefix>`,
+  // surfaced through the observability subgraph as `pod.agent`. Match on
+  // that. The previous regex matcher (against pod names of the form
+  // `<fullname>-clint-<prefix>-<hash>`) was fragile in two ways:
+  //   1) k8s truncates pod names at 63 chars and drops the dash before the
+  //      hash, so `…-clint-ph-pirate-cli-agent6ff6x` failed to match.
+  //   2) When one agent's prefix was a strict prefix of another's
+  //      (e.g. `ph-pirate-cli` vs `ph-pirate-cli-agent`), the shorter
+  //      regex falsely matched the longer prefix's pod, especially in the
+  //      truncated case.
+  // The label is set by the chart and equal to the prefix verbatim, so a
+  // simple equality match is both precise and truncation-proof.
+  return pods.filter((p) => p.agent === prefix)
 }
 
 export function deriveClintAgentStatus(

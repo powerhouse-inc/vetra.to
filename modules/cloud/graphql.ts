@@ -450,7 +450,7 @@ export async function fetchEnvironmentPods(
     subdomain,
     `query ($tenantId: String!) {
       environmentPods(tenantId: $tenantId) {
-        name service phase ready restartCount updatedAt
+        name service component agent phase ready restartCount updatedAt
       }
     }`,
     { tenantId },
@@ -481,7 +481,7 @@ export async function fetchEnvironmentOverview(
         domainResolves updatedAt
       }
       environmentPods(tenantId: $tenantId) {
-        name service phase ready restartCount updatedAt
+        name service component agent phase ready restartCount updatedAt
       }
     }`,
     { tenantId },
