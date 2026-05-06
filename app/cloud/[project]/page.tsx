@@ -2,11 +2,17 @@
 
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { Suspense, use, useEffect, useRef, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Suspense, use, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import { AgentDetailDrawer } from '@/modules/cloud/components/agent-detail-drawer'
+import { ServiceDetailDrawer } from '@/modules/cloud/components/service-detail-drawer'
 import { StatusBadge } from '@/modules/cloud/components/status-badge'
+import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
+import { useClintPackages } from '@/modules/cloud/hooks/use-clint-packages'
+import { useClintRuntimeEndpoints } from '@/modules/cloud/hooks/use-clint-runtime-endpoints'
+import { useDetailDrawer } from '@/modules/cloud/hooks/use-detail-drawer'
 import { useEnvironmentDetail } from '@/modules/cloud/hooks/use-environment-detail'
 import { useEnvironmentStatus } from '@/modules/cloud/hooks/use-environment-status'
 import { generateSubdomain } from '@/modules/cloud/subdomain'
@@ -19,23 +25,18 @@ import {
   DropdownMenuTrigger,
 } from '@/modules/shared/components/ui/dropdown-menu'
 import { HeroCard } from '@/modules/shared/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/shared/components/ui/tabs'
 
 import { ConfigurationTab } from './tabs/configuration'
-import { DeploymentsTab } from './tabs/deployments'
-import { LogsTab } from './tabs/logs'
-import { MetricsTab } from './tabs/metrics'
 import { InlineEditableTitle, OverviewTab } from './tabs/overview'
 
 // ---------------------------------------------------------------------------
-// EnvironmentDetail — inner component that uses useSearchParams
-// (must be wrapped in <Suspense> per Next.js 15 requirements)
+// EnvironmentDetail — single-column env page; no env-level tabs. Per-service
+// and per-agent observability surfaces live in side drawers (see
+// `useDetailDrawer` for URL state). This was previously a tab orchestrator.
 // ---------------------------------------------------------------------------
 
 function EnvironmentDetail({ documentId }: { documentId: string }) {
   const searchParams = useSearchParams()
-  const router = useRouter()
-  const activeTab = searchParams.get('tab') ?? 'overview'
 
   const detail = useEnvironmentDetail(documentId)
   const { environment, isLoading } = detail
@@ -51,6 +52,11 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
     pods: envPods,
     isLoading: statusLoading,
   } = useEnvironmentStatus(subdomain, tenantId, documentId)
+
+  // Drawer state (per-service / per-agent detail) is keyed in the URL via
+  // `?drawer=service:<id>` or `?drawer=agent:<prefix>`. Hook owns parsing and
+  // navigation; the page just reads `scope`/`tab` and provides handlers.
+  const drawer = useDetailDrawer()
 
   // Auto-heal: set genericSubdomain if missing
   const subdomainHealedRef = useRef(false)
@@ -73,12 +79,6 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [environment, detail.setDefaultPackageRegistry])
-
-  const handleTabChange = (tab: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('tab', tab)
-    router.replace(`?${params.toString()}`, { scroll: false })
-  }
 
   // Approve/Deploy: local "just clicked" flag shields the button from the
   // subscription-vs-push race. The controller updates local state
@@ -103,6 +103,34 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
       toast.error(err instanceof Error ? err.message : 'Failed to approve changes')
     }
   }
+
+  const { canSign } = useCanSign()
+  const { clintPackages } = useClintPackages({
+    registry: state?.defaultPackageRegistry ?? null,
+    packages: state?.packages ?? [],
+  })
+  const clintManifestsByName = useMemo(
+    () => Object.fromEntries(clintPackages.map((p) => [p.package.name, p.manifest])),
+    [clintPackages],
+  )
+  const { byPrefix: clintRuntimeEndpointsByPrefix } = useClintRuntimeEndpoints(
+    subdomain,
+    documentId,
+  )
+
+  // Resolve the active drawer scope into the concrete service/agent the
+  // drawer needs. We do this here (not inside the drawers) so the drawers
+  // can stay dumb renderers and the URL drives mount/unmount.
+  const drawerService = useMemo(() => {
+    if (!state || drawer.scope?.kind !== 'service') return null
+    const enumKind = drawer.scope.id.toUpperCase() as 'CONNECT' | 'SWITCHBOARD' | 'FUSION'
+    return state.services.find((s) => s.type === enumKind) ?? null
+  }, [state, drawer.scope])
+
+  const drawerAgent = useMemo(() => {
+    if (!state || drawer.scope?.kind !== 'agent') return null
+    return state.services.find((s) => s.type === 'CLINT' && s.prefix === drawer.scope!.id) ?? null
+  }, [state, drawer.scope])
 
   if (isLoading) {
     return <p className="text-muted-foreground">Loading environment...</p>
@@ -201,60 +229,97 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
         </HeroCard>
       </div>
 
-      {/* Tabs */}
+      {/* Sections — single column, top to bottom. The previous env-level
+          tabs (Logs / Metrics / Deployments / Configuration) folded into
+          the per-service / per-agent drawers and the inline Configuration
+          section below. */}
       {state && environment && (
-        <Tabs value={activeTab} onValueChange={handleTabChange}>
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="configuration">Configuration</TabsTrigger>
-            <TabsTrigger value="deployments">Deployments</TabsTrigger>
-            <TabsTrigger value="logs">Logs</TabsTrigger>
-            <TabsTrigger value="metrics">Metrics</TabsTrigger>
-          </TabsList>
-          <TabsContent value="overview" className="pt-4">
-            <OverviewTab
-              subdomain={subdomain}
-              tenantId={tenantId}
-              environment={environment}
-              status={envStatus}
-              pods={envPods}
-              statusLoading={statusLoading}
-              onTabChange={handleTabChange}
-              enableService={detail.enableService}
-              disableService={detail.disableService}
-              setServiceConfig={detail.setServiceConfig}
-              setServiceSize={detail.setServiceSize}
-              addPackage={detail.addPackage}
-              removePackage={detail.removePackage}
-              setCustomDomain={detail.setCustomDomain}
-              onTerminate={detail.terminate}
-              setServiceVersion={detail.setServiceVersion}
-              setPackageVersion={detail.setPackageVersion}
-              setAutoUpdateChannel={detail.setAutoUpdateChannel}
-              updateToLatest={detail.updateToLatest}
-              rollbackRelease={detail.rollbackRelease}
-              initialAddPackage={searchParams.get('addPackage')}
-              initialAddVersion={searchParams.get('version')}
-            />
-          </TabsContent>
-          <TabsContent value="configuration" className="pt-4">
-            <ConfigurationTab tenantId={tenantId} environment={environment} />
-          </TabsContent>
-          <TabsContent value="deployments" className="pt-4">
-            <DeploymentsTab subdomain={subdomain} tenantId={tenantId} documentId={documentId} />
-          </TabsContent>
-          <TabsContent value="logs" className="pt-4">
-            <LogsTab subdomain={subdomain} tenantId={tenantId} isStopped={isInactive} />
-          </TabsContent>
-          <TabsContent value="metrics" className="pt-4">
-            <MetricsTab
-              subdomain={subdomain}
-              tenantId={tenantId}
-              isStopped={isInactive}
-              documentId={documentId}
-            />
-          </TabsContent>
-        </Tabs>
+        <div className="space-y-8">
+          <OverviewTab
+            subdomain={subdomain}
+            tenantId={tenantId}
+            environment={environment}
+            status={envStatus}
+            pods={envPods}
+            statusLoading={statusLoading}
+            enableService={detail.enableService}
+            disableService={detail.disableService}
+            setServiceConfig={detail.setServiceConfig}
+            setServiceSize={detail.setServiceSize}
+            addPackage={detail.addPackage}
+            removePackage={detail.removePackage}
+            setCustomDomain={detail.setCustomDomain}
+            onTerminate={detail.terminate}
+            setServiceVersion={detail.setServiceVersion}
+            setPackageVersion={detail.setPackageVersion}
+            setAutoUpdateChannel={detail.setAutoUpdateChannel}
+            updateToLatest={detail.updateToLatest}
+            rollbackRelease={detail.rollbackRelease}
+            initialAddPackage={searchParams.get('addPackage')}
+            initialAddVersion={searchParams.get('version')}
+            onOpenServiceDetail={(kind) => drawer.open({ kind: 'service', id: kind }, 'logs')}
+            onOpenAgentDetail={(prefix) => drawer.open({ kind: 'agent', id: prefix }, 'logs')}
+          />
+
+          {/* Configuration — env-wide package config (env vars + secrets
+              declared by manifests). This used to be a tab; now it sits
+              inline so the page is a single readable surface. Per-agent
+              config lives inside the agent drawer's Config tab. */}
+          <ConfigurationTab tenantId={tenantId} environment={environment} />
+        </div>
+      )}
+
+      {/* Drawers — mounted at page level so URL state controls visibility.
+          We pass the resolved service/agent down so the drawer doesn't
+          need to know about the doc model. */}
+      {state && environment && drawer.scope?.kind === 'service' && (
+        <ServiceDetailDrawer
+          open
+          onClose={drawer.close}
+          kind={drawer.scope.id}
+          service={drawerService ?? undefined}
+          subdomain={subdomain}
+          tenantId={tenantId}
+          documentId={documentId}
+          isStopped={isInactive}
+          pods={envPods}
+          activeTab={drawer.tab ?? 'logs'}
+          onTabChange={drawer.setTab}
+        />
+      )}
+      {state && environment && drawer.scope?.kind === 'agent' && drawerAgent && (
+        <AgentDetailDrawer
+          open
+          onClose={drawer.close}
+          service={drawerAgent}
+          env={environment}
+          subdomain={subdomain}
+          tenantId={tenantId}
+          isStopped={isInactive}
+          canEdit={canSign}
+          manifest={
+            drawerAgent.config
+              ? (clintManifestsByName[drawerAgent.config.package.name] ?? null)
+              : null
+          }
+          runtimeEndpoints={clintRuntimeEndpointsByPrefix[drawerAgent.prefix] ?? null}
+          pods={envPods}
+          activeTab={drawer.tab ?? 'logs'}
+          onTabChange={drawer.setTab}
+          onSaveConfig={
+            detail.setServiceConfig
+              ? async (config) => {
+                  await detail.setServiceConfig(drawerAgent.prefix, config)
+                  toast.success('Agent updated')
+                }
+              : undefined
+          }
+          onDisable={async () => {
+            await detail.disableService('CLINT', drawerAgent.prefix)
+            toast.success('Agent removed')
+            drawer.close()
+          }}
+        />
       )}
     </>
   )

@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   ShieldOff,
   Bot,
+  ExternalLink,
   Globe,
   Package,
   Server,
@@ -140,6 +141,7 @@ function ServiceRow({
   onToggle,
   onSetVersion,
   onResize,
+  onOpenDetail,
 }: {
   serviceType: CloudEnvironmentServiceType
   prefix: string
@@ -157,6 +159,10 @@ function ServiceRow({
   onToggle: (enabled: boolean) => Promise<void>
   onSetVersion?: (version: string) => Promise<void>
   onResize?: (size: import('@/modules/cloud/types').CloudResourceSize) => Promise<void>
+  /** When set, the row shows an "Open" button that opens the per-service
+   *  drawer (logs / metrics / activity). Only meaningful while the service is
+   *  enabled — disabled services have nothing to observe. */
+  onOpenDetail?: () => void
 }) {
   const [showVersionPicker, setShowVersionPicker] = useState(false)
   const [tags, setTags] = useState<string[]>([])
@@ -290,6 +296,18 @@ function ServiceRow({
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {isEnabled && onOpenDetail && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onOpenDetail}
+              aria-label={`Open ${label} details`}
+              className="hidden gap-1.5 sm:inline-flex"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              Open
+            </Button>
+          )}
           {isEnabled && onResize && (
             <ServiceSizePopover
               serviceType={serviceType}
@@ -760,6 +778,17 @@ type OverviewTabProps = {
   rollbackRelease?: () => Promise<string[]>
   initialAddPackage?: string | null
   initialAddVersion?: string | null
+  /**
+   * Open the per-service detail drawer (logs / metrics / activity). The
+   * page owns drawer state via `useDetailDrawer`; OverviewTab just plumbs the
+   * callback into ServiceRow.
+   */
+  onOpenServiceDetail?: (kind: 'connect' | 'switchboard' | 'fusion') => void
+  /**
+   * Open the per-agent detail drawer for the agent with the given prefix.
+   * Same plumbing as `onOpenServiceDetail`.
+   */
+  onOpenAgentDetail?: (prefix: string) => void
 }
 
 export function OverviewTab({
@@ -786,6 +815,8 @@ export function OverviewTab({
   rollbackRelease,
   initialAddPackage,
   initialAddVersion,
+  onOpenServiceDetail,
+  onOpenAgentDetail,
 }: OverviewTabProps) {
   const { signer, canSign } = useCanSign()
   const router = useRouter()
@@ -993,17 +1024,23 @@ export function OverviewTab({
         />
       )}
 
-      {/* c. Services + Packages side-by-side on large screens */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Services Section (interactive toggles) */}
-        <Card>
-          <CardHeader>
+      {/* c. Services — runtime hosts. Each enabled service can be opened in
+          a per-service drawer (Logs / Metrics / Activity). Below the rows
+          we list the packages those services consume — reactor modules
+          loaded into Switchboard, UI apps loaded into Connect. Packages
+          aren't tied to a specific service in the doc model, so they live
+          in one shared sub-list inside the Services card. */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-base">
               <Server className="h-4 w-4" />
               Services
             </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-3">
             {(['CONNECT', 'SWITCHBOARD', 'FUSION'] as const).map((type) => {
               const service = getServiceEnabled(type)
               return (
@@ -1036,20 +1073,32 @@ export function OverviewTab({
                       ? (size) => setServiceSize(service.prefix, size)
                       : undefined
                   }
+                  onOpenDetail={
+                    onOpenServiceDetail && service?.enabled
+                      ? () =>
+                          onOpenServiceDetail(
+                            type.toLowerCase() as 'connect' | 'switchboard' | 'fusion',
+                          )
+                      : undefined
+                  }
                 />
               )
             })}
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Packages Section */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Package className="h-4 w-4" />
-                Reactor Modules
-              </CardTitle>
+          {/* Installed Packages — shared sub-list under the services. Modules
+              load into Switchboard's reactor; UI apps live in Connect.
+              Today the doc model doesn't tag a package as belonging to one
+              service, so we render them as one list. */}
+          <div className="border-t pt-5">
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Package className="text-muted-foreground h-4 w-4" />
+                <h3 className="text-sm font-semibold">Installed Packages</h3>
+                <span className="text-muted-foreground text-xs">
+                  Reactor modules &amp; Connect apps
+                </span>
+              </div>
               <AddPackageModal
                 registryUrl={state.defaultPackageRegistry ?? 'https://registry.dev.vetra.io'}
                 tenantId={tenantId}
@@ -1060,8 +1109,6 @@ export function OverviewTab({
                 initialOpen={!!initialAddPackage}
               />
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
             {modulePackages.length > 0 ? (
               <Table>
                 <TableHeader>
@@ -1086,14 +1133,13 @@ export function OverviewTab({
                 </TableBody>
               </Table>
             ) : (
-              <div className="flex flex-col items-center justify-center gap-2 py-8">
-                <Package className="text-muted-foreground h-8 w-8" />
-                <p className="text-muted-foreground text-sm">No reactor modules installed</p>
+              <div className="text-muted-foreground rounded-md border border-dashed p-4 text-center text-xs">
+                No packages installed yet — add one to extend Switchboard or Connect.
               </div>
             )}
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* c.5 Agents (CLINT services) */}
       <Card>
@@ -1106,6 +1152,7 @@ export function OverviewTab({
             manifests={clintManifestsByName}
             runtimeEndpointsByPrefix={clintRuntimeEndpointsByPrefix}
             pods={pods}
+            onOpenDetail={onOpenAgentDetail}
             onSaveConfig={
               setServiceConfig
                 ? async (prefix, config) => {
