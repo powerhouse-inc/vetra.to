@@ -227,7 +227,7 @@ export function AddPackageModal({
                   aria-expanded={packagePopoverOpen}
                   className="w-full justify-between font-normal"
                 >
-                  {selectedPackage ?? 'Select package...'}
+                  {selectedPackage ?? 'Search Package'}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>

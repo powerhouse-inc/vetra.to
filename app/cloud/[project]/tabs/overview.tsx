@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   ShieldOff,
   Bot,
+  Copy,
   ExternalLink,
   Globe,
   Package,
@@ -281,22 +282,47 @@ function ServiceRow({
                 </Badge>
               )}
             </div>
-            {isEnabled && environmentStatus === 'READY' ? (
-              <a
-                href={`https://${serviceUrl}${serviceType === 'SWITCHBOARD' ? '/graphql' : ''}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:text-primary/80 truncate font-mono text-xs underline underline-offset-2"
-              >
-                https://{serviceUrl}
-                {serviceType === 'SWITCHBOARD' && '/graphql'}
-              </a>
-            ) : (
-              <span className="text-muted-foreground/60 font-mono text-xs">
-                {serviceUrl}
-                {serviceType === 'SWITCHBOARD' && '/graphql'}
-              </span>
-            )}
+            {(() => {
+              const suffix = serviceType === 'SWITCHBOARD' ? '/graphql' : ''
+              const fullUrl = `https://${serviceUrl}${suffix}`
+              const copy = async () => {
+                try {
+                  await navigator.clipboard.writeText(fullUrl)
+                  toast.success('URL copied')
+                } catch {
+                  toast.error('Failed to copy URL')
+                }
+              }
+              return (
+                <div className="flex items-center gap-1">
+                  {isEnabled && environmentStatus === 'READY' ? (
+                    <a
+                      href={fullUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:text-primary/80 truncate font-mono text-xs underline underline-offset-2"
+                    >
+                      {fullUrl}
+                    </a>
+                  ) : (
+                    <span className="text-muted-foreground/60 font-mono text-xs">
+                      {serviceUrl}
+                      {suffix}
+                    </span>
+                  )}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={copy}
+                    aria-label={`Copy ${label} URL`}
+                    className="text-muted-foreground hover:text-foreground h-5 w-5 shrink-0 p-0"
+                  >
+                    <Copy className="h-3 w-3" />
+                  </Button>
+                </div>
+              )
+            })()}
           </div>
         </div>
         <div className="flex items-center gap-2">
