@@ -53,6 +53,16 @@ import { EnvVarsEditor } from './env-vars-editor'
 
 const PREFIX_RE = /^[a-z0-9-]+$/
 
+/**
+ * Maximum agent prefix length. The chart names the agent's Service and
+ * Ingress `<release-fullname>-clint-<prefix>`, where `release-fullname` is
+ * `powerhouse-<subdomain>-<id-prefix>` (≈32-34 chars for typical envs) plus
+ * `-clint-` (7 chars) — leaving ~22 chars for the prefix before hitting
+ * Kubernetes' 63-char Service name limit. We cap at 20 to keep a safety
+ * margin and avoid threading the actual release name through this UI.
+ */
+const MAX_PREFIX_LENGTH = 20
+
 const SIZE_TO_TS: Record<string, CloudResourceSize> = {
   'vetra-agent-s': 'VETRA_AGENT_S',
   'vetra-agent-m': 'VETRA_AGENT_M',
@@ -149,10 +159,18 @@ export function AddAgentModal({
     () => new Map(env.state.services.map((s) => [s.prefix, s])),
     [env.state.services],
   )
-  const prefixError = useMemo<{ kind: 'format' | 'collision'; message: string } | null>(() => {
+  const prefixError = useMemo<{
+    kind: 'format' | 'length' | 'collision'
+    message: string
+  } | null>(() => {
     if (!prefix) return null
     if (!PREFIX_RE.test(prefix))
       return { kind: 'format', message: 'lowercase letters, digits, and hyphens only' }
+    if (prefix.length > MAX_PREFIX_LENGTH)
+      return {
+        kind: 'length',
+        message: `must be ${MAX_PREFIX_LENGTH} characters or fewer (kubernetes Service name limit)`,
+      }
     const collide = existingByPrefix.get(prefix)
     if (collide) {
       return {
