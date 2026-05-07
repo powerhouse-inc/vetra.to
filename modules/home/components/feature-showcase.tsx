@@ -4,33 +4,33 @@ import { DotLottiePlayer } from '@/shared/components/ui/dotlottie-player'
 
 const features = [
   {
-    title: 'Rapid Application Development',
+    title: 'Build anything, fast',
     description:
-      'Turn specifications into applications with spec-driven AI. Generate scaffolding automatically, reuse modular components, and tap into an active open-source builder community.',
+      'Describe your workflow and Vetra sets it up automatically. Use ready-made templates or create something from scratch — your team can be up and running in minutes.',
     image: '/images/home/rapid-application-development.svg',
   },
   {
-    title: 'Build Reactive Apps',
+    title: 'Everyone stays in sync',
     description:
-      "Create interfaces that react in real time. Vetra's push architecture integrates with React, putting user intent at the center and making reusable design patterns part of your workflow.",
+      'Updates appear for your whole team the moment they happen. Like a live conversation, not a file waiting to be saved.',
     lottie: 'https://cdn.lottielab.com/l/E6XFYWdFhnNvBH.json',
   },
   {
-    title: 'Collaborative User Experiences',
+    title: 'Work together, naturally',
     description:
-      "Built 'Git-like' user experiences with branching merging & pull-requests. Applications built with Vetra are collaborative by default.",
+      'Leave comments, suggest changes, and review updates — just like editing a shared document. Everyone stays on the same page, effortlessly.',
     image: '/images/home/collaborative-infrastructure.svg',
   },
   {
-    title: 'Ready to Scale',
+    title: 'Grows with your organization',
     description:
-      "Grow from a single node to millions of users. Vetra's CQRS- and EDA-inspired architecture distributes workloads across sharded document storage.",
+      'Start small and scale to millions of users without switching platforms or rewriting anything. Vetra handles the hard parts automatically.',
     image: '/images/home/feature-collaborative.svg',
   },
   {
-    title: 'Web3 Built In',
+    title: 'Secure and verifiable',
     description:
-      'Add Web3 to your workflows without extra setup. Vetra supports on-chain storage, cryptographic verification, and wallet-based authentication.',
+      'Every action is recorded and tamper-proof. Know exactly who did what, and when — optionally backed by blockchain for extra trust.',
     image: '/images/home/web3-enabled.svg',
   },
 ]
@@ -39,7 +39,7 @@ export function FeatureShowcase() {
   return (
     <section className="mx-auto max-w-screen-xl px-6 py-20">
       <h2 className="text-foreground mb-16 text-center text-3xl font-bold">
-        What&apos;s included?
+        See what your team can do
       </h2>
 
       <div className="space-y-20">
@@ -57,15 +57,15 @@ export function FeatureShowcase() {
             <div className="flex-1 overflow-hidden rounded-xl">
               {'lottie' in feature && feature.lottie ? (
                 <DotLottiePlayer src={feature.lottie} className="h-[400px] w-full" />
-              ) : (
+              ) : feature.image ? (
                 <Image
-                  src={feature.image!}
+                  src={feature.image}
                   alt={feature.title}
                   width={600}
                   height={400}
                   className="h-auto w-full object-cover"
                 />
-              )}
+              ) : null}
             </div>
           </div>
         ))}

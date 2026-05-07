@@ -198,12 +198,17 @@ export function IsoGrid() {
       }
     }
 
-    const cleanup = loadThreeJS()
+    let mounted = true
+    let cleanupFn: (() => void) | undefined
+
+    loadThreeJS().then((fn) => {
+      cleanupFn = fn
+      if (!mounted) cleanupFn?.()
+    })
 
     return () => {
-      cleanup.then((cleanupFn) => {
-        if (cleanupFn) cleanupFn()
-      })
+      mounted = false
+      cleanupFn?.()
     }
   }, [])
 

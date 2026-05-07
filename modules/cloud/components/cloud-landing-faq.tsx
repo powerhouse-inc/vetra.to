@@ -8,57 +8,56 @@ import {
 } from '@/shared/components/ui/accordion'
 
 export function CloudLandingFAQ() {
-  // Split FAQs into two columns for desktop layout
   const faqs = [
     {
       question: 'What is Vetra Cloud?',
       answer:
-        'Vetra Cloud is a comprehensive cloud infrastructure platform that provides scalable environments for modern applications build with Vetra. It offers automated deployment, monitoring, and management tools to help developers focus on building great products instead of managing infrastructure. It relies on open source technologies to avoid vendor lock-in or proprietary dependencies.',
+        'Vetra Cloud is our hosted option for running apps built with Vetra. We handle the servers, storage, scaling, and monitoring so you can focus on your work. It is built entirely on open source tools, so there are no hidden dependencies or lock-in.',
     },
     {
-      question: 'How do I get started with Vetra Cloud?',
+      question: 'How do I get started?',
       answer:
-        'Getting started is simple: create your account, connect your packages, and deploy your first application with our one-click deployment process. Our platform automatically handles the infrastructure setup, scaling, and monitoring so you can focus on your business logic.',
+        'Create your account, connect your first app, and deploy with one click. The platform handles setup and scaling automatically so you can focus on what your team actually needs to do.',
     },
     {
-      question: 'What are the pricing options?',
+      question: 'What does it cost?',
       answer:
-        'We offer flexible pricing tiers to suit different needs, from individual developers to large teams. Our plans include pay-as-you-scale options with transparent pricing for compute, storage, and bandwidth. Contact our team for enterprise pricing and custom solutions.',
+        'We offer flexible plans to fit teams of all sizes — from individual builders to large organizations. Pricing scales with your usage and is always transparent. Contact us for enterprise or custom pricing.',
     },
     {
-      question: 'What technologies and frameworks are supported?',
+      question: 'What kind of apps can I run on Vetra Cloud?',
       answer:
-        'Vetra Cloud supports a wide range of technologies including Node.js, Python, React, Next.js, Docker containers, and many more. Our platform is designed to be framework-agnostic and can run virtually any application that can be containerized.',
+        'Any app built with Vetra. The platform is also framework-friendly and can run containerized apps built with Node.js, Python, React, Next.js, and many more. If it runs in a container, it can run on Vetra Cloud.',
     },
     {
-      question: 'How secure is Vetra Cloud?',
+      question: 'How secure is it?',
       answer:
-        'Security is our top priority. Although we are currently in a beta phase, we are implementing industry-standard security measures including end-to-end encryption, secure networking, regular security audits, and compliance with SOC 2 and other security frameworks. All data will be encrypted both in transit and at rest.',
+        'Security is built in from the start. All data is encrypted in transit and at rest. We are working toward end-to-end encryption, regular security audits, and compliance certifications. We will keep you updated as these features roll out.',
     },
     {
-      question: 'How does automatic scaling work?',
+      question: 'How does scaling work?',
       answer:
-        "Our platform automatically monitors your application's performance and resource usage. When demand increases, we automatically scale your infrastructure up to handle the load. When demand decreases, we scale down to optimize costs. This happens seamlessly without any downtime.",
+        'Automatically. The platform monitors your app and adjusts capacity as traffic goes up or down. You never need to think about it — and you only pay for what you use.',
     },
     {
-      question: 'What monitoring and analytics are available?',
+      question: 'What can I monitor?',
       answer:
-        'Vetra Cloud provides comprehensive monitoring including real-time performance metrics, application logs, error tracking, and custom dashboards. You get insights into response times, resource usage, user activity, and can set up alerts for important events.',
+        'Vetra Cloud gives you a real-time view of your app: performance, logs, errors, and usage. You can set up alerts for anything important and build custom dashboards for your team.',
     },
     {
-      question: 'Can I self-host Vetra Cloud?',
+      question: 'Can I run Vetra Cloud on my own servers?',
       answer:
-        "Yes! Vetra Cloud is built on open-source technologies and can be self-hosted on your own infrastructure. We provide comprehensive documentation, Docker images, and deployment guides to help you set up your own instance. This gives you complete control over your data and infrastructure while still benefiting from Vetra's powerful features.",
+        'Yes. Vetra Cloud is open source and fully self-hostable. We provide documentation, Docker images, and step-by-step guides to get your own instance running. Your data, your hardware, your rules.',
     },
     {
-      question: 'Is it E2EE and does it protect metadata privacy?',
+      question: 'Is my data encrypted and private?',
       answer:
-        'Yes, Vetra Cloud is in the beta phase and will soon implement end-to-end encryption (E2EE) to ensure your data remains secure. We also protect metadata privacy through advanced encryption techniques, ensuring that not only your data content but also information about your data patterns and usage remains private.',
+        'Yes. All data is encrypted in transit and at rest. We are actively building end-to-end encryption so even we cannot read your data. Your privacy matters and we will never sell or share your information.',
     },
     {
-      question: 'What support options are available?',
+      question: 'What support is available?',
       answer:
-        'We offer multiple support channels including documentation, discord, email support, and priority support for enterprise customers. Our team is committed to helping you succeed with responsive support.',
+        'We offer documentation, a community Discord, email support, and priority support for larger plans. Our team is responsive and committed to helping you succeed.',
     },
   ]
 

@@ -3,21 +3,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/compo
 
 const audiences = [
   {
-    title: 'Builders & Developers',
+    title: 'Business teams',
     description:
-      'Want control without overhead? Use Vetra to launch services, build extensions, and own your deployment.',
+      'Get your processes running on software your team actually enjoys using. No technical setup required.',
     animation: 'scale' as const,
   },
   {
-    title: 'System Integrators',
+    title: 'Managed service providers',
     description:
-      'Deploy Vetra stacks for clients, offer managed services, and customize solutions. Get paid for uptime and support.',
+      'Deploy Vetra for your clients and offer ongoing support. Get paid for keeping their systems running smoothly.',
     animation: 'movement' as const,
   },
   {
-    title: 'Data & AI Teams',
+    title: 'Data & AI teams',
     description:
-      'Subscribe to events across workflows and contributor actions. Train AI on structured, cross-org data streams.',
+      'Connect your AI to live, structured data from across your organization. No messy integrations.',
     animation: 'threeStep' as const,
   },
 ]
@@ -25,12 +25,9 @@ const audiences = [
 export function AudienceCards() {
   return (
     <section className="mx-auto max-w-screen-xl px-6 py-20">
-      <h2 className="text-foreground mb-4 text-center text-3xl font-bold">
-        Who it&apos;s built for
-      </h2>
+      <h2 className="text-foreground mb-4 text-center text-3xl font-bold">Who it&apos;s for</h2>
       <p className="text-foreground-70 mt-2 mb-8 text-center text-2xl transition-all duration-500 ease-out">
-        Vetra is designed for teams that need full control <br /> of their coordination
-        infrastructure.
+        Vetra works for everyone — no technical background needed.
       </p>
 
       <div className="grid gap-6 lg:grid-cols-3">

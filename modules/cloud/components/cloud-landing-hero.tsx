@@ -7,14 +7,13 @@ export function CloudLandingHero() {
     <section className="relative overflow-hidden px-6 py-20 text-center md:py-28">
       <IsoGrid />
       <div className="relative z-10 mx-auto max-w-screen-xl">
-        <p className="text-primary mb-4 text-sm font-semibold">The Open Cloud, on your terms.</p>
+        <p className="text-primary mb-4 text-sm font-semibold">Your cloud, your way.</p>
         <h1 className="mx-auto mb-4 max-w-2xl text-[clamp(28px,4vw,48px)] leading-[1.1] font-bold">
-          Independent infrastructure{' '}
-          <span className="text-primary">for independent organizations</span>
+          Run your apps{' '}
+          <span className="text-primary">wherever you want</span>
         </h1>
         <p className="text-foreground-70 mx-auto mb-8 max-w-xl text-base leading-relaxed">
-          Combine the scalability and convenience of centralized cloud providers with the resilience
-          of on-premise hosting.
+          Get the reliability of a big cloud provider — with the freedom to move your data anytime.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <CreatePackageModal />

@@ -124,8 +124,8 @@ export function PowerhouseStack() {
                   className="h-7 w-auto self-start"
                 />
                 <p className="text-sm leading-relaxed" style={{ color: '#4b5563' }}>
-                  Verifiable history for every contributor—use it to find talent, grant access, and
-                  collaborate with confidence.
+                  A track record for every contributor — use it to find talent, grant access, and
+                  work with confidence.
                 </p>
               </div>
               <div className="min-h-0 flex-1 px-4 pt-2">

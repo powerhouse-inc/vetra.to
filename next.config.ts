@@ -1,3 +1,4 @@
+import path from 'path'
 import type { NextConfig } from 'next'
 
 /** Next.js configuration for Vetra application */
@@ -23,6 +24,10 @@ const nextConfig: NextConfig = {
   },
   output: 'standalone',
   turbopack: {
+    root: __dirname,
+    resolveAlias: {
+      tailwindcss: path.resolve(__dirname, 'node_modules/tailwindcss'),
+    },
     rules: {
       '*.svg': {
         loaders: ['@svgr/webpack'],
