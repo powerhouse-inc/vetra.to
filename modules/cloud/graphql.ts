@@ -677,7 +677,7 @@ export async function fetchLogs(
 // Clint runtime-announced endpoints (vetra-cloud-observability subgraph)
 // ---------------------------------------------------------------------------
 
-import type { ClintRuntimeEndpointsForPrefix } from './types'
+import type { ClintRuntimeEndpointsForPrefix, DatabaseDump } from './types'
 
 export async function fetchClintRuntimeEndpointsByEnv(
   subdomain: string,
@@ -698,4 +698,43 @@ export async function fetchClintRuntimeEndpointsByEnv(
     token,
   )
   return data.clintRuntimeEndpointsByEnv
+}
+
+// ---------------------------------------------------------------------------
+// On-demand database dumps (vetra-cloud-observability subgraph)
+// ---------------------------------------------------------------------------
+
+const DUMP_FIELDS = `
+  id status requestedAt startedAt completedAt expiresAt
+  sizeBytes errorMessage downloadUrl
+`
+
+export async function fetchEnvironmentDumps(
+  tenantId: string,
+  token?: string | null,
+): Promise<DatabaseDump[]> {
+  const data = await gqlObservability<{ environmentDumps: DatabaseDump[] }>(
+    '',
+    `query ($tenantId: String!) {
+      environmentDumps(tenantId: $tenantId) { ${DUMP_FIELDS} }
+    }`,
+    { tenantId },
+    token,
+  )
+  return data.environmentDumps
+}
+
+export async function requestEnvironmentDump(
+  tenantId: string,
+  token?: string | null,
+): Promise<DatabaseDump> {
+  const data = await gqlObservability<{ requestEnvironmentDump: DatabaseDump }>(
+    '',
+    `mutation ($tenantId: String!) {
+      requestEnvironmentDump(tenantId: $tenantId) { ${DUMP_FIELDS} }
+    }`,
+    { tenantId },
+    token,
+  )
+  return data.requestEnvironmentDump
 }

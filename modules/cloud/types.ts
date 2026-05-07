@@ -218,3 +218,23 @@ export type ClintRuntimeEndpointsForPrefix = {
   prefix: string
   endpoints: ClintRuntimeEndpointReport[]
 }
+
+export type DatabaseDumpStatus = 'PENDING' | 'RUNNING' | 'READY' | 'FAILED'
+
+/**
+ * On-demand pg_dump export of the env's Postgres. File has a 24h TTL on
+ * S3; rows are pruned after 7d. `downloadUrl` is a 15-min presigned URL
+ * minted on every read, only present when status=READY and the file
+ * hasn't expired.
+ */
+export type DatabaseDump = {
+  id: string
+  status: DatabaseDumpStatus
+  requestedAt: string
+  startedAt: string | null
+  completedAt: string | null
+  expiresAt: string
+  sizeBytes: number | null
+  errorMessage: string | null
+  downloadUrl: string | null
+}
