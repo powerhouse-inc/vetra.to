@@ -7,6 +7,8 @@ import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-even
 import { useEnvironmentLogs } from '@/modules/cloud/hooks/use-environment-logs'
 import { useEnvironmentMetrics } from '@/modules/cloud/hooks/use-environment-metrics'
 import { deriveClintAgentStatus, findClintAgentPods } from '@/modules/cloud/lib/clint-agent-status'
+import { getServiceQuota } from '@/modules/cloud/lib/resource-maps'
+import { extractRestartTimestamps } from '@/modules/cloud/lib/restart-events'
 import type {
   ClintRuntimeEndpointsForPrefix,
   CloudEnvironment,
@@ -52,12 +54,6 @@ type Props = {
   onTabChange: (tab: string) => void
   onSaveConfig?: (config: CloudServiceClintConfig) => Promise<void>
   onDisable?: () => Promise<void>
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
 }
 
 /** Filter MetricSeries[] so only those whose pod label belongs to this agent remain. */
@@ -153,6 +149,10 @@ export function AgentDetailDrawer({
     refresh: refreshEvents,
   } = useEnvironmentEvents(subdomain, tenantId, 100, env.id)
   const filteredEvents = useMemo(() => filterEventsByPods(events, podNameSet), [events, podNameSet])
+  const restartTimestamps = useMemo(
+    () => extractRestartTimestamps(filteredEvents),
+    [filteredEvents],
+  )
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
@@ -265,14 +265,18 @@ export function AgentDetailDrawer({
                       title="CPU Usage"
                       description="CPU cores consumed by this agent's pod(s)"
                       series={filteredMetrics?.cpu ?? []}
-                      formatValue={(v) => `${(v * 100).toFixed(1)}%`}
+                      kind="cpu"
+                      quota={getServiceQuota(service, 'cpu')}
+                      restarts={restartTimestamps}
                       isLoading={metricsLoading}
                     />
                     <MetricCard
                       title="Memory"
                       description="Working set memory by this agent's pod(s)"
                       series={filteredMetrics?.memory ?? []}
-                      formatValue={formatBytes}
+                      kind="memory"
+                      quota={getServiceQuota(service, 'memory')}
+                      restarts={restartTimestamps}
                       isLoading={metricsLoading}
                     />
                     <MetricCard

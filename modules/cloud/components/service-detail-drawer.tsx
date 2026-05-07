@@ -6,6 +6,8 @@ import { useMemo, useState } from 'react'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useEnvironmentLogs } from '@/modules/cloud/hooks/use-environment-logs'
 import { useEnvironmentMetrics } from '@/modules/cloud/hooks/use-environment-metrics'
+import { getServiceQuota } from '@/modules/cloud/lib/resource-maps'
+import { extractRestartTimestamps } from '@/modules/cloud/lib/restart-events'
 import type {
   CloudEnvironmentService,
   KubeEvent,
@@ -47,12 +49,6 @@ function toTenantService(kind: ServiceKind): TenantService | null {
   if (kind === 'connect') return 'CONNECT'
   if (kind === 'switchboard') return 'SWITCHBOARD'
   return null
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
 }
 
 function filterSeriesByPods(series: MetricSeries[], podNames: Set<string>): MetricSeries[] {
@@ -137,6 +133,10 @@ export function ServiceDetailDrawer({
     refresh: refreshEvents,
   } = useEnvironmentEvents(subdomain, tenantId, 100, documentId)
   const filteredEvents = useMemo(() => filterEventsByPods(events, podNameSet), [events, podNameSet])
+  const restartTimestamps = useMemo(
+    () => extractRestartTimestamps(filteredEvents),
+    [filteredEvents],
+  )
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
@@ -214,14 +214,18 @@ export function ServiceDetailDrawer({
                       title="CPU Usage"
                       description="CPU cores consumed by this service"
                       series={filteredMetrics?.cpu ?? []}
-                      formatValue={(v) => `${(v * 100).toFixed(1)}%`}
+                      kind="cpu"
+                      quota={service ? getServiceQuota(service, 'cpu') : null}
+                      restarts={restartTimestamps}
                       isLoading={metricsLoading}
                     />
                     <MetricCard
                       title="Memory"
                       description="Working set memory by this service"
                       series={filteredMetrics?.memory ?? []}
-                      formatValue={formatBytes}
+                      kind="memory"
+                      quota={service ? getServiceQuota(service, 'memory') : null}
+                      restarts={restartTimestamps}
                       isLoading={metricsLoading}
                     />
                     <MetricCard

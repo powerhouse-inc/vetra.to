@@ -54,3 +54,6 @@ cdn-cache/.playwright-cli/
 
 # Superpowers brainstorming companion mockups
 .superpowers/
+
+# Claude Code local artifacts
+.claude/

@@ -1,4 +1,4 @@
-import type { CloudResourceSize } from '@/modules/cloud/types'
+import type { CloudEnvironmentService, CloudResourceSize } from '@/modules/cloud/types'
 
 export type ResourceSpec = {
   requests: { cpu: string; memory: string }
@@ -72,3 +72,46 @@ export const ALL_SIZES: CloudResourceSize[] = [
   'VETRA_AGENT_XL',
   'VETRA_AGENT_XXL',
 ]
+
+/** Parse a Kubernetes CPU quantity ("500m", "1", "2") into a number of cores. */
+export function parseK8sCpu(raw: string): number {
+  if (raw.endsWith('m')) return parseFloat(raw.slice(0, -1)) / 1000
+  return parseFloat(raw)
+}
+
+const MEMORY_UNITS: Record<string, number> = {
+  Ki: 1024,
+  Mi: 1024 ** 2,
+  Gi: 1024 ** 3,
+  Ti: 1024 ** 4,
+  K: 1000,
+  M: 1000 ** 2,
+  G: 1000 ** 3,
+  T: 1000 ** 4,
+}
+
+/** Parse a Kubernetes memory quantity ("512Mi", "1Gi") into bytes. */
+export function parseK8sMemory(raw: string): number {
+  for (const [suffix, mult] of Object.entries(MEMORY_UNITS)) {
+    if (raw.endsWith(suffix)) return parseFloat(raw.slice(0, -suffix.length)) * mult
+  }
+  return parseFloat(raw)
+}
+
+/**
+ * Resolve a service's per-pod CPU or memory limit.
+ *
+ * CLINT services use {@link CLINT_RESOURCE_MAP}; everything else
+ * ({@link APP_RESOURCE_MAP}). Returns `null` when the service has no resource
+ * size selected — caller should render the unbounded chart in that case.
+ */
+export function getServiceQuota(
+  service: Pick<CloudEnvironmentService, 'type' | 'selectedRessource'>,
+  kind: 'cpu' | 'memory',
+): number | null {
+  if (!service.selectedRessource) return null
+  const map = service.type === 'CLINT' ? CLINT_RESOURCE_MAP : APP_RESOURCE_MAP
+  const spec = map[service.selectedRessource]
+  if (!spec) return null
+  return kind === 'cpu' ? parseK8sCpu(spec.limits.cpu) : parseK8sMemory(spec.limits.memory)
+}
