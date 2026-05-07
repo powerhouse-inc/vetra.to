@@ -14,7 +14,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { fetchEnvironmentReleaseHistory, fetchLatestRelease } from '@/modules/cloud/graphql'
-import { useOptimistic } from '@/modules/cloud/hooks/use-optimistic'
+import { useDebouncedOptimistic } from '@/modules/cloud/hooks/use-debounced-optimistic'
 import type {
   AutoUpdateChannel,
   CloudEnvironment,
@@ -70,27 +70,27 @@ export function AutoUpdateCard({
   const state = environment.state
   const serverChannel: AutoUpdateChannel | null = state.autoUpdateChannel ?? null
 
-  // Channel flips instantly via the optimistic hook; reverts on error.
+  // Channel writes go through a debounced optimistic hook so the radio
+  // tracks user intent instantly, scrubbing collapses to a single commit,
+  // and parallel commits can't race the controller's push queue. See
+  // `useDebouncedOptimistic` for the full reasoning.
   const {
     value: channel,
-    set: commitChannel,
+    set: setChannel,
     isPending: isChannelPending,
-  } = useOptimistic(serverChannel, onChangeChannel)
-
-  const handleChannelChange = async (next: AutoUpdateChannel | 'OFF') => {
-    // Block further clicks while the mutation is in flight — stacking
-    // commits races the controller.push() queue and makes the radios
-    // visibly stutter between the previous committed value and the new
-    // optimistic one. Ignoring late clicks is less surprising than
-    // watching the selection bounce.
-    if (isChannelPending) return
-    const nextChannel = next === 'OFF' ? null : next
-    if (nextChannel === channel) return
-    try {
-      await commitChannel(nextChannel)
-    } catch (err) {
+  } = useDebouncedOptimistic<AutoUpdateChannel | null>({
+    serverValue: serverChannel,
+    commit: onChangeChannel,
+    delayMs: 300,
+    onError: (err) => {
       toast.error(err instanceof Error ? err.message : 'Failed to set auto-update channel')
-    }
+    },
+  })
+
+  const handleChannelChange = (next: AutoUpdateChannel | 'OFF') => {
+    const nextChannel: AutoUpdateChannel | null = next === 'OFF' ? null : next
+    if (nextChannel === channel) return
+    setChannel(nextChannel)
   }
 
   // Latest release per enabled service — only fetched once a channel is picked,
@@ -259,12 +259,8 @@ export function AutoUpdateCard({
             <label className="text-muted-foreground mb-2 block text-sm font-medium">Channel</label>
             <RadioGroup
               value={channel ?? 'OFF'}
-              onValueChange={(v) => void handleChannelChange(v as AutoUpdateChannel | 'OFF')}
-              disabled={isChannelPending}
-              className={cn(
-                'grid grid-cols-4 gap-2',
-                isChannelPending && 'pointer-events-none opacity-60',
-              )}
+              onValueChange={(v) => handleChannelChange(v as AutoUpdateChannel | 'OFF')}
+              className="grid grid-cols-4 gap-2"
             >
               {CHANNEL_OPTIONS.map((opt) => {
                 const id = `auto-update-${opt.value.toLowerCase()}`
@@ -274,15 +270,14 @@ export function AutoUpdateCard({
                     key={opt.value}
                     htmlFor={id}
                     className={cn(
-                      'flex flex-col gap-0.5 rounded-md border p-2 text-xs transition-colors',
-                      isChannelPending ? 'cursor-wait' : 'cursor-pointer',
+                      'flex cursor-pointer flex-col gap-0.5 rounded-md border p-2 text-xs transition-colors',
                       active
                         ? 'border-primary bg-primary/5'
                         : 'border-border/50 hover:border-border',
                     )}
                   >
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value={opt.value} id={id} disabled={isChannelPending} />
+                      <RadioGroupItem value={opt.value} id={id} />
                       <span className="font-medium">{opt.label}</span>
                     </div>
                     <span className="text-muted-foreground pl-6 text-[10px]">
@@ -352,13 +347,14 @@ export function AutoUpdateCard({
                 </div>
               )}
 
-              {/* Actions */}
+              {/* Actions — disabled while a channel commit is pending so the
+                  server-side mutations don't act on stale state. */}
               <div className="flex flex-wrap items-center gap-2 pt-2">
                 <Button
                   size="sm"
                   variant="default"
-                  onClick={handleUpdateNow}
-                  disabled={isUpdating}
+                  onClick={() => void handleUpdateNow()}
+                  disabled={isUpdating || isChannelPending}
                   className="gap-1.5"
                 >
                   <ArrowUpCircle className="h-3.5 w-3.5" />
@@ -368,8 +364,8 @@ export function AutoUpdateCard({
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={handleRollback}
-                    disabled={isRollingBack}
+                    onClick={() => void handleRollback()}
+                    disabled={isRollingBack || isChannelPending}
                     className="gap-1.5"
                   >
                     <ArrowDownCircle className="h-3.5 w-3.5" />
