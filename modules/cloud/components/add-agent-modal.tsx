@@ -78,6 +78,13 @@ function sanitize(s: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
+/** Sanitize and clip a derived prefix to the kubernetes-friendly cap.
+ *  Trailing hyphens after truncation get cleaned up so the prefix
+ *  doesn't end on `-`. */
+function sanitizeForPrefix(s: string): string {
+  return sanitize(s).slice(0, MAX_PREFIX_LENGTH).replace(/-+$/, '')
+}
+
 export type AddAgentSubmitPayload = {
   packageName: string
   version: string | undefined
@@ -147,7 +154,7 @@ export function AddAgentModal({
     const m = validation.manifest
     const agent = m.features?.agent || null
     const agentId = agent && typeof agent === 'object' ? agent.id : null
-    const defaultPrefix = agentId ? sanitize(agentId) : sanitize(m.name)
+    const defaultPrefix = agentId ? sanitizeForPrefix(agentId) : sanitizeForPrefix(m.name)
     setPrefix(defaultPrefix)
     setServiceCommand(m.serviceCommand ?? '')
     const supported = (m.supportedResources ?? []).map((s) => SIZE_TO_TS[s]).filter(Boolean)
@@ -464,12 +471,24 @@ export function AddAgentModal({
           {/* Prefix */}
           {validation?.ok && (
             <div className="space-y-2">
-              <Label htmlFor="prefix">Prefix</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="prefix">Prefix</Label>
+                <span
+                  className={
+                    prefix.length > MAX_PREFIX_LENGTH
+                      ? 'text-destructive text-xs tabular-nums'
+                      : 'text-muted-foreground text-xs tabular-nums'
+                  }
+                >
+                  {prefix.length}/{MAX_PREFIX_LENGTH}
+                </span>
+              </div>
               <Input
                 id="prefix"
                 value={prefix}
                 onChange={(e) => setPrefix(e.target.value)}
                 aria-invalid={!!prefixError}
+                maxLength={MAX_PREFIX_LENGTH}
                 placeholder="agent"
               />
               {prefixError && <p className="text-destructive text-xs">{prefixError.message}</p>}
