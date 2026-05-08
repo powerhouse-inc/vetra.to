@@ -12,7 +12,8 @@ type Props = {
 }
 
 export function DatabaseBackupsTab({ tenantId, canEdit }: Props) {
-  const { dumps, isLoading, error, isRequesting, request } = useEnvironmentDumps(tenantId)
+  const { dumps, isLoading, error, isRequesting, cancellingId, request, cancel } =
+    useEnvironmentDumps(tenantId)
 
   const inFlight = dumps.some((d) => d.status === 'PENDING' || d.status === 'RUNNING')
 
@@ -30,6 +31,16 @@ export function DatabaseBackupsTab({ tenantId, canEdit }: Props) {
       } else {
         toast.error(msg)
       }
+    }
+  }
+
+  const handleCancel = async (dumpId: string) => {
+    try {
+      await cancel(dumpId)
+      toast.success('Dump cancelled.')
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to cancel dump'
+      toast.error(msg)
     }
   }
 
@@ -79,6 +90,12 @@ export function DatabaseBackupsTab({ tenantId, canEdit }: Props) {
               key={d.id}
               dump={d}
               onRetry={d.status === 'FAILED' && canEdit ? handleCreate : undefined}
+              onCancel={
+                canEdit && (d.status === 'PENDING' || d.status === 'RUNNING')
+                  ? () => handleCancel(d.id)
+                  : undefined
+              }
+              isCancelling={cancellingId === d.id}
             />
           ))}
         </div>

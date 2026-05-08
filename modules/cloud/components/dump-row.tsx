@@ -1,6 +1,6 @@
 'use client'
 
-import { Clock, Database, Download, Loader2, RefreshCw } from 'lucide-react'
+import { Clock, Database, Download, Loader2, RefreshCw, X } from 'lucide-react'
 import type { DatabaseDump, DatabaseDumpStatus } from '@/modules/cloud/types'
 import { Button } from '@/modules/shared/components/ui/button'
 import { cn } from '@/shared/lib/utils'
@@ -51,9 +51,11 @@ const EXPIRED_PILL = { label: 'EXPIRED', cls: 'bg-muted text-muted-foreground' }
 type Props = {
   dump: DatabaseDump
   onRetry?: () => void
+  onCancel?: () => void
+  isCancelling?: boolean
 }
 
-export function DumpRow({ dump, onRetry }: Props) {
+export function DumpRow({ dump, onRetry, onCancel, isCancelling }: Props) {
   const isExpired = new Date(dump.expiresAt).getTime() < Date.now()
   const isExpiredReady = isExpired && dump.status === 'READY'
   const pill = isExpiredReady ? EXPIRED_PILL : PILL_BY_STATUS[dump.status]
@@ -124,6 +126,12 @@ export function DumpRow({ dump, onRetry }: Props) {
           <Button size="sm" variant="outline" onClick={onRetry}>
             <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
             Retry
+          </Button>
+        )}
+        {(dump.status === 'PENDING' || dump.status === 'RUNNING') && onCancel && (
+          <Button size="sm" variant="outline" onClick={onCancel} disabled={isCancelling}>
+            <X className="mr-1.5 h-3.5 w-3.5" />
+            {isCancelling ? 'Cancelling…' : 'Cancel'}
           </Button>
         )}
       </div>

@@ -738,3 +738,18 @@ export async function requestEnvironmentDump(
   )
   return data.requestEnvironmentDump
 }
+
+export async function cancelEnvironmentDump(
+  dumpId: string,
+  token?: string | null,
+): Promise<DatabaseDump> {
+  const data = await gqlObservability<{ cancelEnvironmentDump: DatabaseDump }>(
+    '',
+    `mutation ($dumpId: ID!) {
+      cancelEnvironmentDump(dumpId: $dumpId) { ${DUMP_FIELDS} }
+    }`,
+    { dumpId },
+    token,
+  )
+  return data.cancelEnvironmentDump
+}
