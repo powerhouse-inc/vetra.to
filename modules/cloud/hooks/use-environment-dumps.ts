@@ -2,7 +2,12 @@
 
 import { useRenown } from '@powerhousedao/reactor-browser'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { fetchEnvironmentDumps, getAuthToken, requestEnvironmentDump } from '../graphql'
+import {
+  cancelEnvironmentDump,
+  fetchEnvironmentDumps,
+  getAuthToken,
+  requestEnvironmentDump,
+} from '../graphql'
 import type { DatabaseDump, DatabaseDumpStatus } from '../types'
 
 const POLL_INTERVAL_MS = 5000
@@ -31,6 +36,7 @@ export function useEnvironmentDumps(tenantId: string | null) {
     error: null,
   })
   const [isRequesting, setIsRequesting] = useState(false)
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const refetch = useCallback(async () => {
@@ -81,12 +87,28 @@ export function useEnvironmentDumps(tenantId: string | null) {
     }
   }, [tenantId, refetch])
 
+  const cancel = useCallback(
+    async (dumpId: string) => {
+      setCancellingId(dumpId)
+      try {
+        const token = await getAuthToken(renownRef.current)
+        await cancelEnvironmentDump(dumpId, token)
+        await refetch()
+      } finally {
+        setCancellingId(null)
+      }
+    },
+    [refetch],
+  )
+
   return {
     dumps: state.dumps,
     isLoading: state.isLoading,
     error: state.error,
     isRequesting,
+    cancellingId,
     request,
+    cancel,
     refetch,
   }
 }
