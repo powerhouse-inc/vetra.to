@@ -1,6 +1,6 @@
 'use client'
 
-import { Bot, ChevronDown, ExternalLink, MoreVertical, RefreshCw, Trash2 } from 'lucide-react'
+import { Bot, ChevronDown, MoreVertical, RefreshCw, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { PackageManifest } from '@/modules/cloud/config/types'
 import { deriveClintAgentStatus, findClintAgentPods } from '@/modules/cloud/lib/clint-agent-status'
@@ -84,7 +84,7 @@ type Props = {
    */
   defaultExpanded?: boolean
   /**
-   * If provided, the card renders an "Open" button instead of an inline
+   * If provided, the card renders a "Details" button instead of an inline
    * "Configure" expand. Click handlers route to the per-agent drawer
    * (logs/metrics/activity/config). The inline expand panel is hidden when
    * `onOpenDetail` is set, since the drawer's Config tab is the authoritative
@@ -262,10 +262,9 @@ export function AgentCard({
                 variant="outline"
                 size="sm"
                 onClick={onOpenDetail}
-                aria-label="Open agent details"
+                aria-label="View agent details"
               >
-                <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-                Open
+                Details
               </Button>
             ) : (
               canEdit && (

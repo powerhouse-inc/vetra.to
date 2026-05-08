@@ -10,7 +10,6 @@ import {
   ShieldOff,
   Bot,
   Copy,
-  ExternalLink,
   Globe,
   Package,
   Server,
@@ -160,7 +159,7 @@ function ServiceRow({
   onToggle: (enabled: boolean) => Promise<void>
   onSetVersion?: (version: string) => Promise<void>
   onResize?: (size: import('@/modules/cloud/types').CloudResourceSize) => Promise<void>
-  /** When set, the row shows an "Open" button that opens the per-service
+  /** When set, the row shows a "Details" button that opens the per-service
    *  drawer (logs / metrics / activity). Only meaningful while the service is
    *  enabled — disabled services have nothing to observe. */
   onOpenDetail?: () => void
@@ -331,11 +330,10 @@ function ServiceRow({
               variant="outline"
               size="sm"
               onClick={onOpenDetail}
-              aria-label={`Open ${label} details`}
-              className="hidden gap-1.5 sm:inline-flex"
+              aria-label={`View ${label} details`}
+              className="hidden sm:inline-flex"
             >
-              <ExternalLink className="h-3.5 w-3.5" />
-              Open
+              Details
             </Button>
           )}
           {isEnabled && onResize && (

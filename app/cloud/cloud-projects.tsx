@@ -1,6 +1,6 @@
 'use client'
 
-import { Trash2, Server, Package } from 'lucide-react'
+import { ExternalLink, Package, Server, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -61,6 +61,16 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
   const displayName = env.state.label || env.name || 'Unnamed'
   const packageCount = env.state.packages.length
 
+  // Visit link to the live env (CONNECT URL). Mirror the field accessors
+  // used by app/cloud/[project]/page.tsx so listing + detail stay in sync.
+  const connectService = env.state.services.find((s) => s.type === 'CONNECT' && s.enabled)
+  const subdomain = env.state.genericSubdomain ?? null
+  const baseDomain = env.state.genericBaseDomain ?? 'vetra.io'
+  const visitUrl =
+    env.state.status === 'READY' && subdomain && connectService
+      ? `https://${connectService.prefix}.${subdomain}.${baseDomain}`
+      : null
+
   const handleDelete = async () => {
     if (!signer) {
       toast.error('You must be logged in with Renown to delete an environment')
@@ -107,8 +117,21 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
 
         <div className="flex gap-2">
           <Button variant="default" asChild className="flex-1">
-            <Link href={`/cloud/${env.id}`}>Open</Link>
+            <Link href={`/cloud/${env.id}`}>Manage</Link>
           </Button>
+          {visitUrl && (
+            <Button variant="outline" asChild className="shrink-0">
+              <a
+                href={visitUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Visit ${displayName}`}
+              >
+                <ExternalLink className="h-4 w-4" />
+                Visit
+              </a>
+            </Button>
+          )}
           <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
             <Button
               variant="outline"
