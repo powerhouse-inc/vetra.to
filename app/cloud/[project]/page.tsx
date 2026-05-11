@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 
 import { AgentDetailDrawer } from '@/modules/cloud/components/agent-detail-drawer'
 import { EnvActionBar } from '@/modules/cloud/components/env-action-bar'
+import { useDebouncedValue } from '@/modules/cloud/hooks/use-debounced-value'
 import { EnvSettingsDrawer } from '@/modules/cloud/components/env-settings-drawer'
 import { ServiceDetailDrawer } from '@/modules/cloud/components/service-detail-drawer'
 import { StatusBadge } from '@/modules/cloud/components/status-badge'
@@ -49,10 +50,15 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
   const isInactive = TRULY_INACTIVE.has(state?.status ?? 'DRAFT')
 
   const {
-    status: envStatus,
+    status: rawEnvStatus,
     pods: envPods,
     isLoading: statusLoading,
   } = useEnvironmentStatus(subdomain, tenantId, documentId)
+  // Smooth out subscription resyncs that briefly oscillate before settling.
+  // 250ms is short enough that "really new" updates feel instant, long
+  // enough to collapse stale push → correction flickers into one visible
+  // transition.
+  const envStatus = useDebouncedValue(rawEnvStatus, 250)
 
   // Drawer state (per-service / per-agent detail) is keyed in the URL via
   // `?drawer=service:<id>` or `?drawer=agent:<prefix>`. Hook owns parsing and
@@ -81,27 +87,25 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [environment, detail.setDefaultPackageRegistry])
 
-  // Approve/Deploy: local "just clicked" flag shields the button from the
-  // subscription-vs-push race. The controller updates local state
-  // optimistically (flipping status away from CHANGES_PENDING / DRAFT), but
-  // an incoming subscription notification can fetch the pre-push remote
-  // state and momentarily revert it — which reads as the button flickering
-  // back for 1-2s. Holding the flag until the server confirms any post-
-  // CHANGES_PENDING status keeps the button hidden through the race.
-  const [justApproved, setJustApproved] = useState(false)
+  // Approve / Deploy intent lock. Flipped synchronously on click so the
+  // floating action bar can speculatively render "Deploying…" through any
+  // subscription-vs-push race. Cleared once status leaves the pre-click
+  // states; the bar's own 3s window covers the early window in case the
+  // useEffect below clears too early.
+  const [intentDeploying, setIntentDeploying] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const statusStr = state?.status ?? 'DRAFT'
   useEffect(() => {
-    if (justApproved && statusStr !== 'CHANGES_PENDING' && statusStr !== 'DRAFT') {
-      setJustApproved(false)
+    if (intentDeploying && statusStr !== 'CHANGES_PENDING' && statusStr !== 'DRAFT') {
+      setIntentDeploying(false)
     }
-  }, [statusStr, justApproved])
+  }, [statusStr, intentDeploying])
   const handleApprove = async () => {
-    setJustApproved(true)
+    setIntentDeploying(true)
     try {
       await detail.approveChanges()
     } catch (err) {
-      setJustApproved(false)
+      setIntentDeploying(false)
       toast.error(err instanceof Error ? err.message : 'Failed to approve changes')
     }
   }
@@ -317,7 +321,7 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
 
       <EnvActionBar
         status={state?.status}
-        justApproved={justApproved}
+        intentDeploying={intentDeploying}
         driftDetected={!!envStatus?.configDriftDetected}
         onApprove={handleApprove}
       />
