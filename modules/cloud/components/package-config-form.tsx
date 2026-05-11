@@ -115,11 +115,11 @@ export function PackageConfigForm({
           <label htmlFor={`cfg-${entry.name}`} className="font-mono text-xs font-medium">
             {entry.name}
           </label>
-          <Badge variant="outline" className="text-[9px]">
+          <Badge size="xs" variant="outline">
             {entry.type}
           </Badge>
           {entry.required && (
-            <Badge variant="destructive" className="text-[9px]">
+            <Badge size="xs" variant="destructive">
               required
             </Badge>
           )}

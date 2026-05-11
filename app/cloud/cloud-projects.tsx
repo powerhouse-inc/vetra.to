@@ -116,11 +116,11 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
         </div>
 
         <div className="flex gap-2">
-          <Button variant="default" asChild className="flex-1">
+          <Button variant="default" size="sm" asChild className="flex-1">
             <Link href={`/cloud/${env.id}`}>Manage</Link>
           </Button>
           {visitUrl && (
-            <Button variant="outline" asChild className="shrink-0">
+            <Button variant="outline" size="sm" asChild className="shrink-0">
               <a
                 href={visitUrl}
                 target="_blank"

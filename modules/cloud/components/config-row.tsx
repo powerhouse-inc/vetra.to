@@ -84,7 +84,7 @@ export function ConfigRow({ entry, currentValue, isSet, onSave, onDelete }: Conf
             <Icon className="text-muted-foreground h-3.5 w-3.5" />
             <span className="font-mono text-sm font-medium">{entry.name}</span>
             {entry.required && (
-              <Badge variant="destructive" className="text-[9px]">
+              <Badge size="xs" variant="destructive">
                 required
               </Badge>
             )}
@@ -95,7 +95,7 @@ export function ConfigRow({ entry, currentValue, isSet, onSave, onDelete }: Conf
         </div>
       </TableCell>
       <TableCell className="align-top">
-        <Badge variant="outline" className="text-[9px]">
+        <Badge size="xs" variant="outline">
           {entry.type}
         </Badge>
       </TableCell>
@@ -138,7 +138,7 @@ export function ConfigRow({ entry, currentValue, isSet, onSave, onDelete }: Conf
               <span className="text-muted-foreground text-xs italic">not set</span>
             )}
             {needsValue && (
-              <Badge variant="destructive" className="text-[9px]">
+              <Badge size="xs" variant="destructive">
                 missing
               </Badge>
             )}

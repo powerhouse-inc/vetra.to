@@ -104,7 +104,7 @@ export function AvailableUpdatesCard({
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-medium">{update.serviceType}</p>
                   {update.channel && update.channel !== 'latest' && (
-                    <Badge variant="secondary" className="text-[10px]">
+                    <Badge size="xs" variant="secondary">
                       {update.channel}
                     </Badge>
                   )}
@@ -134,7 +134,7 @@ export function AvailableUpdatesCard({
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-medium">{update.packageName}</p>
                   {'channel' in update && (update as PackageUpdate).channel !== 'latest' && (
-                    <Badge variant="secondary" className="text-[10px]">
+                    <Badge size="xs" variant="secondary">
                       {(update as PackageUpdate).channel}
                     </Badge>
                   )}

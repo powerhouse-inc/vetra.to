@@ -238,8 +238,9 @@ function ServiceRow({
               {isEnabled && <StatusDot status={serviceStatus} />}
               {!isEnabled && (
                 <Badge
+                  size="xs"
                   variant="outline"
-                  className="text-muted-foreground border-border/50 px-1.5 py-0 text-[10px]"
+                  className="text-muted-foreground border-border/50 px-1.5 py-0"
                 >
                   OFF
                 </Badge>
@@ -391,12 +392,12 @@ function ServiceRow({
                             <span className="font-mono">{tag}</span>
                             <div className="flex items-center gap-1">
                               {tagLabel && (
-                                <Badge variant="secondary" className="text-[9px]">
+                                <Badge size="xs" variant="secondary">
                                   {tagLabel}
                                 </Badge>
                               )}
                               {tag === displayedVersion && (
-                                <Badge variant="default" className="text-[9px]">
+                                <Badge size="xs" variant="default">
                                   current
                                 </Badge>
                               )}

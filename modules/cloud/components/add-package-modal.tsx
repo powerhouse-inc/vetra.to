@@ -209,7 +209,7 @@ export function AddPackageModal({
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="flex items-center gap-1">
           <Plus className="h-3 w-3" />
-          Add
+          Add package
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">

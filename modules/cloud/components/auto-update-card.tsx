@@ -221,11 +221,11 @@ export function AutoUpdateCard({
   }, [serverChannel])
 
   const summaryBadge = channel ? (
-    <Badge variant="secondary" className="font-mono text-[10px]">
+    <Badge size="xs" variant="secondary" className="font-mono">
       {channel.toLowerCase()}
     </Badge>
   ) : (
-    <Badge variant="outline" className="text-[10px]">
+    <Badge size="xs" variant="outline">
       off
     </Badge>
   )
@@ -331,12 +331,12 @@ export function AutoUpdateCard({
                             </>
                           )}
                           {!outOfDate && latest && (
-                            <Badge variant="outline" className="text-[9px]">
+                            <Badge size="xs" variant="outline">
                               up to date
                             </Badge>
                           )}
                           {!latest && (
-                            <Badge variant="outline" className="text-[9px]">
+                            <Badge size="xs" variant="outline">
                               no release seen
                             </Badge>
                           )}

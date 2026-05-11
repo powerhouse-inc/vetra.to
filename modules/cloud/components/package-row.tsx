@@ -406,7 +406,7 @@ function UninstallDialog({
                     }
                   />
                   <span className="font-mono text-xs">{entry.name}</span>
-                  <Badge variant="outline" className="text-[9px]">
+                  <Badge size="xs" variant="outline">
                     {entry.type}
                   </Badge>
                   <span className="text-muted-foreground text-[10px]">
