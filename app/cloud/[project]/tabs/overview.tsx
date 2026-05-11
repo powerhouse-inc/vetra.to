@@ -288,26 +288,32 @@ function ServiceRow({
             })()}
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {isEnabled && onOpenDetail && (
+        {/* Reserve the action-slot width unconditionally so toggling Enabled
+            doesn't shift the row. Buttons that only make sense while enabled
+            are still gated, but their place is held. */}
+        <div className="flex min-w-44 items-center justify-end gap-2">
+          {onOpenDetail && (
             <Button
               variant="outline"
               size="sm"
               onClick={onOpenDetail}
               aria-label={`View ${label} details`}
-              className="hidden sm:inline-flex"
+              className={cn('hidden sm:inline-flex', !isEnabled && 'pointer-events-none invisible')}
+              tabIndex={isEnabled ? undefined : -1}
             >
               Details
             </Button>
           )}
-          {isEnabled && onResize && (
-            <ServiceSizePopover
-              serviceType={serviceType}
-              prefix={prefix}
-              currentSize={selectedRessource}
-              canEdit={canResize}
-              onSave={onResize}
-            />
+          {onResize && (
+            <span className={cn(!isEnabled && 'pointer-events-none invisible')}>
+              <ServiceSizePopover
+                serviceType={serviceType}
+                prefix={prefix}
+                currentSize={selectedRessource}
+                canEdit={canResize}
+                onSave={onResize}
+              />
+            </span>
           )}
           <Switch
             checked={isEnabled}
