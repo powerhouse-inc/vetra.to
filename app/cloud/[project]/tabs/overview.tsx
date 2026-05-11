@@ -1,6 +1,5 @@
 'use client'
 
-import { loadEnvironmentController } from '@/modules/cloud/controller'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
 import {
   CheckCircle,
@@ -11,16 +10,13 @@ import {
   Bot,
   Copy,
   Globe,
-  Package,
   Server,
   Zap,
-  Trash2,
   Pencil,
   Check,
   X,
   Loader2,
 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useCallback, useMemo, useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 
@@ -43,17 +39,6 @@ import type {
   CloudEnvironmentServiceType,
   EnvironmentStatus,
 } from '@/modules/cloud/types'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/modules/shared/components/ui/alert-dialog'
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
@@ -794,8 +779,6 @@ type OverviewTabProps = {
   addPackage: (name: string, version?: string) => Promise<void>
   removePackage: (name: string) => Promise<void>
   setCustomDomain: (enabled: boolean, domain?: string | null) => Promise<void>
-  onTerminate?: () => Promise<void>
-  onDelete?: () => void
   setServiceVersion?: (type: CloudEnvironmentServiceType, version: string) => Promise<void>
   setPackageVersion?: (packageName: string, version: string) => Promise<void>
   setAutoUpdateChannel?: (
@@ -833,8 +816,6 @@ export function OverviewTab({
   addPackage,
   removePackage,
   setCustomDomain,
-  onTerminate,
-  onDelete,
   setServiceVersion,
   setPackageVersion,
   setAutoUpdateChannel,
@@ -845,15 +826,13 @@ export function OverviewTab({
   onOpenServiceDetail,
   onOpenAgentDetail,
 }: OverviewTabProps) {
-  const { signer, canSign } = useCanSign()
-  const router = useRouter()
+  const { canSign } = useCanSign()
   const { events, isLoading: eventsLoading } = useEnvironmentEvents(
     subdomain,
     tenantId,
     5,
     environment.id,
   )
-  const [isDeleting, setIsDeleting] = useState(false)
   const [addAgentOpen, setAddAgentOpen] = useState(false)
 
   const state = environment.state
@@ -890,26 +869,6 @@ export function OverviewTab({
 
   const getServiceEnabled = (type: CloudEnvironmentServiceType) =>
     state.services.find((s) => s.type === type)
-
-  const handleDelete = async () => {
-    if (!signer) {
-      toast.error('You must be logged in with Renown to delete an environment')
-      return
-    }
-    try {
-      setIsDeleting(true)
-      const ctrl = await loadEnvironmentController({ documentId: environment.id, signer })
-      await ctrl.delete()
-      toast.success('Environment deleted')
-      onDelete?.()
-      router.push('/cloud')
-    } catch (error) {
-      console.error('Failed to delete environment:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to delete environment')
-    } finally {
-      setIsDeleting(false)
-    }
-  }
 
   const hasCustomDomain = state.customDomain?.enabled ?? false
 
@@ -1216,106 +1175,6 @@ export function OverviewTab({
         </CardHeader>
         <CardContent>
           <EventTimeline events={events} isLoading={eventsLoading} />
-        </CardContent>
-      </Card>
-
-      {/* f. Metadata */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Server className="h-4 w-4" />
-            Metadata
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div>
-            <dt className="text-muted-foreground text-xs font-medium">Document ID</dt>
-            <dd className="mt-0.5 font-mono text-xs break-all">{environment.id}</dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground text-xs font-medium">Type</dt>
-            <dd className="mt-0.5 text-sm">{environment.documentType}</dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground text-xs font-medium">Revision</dt>
-            <dd className="mt-0.5 text-sm">{environment.revision}</dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground text-xs font-medium">Created</dt>
-            <dd className="mt-0.5 text-sm">
-              {environment.createdAtUtcIso
-                ? new Date(environment.createdAtUtcIso).toLocaleDateString()
-                : '—'}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground text-xs font-medium">Last Modified</dt>
-            <dd className="mt-0.5 text-sm">
-              {environment.lastModifiedAtUtcIso
-                ? new Date(environment.lastModifiedAtUtcIso).toLocaleDateString()
-                : '—'}
-            </dd>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* g. Danger Zone */}
-      <Card className="border-destructive/50">
-        <CardHeader>
-          <CardTitle className="text-destructive flex items-center gap-2 text-base">
-            <Trash2 className="h-4 w-4" />
-            Danger Zone
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {onTerminate &&
-            !['DRAFT', 'TERMINATING', 'DESTROYED', 'ARCHIVED'].includes(state.status) && (
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-sm font-medium">Terminate Environment</p>
-                  <p className="text-muted-foreground text-sm">
-                    Stop all services and begin teardown. The environment can be archived after
-                    termination.
-                  </p>
-                </div>
-                <Button variant="destructive" size="sm" onClick={() => onTerminate()}>
-                  Terminate
-                </Button>
-              </div>
-            )}
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-medium">Delete Environment</p>
-              <p className="text-muted-foreground text-sm">
-                Permanently delete this environment and all its data. This action cannot be undone.
-              </p>
-            </div>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm" disabled={isDeleting}>
-                  {isDeleting ? 'Deleting...' : 'Delete'}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Environment</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to delete &ldquo;{state.label || environment.name}&rdquo;?
-                    This action cannot be undone and all data will be permanently lost.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDelete}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  >
-                    Delete Environment
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
         </CardContent>
       </Card>
     </div>
