@@ -251,12 +251,8 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
             setServiceSize={detail.setServiceSize}
             addPackage={detail.addPackage}
             removePackage={detail.removePackage}
-            setCustomDomain={detail.setCustomDomain}
             setServiceVersion={detail.setServiceVersion}
             setPackageVersion={detail.setPackageVersion}
-            setAutoUpdateChannel={detail.setAutoUpdateChannel}
-            updateToLatest={detail.updateToLatest}
-            rollbackRelease={detail.rollbackRelease}
             initialAddPackage={searchParams.get('addPackage')}
             initialAddVersion={searchParams.get('version')}
             onOpenServiceDetail={(kind) => drawer.open({ kind: 'service', id: kind }, 'logs')}

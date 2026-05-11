@@ -2,8 +2,6 @@
 
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
 import {
-  CheckCircle,
-  AlertTriangle,
   ShieldCheck,
   ShieldOff,
   Bot,
@@ -22,15 +20,11 @@ import { toast } from 'sonner'
 import { PackagesSection } from '@/modules/cloud/components/packages-section'
 import { AgentsSection } from '@/modules/cloud/components/agents-section'
 import { AddAgentModal } from '@/modules/cloud/components/add-agent-modal'
-import { CustomDomainSection } from '@/modules/cloud/components/custom-domain-section'
-import { AutoUpdateCard } from '@/modules/cloud/components/auto-update-card'
 import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updates-card'
-import { EventTimeline } from '@/modules/cloud/components/event-timeline'
 import { ServiceSizePopover } from '@/modules/cloud/components/service-size-popover'
 import { useClintPackages } from '@/modules/cloud/hooks/use-clint-packages'
 import { useClintRuntimeEndpoints } from '@/modules/cloud/hooks/use-clint-runtime-endpoints'
 import { partitionPackagesByManifestType } from '@/modules/cloud/lib/module-package-filter'
-import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useOptimistic } from '@/modules/cloud/hooks/use-optimistic'
 import { usePackageUpdates } from '@/modules/cloud/hooks/use-package-updates'
 import { useServiceUpdates } from '@/modules/cloud/hooks/use-service-updates'
@@ -42,17 +36,8 @@ import type {
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/shared/components/ui/card'
-import { Checkbox } from '@/modules/shared/components/ui/checkbox'
 import { Input } from '@/modules/shared/components/ui/input'
 import { Switch } from '@/modules/shared/components/ui/switch'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/modules/shared/components/ui/table'
 import { cn } from '@/shared/lib/utils'
 
 // ---------------------------------------------------------------------------
@@ -72,67 +57,6 @@ function StatusDot({ status }: { status: string }) {
             : 'bg-muted-foreground'
 
   return <span className={`inline-block h-2 w-2 rounded-full ${colorClass}`} />
-}
-
-// ---------------------------------------------------------------------------
-// ActivityStatusStrip — pills rendered above the Recent Activity event list
-// to surface the env's current ArgoCD sync state and config drift in the same
-// panel that already answers "what's been happening here?"
-// ---------------------------------------------------------------------------
-
-function ActivityStatusStrip({
-  argoSyncStatus,
-  argoHealthStatus,
-  argoLastSyncedAt,
-  configDriftDetected,
-  isLoading,
-}: {
-  argoSyncStatus?: string | null
-  argoHealthStatus?: string | null
-  argoLastSyncedAt?: string | null
-  configDriftDetected?: boolean | null
-  isLoading: boolean
-}) {
-  if (isLoading) {
-    return (
-      <div className="text-muted-foreground flex items-center gap-2 text-xs">
-        <Loader2 className="h-3 w-3 animate-spin" />
-        Loading status…
-      </div>
-    )
-  }
-  const syncedOk = argoSyncStatus === 'SYNCED'
-  const driftOk = !configDriftDetected
-  return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-      <span
-        className={cn(
-          'inline-flex items-center gap-1.5',
-          syncedOk ? 'text-emerald-500' : 'text-amber-500',
-        )}
-      >
-        {syncedOk ? <CheckCircle className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
-        ArgoCD {argoSyncStatus ? argoSyncStatus.toLowerCase() : 'unknown'}
-        {argoHealthStatus && argoHealthStatus !== 'Healthy' && (
-          <span className="text-muted-foreground">· {argoHealthStatus}</span>
-        )}
-      </span>
-      <span
-        className={cn(
-          'inline-flex items-center gap-1.5',
-          driftOk ? 'text-emerald-500' : 'text-amber-500',
-        )}
-      >
-        {driftOk ? <CheckCircle className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
-        {driftOk ? 'No drift' : 'Drift detected'}
-      </span>
-      {argoLastSyncedAt && (
-        <span className="text-muted-foreground ml-auto">
-          last sync {new Date(argoLastSyncedAt).toLocaleTimeString()}
-        </span>
-      )}
-    </div>
-  )
 }
 
 // ---------------------------------------------------------------------------
@@ -608,7 +532,6 @@ type OverviewTabProps = {
   /** Pods in the env namespace, shared from the same observability subscription as `status`. */
   pods?: readonly import('@/modules/cloud/types').Pod[]
   statusLoading: boolean
-  onTabChange?: (tab: string) => void
   enableService: (
     type: CloudEnvironmentServiceType,
     prefix: string,
@@ -625,14 +548,8 @@ type OverviewTabProps = {
   ) => Promise<void>
   addPackage: (name: string, version?: string) => Promise<void>
   removePackage: (name: string) => Promise<void>
-  setCustomDomain: (enabled: boolean, domain?: string | null) => Promise<void>
   setServiceVersion?: (type: CloudEnvironmentServiceType, version: string) => Promise<void>
   setPackageVersion?: (packageName: string, version: string) => Promise<void>
-  setAutoUpdateChannel?: (
-    channel: import('@/modules/cloud/types').AutoUpdateChannel | null,
-  ) => Promise<void>
-  updateToLatest?: () => Promise<string[]>
-  rollbackRelease?: () => Promise<string[]>
   initialAddPackage?: string | null
   initialAddVersion?: string | null
   /**
@@ -655,31 +572,20 @@ export function OverviewTab({
   status,
   pods,
   statusLoading,
-  onTabChange,
   enableService,
   disableService,
   setServiceConfig,
   setServiceSize,
   addPackage,
   removePackage,
-  setCustomDomain,
   setServiceVersion,
   setPackageVersion,
-  setAutoUpdateChannel,
-  updateToLatest,
-  rollbackRelease,
   initialAddPackage,
   initialAddVersion,
   onOpenServiceDetail,
   onOpenAgentDetail,
 }: OverviewTabProps) {
   const { canSign } = useCanSign()
-  const { events, isLoading: eventsLoading } = useEnvironmentEvents(
-    subdomain,
-    tenantId,
-    5,
-    environment.id,
-  )
   const [addAgentOpen, setAddAgentOpen] = useState(false)
 
   const state = environment.state
@@ -704,8 +610,6 @@ export function OverviewTab({
     subdomain,
     environment.id,
   )
-  const baseDomain = state.genericBaseDomain ?? 'vetra.io'
-  const genericDomain = subdomain ? `${subdomain}.${baseDomain}` : `<subdomain>.${baseDomain}`
 
   const defaultPrefixes: Record<CloudEnvironmentServiceType, string> = {
     CONNECT: 'connect',
@@ -780,18 +684,6 @@ export function OverviewTab({
             setServiceVersion(type as CloudEnvironmentServiceType, version)
           }
           onUpdatePackage={setPackageVersion}
-        />
-      )}
-
-      {/* b.2 Auto-Update — owner-facing channel subscription, update-now,
-          rollback, and release history. Only rendered when the detail
-          hook provided its wrappers (signed-in owner path). */}
-      {setAutoUpdateChannel && updateToLatest && rollbackRelease && (
-        <AutoUpdateCard
-          environment={environment}
-          onChangeChannel={setAutoUpdateChannel}
-          onUpdateNow={updateToLatest}
-          onRollback={rollbackRelease}
         />
       )}
 
@@ -919,64 +811,6 @@ export function OverviewTab({
           }}
         />
       )}
-
-      {/* d. Domain Configuration */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Globe className="h-4 w-4" />
-            Domain Configuration
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-muted-foreground text-sm font-medium">Generic Domain:</label>
-            <Input value={genericDomain} readOnly className="bg-muted font-mono text-sm" />
-          </div>
-
-          <CustomDomainSection
-            customDomain={state.customDomain}
-            apexService={
-              state.apexService === 'CONNECT' || state.apexService === 'SWITCHBOARD'
-                ? state.apexService
-                : null
-            }
-            enabledServices={state.services
-              .filter((s) => s.enabled && (s.type === 'CONNECT' || s.type === 'SWITCHBOARD'))
-              .map((s) => s.type as 'CONNECT' | 'SWITCHBOARD')}
-            onSetCustomDomain={setCustomDomain}
-          />
-        </CardContent>
-      </Card>
-
-      {/* e. Recent Activity — also surfaces ArgoCD sync + config drift as
-          pills in the header, since they describe the same "what's happening
-          to this env" question the event stream answers. */}
-      <Card>
-        <CardHeader className="space-y-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Recent Activity</CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground text-xs"
-              onClick={() => onTabChange?.('deployments')}
-            >
-              View all
-            </Button>
-          </div>
-          <ActivityStatusStrip
-            argoSyncStatus={status?.argoSyncStatus}
-            argoHealthStatus={status?.argoHealthStatus}
-            argoLastSyncedAt={status?.argoLastSyncedAt}
-            configDriftDetected={status?.configDriftDetected}
-            isLoading={statusLoading && !status}
-          />
-        </CardHeader>
-        <CardContent>
-          <EventTimeline events={events} isLoading={eventsLoading} />
-        </CardContent>
-      </Card>
     </div>
   )
 }
