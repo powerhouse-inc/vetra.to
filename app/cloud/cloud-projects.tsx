@@ -169,47 +169,53 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
   )
 }
 
-const SCOPE_LABELS: Record<ViewScope, string> = {
+// `UNCLAIMED` exists in ViewScope for the hook's in-memory filtering but is
+// no longer surfaced in the UI. Non-admins only see their own environments
+// (no toggle); admins can flip between Mine / All.
+type VisibleScope = Exclude<ViewScope, 'UNCLAIMED'>
+
+const SCOPE_LABELS: Record<VisibleScope, string> = {
   MINE: 'Mine',
-  UNCLAIMED: 'Unclaimed',
   ALL: 'All',
 }
 
-const EMPTY_COPY: Record<ViewScope, string> = {
+const EMPTY_COPY: Record<VisibleScope, string> = {
   MINE: 'Create your first environment to get started.',
-  UNCLAIMED: 'No unclaimed environments available.',
   ALL: 'No environments exist in the system.',
 }
 
+const ADMIN_SCOPE_OPTIONS: VisibleScope[] = ['MINE', 'ALL']
+
 export function CloudEnvironments() {
-  const [scope, setScope] = useState<ViewScope>('MINE')
+  const [scope, setScope] = useState<VisibleScope>('MINE')
   const { viewer } = useViewer()
   const environments = useEnvironments(scope, viewer?.address ?? null)
   const isAdmin = viewer?.isAdmin ?? false
 
-  const scopeOptions: ViewScope[] = isAdmin ? ['MINE', 'UNCLAIMED', 'ALL'] : ['MINE', 'UNCLAIMED']
-
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 text-sm">
-        <span className="text-muted-foreground">View:</span>
-        <div className="bg-muted inline-flex rounded-md p-0.5">
-          {scopeOptions.map((option) => (
-            <button
-              key={option}
-              type="button"
-              onClick={() => setScope(option)}
-              className={`rounded px-3 py-1 transition-colors ${
-                scope === option
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {SCOPE_LABELS[option]}
-            </button>
-          ))}
+      {/* Scope toggle is admin-only. Non-admins always see their own envs. */}
+      {isAdmin && (
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-muted-foreground">View:</span>
+          <div className="bg-muted inline-flex rounded-md p-0.5">
+            {ADMIN_SCOPE_OPTIONS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => setScope(option)}
+                className={`rounded px-3 py-1 transition-colors ${
+                  scope === option
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {SCOPE_LABELS[option]}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {environments.length === 0 ? (
         <div className="flex min-h-[300px] flex-col items-center justify-center space-y-4 py-12">
