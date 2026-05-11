@@ -26,7 +26,6 @@ import {
 } from '@/modules/shared/components/ui/dropdown-menu'
 import { HeroCard } from '@/modules/shared/components/ui/card'
 
-import { ConfigurationTab } from './tabs/configuration'
 import { InlineEditableTitle, OverviewTab } from './tabs/overview'
 
 // ---------------------------------------------------------------------------
@@ -267,12 +266,6 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
             onOpenServiceDetail={(kind) => drawer.open({ kind: 'service', id: kind }, 'logs')}
             onOpenAgentDetail={(prefix) => drawer.open({ kind: 'agent', id: prefix }, 'logs')}
           />
-
-          {/* Configuration — env-wide package config (env vars + secrets
-              declared by manifests). This used to be a tab; now it sits
-              inline so the page is a single readable surface. Per-agent
-              config lives inside the agent drawer's Config tab. */}
-          <ConfigurationTab tenantId={tenantId} environment={environment} />
         </div>
       )}
 
