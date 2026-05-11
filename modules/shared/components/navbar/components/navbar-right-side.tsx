@@ -51,7 +51,7 @@ function RenownButton() {
           <DropdownMenuSeparator className="bg-border/50" />
           <DropdownMenuItem
             onClick={() => auth.logout()}
-            className="cursor-pointer rounded-md px-3 py-2 text-sm font-medium text-red-500 focus:text-red-500"
+            className="text-destructive focus:text-destructive cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
           >
             <LogOut className="h-4 w-4" />
             Log out

@@ -4,6 +4,33 @@ import * as React from 'react'
 
 import { cn } from '@/shared/lib/utils'
 
+/**
+ * Button — primary interactive primitive.
+ *
+ * Use one of four roles, in order of decreasing emphasis:
+ *
+ * - `default`     — primary CTA (Vetra brand green). Max one per visible
+ *                   surface; the user's main action right now.
+ *                   Examples: Manage env, Deploy, Approve, modal Save.
+ * - `outline`     — secondary action / navigation peer of primary.
+ *                   Examples: Visit, Details, Add, Cancel.
+ * - `ghost`       — low-emphasis in-row tools, icon-only utilities.
+ *                   Examples: `⋮` dropdown triggers, copy buttons.
+ * - `destructive` — final commit step of a destructive flow (inside an
+ *                   AlertDialog). NOT the pre-confirm trigger.
+ *                   Examples: AlertDialogAction for Delete / Uninstall.
+ *
+ * `secondary` and `link` exist for legacy uses; avoid for new code.
+ *
+ * Sizes by surface:
+ * - `sm`      — compact rows, table actions (default for most cloud UI).
+ * - `default` — modal / dialog footer CTAs.
+ * - `lg`      — landing-page hero CTAs.
+ * - `icon`    — square icon-only buttons.
+ *
+ * Async clicks should use <AsyncButton> from `@/modules/cloud/components/async-button`
+ * — it provides the pending spinner + disable while a mutation is in flight.
+ */
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive cursor-pointer",
   {
