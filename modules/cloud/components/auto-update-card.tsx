@@ -315,7 +315,7 @@ export function AutoUpdateCard({
                           </span>
                           {outOfDate && latest && (
                             <>
-                              <ArrowUpCircle className="h-3 w-3 text-emerald-500" />
+                              <ArrowUpCircle className="text-success h-3 w-3" />
                               {latest.releaseUrl ? (
                                 <a
                                   href={latest.releaseUrl}

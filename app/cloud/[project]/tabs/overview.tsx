@@ -47,13 +47,13 @@ import { cn } from '@/shared/lib/utils'
 function StatusDot({ status }: { status: string }) {
   const colorClass =
     status === 'READY' || status === 'ACTIVE'
-      ? 'bg-emerald-500'
+      ? 'bg-success'
       : status === 'DEPLOYING'
-        ? 'bg-yellow-500'
+        ? 'bg-warning'
         : status === 'PROVISIONING'
-          ? 'bg-blue-500'
+          ? 'bg-info'
           : status === 'SUSPENDED' || status === 'BILLING_ISSUE'
-            ? 'bg-red-500'
+            ? 'bg-destructive'
             : 'bg-muted-foreground'
 
   return <span className={`inline-block h-2 w-2 rounded-full ${colorClass}`} />
@@ -211,7 +211,7 @@ function ServiceRow({
       className={cn(
         'rounded-lg border p-4 transition-colors',
         isEnabled
-          ? 'border-emerald-500/30 bg-emerald-500/5 dark:border-emerald-500/20 dark:bg-emerald-500/5'
+          ? 'border-success/30 bg-success/5 dark:border-success/20 dark:bg-success/5'
           : 'border-border/50 bg-muted/30 opacity-70',
       )}
     >
@@ -220,13 +220,13 @@ function ServiceRow({
           <div
             className={cn(
               'flex h-9 w-9 items-center justify-center rounded-md',
-              isEnabled ? 'bg-emerald-500/15 dark:bg-emerald-500/20' : 'bg-muted',
+              isEnabled ? 'bg-success/15 dark:bg-success/20' : 'bg-muted',
             )}
           >
             <Icon
               className={cn(
                 'h-5 w-5',
-                isEnabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground',
+                isEnabled ? 'text-success dark:text-success' : 'text-muted-foreground',
               )}
             />
           </div>
@@ -321,7 +321,7 @@ function ServiceRow({
             aria-label={`Toggle ${label}`}
             className={cn(
               isEnabled
-                ? 'data-[state=checked]:bg-emerald-500'
+                ? 'data-[state=checked]:bg-success'
                 : 'data-[state=unchecked]:bg-zinc-400 dark:data-[state=unchecked]:bg-zinc-600',
             )}
           />
@@ -331,7 +331,7 @@ function ServiceRow({
       {/* Version row. The image / npm package name aren't shown — they're
           a function of serviceType, not interesting per row. */}
       {isEnabled && (
-        <div className="mt-3 space-y-2 border-t border-emerald-500/10 pt-3">
+        <div className="border-success/10 mt-3 space-y-2 border-t pt-3">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
             <span className="text-muted-foreground">
               <span className="font-medium">Version:</span>{' '}

@@ -78,7 +78,7 @@ export function AvailableUpdatesCard({
   }
 
   return (
-    <Card className="border-blue-500/30 bg-blue-500/5 dark:border-blue-500/20 dark:bg-blue-500/5">
+    <Card className="border-info/30 bg-info/5 dark:border-info/20 dark:bg-info/5">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -86,10 +86,7 @@ export function AvailableUpdatesCard({
               <RefreshCw className="h-4 w-4" />
               Available Updates
             </CardTitle>
-            <Badge
-              variant="outline"
-              className="border-blue-500/30 bg-blue-500/10 text-xs text-blue-500"
-            >
+            <Badge variant="outline" className="border-info/30 bg-info/10 text-info text-xs">
               {totalUpdates}
             </Badge>
           </div>
@@ -115,7 +112,7 @@ export function AvailableUpdatesCard({
                 <div className="text-muted-foreground flex items-center gap-1.5 font-mono text-xs">
                   <span>{update.currentVersion ?? 'not set'}</span>
                   <ArrowRight className="h-3 w-3" />
-                  <span className="text-emerald-500">{update.latestVersion}</span>
+                  <span className="text-success">{update.latestVersion}</span>
                 </div>
               </div>
               <Button
@@ -145,7 +142,7 @@ export function AvailableUpdatesCard({
                 <div className="text-muted-foreground flex items-center gap-1.5 font-mono text-xs">
                   <span>{update.currentVersion ?? 'not set'}</span>
                   <ArrowRight className="h-3 w-3" />
-                  <span className="text-emerald-500">{update.latestVersion}</span>
+                  <span className="text-success">{update.latestVersion}</span>
                 </div>
               </div>
               <Button

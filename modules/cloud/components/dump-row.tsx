@@ -42,9 +42,9 @@ function fmtBytes(n: number | null): string {
 
 const PILL_BY_STATUS: Record<DatabaseDumpStatus, { label: string; cls: string }> = {
   PENDING: { label: 'PENDING', cls: 'bg-muted text-muted-foreground' },
-  RUNNING: { label: 'RUNNING', cls: 'bg-blue-500/15 text-blue-400' },
-  READY: { label: 'READY', cls: 'bg-emerald-500/15 text-emerald-400' },
-  FAILED: { label: 'FAILED', cls: 'bg-red-500/15 text-red-400' },
+  RUNNING: { label: 'RUNNING', cls: 'bg-info/15 text-info' },
+  READY: { label: 'READY', cls: 'bg-success/15 text-success' },
+  FAILED: { label: 'FAILED', cls: 'bg-destructive/15 text-destructive' },
 }
 const EXPIRED_PILL = { label: 'EXPIRED', cls: 'bg-muted text-muted-foreground' }
 
@@ -108,7 +108,7 @@ export function DumpRow({ dump, onRetry, onCancel, isCancelling }: Props) {
         </div>
         {dump.status === 'RUNNING' && (
           <div className="bg-muted mt-2 h-0.5 overflow-hidden rounded-full">
-            <div className="h-full w-1/3 animate-pulse bg-blue-500" />
+            <div className="bg-info h-full w-1/3 animate-pulse" />
           </div>
         )}
       </div>

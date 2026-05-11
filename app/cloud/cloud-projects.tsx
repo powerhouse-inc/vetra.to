@@ -30,8 +30,8 @@ import type { CloudEnvironment } from './types'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   DRAFT: { label: 'Draft', color: 'bg-muted-foreground' },
-  CHANGES_PENDING: { label: 'Pending', color: 'bg-blue-500' },
-  CHANGES_APPROVED: { label: 'Approved', color: 'bg-blue-500' },
+  CHANGES_PENDING: { label: 'Pending', color: 'bg-info' },
+  CHANGES_APPROVED: { label: 'Approved', color: 'bg-info' },
   CHANGES_PUSHED: { label: 'Deploying', color: 'bg-warning' },
   DEPLOYING: { label: 'Deploying', color: 'bg-warning' },
   DEPLOYMENt_FAILED: { label: 'Failed', color: 'bg-destructive' },

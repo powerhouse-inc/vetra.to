@@ -227,9 +227,11 @@ export function CustomDomainSection({
                     <TableCell className="font-mono text-xs">{record.host}</TableCell>
                     <TableCell className="font-mono text-xs">{record.value}</TableCell>
                     <TableCell>
-                      {status === true && <span className="text-xs text-emerald-500">Valid</span>}
-                      {status === false && <span className="text-xs text-red-500">Missing</span>}
-                      {status === null && <span className="text-xs text-amber-500">Error</span>}
+                      {status === true && <span className="text-success text-xs">Valid</span>}
+                      {status === false && (
+                        <span className="text-destructive text-xs">Missing</span>
+                      )}
+                      {status === null && <span className="text-warning text-xs">Error</span>}
                       {status === undefined && (
                         <span className="text-muted-foreground text-xs">—</span>
                       )}

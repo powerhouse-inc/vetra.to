@@ -112,7 +112,7 @@ function SelectableSizeTable({
               )}
             >
               <span className="flex h-4 w-4 items-center justify-center">
-                {isSelected && <Check className="h-4 w-4 text-emerald-500" />}
+                {isSelected && <Check className="text-success h-4 w-4" />}
               </span>
               <span className="font-medium">{SIZE_LABELS[s]}</span>
               <span className="text-muted-foreground font-mono">

@@ -18,10 +18,10 @@ type ParsedLog = {
 }
 
 const LEVEL_STYLES: Record<string, { badge: string; text: string }> = {
-  error: { badge: 'bg-red-500/20 text-red-400', text: 'text-red-300' },
-  warn: { badge: 'bg-amber-500/20 text-amber-400', text: 'text-amber-200' },
-  warning: { badge: 'bg-amber-500/20 text-amber-400', text: 'text-amber-200' },
-  info: { badge: 'bg-blue-500/15 text-blue-400', text: 'text-gray-200' },
+  error: { badge: 'bg-destructive/20 text-destructive', text: 'text-red-300' },
+  warn: { badge: 'bg-warning/20 text-warning', text: 'text-amber-200' },
+  warning: { badge: 'bg-warning/20 text-warning', text: 'text-amber-200' },
+  info: { badge: 'bg-info/15 text-info', text: 'text-gray-200' },
   debug: { badge: 'bg-gray-500/20 text-gray-500', text: 'text-gray-400' },
   log: { badge: 'bg-gray-500/15 text-gray-400', text: 'text-gray-300' },
 }

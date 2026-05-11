@@ -3,18 +3,18 @@ import { Badge } from '@/modules/shared/components/ui/badge'
 import { cn } from '@/shared/lib/utils'
 
 const DOT: Record<ClintAgentStatusTone, string> = {
-  healthy: 'bg-emerald-500',
-  starting: 'bg-amber-500 animate-pulse',
-  restarting: 'bg-amber-500 animate-pulse',
-  failed: 'bg-rose-500',
-  stopped: 'bg-gray-400',
+  healthy: 'bg-success',
+  starting: 'bg-warning animate-pulse',
+  restarting: 'bg-warning animate-pulse',
+  failed: 'bg-destructive',
+  stopped: 'bg-muted-foreground',
 }
 
 const PILL: Record<ClintAgentStatusTone, string> = {
-  healthy: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
-  starting: 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
-  restarting: 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
-  failed: 'bg-rose-500/15 text-rose-700 dark:text-rose-400',
+  healthy: 'bg-success/15 text-success',
+  starting: 'bg-warning/15 text-warning',
+  restarting: 'bg-warning/15 text-warning',
+  failed: 'bg-destructive/15 text-destructive',
   stopped: 'bg-muted text-muted-foreground',
 }
 

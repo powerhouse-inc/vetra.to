@@ -290,7 +290,7 @@ function ActivityStatusStrip({
       <span
         className={cn(
           'inline-flex items-center gap-1.5',
-          syncedOk ? 'text-emerald-500' : 'text-amber-500',
+          syncedOk ? 'text-success' : 'text-warning',
         )}
       >
         {syncedOk ? <CheckCircle className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
@@ -302,7 +302,7 @@ function ActivityStatusStrip({
       <span
         className={cn(
           'inline-flex items-center gap-1.5',
-          driftOk ? 'text-emerald-500' : 'text-amber-500',
+          driftOk ? 'text-success' : 'text-warning',
         )}
       >
         {driftOk ? <CheckCircle className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}

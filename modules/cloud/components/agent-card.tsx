@@ -247,7 +247,7 @@ export function AgentCard({
               </span>
             )}
             {restartCount > 0 && (
-              <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
+              <span className="text-warning inline-flex items-center gap-1">
                 <RefreshCw className="h-3 w-3" /> {restartCount} restart
                 {restartCount === 1 ? '' : 's'}
               </span>
