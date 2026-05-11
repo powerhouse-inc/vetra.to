@@ -1,6 +1,15 @@
 'use client'
 
-import { Activity, BarChart2, FileText, Globe, RefreshCw, Server, Zap } from 'lucide-react'
+import {
+  Activity,
+  BarChart2,
+  Database,
+  FileText,
+  Globe,
+  RefreshCw,
+  Server,
+  Zap,
+} from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
@@ -26,6 +35,7 @@ import {
 } from '@/modules/shared/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/shared/components/ui/tabs'
 
+import { DatabaseBackupsTab } from './database-backups-tab'
 import { EventTimeline } from './event-timeline'
 import { LogViewer } from './log-viewer'
 import { MetricCard } from './metric-card'
@@ -75,6 +85,12 @@ type Props = {
   tenantId: string | null
   documentId: string
   isStopped: boolean
+  /**
+   * Whether the viewer can mutate env resources. Only used by the Database
+   * tab (switchboard-only) to gate the "Create dump" button. Other tabs are
+   * read-only.
+   */
+  canEdit: boolean
   pods?: readonly Pod[]
   activeTab: string
   onTabChange: (tab: string) => void
@@ -89,10 +105,16 @@ export function ServiceDetailDrawer({
   tenantId,
   documentId,
   isStopped,
+  canEdit,
   pods,
   activeTab,
   onTabChange,
 }: Props) {
+  // The Switchboard service is the chart's gating service for the CNPG
+  // database cluster, so its drawer also surfaces DB backups. CONNECT and
+  // FUSION never get a Database tab.
+  const showDatabaseTab = kind === 'switchboard' && !!tenantId
+  const clusterName = tenantId ? `${tenantId}-pg` : null
   const Icon = SERVICE_ICON[kind]
   const label = SERVICE_LABEL[kind]
   const tenantService = toTenantService(kind)
@@ -173,6 +195,11 @@ export function ServiceDetailDrawer({
             <TabsTrigger value="activity" className="gap-1.5">
               <Activity className="h-3.5 w-3.5" /> Activity
             </TabsTrigger>
+            {showDatabaseTab && (
+              <TabsTrigger value="database" className="gap-1.5">
+                <Database className="h-3.5 w-3.5" /> Database
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <div className="flex-1 overflow-y-auto px-6 py-4">
@@ -265,6 +292,19 @@ export function ServiceDetailDrawer({
                 </p>
               )}
             </TabsContent>
+
+            {showDatabaseTab && (
+              <TabsContent value="database" className="mt-0">
+                <div className="text-muted-foreground mb-4 text-xs">
+                  <span className="font-mono">{clusterName}</span> · postgres 16
+                </div>
+                <DatabaseBackupsTab tenantId={tenantId} canEdit={canEdit} />
+                <p className="text-muted-foreground mt-4 text-[11px]">
+                  Detailed metrics, replication lag and connection counts live in the cluster-wide
+                  Grafana dashboards.
+                </p>
+              </TabsContent>
+            )}
           </div>
         </Tabs>
       </SheetContent>

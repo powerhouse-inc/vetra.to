@@ -6,14 +6,14 @@ import { useCallback, useMemo } from 'react'
 /**
  * Drawer scope keyed in the URL as `?drawer=<kind>:<id>&drawerTab=<tab>`.
  *
- * Three kinds: `service` (CONNECT/SWITCHBOARD/FUSION, id = lowercased type),
- * `agent` (CLINT, id = service prefix), and `database` (id = always 'main' —
- * one DB per env). Anything that doesn't parse cleanly means "no drawer open".
+ * Two kinds: `service` (CONNECT/SWITCHBOARD/FUSION, id = lowercased type) and
+ * `agent` (CLINT, id = service prefix). Database backups live inside the
+ * Switchboard service drawer's Database tab — there's no separate scope for
+ * them. Anything that doesn't parse cleanly means "no drawer open".
  */
 export type DrawerScope =
   | { kind: 'service'; id: 'connect' | 'switchboard' | 'fusion' }
   | { kind: 'agent'; id: string }
-  | { kind: 'database'; id: 'main' }
 
 const VALID_SERVICE_IDS = new Set(['connect', 'switchboard', 'fusion'])
 
@@ -28,9 +28,6 @@ function parseDrawer(value: string | null): DrawerScope | null {
     return { kind: 'service', id: id as 'connect' | 'switchboard' | 'fusion' }
   }
   if (kind === 'agent') return { kind: 'agent', id }
-  if (kind === 'database' && id === 'main') {
-    return { kind: 'database', id: 'main' }
-  }
   return null
 }
 

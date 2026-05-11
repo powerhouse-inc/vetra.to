@@ -7,8 +7,6 @@ import { Suspense, use, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { AgentDetailDrawer } from '@/modules/cloud/components/agent-detail-drawer'
-import { DatabaseDetailDrawer } from '@/modules/cloud/components/database-detail-drawer'
-import { DatabaseRow } from '@/modules/cloud/components/database-row'
 import { ServiceDetailDrawer } from '@/modules/cloud/components/service-detail-drawer'
 import { StatusBadge } from '@/modules/cloud/components/status-badge'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
@@ -270,17 +268,6 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
             onOpenAgentDetail={(prefix) => drawer.open({ kind: 'agent', id: prefix }, 'logs')}
           />
 
-          {/* Database row — only for envs that have a CNPG cluster.
-              Switchboard is the chart's gating service for database.cnpg
-              (see powerhouse-chart/templates/postgres-cluster.yaml). The
-              row opens a side drawer with Backups + Overview tabs. */}
-          {state.services.some((s) => s.enabled && s.type === 'SWITCHBOARD') && tenantId && (
-            <DatabaseRow
-              clusterName={`${tenantId}-pg`}
-              onOpen={() => drawer.open({ kind: 'database', id: 'main' }, 'backups')}
-            />
-          )}
-
           {/* Configuration — env-wide package config (env vars + secrets
               declared by manifests). This used to be a tab; now it sits
               inline so the page is a single readable surface. Per-agent
@@ -302,19 +289,9 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
           tenantId={tenantId}
           documentId={documentId}
           isStopped={isInactive}
+          canEdit={canSign && !isInactive}
           pods={envPods}
           activeTab={drawer.tab ?? 'logs'}
-          onTabChange={drawer.setTab}
-        />
-      )}
-      {state && environment && drawer.scope?.kind === 'database' && tenantId && (
-        <DatabaseDetailDrawer
-          open
-          onClose={drawer.close}
-          tenantId={tenantId}
-          clusterName={`${tenantId}-pg`}
-          canEdit={canSign && !isInactive}
-          activeTab={drawer.tab ?? 'backups'}
           onTabChange={drawer.setTab}
         />
       )}
