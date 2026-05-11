@@ -3,7 +3,6 @@
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
 import {
   CheckCircle,
-  XCircle,
   AlertTriangle,
   ShieldCheck,
   ShieldOff,
@@ -72,6 +71,67 @@ function StatusDot({ status }: { status: string }) {
             : 'bg-muted-foreground'
 
   return <span className={`inline-block h-2 w-2 rounded-full ${colorClass}`} />
+}
+
+// ---------------------------------------------------------------------------
+// ActivityStatusStrip — pills rendered above the Recent Activity event list
+// to surface the env's current ArgoCD sync state and config drift in the same
+// panel that already answers "what's been happening here?"
+// ---------------------------------------------------------------------------
+
+function ActivityStatusStrip({
+  argoSyncStatus,
+  argoHealthStatus,
+  argoLastSyncedAt,
+  configDriftDetected,
+  isLoading,
+}: {
+  argoSyncStatus?: string | null
+  argoHealthStatus?: string | null
+  argoLastSyncedAt?: string | null
+  configDriftDetected?: boolean | null
+  isLoading: boolean
+}) {
+  if (isLoading) {
+    return (
+      <div className="text-muted-foreground flex items-center gap-2 text-xs">
+        <Loader2 className="h-3 w-3 animate-spin" />
+        Loading status…
+      </div>
+    )
+  }
+  const syncedOk = argoSyncStatus === 'SYNCED'
+  const driftOk = !configDriftDetected
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+      <span
+        className={cn(
+          'inline-flex items-center gap-1.5',
+          syncedOk ? 'text-emerald-500' : 'text-amber-500',
+        )}
+      >
+        {syncedOk ? <CheckCircle className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
+        ArgoCD {argoSyncStatus ? argoSyncStatus.toLowerCase() : 'unknown'}
+        {argoHealthStatus && argoHealthStatus !== 'Healthy' && (
+          <span className="text-muted-foreground">· {argoHealthStatus}</span>
+        )}
+      </span>
+      <span
+        className={cn(
+          'inline-flex items-center gap-1.5',
+          driftOk ? 'text-emerald-500' : 'text-amber-500',
+        )}
+      >
+        {driftOk ? <CheckCircle className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
+        {driftOk ? 'No drift' : 'Drift detected'}
+      </span>
+      {argoLastSyncedAt && (
+        <span className="text-muted-foreground ml-auto">
+          last sync {new Date(argoLastSyncedAt).toLocaleTimeString()}
+        </span>
+      )}
+    </div>
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -874,117 +934,55 @@ export function OverviewTab({
 
   return (
     <div className="space-y-6">
-      {/* a. Status Row */}
-      <div className={cn('grid gap-4', hasCustomDomain ? 'grid-cols-3' : 'grid-cols-2')}>
-        {/* ArgoCD Card */}
+      {/* a. Domain status — only when a custom domain is configured.
+          ArgoCD sync + config drift previously lived here as two more cards;
+          they're now folded into the Recent Activity panel header below. */}
+      {hasCustomDomain && (
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
-              {status?.argoSyncStatus === 'SYNCED' ? (
-                <CheckCircle className="h-4 w-4 text-[#04c161]" />
-              ) : (
-                <XCircle className="h-4 w-4 text-[#ea4335]" />
-              )}
-              <span className="text-sm font-medium">ArgoCD</span>
+              <Globe className="text-muted-foreground h-4 w-4" />
+              <span className="text-sm font-medium">Domain</span>
             </div>
             <div className="mt-2 space-y-1">
               <p className="text-muted-foreground text-xs">
-                Sync:{' '}
+                Resolves:{' '}
                 <span className="text-foreground font-medium">
-                  {statusLoading ? '...' : (status?.argoSyncStatus ?? 'Unknown')}
+                  {statusLoading
+                    ? '...'
+                    : status?.domainResolves === null
+                      ? 'Checking...'
+                      : status?.domainResolves
+                        ? 'Yes'
+                        : 'No'}
                 </span>
               </p>
-              <p className="text-muted-foreground text-xs">
-                Health:{' '}
-                <span className="text-foreground font-medium">
-                  {statusLoading ? '...' : (status?.argoHealthStatus ?? 'Unknown')}
-                </span>
-              </p>
-              {status?.argoLastSyncedAt && (
-                <p className="text-muted-foreground text-xs">
-                  Last synced: {new Date(status.argoLastSyncedAt).toLocaleTimeString()}
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Config Card */}
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2">
-              {status?.configDriftDetected ? (
-                <AlertTriangle className="h-4 w-4 text-[#ffa132]" />
-              ) : (
-                <CheckCircle className="h-4 w-4 text-[#04c161]" />
-              )}
-              <span className="text-sm font-medium">Config</span>
-            </div>
-            <div className="mt-2 space-y-1">
-              <p className="text-muted-foreground text-xs">
-                Drift:{' '}
-                <span className="text-foreground font-medium">
-                  {statusLoading ? '...' : status?.configDriftDetected ? 'Detected' : 'None'}
-                </span>
-              </p>
-              {status?.argoMessage && (
-                <p className="text-muted-foreground line-clamp-2 text-xs">{status.argoMessage}</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Domain Card — only shown when a custom domain is configured.
-            Without one, domainResolves/tlsCertValid come back null from
-            the observability subgraph (nothing to probe) and the card
-            would just render "Unknown" everywhere. */}
-        {hasCustomDomain && (
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2">
-                <Globe className="text-muted-foreground h-4 w-4" />
-                <span className="text-sm font-medium">Domain</span>
-              </div>
-              <div className="mt-2 space-y-1">
-                <p className="text-muted-foreground text-xs">
-                  Resolves:{' '}
-                  <span className="text-foreground font-medium">
-                    {statusLoading
-                      ? '...'
-                      : status?.domainResolves === null
-                        ? 'Checking...'
-                        : status?.domainResolves
-                          ? 'Yes'
-                          : 'No'}
-                  </span>
-                </p>
-                <p className="text-muted-foreground flex items-center gap-1 text-xs">
-                  TLS:{' '}
-                  {status?.tlsCertValid ? (
-                    <ShieldCheck className="h-3 w-3 text-[#04c161]" />
-                  ) : (
-                    <ShieldOff className="h-3 w-3 text-[#ea4335]" />
-                  )}
-                  <span className="text-foreground font-medium">
-                    {statusLoading
-                      ? '...'
-                      : status?.tlsCertValid === null
-                        ? 'Checking...'
-                        : status?.tlsCertValid
-                          ? 'Valid'
-                          : 'Invalid'}
-                  </span>
-                </p>
-                {status?.tlsCertExpiresAt && (
-                  <p className="text-muted-foreground text-xs">
-                    Expires: {new Date(status.tlsCertExpiresAt).toLocaleDateString()}
-                  </p>
+              <p className="text-muted-foreground flex items-center gap-1 text-xs">
+                TLS:{' '}
+                {status?.tlsCertValid ? (
+                  <ShieldCheck className="h-3 w-3 text-[#04c161]" />
+                ) : (
+                  <ShieldOff className="h-3 w-3 text-[#ea4335]" />
                 )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+                <span className="text-foreground font-medium">
+                  {statusLoading
+                    ? '...'
+                    : status?.tlsCertValid === null
+                      ? 'Checking...'
+                      : status?.tlsCertValid
+                        ? 'Valid'
+                        : 'Invalid'}
+                </span>
+              </p>
+              {status?.tlsCertExpiresAt && (
+                <p className="text-muted-foreground text-xs">
+                  Expires: {new Date(status.tlsCertExpiresAt).toLocaleDateString()}
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* b. Available Updates */}
       {setServiceVersion && setPackageVersion && (
@@ -1158,9 +1156,11 @@ export function OverviewTab({
         </CardContent>
       </Card>
 
-      {/* e. Recent Activity */}
+      {/* e. Recent Activity — also surfaces ArgoCD sync + config drift as
+          pills in the header, since they describe the same "what's happening
+          to this env" question the event stream answers. */}
       <Card>
-        <CardHeader>
+        <CardHeader className="space-y-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base">Recent Activity</CardTitle>
             <Button
@@ -1172,6 +1172,13 @@ export function OverviewTab({
               View all
             </Button>
           </div>
+          <ActivityStatusStrip
+            argoSyncStatus={status?.argoSyncStatus}
+            argoHealthStatus={status?.argoHealthStatus}
+            argoLastSyncedAt={status?.argoLastSyncedAt}
+            configDriftDetected={status?.configDriftDetected}
+            isLoading={statusLoading && !status}
+          />
         </CardHeader>
         <CardContent>
           <EventTimeline events={events} isLoading={eventsLoading} />
