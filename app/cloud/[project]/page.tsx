@@ -7,6 +7,7 @@ import { Suspense, use, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { AgentDetailDrawer } from '@/modules/cloud/components/agent-detail-drawer'
+import { EnvActionBar } from '@/modules/cloud/components/env-action-bar'
 import { ServiceDetailDrawer } from '@/modules/cloud/components/service-detail-drawer'
 import { StatusBadge } from '@/modules/cloud/components/status-badge'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
@@ -176,24 +177,8 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Deploy/Approve button — hidden instantly on click via
-                  justApproved until the server confirms a
-                  post-CHANGES_PENDING state, to mask the
-                  subscription-vs-push race. */}
-              {state?.status === 'DRAFT' && !justApproved && (
-                <Button
-                  size="sm"
-                  onClick={handleApprove}
-                  className="bg-emerald-600 hover:bg-emerald-700"
-                >
-                  Deploy
-                </Button>
-              )}
-              {state?.status === 'CHANGES_PENDING' && !justApproved && (
-                <Button size="sm" onClick={handleApprove} className="bg-blue-600 hover:bg-blue-700">
-                  Approve Changes
-                </Button>
-              )}
+              {/* Deploy / Approve / Deploying… surfaces in <EnvActionBar/>
+                  pinned to the bottom of the viewport, not here in the hero. */}
 
               {/* Visit dropdown */}
               {subdomain && enabledServices.length > 0 && (
@@ -322,6 +307,13 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
           }}
         />
       )}
+
+      <EnvActionBar
+        status={state?.status}
+        justApproved={justApproved}
+        driftDetected={!!envStatus?.configDriftDetected}
+        onApprove={handleApprove}
+      />
     </>
   )
 }
