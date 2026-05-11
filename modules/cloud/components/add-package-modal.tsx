@@ -22,6 +22,7 @@ import {
 } from '@/modules/cloud/hooks/use-registry-search'
 import { useTenantConfig } from '@/modules/cloud/hooks/use-tenant-config'
 import type { CloudPackage } from '@/modules/cloud/types'
+import { AsyncButton } from '@/modules/cloud/components/async-button'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
   Command,
@@ -67,7 +68,6 @@ export function AddPackageModal({
 }: AddPackageModalProps) {
   const renown = useRenown()
   const [open, setOpen] = useState(initialOpen ?? false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [packageSearch, setPackageSearch] = useState(initialPackage ?? '')
   const [selectedPackage, setSelectedPackage] = useState<string | null>(initialPackage ?? null)
@@ -166,13 +166,13 @@ export function AddPackageModal({
   }
 
   const handleSubmit = async () => {
-    if (!selectedPackage) return
+    if (!selectedPackage) throw new Error('Pick a package first.')
     if (missingRequired.length > 0) {
-      toast.error(`Missing required config: ${missingRequired.join(', ')}`)
-      return
+      const msg = `Missing required config: ${missingRequired.join(', ')}`
+      toast.error(msg)
+      throw new Error(msg)
     }
     try {
-      setIsSubmitting(true)
       const entries = candidateManifest?.config ?? []
       if (tenantId && entries.length > 0) {
         const changes = computeConfigChanges(entries, configState, existingVarValues)
@@ -182,20 +182,21 @@ export function AddPackageModal({
       }
       await onAdd(selectedPackage, selectedVersion || undefined)
       toast.success('Package added successfully')
+      // Close only after the mutation has resolved successfully so the user
+      // sees server-side errors (e.g. registry resolution failure) inline.
       resetForm()
       setOpen(false)
     } catch (error) {
       console.error('Failed to add package:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to add package')
-    } finally {
-      setIsSubmitting(false)
+      const msg = error instanceof Error ? error.message : 'Failed to add package'
+      toast.error(msg)
+      throw error instanceof Error ? error : new Error(msg)
     }
   }
 
   const configEntries = candidateManifest?.config ?? []
   const showConfigForm = !!selectedPackage && configEntries.length > 0 && tenantId !== null
-  const isAddDisabled =
-    isSubmitting || !selectedPackage || candidateManifestLoading || missingRequired.length > 0
+  const isAddDisabled = !selectedPackage || candidateManifestLoading || missingRequired.length > 0
 
   return (
     <Dialog
@@ -380,9 +381,9 @@ export function AddPackageModal({
           )}
         </div>
         <div className="mt-2 flex gap-2">
-          <Button onClick={handleSubmit} disabled={isAddDisabled}>
-            {isSubmitting ? 'Adding...' : 'Add Package'}
-          </Button>
+          <AsyncButton onClickAsync={handleSubmit} disabled={isAddDisabled} pendingLabel="Adding…">
+            Add Package
+          </AsyncButton>
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>

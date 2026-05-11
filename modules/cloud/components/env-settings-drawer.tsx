@@ -17,10 +17,12 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
+import { AsyncButton } from '@/modules/cloud/components/async-button'
 import { AutoUpdateCard } from '@/modules/cloud/components/auto-update-card'
 import { CustomDomainSection } from '@/modules/cloud/components/custom-domain-section'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
 import { loadEnvironmentController } from '@/modules/cloud/controller'
+import { useAsyncAction } from '@/modules/cloud/hooks/use-async-action'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import type {
@@ -383,29 +385,19 @@ function DangerZone({
   onClose: () => void
 }) {
   const [expanded, setExpanded] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
   const router = useRouter()
   const { signer } = useCanSign()
 
-  const handleDelete = async () => {
+  const { run: runDelete, isPending: isDeleting } = useAsyncAction(async () => {
     if (!signer) {
-      toast.error('You must be logged in with Renown to delete an environment')
-      return
+      throw new Error('You must be logged in with Renown to delete an environment')
     }
-    try {
-      setIsDeleting(true)
-      const ctrl = await loadEnvironmentController({ documentId: environment.id, signer })
-      await ctrl.delete()
-      toast.success('Environment deleted')
-      onClose()
-      router.push('/cloud')
-    } catch (error) {
-      console.error('Failed to delete environment:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to delete environment')
-    } finally {
-      setIsDeleting(false)
-    }
-  }
+    const ctrl = await loadEnvironmentController({ documentId: environment.id, signer })
+    await ctrl.delete()
+    toast.success('Environment deleted')
+    onClose()
+    router.push('/cloud')
+  })
 
   return (
     <div className="border-destructive/30 mt-2 rounded-md border">
@@ -431,16 +423,17 @@ function DangerZone({
                   Stop all services and begin teardown.
                 </p>
               </div>
-              <Button
+              <AsyncButton
                 variant="destructive"
                 size="sm"
-                onClick={async () => {
+                pendingLabel="Terminating…"
+                onClickAsync={async () => {
                   await onTerminate?.()
                   onClose()
                 }}
               >
                 Terminate
-              </Button>
+              </AsyncButton>
             </div>
           )}
           <div className="flex items-center justify-between gap-3">
@@ -467,10 +460,23 @@ function DangerZone({
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={handleDelete}
+                    // Don't auto-close: keep the confirm dialog open while
+                    // the delete is in flight so a failure leaves the user on
+                    // the confirm screen instead of an empty cloud page.
+                    onClick={(e) => {
+                      e.preventDefault()
+                      void runDelete().catch((err) => {
+                        console.error('Failed to delete environment:', err)
+                        toast.error(
+                          err instanceof Error ? err.message : 'Failed to delete environment',
+                        )
+                      })
+                    }}
+                    disabled={isDeleting}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
-                    Delete
+                    {isDeleting && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
+                    {isDeleting ? 'Deleting…' : 'Delete'}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

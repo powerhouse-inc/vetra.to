@@ -14,6 +14,7 @@ import {
 } from '@/modules/cloud/hooks/use-registry-search'
 import { applyConfigChanges, computeConfigChanges } from '@/modules/cloud/config/apply'
 import { buildCollisionMap } from '@/modules/cloud/config/collisions'
+import { AsyncButton } from '@/modules/cloud/components/async-button'
 import {
   initialConfigFormState,
   PackageConfigForm,
@@ -213,42 +214,42 @@ export function AddAgentModal({
     [validation],
   )
 
-  const [submitting, setSubmitting] = useState(false)
-
   const handleSubmit = async () => {
-    if (!validation?.ok || !selectedPackage || !prefix || prefixError || !selectedRessource) return
     setSubmitError(null)
-
-    // Reservation check
+    // Pre-submit validation. Each failure throws so AsyncButton treats it as
+    // a failed run — modal stays open, button re-enables, inline message
+    // shows what to fix.
+    if (!validation?.ok || !selectedPackage || !prefix || prefixError || !selectedRessource) {
+      const msg = 'Form is not ready to submit.'
+      setSubmitError(msg)
+      throw new Error(msg)
+    }
+    const okValidation = validation
     const shadowed = customEnvVars.find(
       (v) => v.name && (isReservedEnvName(v.name) || manifestConfigNames.has(v.name)),
     )
     if (shadowed) {
-      setSubmitError(
-        `"${shadowed.name}" is reserved (set by the platform or declared by the agent). Pick another name.`,
-      )
-      return
+      const msg = `"${shadowed.name}" is reserved (set by the platform or declared by the agent). Pick another name.`
+      setSubmitError(msg)
+      throw new Error(msg)
     }
-
-    // Required manifest-config check
-    if ((validation.manifest.config?.length ?? 0) > 0 && tenantId) {
-      const missing = validateConfigForm(validation.manifest.config ?? [], configState, {
+    if ((okValidation.manifest.config?.length ?? 0) > 0 && tenantId) {
+      const missing = validateConfigForm(okValidation.manifest.config ?? [], configState, {
         existingVarValues,
         existingSecretKeys,
         collisions,
         ownerPackageName: selectedPackage,
       })
       if (missing.length > 0) {
-        setSubmitError(`Missing required config: ${missing.join(', ')}`)
-        return
+        const msg = `Missing required config: ${missing.join(', ')}`
+        setSubmitError(msg)
+        throw new Error(msg)
       }
     }
-
-    setSubmitting(true)
     try {
-      if ((validation.manifest.config?.length ?? 0) > 0 && tenantId) {
+      if ((okValidation.manifest.config?.length ?? 0) > 0 && tenantId) {
         const changes = computeConfigChanges(
-          validation.manifest.config ?? [],
+          okValidation.manifest.config ?? [],
           configState,
           existingVarValues,
         )
@@ -264,18 +265,20 @@ export function AddAgentModal({
           package: {
             registry: registryUrl ?? '',
             name: selectedPackage,
-            version: selectedVersion || null,
+            version: selectedVersion ?? null,
           },
           env: customEnvVars.filter((v) => v.name.trim()),
           serviceCommand: serviceCommand.trim() || null,
           selectedRessource,
         },
       })
+      // Close only on resolved success. The error path below keeps the
+      // modal open so the user can fix the input and retry.
       onOpenChange(false)
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Failed to install agent')
-    } finally {
-      setSubmitting(false)
+      const message = err instanceof Error ? err.message : 'Failed to install agent'
+      setSubmitError(message)
+      throw err instanceof Error ? err : new Error(message)
     }
   }
 
@@ -581,14 +584,13 @@ export function AddAgentModal({
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={
-              !validation?.ok || !!prefixError || !prefix || !selectedRessource || submitting
-            }
+          <AsyncButton
+            onClickAsync={handleSubmit}
+            disabled={!validation?.ok || !!prefixError || !prefix || !selectedRessource}
+            pendingLabel="Installing…"
           >
-            {submitting ? 'Installing…' : 'Install agent'}
-          </Button>
+            Install agent
+          </AsyncButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

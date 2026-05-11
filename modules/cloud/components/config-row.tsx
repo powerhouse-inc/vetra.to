@@ -4,6 +4,7 @@ import { KeyRound, Trash2, Type } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
+import { AsyncButton } from '@/modules/cloud/components/async-button'
 import type { ConfigEntry } from '@/modules/cloud/config/types'
 import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
@@ -48,7 +49,7 @@ export function ConfigRow({ entry, currentValue, isSet, onSave, onDelete }: Conf
   const handleSave = async () => {
     if (draft.trim().length === 0) {
       toast.error('Value cannot be empty')
-      return
+      throw new Error('Value cannot be empty')
     }
     setOptimisticDraft(draft)
     setEditing(false)
@@ -57,7 +58,9 @@ export function ConfigRow({ entry, currentValue, isSet, onSave, onDelete }: Conf
       toast.success(`Updated ${entry.name}`)
     } catch (err) {
       setOptimisticDraft(null) // revert
-      toast.error(err instanceof Error ? err.message : `Failed to update ${entry.name}`)
+      const msg = err instanceof Error ? err.message : `Failed to update ${entry.name}`
+      toast.error(msg)
+      throw err instanceof Error ? err : new Error(msg)
     }
   }
 
@@ -67,6 +70,7 @@ export function ConfigRow({ entry, currentValue, isSet, onSave, onDelete }: Conf
       toast.success(`Deleted ${entry.name}`)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : `Failed to delete ${entry.name}`)
+      throw err
     }
   }
 
@@ -106,9 +110,9 @@ export function ConfigRow({ entry, currentValue, isSet, onSave, onDelete }: Conf
               className="font-mono text-sm"
               placeholder={entry.type === 'secret' ? 'Enter new value' : ''}
             />
-            <Button size="sm" onClick={handleSave}>
+            <AsyncButton size="sm" onClickAsync={handleSave} pendingLabel="Saving…">
               Save
-            </Button>
+            </AsyncButton>
             <Button
               size="sm"
               variant="outline"
@@ -154,15 +158,15 @@ export function ConfigRow({ entry, currentValue, isSet, onSave, onDelete }: Conf
       </TableCell>
       <TableCell className="text-right align-top">
         {effectiveIsSet && !editing && (
-          <Button
+          <AsyncButton
             size="sm"
             variant="ghost"
             className="text-destructive h-7 w-7 p-0"
-            onClick={handleDelete}
+            onClickAsync={handleDelete}
           >
             <Trash2 className="h-3.5 w-3.5" />
             <span className="sr-only">Delete</span>
-          </Button>
+          </AsyncButton>
         )}
       </TableCell>
     </TableRow>

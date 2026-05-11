@@ -15,6 +15,7 @@ import { applyConfigChanges, type ConfigChange } from '@/modules/cloud/config/ap
 import { exclusiveKeys } from '@/modules/cloud/config/collisions'
 import type { ConfigEntry, PackageManifest } from '@/modules/cloud/config/types'
 import { ConfigRow } from '@/modules/cloud/components/config-row'
+import { useAsyncAction } from '@/modules/cloud/hooks/use-async-action'
 import { UpgradePackageModal } from '@/modules/cloud/components/upgrade-package-modal'
 import {
   useRegistryManifest,
@@ -323,7 +324,6 @@ function UninstallDialog({
 }) {
   const renown = useRenown()
   const [selectedKeys, setSelectedKeys] = useState<Record<string, boolean>>({})
-  const [isRemoving, setIsRemoving] = useState(false)
 
   // Manifest for the package being uninstalled.
   const { manifest: pkgManifest } = useRegistryManifest(
@@ -355,33 +355,25 @@ function UninstallDialog({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [declaredEntries.map((e) => e.name).join(','), exclusive.size])
 
-  const handleConfirm = async () => {
-    setIsRemoving(true)
-    try {
-      if (tenantId) {
-        const changes: ConfigChange[] = []
-        for (const entry of declaredEntries) {
-          if (!selectedKeys[entry.name]) continue
-          changes.push(
-            entry.type === 'var'
-              ? { kind: 'deleteVar', name: entry.name }
-              : { kind: 'deleteSecret', name: entry.name },
-          )
-        }
-        if (changes.length > 0) {
-          await applyConfigChanges(tenantId, changes, renown)
-        }
+  const { run: runRemove, isPending: isRemoving } = useAsyncAction(async () => {
+    if (tenantId) {
+      const changes: ConfigChange[] = []
+      for (const entry of declaredEntries) {
+        if (!selectedKeys[entry.name]) continue
+        changes.push(
+          entry.type === 'var'
+            ? { kind: 'deleteVar', name: entry.name }
+            : { kind: 'deleteSecret', name: entry.name },
+        )
       }
-      await onRemove(pkg.name)
-      toast.success(`Uninstalled ${pkg.name}`)
-      onOpenChange(false)
-    } catch (err) {
-      console.error('Failed to uninstall:', err)
-      toast.error(err instanceof Error ? err.message : 'Failed to uninstall')
-    } finally {
-      setIsRemoving(false)
+      if (changes.length > 0) {
+        await applyConfigChanges(tenantId, changes, renown)
+      }
     }
-  }
+    await onRemove(pkg.name)
+    toast.success(`Uninstalled ${pkg.name}`)
+    onOpenChange(false)
+  })
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -428,11 +420,21 @@ function UninstallDialog({
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isRemoving}>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={handleConfirm}
+            // Stop Radix from auto-closing on click — close only after the
+            // mutation resolves, so a server-side error leaves the user on
+            // the confirm screen with the keys still selected.
+            onClick={(e) => {
+              e.preventDefault()
+              void runRemove().catch((err) => {
+                console.error('Failed to uninstall:', err)
+                toast.error(err instanceof Error ? err.message : 'Failed to uninstall')
+              })
+            }}
             disabled={isRemoving}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isRemoving ? 'Uninstalling...' : 'Uninstall'}
+            {isRemoving && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
+            {isRemoving ? 'Uninstalling…' : 'Uninstall'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
