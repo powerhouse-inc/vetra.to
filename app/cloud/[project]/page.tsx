@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowLeft, ExternalLink, Info } from 'lucide-react'
+import { ArrowLeft, ExternalLink, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, use, useEffect, useMemo, useRef, useState } from 'react'
@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 
 import { AgentDetailDrawer } from '@/modules/cloud/components/agent-detail-drawer'
 import { EnvActionBar } from '@/modules/cloud/components/env-action-bar'
-import { EnvMetadataDialog } from '@/modules/cloud/components/env-metadata-dialog'
+import { EnvSettingsDrawer } from '@/modules/cloud/components/env-settings-drawer'
 import { ServiceDetailDrawer } from '@/modules/cloud/components/service-detail-drawer'
 import { StatusBadge } from '@/modules/cloud/components/status-badge'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
@@ -89,7 +89,7 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
   // back for 1-2s. Holding the flag until the server confirms any post-
   // CHANGES_PENDING status keeps the button hidden through the race.
   const [justApproved, setJustApproved] = useState(false)
-  const [metadataOpen, setMetadataOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const statusStr = state?.status ?? 'DRAFT'
   useEffect(() => {
     if (justApproved && statusStr !== 'CHANGES_PENDING' && statusStr !== 'DRAFT') {
@@ -185,11 +185,11 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setMetadataOpen(true)}
-                aria-label="Environment details"
+                onClick={() => setSettingsOpen(true)}
+                aria-label="Environment settings"
                 className="text-muted-foreground hover:text-foreground"
               >
-                <Info className="h-4 w-4" />
+                <Settings className="h-4 w-4" />
               </Button>
 
               {/* Visit dropdown */}
@@ -327,10 +327,18 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
       />
 
       {environment && (
-        <EnvMetadataDialog
-          open={metadataOpen}
-          onOpenChange={setMetadataOpen}
+        <EnvSettingsDrawer
+          open={settingsOpen}
+          onOpenChange={setSettingsOpen}
           environment={environment}
+          tenantId={tenantId}
+          subdomain={subdomain}
+          status={envStatus}
+          statusLoading={statusLoading}
+          onSetCustomDomain={detail.setCustomDomain}
+          onSetAutoUpdateChannel={detail.setAutoUpdateChannel}
+          onUpdateToLatest={detail.updateToLatest}
+          onRollbackRelease={detail.rollbackRelease}
           onTerminate={detail.terminate}
         />
       )}

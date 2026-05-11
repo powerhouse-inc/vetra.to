@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { useOptimistic } from '@/modules/cloud/hooks/use-optimistic'
-import type { CloudEnvironment, CloudEnvironmentServiceType } from '@/modules/cloud/types'
+import type { CloudEnvironment, TenantService } from '@/modules/cloud/types'
 import { Button } from '@/modules/shared/components/ui/button'
 import { Checkbox } from '@/modules/shared/components/ui/checkbox'
 import { Input } from '@/modules/shared/components/ui/input'
@@ -29,22 +29,27 @@ function isOwnedDomain(domain: string | null | undefined): boolean {
 }
 
 // Mirror of the SERVICE_LABELS map in overview.tsx — kept local so this file
-// stays self-contained. Both must agree on the user-facing names.
-const SERVICE_LABELS: Record<CloudEnvironmentServiceType, string> = {
+// stays self-contained. Both must agree on the user-facing names. Only
+// CONNECT and SWITCHBOARD can host the apex of a custom domain (see
+// TenantService), so those are the only ones we render labels for.
+const SERVICE_LABELS: Record<TenantService, string> = {
   CONNECT: 'Powerhouse Connect',
   SWITCHBOARD: 'Powerhouse Switchboard',
-  FUSION: 'Powerhouse Fusion',
-  CLINT: 'Agent',
 }
 
 type Props = {
   customDomain: CloudEnvironment['state']['customDomain']
-  apexService: CloudEnvironmentServiceType | null
-  enabledServices: CloudEnvironmentServiceType[]
+  apexService: TenantService | null
+  /**
+   * Enabled services eligible to serve at the apex. CLINT and FUSION are
+   * filtered out by the caller — only CONNECT / SWITCHBOARD can host the
+   * apex.
+   */
+  enabledServices: TenantService[]
   onSetCustomDomain: (
     enabled: boolean,
     domain?: string | null,
-    apexService?: CloudEnvironmentServiceType | null,
+    apexService?: TenantService | null,
   ) => Promise<void>
 }
 
@@ -60,7 +65,7 @@ export function CustomDomainSection({
   onSetCustomDomain,
 }: Props) {
   const [domainInput, setDomainInput] = useState(customDomain?.domain ?? '')
-  const [apexInput, setApexInput] = useState<CloudEnvironmentServiceType | ''>(apexService ?? '')
+  const [apexInput, setApexInput] = useState<TenantService | ''>(apexService ?? '')
   const [dnsResults, setDnsResults] = useState<Record<string, boolean | null>>({})
   const [isVerifying, setIsVerifying] = useState(false)
   const records = customDomain?.dnsRecords ?? []
@@ -168,7 +173,7 @@ export function CustomDomainSection({
             id="apex-service"
             className="border-input bg-background h-9 w-full rounded-md border px-3 font-mono text-sm"
             value={apexInput}
-            onChange={(e) => setApexInput(e.target.value as CloudEnvironmentServiceType | '')}
+            onChange={(e) => setApexInput(e.target.value as TenantService | '')}
           >
             <option value="">None</option>
             {enabledServices.map((s) => (

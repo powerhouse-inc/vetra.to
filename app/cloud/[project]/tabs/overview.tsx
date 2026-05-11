@@ -936,8 +936,14 @@ export function OverviewTab({
 
           <CustomDomainSection
             customDomain={state.customDomain}
-            apexService={state.apexService ?? null}
-            enabledServices={state.services.filter((s) => s.enabled).map((s) => s.type)}
+            apexService={
+              state.apexService === 'CONNECT' || state.apexService === 'SWITCHBOARD'
+                ? state.apexService
+                : null
+            }
+            enabledServices={state.services
+              .filter((s) => s.enabled && (s.type === 'CONNECT' || s.type === 'SWITCHBOARD'))
+              .map((s) => s.type as 'CONNECT' | 'SWITCHBOARD')}
             onSetCustomDomain={setCustomDomain}
           />
         </CardContent>
