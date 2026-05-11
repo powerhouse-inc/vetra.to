@@ -24,13 +24,12 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useMemo, useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 
-import { AddPackageModal } from '@/modules/cloud/components/add-package-modal'
+import { PackagesSection } from '@/modules/cloud/components/packages-section'
 import { AgentsSection } from '@/modules/cloud/components/agents-section'
 import { AddAgentModal } from '@/modules/cloud/components/add-agent-modal'
 import { AutoUpdateCard } from '@/modules/cloud/components/auto-update-card'
 import { AvailableUpdatesCard } from '@/modules/cloud/components/available-updates-card'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
-import { PackageRow } from '@/modules/cloud/components/package-row'
 import { ServiceSizePopover } from '@/modules/cloud/components/service-size-popover'
 import { useClintPackages } from '@/modules/cloud/hooks/use-clint-packages'
 import { useClintRuntimeEndpoints } from '@/modules/cloud/hooks/use-clint-runtime-endpoints'
@@ -1116,56 +1115,19 @@ export function OverviewTab({
 
           {/* Installed Packages — shared sub-list under the services. Modules
               load into Switchboard's reactor; UI apps live in Connect.
-              Today the doc model doesn't tag a package as belonging to one
-              service, so we render them as one list. */}
-          <div className="border-t pt-5">
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Package className="text-muted-foreground h-4 w-4" />
-                <h3 className="text-sm font-semibold">Installed Packages</h3>
-                <span className="text-muted-foreground text-xs">
-                  Reactor modules &amp; Connect apps
-                </span>
-              </div>
-              <AddPackageModal
-                registryUrl={state.defaultPackageRegistry ?? 'https://registry.dev.vetra.io'}
-                tenantId={tenantId}
-                installedPackages={state.packages}
-                onAdd={addPackage}
-                initialPackage={initialAddPackage}
-                initialVersion={initialAddVersion}
-                initialOpen={!!initialAddPackage}
-              />
-            </div>
-            {modulePackages.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Package</TableHead>
-                    <TableHead>Version</TableHead>
-                    <TableHead className="w-12 text-right" />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {modulePackages.map((pkg) => (
-                    <PackageRow
-                      key={pkg.name}
-                      pkg={pkg}
-                      tenantId={tenantId}
-                      registryUrl={state.defaultPackageRegistry ?? 'https://registry.dev.vetra.io'}
-                      installedPackages={state.packages}
-                      onRemove={removePackage}
-                      onSetVersion={setPackageVersion}
-                    />
-                  ))}
-                </TableBody>
-              </Table>
-            ) : (
-              <div className="text-muted-foreground rounded-md border border-dashed p-4 text-center text-xs">
-                No packages installed yet — add one to extend Switchboard or Connect.
-              </div>
-            )}
-          </div>
+              Each row expands inline to surface that package's declared
+              env vars and secrets. */}
+          <PackagesSection
+            tenantId={tenantId}
+            registryUrl={state.defaultPackageRegistry ?? 'https://registry.dev.vetra.io'}
+            installedPackages={state.packages}
+            modulePackages={modulePackages}
+            onAddPackage={addPackage}
+            onRemovePackage={removePackage}
+            onSetPackageVersion={setPackageVersion}
+            initialAddPackage={initialAddPackage}
+            initialAddVersion={initialAddVersion}
+          />
         </CardContent>
       </Card>
 
