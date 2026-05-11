@@ -80,15 +80,11 @@ const SERVICE_ICONS: Record<
   CLINT: Bot,
 }
 
-const SERVICE_IMAGES: Record<string, string> = {
-  CONNECT: 'cr.vetra.io/powerhouse-inc-powerhouse/connect',
-  SWITCHBOARD: 'cr.vetra.io/powerhouse-inc-powerhouse/switchboard',
-  // FUSION services are arbitrary front-ends. The default points at the
-  // DeFi United landing app published from defi-united-web. Operators can
-  // swap this once a per-service image override lands on the doc model.
-  FUSION: 'cr.vetra.io/defi-united/web',
-}
-
+// The container image (cr.vetra.io/...) and the npm package
+// (@powerhousedao/...) point at the same artifact in two distribution
+// channels — showing both in the UI is just noise. The npm package name is
+// still kept below because the version-picker fetches dist-tags from
+// registry.npmjs.org, but neither is rendered in the row.
 const SERVICE_NPM_PACKAGES: Record<string, string> = {
   CONNECT: '@powerhousedao/connect',
   SWITCHBOARD: '@powerhousedao/switchboard',
@@ -140,7 +136,6 @@ function ServiceRow({
   const npmPackage = SERVICE_NPM_PACKAGES[serviceType]
   const label = SERVICE_LABELS[serviceType]
   const Icon = SERVICE_ICONS[serviceType]
-  const image = SERVICE_IMAGES[serviceType]
   const defaultUrl = subdomain
     ? `${prefix}.${subdomain}.vetra.io`
     : `${prefix}.<subdomain>.vetra.io`
@@ -327,22 +322,11 @@ function ServiceRow({
         </div>
       </div>
 
-      {/* Version & image info */}
+      {/* Version row. The image / npm package name aren't shown — they're
+          a function of serviceType, not interesting per row. */}
       {isEnabled && (
         <div className="mt-3 space-y-2 border-t border-emerald-500/10 pt-3">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
-            {image && (
-              <span className="text-muted-foreground">
-                <span className="font-medium">Image:</span>{' '}
-                <span className="font-mono">{image}</span>
-              </span>
-            )}
-            {npmPackage && (
-              <span className="text-muted-foreground">
-                <span className="font-medium">Package:</span>{' '}
-                <span className="font-mono">{npmPackage}</span>
-              </span>
-            )}
             <span className="text-muted-foreground">
               <span className="font-medium">Version:</span>{' '}
               <span className="font-mono">{displayedVersion ?? 'not set'}</span>
