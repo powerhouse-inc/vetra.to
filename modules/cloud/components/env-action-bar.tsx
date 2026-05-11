@@ -130,8 +130,9 @@ function renderBody({
         <span className="text-foreground text-sm">Ready to deploy</span>
         <Button
           size="sm"
+          variant="default"
           onClick={onApprove}
-          className="rounded-full bg-emerald-600 px-5 hover:bg-emerald-700"
+          className="rounded-full px-5"
           aria-label="Deploy environment"
         >
           Deploy
@@ -145,8 +146,9 @@ function renderBody({
         <span className="text-foreground text-sm">Pending change</span>
         <Button
           size="sm"
+          variant="default"
           onClick={onApprove}
-          className="rounded-full bg-blue-600 px-5 hover:bg-blue-700"
+          className="rounded-full px-5"
           aria-label="Approve pending changes"
         >
           Approve
@@ -158,7 +160,7 @@ function renderBody({
   if (status === 'READY' && driftDetected) {
     return (
       <>
-        <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
+        <AlertTriangle className="text-warning h-3.5 w-3.5" />
         <span className="text-foreground text-sm">Config drift detected</span>
       </>
     )
@@ -169,7 +171,7 @@ function renderBody({
 function DeployingBody() {
   return (
     <>
-      <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-500" />
+      <Loader2 className="text-success h-3.5 w-3.5 animate-spin" />
       <span className="text-foreground text-sm">Deploying…</span>
     </>
   )
