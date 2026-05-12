@@ -7,6 +7,7 @@ import {
   fetchEnvironmentDumps,
   getAuthToken,
   requestEnvironmentDump,
+  restoreEnvironmentDump,
 } from '../graphql'
 import type { DatabaseDump, DatabaseDumpStatus } from '../types'
 
@@ -37,6 +38,7 @@ export function useEnvironmentDumps(tenantId: string | null) {
   })
   const [isRequesting, setIsRequesting] = useState(false)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
+  const [restoringId, setRestoringId] = useState<string | null>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const refetch = useCallback(async () => {
@@ -101,14 +103,27 @@ export function useEnvironmentDumps(tenantId: string | null) {
     [refetch],
   )
 
+  const restore = useCallback(async (dumpId: string) => {
+    setRestoringId(dumpId)
+    try {
+      const token = await getAuthToken(renownRef.current)
+      await restoreEnvironmentDump(dumpId, token)
+      // No refetch — server runs restore async; dump list is unchanged.
+    } finally {
+      setRestoringId(null)
+    }
+  }, [])
+
   return {
     dumps: state.dumps,
     isLoading: state.isLoading,
     error: state.error,
     isRequesting,
     cancellingId,
+    restoringId,
     request,
     cancel,
+    restore,
     refetch,
   }
 }
