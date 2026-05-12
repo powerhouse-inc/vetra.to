@@ -677,7 +677,7 @@ export async function fetchLogs(
 // Clint runtime-announced endpoints (vetra-cloud-observability subgraph)
 // ---------------------------------------------------------------------------
 
-import type { ClintRuntimeEndpointsForPrefix, DatabaseDump } from './types'
+import type { ClintRuntimeEndpointsForPrefix, DatabaseDump, DatabaseSchema } from './types'
 
 export async function fetchClintRuntimeEndpointsByEnv(
   subdomain: string,
@@ -752,6 +752,42 @@ export async function cancelEnvironmentDump(
     token,
   )
   return data.cancelEnvironmentDump
+}
+
+// ---------------------------------------------------------------------------
+// Database Explorer (vetra-cloud-observability subgraph)
+// ---------------------------------------------------------------------------
+
+const DB_SCHEMA_FRAGMENT = `
+  schemas {
+    name
+    truncated
+    tables {
+      name
+      columns { name type nullable default isPrimaryKey }
+      indexes { name columns unique }
+    }
+  }
+`
+
+/**
+ * Owner-gated read-only describe of the env's Postgres. Returns a static
+ * structural snapshot — schemas, tables, columns and indexes. No row data.
+ * Capped at 500 tables per schema on the server.
+ */
+export async function describeDatabase(
+  tenantId: string,
+  token?: string | null,
+): Promise<DatabaseSchema> {
+  const data = await gqlObservability<{ describeDatabase: DatabaseSchema }>(
+    '',
+    `query ($tenantId: String!) {
+      describeDatabase(tenantId: $tenantId) { ${DB_SCHEMA_FRAGMENT} }
+    }`,
+    { tenantId },
+    token,
+  )
+  return data.describeDatabase
 }
 
 export async function restoreEnvironmentDump(
