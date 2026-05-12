@@ -75,6 +75,16 @@ function toCsv(columns: string[], rows: (string | null)[][]): string {
   return lines.join('\r\n')
 }
 
+/**
+ * Quote a SQL identifier per the standard: wrap in double-quotes and double
+ * any embedded double-quote. Defensive against schema/table names that
+ * contain a `"` character — the unescaped template literal would produce
+ * broken SQL.
+ */
+function escIdent(id: string): string {
+  return `"${id.replace(/"/g, '""')}"`
+}
+
 function downloadCsv(columns: string[], rows: (string | null)[][]): void {
   if (typeof window === 'undefined') return
   const csv = toCsv(columns, rows)
@@ -134,7 +144,7 @@ export function DatabaseExplorerTab({ tenantId, canEdit }: Props) {
   )
 
   const handleTableClick = useCallback((schemaName: string, tableName: string) => {
-    setEditorSql(`SELECT * FROM "${schemaName}"."${tableName}" LIMIT 100`)
+    setEditorSql(`SELECT * FROM ${escIdent(schemaName)}.${escIdent(tableName)} LIMIT 100`)
   }, [])
 
   const statementCount = useMemo(
