@@ -65,11 +65,10 @@ type Props = {
   onRetry?: () => void
   onCancel?: () => void
   isCancelling?: boolean
-  onRestore?: () => Promise<void> | void
-  isRestoring?: boolean
+  onRestore?: () => Promise<void>
 }
 
-export function DumpRow({ dump, onRetry, onCancel, isCancelling, onRestore, isRestoring }: Props) {
+export function DumpRow({ dump, onRetry, onCancel, isCancelling, onRestore }: Props) {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const isExpired = new Date(dump.expiresAt).getTime() < Date.now()
   const isExpiredReady = isExpired && dump.status === 'READY'
@@ -140,7 +139,7 @@ export function DumpRow({ dump, onRetry, onCancel, isCancelling, onRestore, isRe
         {dump.status === 'READY' && !isExpired && onRestore && (
           <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
             <AlertDialogTrigger asChild>
-              <Button size="sm" variant="outline" disabled={isRestoring}>
+              <Button size="sm" variant="outline">
                 <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
                 Restore
               </Button>

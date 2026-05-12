@@ -139,7 +139,6 @@ export function DatabaseBackupsTab({ tenantId, canEdit }: Props) {
                   ? () => handleRestore(d.id)
                   : undefined
               }
-              isRestoring={restoringId === d.id}
             />
           ))}
         </div>
