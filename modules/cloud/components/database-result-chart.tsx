@@ -31,15 +31,21 @@ export function isChartable(result: DatabaseQueryResult): boolean {
   return detectNumericColumns(result).length > 0
 }
 
+/**
+ * True when `cell` is a string that converts cleanly to a finite number.
+ * `Number(...)` is stricter than `parseFloat(...)`: it rejects partial-string
+ * values like `"10px"` (→ NaN) and date-ish strings like `"2024-01-01"` (→ NaN).
+ * The empty-string guard avoids `Number("") === 0` false positives.
+ */
+function isNumericCell(cell: string | null): boolean {
+  if (cell === null || cell === '') return false
+  return Number.isFinite(Number(cell))
+}
+
 function detectNumericColumns(result: DatabaseQueryResult): string[] {
   const numeric: string[] = []
   for (let col = 0; col < result.columns.length; col++) {
-    const hasAny = result.rows.some((row) => {
-      const cell = row[col]
-      if (cell === null) return false
-      const parsed = parseFloat(cell)
-      return Number.isFinite(parsed)
-    })
+    const hasAny = result.rows.some((row) => isNumericCell(row[col]))
     if (hasAny) numeric.push(result.columns[col])
   }
   return numeric
@@ -53,8 +59,7 @@ function buildChartShape(result: DatabaseQueryResult): ChartShape {
     result.columns.forEach((col, idx) => {
       const cell = row[idx]
       if (numericColumns.includes(col)) {
-        const parsed = cell === null ? null : parseFloat(cell)
-        record[col] = parsed !== null && Number.isFinite(parsed) ? parsed : null
+        record[col] = isNumericCell(cell) ? Number(cell) : null
       } else if (col === xColumn) {
         record[col] = cell ?? `(null #${i + 1})`
       } else {
