@@ -37,7 +37,7 @@ import {
 } from '@/modules/shared/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/shared/components/ui/tabs'
 
-import { DatabaseBackupsTab } from './database-backups-tab'
+import { DatabaseTabBody } from './database-tab-body'
 import { EventTimeline } from './event-timeline'
 import { LogViewer } from './log-viewer'
 import { MetricCard } from './metric-card'
@@ -315,7 +315,7 @@ export function ServiceDetailDrawer({
                 <div className="text-muted-foreground mb-4 text-xs">
                   <span className="font-mono">{clusterName}</span> · postgres 16
                 </div>
-                <DatabaseBackupsTab
+                <DatabaseTabBody
                   tenantId={tenantId}
                   canEdit={canEdit}
                   schedule={backupSchedule}
