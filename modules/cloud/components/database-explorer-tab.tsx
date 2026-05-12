@@ -2,10 +2,11 @@
 
 import { sql } from '@codemirror/lang-sql'
 import CodeMirror from '@uiw/react-codemirror'
-import { Clock, Play, RefreshCw } from 'lucide-react'
+import { BarChart3, Clock, Download, Play, RefreshCw } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 
 import { AsyncButton } from '@/modules/cloud/components/async-button'
+import { DatabaseResultChart, isChartable } from '@/modules/cloud/components/database-result-chart'
 import { DatabaseSchemaTree } from '@/modules/cloud/components/database-schema-tree'
 import { useDatabaseQuery } from '@/modules/cloud/hooks/use-database-query'
 import { useDatabaseSchema } from '@/modules/cloud/hooks/use-database-schema'
@@ -53,6 +54,41 @@ function friendlyError(raw: string | null): string | null {
   return raw
 }
 
+/**
+ * RFC 4180 CSV serialisation. Cells that contain a comma, double-quote, or
+ * newline are wrapped in `"…"`; internal double-quotes are doubled. SQL NULL
+ * is emitted as the empty cell.
+ */
+function toCsv(columns: string[], rows: (string | null)[][]): string {
+  const escape = (value: string | null): string => {
+    if (value === null) return ''
+    if (/[",\n\r]/.test(value)) {
+      return `"${value.replace(/"/g, '""')}"`
+    }
+    return value
+  }
+  const lines: string[] = []
+  lines.push(columns.map(escape).join(','))
+  for (const row of rows) {
+    lines.push(row.map(escape).join(','))
+  }
+  return lines.join('\r\n')
+}
+
+function downloadCsv(columns: string[], rows: (string | null)[][]): void {
+  if (typeof window === 'undefined') return
+  const csv = toCsv(columns, rows)
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'result.csv'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
+
 export function DatabaseExplorerTab({ tenantId, canEdit }: Props) {
   const effectiveTenantId = canEdit ? tenantId : null
   const {
@@ -67,6 +103,9 @@ export function DatabaseExplorerTab({ tenantId, canEdit }: Props) {
   const [editorSql, setEditorSql] = useState('')
   const [limit, setLimit] = useState<number>(1000)
   const [historyOpen, setHistoryOpen] = useState(false)
+  const [showChart, setShowChart] = useState(false)
+
+  const chartAvailable = result !== null && isChartable(result)
 
   const handleRun = useCallback(async () => {
     const trimmed = editorSql.trim()
@@ -209,6 +248,28 @@ export function DatabaseExplorerTab({ tenantId, canEdit }: Props) {
                 <span className="text-muted-foreground ml-auto text-[11px]">
                   Cmd/Ctrl+Enter to run
                 </span>
+                {chartAvailable && (
+                  <Button
+                    variant={showChart ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setShowChart((v) => !v)}
+                    aria-pressed={showChart}
+                    className="gap-1.5"
+                  >
+                    <BarChart3 className="h-3.5 w-3.5" /> Chart
+                  </Button>
+                )}
+                {result && result.rowCount > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => downloadCsv(result.columns, result.rows)}
+                    title="Download CSV"
+                    className="gap-1.5"
+                  >
+                    <Download className="h-3.5 w-3.5" /> CSV
+                  </Button>
+                )}
               </div>
               <div className="min-h-0 flex-1 overflow-auto" onKeyDown={handleEditorKeyDown}>
                 <CodeMirror
@@ -233,6 +294,7 @@ export function DatabaseExplorerTab({ tenantId, canEdit }: Props) {
                 result={result}
                 isRunning={isRunning}
                 error={friendlyError(queryError)}
+                showChart={showChart && chartAvailable}
               />
             </ResizablePanel>
           </ResizablePanelGroup>
@@ -246,10 +308,12 @@ function ResultPanel({
   result,
   isRunning,
   error,
+  showChart,
 }: {
   result: DatabaseQueryResult | null
   isRunning: boolean
   error: string | null
+  showChart: boolean
 }) {
   if (error) {
     return (
@@ -281,6 +345,7 @@ function ResultPanel({
 
   return (
     <div className="flex h-full flex-col">
+      {showChart && <DatabaseResultChart result={result} />}
       <div className="min-h-0 flex-1 overflow-auto">
         <table className="w-full text-xs">
           <thead className="bg-muted/60 sticky top-0">
