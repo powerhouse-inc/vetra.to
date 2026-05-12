@@ -318,7 +318,6 @@ export function ServiceDetailDrawer({
                 <DatabaseBackupsTab
                   tenantId={tenantId}
                   canEdit={canEdit}
-                  documentId={documentId}
                   schedule={backupSchedule}
                   onSaveSchedule={onSaveBackupSchedule}
                   scheduleSupported={backupScheduleSupported}

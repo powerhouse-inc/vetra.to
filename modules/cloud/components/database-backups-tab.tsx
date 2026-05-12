@@ -13,13 +13,6 @@ import { Button } from '@/modules/shared/components/ui/button'
 type Props = {
   tenantId: string | null
   canEdit: boolean
-  /**
-   * Doc id of the env. Accepted (per spec) so future read paths in this tab
-   * can address the env doc without a second hook lookup; currently no
-   * direct consumption — the schedule + onSaveSchedule wiring already
-   * carries the context.
-   */
-  documentId?: string
   /** Current schedule from `CloudEnvironmentState.backupSchedule`. */
   schedule?: BackupSchedule | null
   /**
@@ -45,15 +38,10 @@ const CADENCE_MS: Record<BackupCadence, number> = {
 export function DatabaseBackupsTab({
   tenantId,
   canEdit,
-  documentId,
   schedule,
   onSaveSchedule,
   scheduleSupported = true,
 }: Props) {
-  // Reference `documentId` so the prop is part of the call signature future
-  // consumers can rely on, without lint complaints today.
-  void documentId
-
   const {
     dumps,
     isLoading,
@@ -100,6 +88,13 @@ export function DatabaseBackupsTab({
   // Compute next-run timestamp client-side from the most recent SCHEDULED
   // dump + the active cadence. There's no `nextRunAt` field on the doc model
   // yet — this is the spec's documented degraded fallback.
+  //
+  // Deliberately narrow deps to the fields the body actually reads. Retention
+  // changes don't shift the next-run timestamp; using whole `schedule` would
+  // recompute on every retention edit. React Compiler prefers matching its
+  // inferred deps, so it bails out of optimizing this memo — manual
+  // memoization stays in effect with the narrower contract.
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const nextRunAt = useMemo(() => {
     if (!schedule?.enabled) return null
     const scheduled = dumps.filter((d) => d.source === 'SCHEDULED')
@@ -107,7 +102,7 @@ export function DatabaseBackupsTab({
     const latest = scheduled.slice().sort((a, b) => b.requestedAt.localeCompare(a.requestedAt))[0]
     const cadenceMs = CADENCE_MS[schedule.cadence]
     return new Date(new Date(latest.requestedAt).getTime() + cadenceMs).toISOString()
-  }, [dumps, schedule])
+  }, [dumps, schedule?.enabled, schedule?.cadence])
 
   const handleSaveSchedule = async (opts: {
     enabled: boolean
@@ -120,7 +115,14 @@ export function DatabaseBackupsTab({
       toast.success(opts.enabled ? 'Scheduled backups enabled.' : 'Scheduled backups disabled.')
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to update schedule'
-      toast.error(msg)
+      if (msg.includes('INVALID_RETENTION')) {
+        toast.error('Retention must be between 1 and 30.')
+      } else if (msg.includes('NotOwnerError') || msg.includes('FORBIDDEN')) {
+        toast.error('Only the environment owner can change the schedule.')
+      } else {
+        toast.error(msg)
+      }
+      // Re-throw so the panel's draft rollback runs.
       throw err
     }
   }
