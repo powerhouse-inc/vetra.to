@@ -2,15 +2,17 @@
 
 import { sql } from '@codemirror/lang-sql'
 import CodeMirror from '@uiw/react-codemirror'
-import { Play, RefreshCw } from 'lucide-react'
+import { Clock, Play, RefreshCw } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 
 import { AsyncButton } from '@/modules/cloud/components/async-button'
 import { DatabaseSchemaTree } from '@/modules/cloud/components/database-schema-tree'
 import { useDatabaseQuery } from '@/modules/cloud/hooks/use-database-query'
 import { useDatabaseSchema } from '@/modules/cloud/hooks/use-database-schema'
+import { useQueryHistory } from '@/modules/cloud/hooks/use-query-history'
 import type { DatabaseQueryResult } from '@/modules/cloud/types'
 import { Button } from '@/modules/shared/components/ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@/modules/shared/components/ui/popover'
 import {
   ResizableHandle,
   ResizablePanel,
@@ -60,15 +62,18 @@ export function DatabaseExplorerTab({ tenantId, canEdit }: Props) {
     refresh,
   } = useDatabaseSchema(effectiveTenantId)
   const { result, isRunning, error: queryError, run } = useDatabaseQuery(effectiveTenantId)
+  const history = useQueryHistory(effectiveTenantId)
 
   const [editorSql, setEditorSql] = useState('')
   const [limit, setLimit] = useState<number>(1000)
+  const [historyOpen, setHistoryOpen] = useState(false)
 
   const handleRun = useCallback(async () => {
     const trimmed = editorSql.trim()
     if (!trimmed) return
-    await run(trimmed, limit)
-  }, [editorSql, limit, run])
+    const res = await run(trimmed, limit)
+    if (res) history.push(trimmed)
+  }, [editorSql, limit, run, history])
 
   const handleEditorKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -151,6 +156,56 @@ export function DatabaseExplorerTab({ tenantId, canEdit }: Props) {
                     ))}
                   </SelectContent>
                 </Select>
+                <Popover open={historyOpen} onOpenChange={setHistoryOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      aria-label="Query history"
+                      title="Query history"
+                      className="h-8 w-8 p-0"
+                    >
+                      <Clock className="h-3.5 w-3.5" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" className="w-[360px] p-0">
+                    <div className="flex items-center justify-between border-b px-3 py-1.5">
+                      <span className="text-xs font-medium">Recent queries</span>
+                      {history.history.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => history.clear()}
+                          className="text-muted-foreground hover:text-foreground text-[11px]"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    <div className="max-h-[260px] overflow-auto py-1">
+                      {history.history.length === 0 ? (
+                        <div className="text-muted-foreground px-3 py-4 text-center text-xs">
+                          No history yet
+                        </div>
+                      ) : (
+                        history.history.map((entry, i) => (
+                          <button
+                            key={`${i}-${entry}`}
+                            type="button"
+                            onClick={() => {
+                              setEditorSql(entry)
+                              setHistoryOpen(false)
+                            }}
+                            className="hover:bg-muted/60 flex w-full items-start gap-2 px-3 py-1.5 text-left"
+                          >
+                            <span className="line-clamp-2 flex-1 font-mono text-[11px]">
+                              {entry}
+                            </span>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 <span className="text-muted-foreground ml-auto text-[11px]">
                   Cmd/Ctrl+Enter to run
                 </span>
