@@ -3,6 +3,7 @@
 import { Clock, Database, Download, Loader2, RefreshCw, RotateCcw, X } from 'lucide-react'
 import { useState } from 'react'
 import { AsyncButton } from '@/modules/cloud/components/async-button'
+import { fmtBytes, timeAgo, timeUntil } from '@/modules/cloud/lib/time-format'
 import type { DatabaseDump, DatabaseDumpStatus } from '@/modules/cloud/types'
 import {
   AlertDialog,
@@ -16,41 +17,6 @@ import {
 } from '@/modules/shared/components/ui/alert-dialog'
 import { Button } from '@/modules/shared/components/ui/button'
 import { cn } from '@/shared/lib/utils'
-
-function timeAgo(iso: string | null): string {
-  if (!iso) return ''
-  const d = Date.now() - new Date(iso).getTime()
-  const s = Math.max(1, Math.round(d / 1000))
-  if (s < 60) return `${s}s ago`
-  const m = Math.round(s / 60)
-  if (m < 60) return `${m}m ago`
-  const h = Math.round(m / 60)
-  if (h < 48) return `${h}h ago`
-  return `${Math.round(h / 24)}d ago`
-}
-
-function timeUntil(iso: string): string {
-  const d = new Date(iso).getTime() - Date.now()
-  if (d < 0) return 'expired'
-  const m = Math.round(d / 60000)
-  if (m < 60) return `${m}m`
-  const h = Math.floor(m / 60)
-  const remM = m % 60
-  if (h < 48) return remM > 0 ? `${h}h ${remM}m` : `${h}h`
-  return `${Math.round(h / 24)}d`
-}
-
-function fmtBytes(n: number | null): string {
-  if (n === null || n === 0) return ''
-  const units = ['B', 'KB', 'MB', 'GB']
-  let v = n
-  let i = 0
-  while (v >= 1024 && i < units.length - 1) {
-    v /= 1024
-    i++
-  }
-  return `${v.toFixed(v < 10 ? 1 : 0)} ${units[i]}`
-}
 
 const PILL_BY_STATUS: Record<DatabaseDumpStatus, { label: string; cls: string }> = {
   PENDING: { label: 'PENDING', cls: 'bg-muted text-muted-foreground' },
