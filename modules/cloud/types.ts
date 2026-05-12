@@ -248,6 +248,55 @@ export type ClintRuntimeEndpointsForPrefix = {
   endpoints: ClintRuntimeEndpointReport[]
 }
 
+// ---------------------------------------------------------------------------
+// Database Explorer (vetra-cloud-observability subgraph)
+// ---------------------------------------------------------------------------
+
+/**
+ * Result of a read-only SQL execution. Cells are serialized to strings for
+ * JSON transport; `null` represents a SQL NULL value. `truncatedAt` is set
+ * when the server capped the row count (either by the user-supplied limit
+ * or the 4 MB payload cap).
+ */
+export type DatabaseQueryResult = {
+  columns: string[]
+  rows: (string | null)[][]
+  rowCount: number
+  truncatedAt: number | null
+  executionMs: number
+}
+
+export type DatabaseColumnInfo = {
+  name: string
+  type: string
+  nullable: boolean
+  default: string | null
+  isPrimaryKey: boolean
+}
+
+export type DatabaseIndexInfo = {
+  name: string
+  columns: string[]
+  unique: boolean
+}
+
+export type DatabaseTableInfo = {
+  name: string
+  columns: DatabaseColumnInfo[]
+  indexes: DatabaseIndexInfo[]
+}
+
+export type DatabaseSchemaInfo = {
+  name: string
+  tables: DatabaseTableInfo[]
+  /** true when the table count exceeded the server cap (500). */
+  truncated?: boolean
+}
+
+export type DatabaseSchema = {
+  schemas: DatabaseSchemaInfo[]
+}
+
 export type DatabaseDumpStatus = 'PENDING' | 'RUNNING' | 'READY' | 'FAILED'
 
 /**
