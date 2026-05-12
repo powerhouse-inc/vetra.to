@@ -706,7 +706,7 @@ export async function fetchClintRuntimeEndpointsByEnv(
 
 const DUMP_FIELDS = `
   id status requestedAt startedAt completedAt expiresAt
-  sizeBytes errorMessage downloadUrl
+  sizeBytes errorMessage downloadUrl source
 `
 
 export async function fetchEnvironmentDumps(
