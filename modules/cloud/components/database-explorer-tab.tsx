@@ -1,7 +1,7 @@
 'use client'
 
 import { sql } from '@codemirror/lang-sql'
-import CodeMirror from '@uiw/react-codemirror'
+import CodeMirror, { Prec, keymap } from '@uiw/react-codemirror'
 import { BarChart3, Clock, Download, Play, RefreshCw } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 
@@ -114,13 +114,22 @@ export function DatabaseExplorerTab({ tenantId, canEdit }: Props) {
     if (res) history.push(trimmed)
   }, [editorSql, limit, run, history])
 
-  const handleEditorKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
-        event.preventDefault()
-        void handleRun()
-      }
-    },
+  // CodeMirror captures keys before they bubble to a wrapping onKeyDown, so
+  // bind Cmd/Ctrl+Enter through a high-precedence CM keymap instead. "Mod" is
+  // the CM cross-platform alias (Cmd on Mac, Ctrl on Linux/Windows).
+  const runKeymap = useMemo(
+    () =>
+      Prec.highest(
+        keymap.of([
+          {
+            key: 'Mod-Enter',
+            run: () => {
+              void handleRun()
+              return true
+            },
+          },
+        ]),
+      ),
     [handleRun],
   )
 
@@ -271,11 +280,11 @@ export function DatabaseExplorerTab({ tenantId, canEdit }: Props) {
                   </Button>
                 )}
               </div>
-              <div className="min-h-0 flex-1 overflow-auto" onKeyDown={handleEditorKeyDown}>
+              <div className="min-h-0 flex-1 overflow-auto">
                 <CodeMirror
                   value={editorSql}
                   onChange={setEditorSql}
-                  extensions={[sql()]}
+                  extensions={[sql(), runKeymap]}
                   basicSetup={{ lineNumbers: true, foldGutter: false }}
                   placeholder="-- SELECT 1"
                   height="100%"
