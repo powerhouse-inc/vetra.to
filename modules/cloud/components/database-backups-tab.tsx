@@ -1,6 +1,6 @@
 'use client'
 
-import { Database, Plus } from 'lucide-react'
+import { Database, Loader2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { useEnvironmentDumps } from '@/modules/cloud/hooks/use-environment-dumps'
 import { DumpRow } from '@/modules/cloud/components/dump-row'
@@ -12,10 +12,21 @@ type Props = {
 }
 
 export function DatabaseBackupsTab({ tenantId, canEdit }: Props) {
-  const { dumps, isLoading, error, isRequesting, cancellingId, request, cancel } =
-    useEnvironmentDumps(tenantId)
+  const {
+    dumps,
+    isLoading,
+    error,
+    isRequesting,
+    cancellingId,
+    restoringId,
+    request,
+    cancel,
+    restore,
+  } = useEnvironmentDumps(tenantId)
 
-  const inFlight = dumps.some((d) => d.status === 'PENDING' || d.status === 'RUNNING')
+  const isRestoring = restoringId !== null
+  const inFlight =
+    dumps.some((d) => d.status === 'PENDING' || d.status === 'RUNNING') || isRestoring
 
   const handleCreate = async () => {
     try {
@@ -44,6 +55,24 @@ export function DatabaseBackupsTab({ tenantId, canEdit }: Props) {
     }
   }
 
+  const handleRestore = async (dumpId: string) => {
+    try {
+      await restore(dumpId)
+      toast.success('Restore started — the database will be replaced shortly.')
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to start restore'
+      if (msg.includes('RESTORE_IN_PROGRESS')) {
+        toast.error('A restore is already in progress for this environment.')
+      } else if (msg.includes('DUMP_NOT_READY') || msg.includes('DUMP_EXPIRED')) {
+        toast.error('This dump is no longer available for restore.')
+      } else if (msg.includes('FORBIDDEN')) {
+        toast.error('Only the environment owner can restore a dump.')
+      } else {
+        toast.error(msg)
+      }
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div className="bg-background/40 flex items-center justify-between rounded-lg p-3">
@@ -58,6 +87,15 @@ export function DatabaseBackupsTab({ tenantId, canEdit }: Props) {
           </Button>
         )}
       </div>
+
+      {isRestoring && restoringId && (
+        <div className="bg-warning/10 text-warning flex items-center gap-2 rounded-md px-3 py-2 text-sm">
+          <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" />
+          <span>
+            Restoring from <span className="font-mono">dump-{restoringId}.dump</span>&hellip;
+          </span>
+        </div>
+      )}
 
       {error && (
         <div className="text-destructive bg-destructive/10 rounded-md p-3 text-sm">{error}</div>
@@ -96,17 +134,16 @@ export function DatabaseBackupsTab({ tenantId, canEdit }: Props) {
                   : undefined
               }
               isCancelling={cancellingId === d.id}
+              onRestore={
+                d.status === 'READY' && canEdit && !isRestoring
+                  ? () => handleRestore(d.id)
+                  : undefined
+              }
+              isRestoring={restoringId === d.id}
             />
           ))}
         </div>
       )}
-
-      <p className="text-muted-foreground pt-2 text-[11px]">
-        Restore:{' '}
-        <code className="bg-muted text-foreground rounded px-1.5 py-0.5 font-mono">
-          pg_restore -d &lt;url&gt; file.dump
-        </code>
-      </p>
     </div>
   )
 }
