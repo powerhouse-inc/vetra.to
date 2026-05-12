@@ -56,27 +56,29 @@ export function BackupSchedulePanel({
   const initialRetention = schedule?.retention ?? DEFAULT_RETENTION
 
   // Drafts mirror the upstream schedule, but accept temporary local overrides
-  // while a save is in flight. The render-time reset below adopts upstream
+  // while a save is in flight. The render-time sync below adopts upstream
   // changes (after a successful save, or a remote subscription update)
   // without a setState-in-effect.
   const [draft, setDraft] = useState<{
     cadence: BackupCadence
     retention: number
-    syncedFrom: { cadence: BackupCadence; retention: number }
   }>(() => ({
     cadence: initialCadence,
     retention: initialRetention,
-    syncedFrom: { cadence: initialCadence, retention: initialRetention },
   }))
 
-  if (
-    draft.syncedFrom.cadence !== initialCadence ||
-    draft.syncedFrom.retention !== initialRetention
-  ) {
+  // Identity-based sync via the "prev state" pattern from the React docs:
+  // store the last-seen schedule reference in state, and reset the draft
+  // whenever a new identity arrives. Documented behavior: any prop change
+  // overwrites local edits. Cadence/retention edits auto-save when enabled,
+  // so drafts are short-lived — having the next subscription tick win is
+  // the right semantics (mid-edit state is reset, not silently kept).
+  const [syncedFrom, setSyncedFrom] = useState(schedule)
+  if (syncedFrom !== schedule) {
+    setSyncedFrom(schedule)
     setDraft({
-      cadence: initialCadence,
-      retention: initialRetention,
-      syncedFrom: { cadence: initialCadence, retention: initialRetention },
+      cadence: schedule?.cadence ?? DEFAULT_CADENCE,
+      retention: schedule?.retention ?? DEFAULT_RETENTION,
     })
   }
 
