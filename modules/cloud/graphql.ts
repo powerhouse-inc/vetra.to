@@ -677,7 +677,12 @@ export async function fetchLogs(
 // Clint runtime-announced endpoints (vetra-cloud-observability subgraph)
 // ---------------------------------------------------------------------------
 
-import type { ClintRuntimeEndpointsForPrefix, DatabaseDump, DatabaseSchema } from './types'
+import type {
+  ClintRuntimeEndpointsForPrefix,
+  DatabaseDump,
+  DatabaseQueryResult,
+  DatabaseSchema,
+} from './types'
 
 export async function fetchClintRuntimeEndpointsByEnv(
   subdomain: string,
@@ -788,6 +793,33 @@ export async function describeDatabase(
     token,
   )
   return data.describeDatabase
+}
+
+const DB_QUERY_RESULT_FRAGMENT = `columns rows rowCount truncatedAt executionMs`
+
+/**
+ * Owner-gated read-only SQL execution. The resolver wraps every call in
+ * `BEGIN READ ONLY … ROLLBACK` with a 5s statement timeout and rejects any
+ * statement whose leading keyword is a mutation (INSERT, UPDATE, etc.).
+ * Multi-statement input is silently truncated to the first statement.
+ */
+export async function executeReadOnlyQuery(
+  tenantId: string,
+  sql: string,
+  limit: number,
+  token?: string | null,
+): Promise<DatabaseQueryResult> {
+  const data = await gqlObservability<{ executeReadOnlyQuery: DatabaseQueryResult }>(
+    '',
+    `mutation ($tenantId: String!, $sql: String!, $limit: Int) {
+      executeReadOnlyQuery(tenantId: $tenantId, sql: $sql, limit: $limit) {
+        ${DB_QUERY_RESULT_FRAGMENT}
+      }
+    }`,
+    { tenantId, sql, limit },
+    token,
+  )
+  return data.executeReadOnlyQuery
 }
 
 export async function restoreEnvironmentDump(
