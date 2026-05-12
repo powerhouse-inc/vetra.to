@@ -94,9 +94,38 @@ export type CloudEnvironmentState = {
    * null (or undefined on envs created before the field existed) = off.
    */
   autoUpdateChannel?: AutoUpdateChannel | null
+  /**
+   * Recurring database backup intent. The frontend writes this via
+   * SET_BACKUP_SCHEDULE; a backend job runner reads it and fires
+   * `requestEnvironmentDump` on the configured cadence. `null` / `undefined`
+   * = scheduled backups disabled (or feature not yet rolled out on this env).
+   */
+  backupSchedule?: BackupSchedule | null
 }
 
 export type AutoUpdateChannel = 'DEV' | 'STAGING' | 'LATEST'
+
+export type BackupCadence = 'HOURLY' | 'DAILY' | 'WEEKLY'
+
+/**
+ * Discriminator for how a dump was triggered. Manual dumps come from a user
+ * clicking "Create dump"; scheduled dumps come from the backend job runner
+ * acting on the env's `backupSchedule`. Optional on the type for tolerance
+ * with backends that haven't rolled out the column yet — `undefined`/`null`
+ * is treated as MANUAL by the UI.
+ */
+export type DumpSource = 'MANUAL' | 'SCHEDULED'
+
+/**
+ * Frontend representation of the recurring-backup intent stored on
+ * `CloudEnvironmentState.backupSchedule`.
+ */
+export type BackupSchedule = {
+  enabled: boolean
+  cadence: BackupCadence
+  /** Number of completed scheduled dumps to retain. Default 7; 1–30. */
+  retention: number
+}
 export type ReleaseTrigger = 'AUTO' | 'MANUAL' | 'ROLLBACK'
 
 export type ReleaseIndexEntry = {
@@ -237,4 +266,10 @@ export type DatabaseDump = {
   sizeBytes: number | null
   errorMessage: string | null
   downloadUrl: string | null
+  /**
+   * Whether the dump was manually requested or fired by the scheduled-backup
+   * runner. Optional for tolerance with backends that haven't rolled out the
+   * column yet — `undefined`/`null` is treated as MANUAL by the UI.
+   */
+  source?: DumpSource | null
 }
