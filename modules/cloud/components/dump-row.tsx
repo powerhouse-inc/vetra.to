@@ -1,7 +1,19 @@
 'use client'
 
-import { Clock, Database, Download, Loader2, RefreshCw, X } from 'lucide-react'
+import { Clock, Database, Download, Loader2, RefreshCw, RotateCcw, X } from 'lucide-react'
+import { useState } from 'react'
+import { AsyncButton } from '@/modules/cloud/components/async-button'
 import type { DatabaseDump, DatabaseDumpStatus } from '@/modules/cloud/types'
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/modules/shared/components/ui/alert-dialog'
 import { Button } from '@/modules/shared/components/ui/button'
 import { cn } from '@/shared/lib/utils'
 
@@ -53,9 +65,12 @@ type Props = {
   onRetry?: () => void
   onCancel?: () => void
   isCancelling?: boolean
+  onRestore?: () => Promise<void> | void
+  isRestoring?: boolean
 }
 
-export function DumpRow({ dump, onRetry, onCancel, isCancelling }: Props) {
+export function DumpRow({ dump, onRetry, onCancel, isCancelling, onRestore, isRestoring }: Props) {
+  const [confirmOpen, setConfirmOpen] = useState(false)
   const isExpired = new Date(dump.expiresAt).getTime() < Date.now()
   const isExpiredReady = isExpired && dump.status === 'READY'
   const pill = isExpiredReady ? EXPIRED_PILL : PILL_BY_STATUS[dump.status]
@@ -121,6 +136,40 @@ export function DumpRow({ dump, onRetry, onCancel, isCancelling }: Props) {
               Download
             </a>
           </Button>
+        )}
+        {dump.status === 'READY' && !isExpired && onRestore && (
+          <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+            <AlertDialogTrigger asChild>
+              <Button size="sm" variant="outline" disabled={isRestoring}>
+                <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+                Restore
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Restore this dump?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will overwrite the current database with the contents of{' '}
+                  <span className="font-mono">{filename}</span>. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AsyncButton
+                  variant="destructive"
+                  size="sm"
+                  pendingLabel="Restoring…"
+                  onClickAsync={async (e) => {
+                    e.preventDefault()
+                    await onRestore()
+                    setConfirmOpen(false)
+                  }}
+                >
+                  Restore
+                </AsyncButton>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
         {dump.status === 'FAILED' && onRetry && (
           <Button size="sm" variant="outline" onClick={onRetry}>
