@@ -4,7 +4,7 @@ import { Clock, Database, Download, Loader2, RefreshCw, RotateCcw, X } from 'luc
 import { useState } from 'react'
 import { AsyncButton } from '@/modules/cloud/components/async-button'
 import { fmtBytes, timeAgo, timeUntil } from '@/modules/cloud/lib/time-format'
-import type { DatabaseDump, DatabaseDumpStatus } from '@/modules/cloud/types'
+import type { DatabaseDump, DatabaseDumpStatus, DumpSource } from '@/modules/cloud/types'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/modules/shared/components/ui/alert-dialog'
+import { Badge } from '@/modules/shared/components/ui/badge'
 import { Button } from '@/modules/shared/components/ui/button'
 import { cn } from '@/shared/lib/utils'
 
@@ -32,9 +33,15 @@ type Props = {
   onCancel?: () => void
   isCancelling?: boolean
   onRestore?: () => Promise<void>
+  /**
+   * Override `dump.source` (useful when the caller already destructured it).
+   * Falls back to `dump.source` when not provided.
+   */
+  source?: DumpSource | null
 }
 
-export function DumpRow({ dump, onRetry, onCancel, isCancelling, onRestore }: Props) {
+export function DumpRow({ dump, onRetry, onCancel, isCancelling, onRestore, source }: Props) {
+  const effectiveSource = source ?? dump.source ?? null
   const [confirmOpen, setConfirmOpen] = useState(false)
   const isExpired = new Date(dump.expiresAt).getTime() < Date.now()
   const isExpiredReady = isExpired && dump.status === 'READY'
@@ -57,6 +64,11 @@ export function DumpRow({ dump, onRetry, onCancel, isCancelling, onRestore }: Pr
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-medium">{filename}</span>
+          {effectiveSource === 'SCHEDULED' && (
+            <Badge size="xs" variant="secondary">
+              auto
+            </Badge>
+          )}
           <span
             className={cn(
               'inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide',
