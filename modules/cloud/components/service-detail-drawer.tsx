@@ -18,6 +18,8 @@ import { useEnvironmentMetrics } from '@/modules/cloud/hooks/use-environment-met
 import { getServiceQuota } from '@/modules/cloud/lib/resource-maps'
 import { extractRestartTimestamps } from '@/modules/cloud/lib/restart-events'
 import type {
+  BackupCadence,
+  BackupSchedule,
   CloudEnvironmentService,
   KubeEvent,
   MetricRange,
@@ -94,6 +96,18 @@ type Props = {
   pods?: readonly Pod[]
   activeTab: string
   onTabChange: (tab: string) => void
+  /**
+   * Schedule + write-handler for the Database tab's BackupSchedulePanel.
+   * Threaded through the drawer so the tab doesn't need to call
+   * `useEnvironmentDetail` twice. Only consumed when `kind === 'switchboard'`.
+   */
+  backupSchedule?: BackupSchedule | null
+  onSaveBackupSchedule?: (opts: {
+    enabled: boolean
+    cadence: BackupCadence
+    retention: number
+  }) => Promise<void>
+  backupScheduleSupported?: boolean
 }
 
 export function ServiceDetailDrawer({
@@ -109,6 +123,9 @@ export function ServiceDetailDrawer({
   pods,
   activeTab,
   onTabChange,
+  backupSchedule,
+  onSaveBackupSchedule,
+  backupScheduleSupported,
 }: Props) {
   // The Switchboard service is the chart's gating service for the CNPG
   // database cluster, so its drawer also surfaces DB backups. CONNECT and
@@ -298,7 +315,14 @@ export function ServiceDetailDrawer({
                 <div className="text-muted-foreground mb-4 text-xs">
                   <span className="font-mono">{clusterName}</span> · postgres 16
                 </div>
-                <DatabaseBackupsTab tenantId={tenantId} canEdit={canEdit} />
+                <DatabaseBackupsTab
+                  tenantId={tenantId}
+                  canEdit={canEdit}
+                  documentId={documentId}
+                  schedule={backupSchedule}
+                  onSaveSchedule={onSaveBackupSchedule}
+                  scheduleSupported={backupScheduleSupported}
+                />
                 <p className="text-muted-foreground mt-4 text-[11px]">
                   Detailed metrics, replication lag and connection counts live in the cluster-wide
                   Grafana dashboards.

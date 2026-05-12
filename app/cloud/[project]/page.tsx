@@ -282,6 +282,9 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
           pods={envPods}
           activeTab={drawer.tab ?? 'logs'}
           onTabChange={drawer.setTab}
+          backupSchedule={state.backupSchedule ?? null}
+          onSaveBackupSchedule={detail.setBackupSchedule}
+          backupScheduleSupported={detail.backupScheduleSupported}
         />
       )}
       {state && environment && drawer.scope?.kind === 'agent' && drawerAgent && (
