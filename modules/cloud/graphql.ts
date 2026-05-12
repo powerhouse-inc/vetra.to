@@ -753,3 +753,20 @@ export async function cancelEnvironmentDump(
   )
   return data.cancelEnvironmentDump
 }
+
+export async function restoreEnvironmentDump(
+  dumpId: string,
+  token?: string | null,
+): Promise<{ ok: boolean; message: string | null }> {
+  const data = await gqlObservability<{
+    restoreEnvironmentDump: { ok: boolean; message: string | null }
+  }>(
+    '',
+    `mutation ($dumpId: ID!) {
+      restoreEnvironmentDump(dumpId: $dumpId) { ok message }
+    }`,
+    { dumpId },
+    token,
+  )
+  return data.restoreEnvironmentDump
+}
