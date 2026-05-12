@@ -117,13 +117,24 @@ export function AgentDetailDrawer({
       ? `${service.config.package.name}@${service.config.package.version ?? 'latest'}`
       : 'unconfigured')
 
-  // Logs — env-wide for now; per-agent filtering ships with the
-  // backend `agent:` arg. We render a disclaimer above the viewer.
+  // Logs — env-wide query for now; until the backend `agent:` arg ships,
+  // we filter client-side by matching the agent's prefix or pod-name
+  // anywhere in the log line. This is a best-effort substring match;
+  // false positives are possible if the prefix collides with another
+  // service's log text. The disclaimer below the viewer states this.
   const {
-    logs,
+    logs: rawLogs,
     isLoading: logsLoading,
     refresh: refreshLogs,
   } = useEnvironmentLogs(subdomain, tenantId, null, range, false)
+  const logs = useMemo(() => {
+    if (rawLogs.length === 0) return rawLogs
+    const needles = [service.prefix, ...agentPods.map((p) => p.name)].filter(
+      (s): s is string => !!s && s.length > 0,
+    )
+    if (needles.length === 0) return rawLogs
+    return rawLogs.filter((entry) => needles.some((n) => entry.line.includes(n)))
+  }, [rawLogs, service.prefix, agentPods])
 
   // Metrics — fetched env-wide and filtered client-side by pod name.
   const { metrics, isLoading: metricsLoading } = useEnvironmentMetrics(
@@ -158,7 +169,7 @@ export function AgentDetailDrawer({
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent
         side="right"
-        className="flex w-full flex-col gap-0 p-0 sm:max-w-2xl lg:max-w-3xl"
+        className="top-16 flex h-[calc(100vh-4rem)] w-full flex-col gap-0 p-0 sm:max-w-2xl lg:max-w-3xl"
       >
         <SheetHeader className="border-b px-6 py-4">
           <div className="flex items-start gap-3">
@@ -228,10 +239,16 @@ export function AgentDetailDrawer({
                   <div className="bg-muted/40 text-muted-foreground flex items-start gap-2 rounded-md border p-3 text-xs">
                     <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <span>
-                      Per-agent log filtering ships in a follow-up. Showing all environment logs —
-                      the JSON <span className="font-mono">logging_pod</span> field is{' '}
-                      <span className="font-mono">{agentPods[0]?.name ?? 'unknown'}</span> for this
-                      agent.
+                      Showing log lines matching this agent (prefix{' '}
+                      <span className="font-mono">{service.prefix}</span>
+                      {agentPods[0] && (
+                        <>
+                          {' '}
+                          / pod <span className="font-mono">{agentPods[0].name}</span>
+                        </>
+                      )}
+                      ). Substring match client-side until the backend ships an{' '}
+                      <span className="font-mono">agent:</span> filter.
                     </span>
                   </div>
                   <div className="flex items-center gap-2">

@@ -164,7 +164,7 @@ export function ServiceDetailDrawer({
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent
         side="right"
-        className="flex w-full flex-col gap-0 p-0 sm:max-w-2xl lg:max-w-3xl"
+        className="top-16 flex h-[calc(100vh-4rem)] w-full flex-col gap-0 p-0 sm:max-w-2xl lg:max-w-3xl"
       >
         <SheetHeader className="border-b px-6 py-4">
           <SheetTitle className="flex items-center gap-2">

@@ -17,6 +17,14 @@ type EventTimelineProps = {
   isLoading?: boolean
 }
 
+/**
+ * Vertical event list — time, type, reason, message, involvedObject.
+ *
+ * Each row is a CSS grid so the timestamp / type / reason columns stay
+ * column-aligned across rows while the message wraps freely. The message
+ * field used to be `line-clamp-1`-truncated which made longer messages
+ * useless; now the row simply gets taller when needed.
+ */
 export function EventTimeline({ events, isLoading }: EventTimelineProps) {
   if (isLoading) {
     return (
@@ -38,40 +46,49 @@ export function EventTimeline({ events, isLoading }: EventTimelineProps) {
   }
 
   return (
-    <div className="space-y-2">
+    <ul className="divide-border/40 divide-y">
       {events.map((event, i) => (
-        <div key={i} className="flex items-start gap-3 py-1 text-sm">
-          <span className="text-muted-foreground w-14 shrink-0 pt-0.5 text-xs">
-            {timeAgo(event.timestamp)}
-          </span>
+        <li
+          key={i}
+          className="grid grid-cols-[3.5rem_5rem_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1 py-2 text-sm sm:grid-cols-[3.5rem_5rem_minmax(0,1fr)_minmax(0,12rem)]"
+        >
+          <span className="text-muted-foreground pt-0.5 text-xs">{timeAgo(event.timestamp)}</span>
 
-          <span className="shrink-0">
+          <span className="pt-0.5">
             {event.type === 'WARNING' ? (
               <Badge
+                size="xs"
                 variant="secondary"
-                className="border-transparent bg-[#ffa132]/20 text-xs text-[#ffa132]"
+                className="bg-warning/15 text-warning border-transparent"
               >
                 WARNING
               </Badge>
             ) : (
               <Badge
+                size="xs"
                 variant="secondary"
-                className="bg-muted text-muted-foreground border-transparent text-xs"
+                className="bg-muted text-muted-foreground border-transparent"
               >
                 NORMAL
               </Badge>
             )}
           </span>
 
-          <span className="shrink-0 font-semibold">{event.reason}</span>
+          <div className="min-w-0 space-y-0.5">
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <span className="font-semibold">{event.reason}</span>
+            </div>
+            <p className="text-foreground/90 text-sm break-words">{event.message}</p>
+          </div>
 
-          <span className="text-foreground line-clamp-1 min-w-0 flex-1">{event.message}</span>
-
-          <span className="text-muted-foreground hidden shrink-0 text-xs sm:block">
+          <span
+            className="text-muted-foreground hidden truncate font-mono text-xs sm:block"
+            title={event.involvedObject}
+          >
             {event.involvedObject}
           </span>
-        </div>
+        </li>
       ))}
-    </div>
+    </ul>
   )
 }
