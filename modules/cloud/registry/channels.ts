@@ -60,3 +60,21 @@ export function computeDistTags(tags: string[]): Record<string, string> {
   }
   return Object.fromEntries(Object.entries(buckets).map(([k, v]) => [k, v.tag]))
 }
+
+/**
+ * Sort tags newest-first using channel-aware semver order.
+ * Tags that don't match either regex (e.g., floating Docker tags like `dev`,
+ * `staging`, `latest`) are bubbled to the very top so users can pick them
+ * to pin to "always-newest-of-channel-X".
+ */
+export function sortTagsNewestFirst(tags: string[]): string[] {
+  const matched: Parsed[] = []
+  const unmatched: string[] = []
+  for (const tag of tags) {
+    const result = parseTag(tag)
+    if (result) matched.push(result.parsed)
+    else unmatched.push(tag)
+  }
+  matched.sort((a, b) => (isNewer(a, b) ? -1 : isNewer(b, a) ? 1 : 0))
+  return [...unmatched, ...matched.map((p) => p.tag)]
+}

@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
-import { computeDistTags } from '@/modules/cloud/registry/channels'
+import { computeDistTags, sortTagsNewestFirst } from '@/modules/cloud/registry/channels'
 import { fetchHarborTags } from '@/modules/cloud/registry/harbor'
 
 export const dynamic = 'force-dynamic'
@@ -27,8 +27,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: `Unknown service type: ${serviceType}` }, { status: 400 })
     }
 
-    const tags = await fetchHarborTags(imagePath)
-    const distTags = computeDistTags(tags)
+    const rawTags = await fetchHarborTags(imagePath)
+    const tags = sortTagsNewestFirst(rawTags)
+    const distTags = computeDistTags(rawTags)
 
     return NextResponse.json({ tags, distTags }, { headers: { 'Cache-Control': CACHE_HEADER } })
   } catch (error) {

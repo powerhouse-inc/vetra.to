@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { computeDistTags } from '@/modules/cloud/registry/channels'
+import { computeDistTags, sortTagsNewestFirst } from '@/modules/cloud/registry/channels'
 
 describe('computeDistTags', () => {
   it('returns empty object for empty input', () => {
@@ -56,5 +56,40 @@ describe('computeDistTags', () => {
     expect(computeDistTags(['v6.0.0-BETA.1', 'v6.0.0-beta.2'])).toEqual({
       beta: 'v6.0.0-beta.2',
     })
+  })
+})
+
+describe('sortTagsNewestFirst', () => {
+  it('returns empty for empty input', () => {
+    expect(sortTagsNewestFirst([])).toEqual([])
+  })
+
+  it('sorts semver tags newest-first within a channel', () => {
+    expect(sortTagsNewestFirst(['v6.0.0-dev.225', 'v6.0.0-dev.240', 'v6.0.0-dev.236'])).toEqual([
+      'v6.0.0-dev.240',
+      'v6.0.0-dev.236',
+      'v6.0.0-dev.225',
+    ])
+  })
+
+  it('orders by base version then bump', () => {
+    expect(sortTagsNewestFirst(['v5.99.0-dev.999', 'v6.0.0-dev.1', 'v6.0.0-dev.10'])).toEqual([
+      'v6.0.0-dev.10',
+      'v6.0.0-dev.1',
+      'v5.99.0-dev.999',
+    ])
+  })
+
+  it('keeps stable above same-base prerelease', () => {
+    expect(sortTagsNewestFirst(['v6.0.0-dev.99', 'v6.0.0'])).toEqual(['v6.0.0', 'v6.0.0-dev.99'])
+  })
+
+  it('floating Docker tags (unmatched) bubble to the top', () => {
+    expect(sortTagsNewestFirst(['v5.0.0', 'dev', 'staging', 'v6.0.0-dev.10'])).toEqual([
+      'dev',
+      'staging',
+      'v6.0.0-dev.10',
+      'v5.0.0',
+    ])
   })
 })
