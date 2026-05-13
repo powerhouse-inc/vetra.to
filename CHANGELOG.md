@@ -1,3 +1,12 @@
+## [1.16.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.15.0...v1.16.0) (2026-05-13)
+
+### Features
+
+- **navbar:** My profile and My packages entries in Renown dropdown ([7ef34af](https://github.com/powerhouse-inc/vetra.to/commit/7ef34af34283f2ef0d9525e3cb8bbb75e3c2ae78))
+- **profile:** /profile route + ProfileTabs shell ([590613e](https://github.com/powerhouse-inc/vetra.to/commit/590613e29bfaff3857b854ebd1260f39ce16d3fd))
+- **profile:** data layer — fetcher, query, useMyTeams hook + tests ([4c928be](https://github.com/powerhouse-inc/vetra.to/commit/4c928be1e713a837173aaa60e0bb6dfb81a7b515))
+- **profile:** LoginPrompt, TabErrorState, TeamProfileCard, TeamsTab, PackagesTab, SettingsTab ([f6a780b](https://github.com/powerhouse-inc/vetra.to/commit/f6a780b2fe25943c8c3dad195b213d5bd50928e4))
+
 ## [1.15.0](https://github.com/powerhouse-inc/vetra.to/compare/v1.14.2...v1.15.0) (2026-05-05)
 
 ### Features
