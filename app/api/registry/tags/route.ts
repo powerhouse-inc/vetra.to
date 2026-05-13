@@ -1,17 +1,22 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
+import { computeDistTags } from '@/modules/cloud/registry/channels'
+import { fetchHarborTags } from '@/modules/cloud/registry/harbor'
+
 export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 const IMAGE_MAP: Record<string, string> = {
   CONNECT: 'powerhouse-inc-powerhouse/connect',
   SWITCHBOARD: 'powerhouse-inc-powerhouse/switchboard',
 }
 
+const CACHE_HEADER = 'public, s-maxage=60, stale-while-revalidate=300'
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const serviceType = searchParams.get('service')
-    const registry = searchParams.get('registry') ?? 'https://cr.vetra.io'
 
     if (!serviceType) {
       return NextResponse.json({ error: 'service parameter is required' }, { status: 400 })
@@ -22,18 +27,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: `Unknown service type: ${serviceType}` }, { status: 400 })
     }
 
-    const url = new URL(`/v2/${imagePath}/tags/list`, registry)
-    const res = await fetch(url.toString(), { next: { revalidate: 300 } })
+    const tags = await fetchHarborTags(imagePath)
+    const distTags = computeDistTags(tags)
 
-    if (!res.ok) {
-      return NextResponse.json({ error: 'Failed to fetch tags from registry' }, { status: 502 })
-    }
-
-    const data = (await res.json()) as { name?: string; tags?: string[] }
-
-    return NextResponse.json({ tags: data.tags ?? [] })
+    return NextResponse.json({ tags, distTags }, { headers: { 'Cache-Control': CACHE_HEADER } })
   } catch (error) {
     console.error('Registry tags API error:', error)
-    return NextResponse.json({ error: 'Failed to fetch tags' }, { status: 500 })
+    return NextResponse.json({ error: 'internal error' }, { status: 500 })
   }
 }
