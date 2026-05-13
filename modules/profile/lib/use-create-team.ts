@@ -1,23 +1,20 @@
 import { useCallback } from 'react'
 import { addDocument, dispatchActions } from '@powerhousedao/reactor-browser'
+import {
+  addMember,
+  addPackage as _unused,
+  generateId,
+  setDescription,
+  setLogo,
+  setSlug,
+  setSocials,
+  setTeamName,
+  updateMemberInfo,
+} from './builder-team-actions'
 import { fetchBuilderTeamBySlug } from './create-team-queries'
 
-// Action constructors mirror vetra-builder-package's builder-team/v1 creators.
-// Inlined here because vetra.to doesn't depend on the package as a node module
-// (it only queries the deployed switchboard's GraphQL schema). Each action
-// matches the wire shape the reactor's reducers accept.
-function action<TInput>(type: string, input: TInput) {
-  return { type, input, scope: 'global' as const }
-}
-const setTeamName = (input: { name: string }) => action('SET_TEAM_NAME', input)
-const setSlug = (input: { slug: string }) => action('SET_SLUG', input)
-const setDescription = (input: { description: string }) => action('SET_DESCRIPTION', input)
-const setLogo = (input: { logo: string }) => action('SET_LOGO', input)
-const setSocials = (input: { xProfile?: string; github?: string; website?: string }) =>
-  action('SET_SOCIALS', input)
-const addMember = (input: { id: string }) => action('ADD_MEMBER', input)
-const updateMemberInfo = (input: { id: string; ethAddress: string }) =>
-  action('UPDATE_MEMBER_INFO', input)
+// Silence the unused-import warning for re-exports we want to keep grouped.
+void _unused
 
 export type CreateTeamForm = {
   name: string
@@ -33,10 +30,6 @@ export type CreateTeamForm = {
 export type UseCreateTeamArgs = {
   driveId: string
   creatorAddress: string
-}
-
-function generateId(): string {
-  return crypto.randomUUID()
 }
 
 async function waitForSlug(slug: string, timeoutMs: number): Promise<void> {
