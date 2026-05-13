@@ -80,16 +80,6 @@ const SERVICE_ICONS: Record<
   CLINT: Bot,
 }
 
-// The container image (cr.vetra.io/...) and the npm package
-// (@powerhousedao/...) point at the same artifact in two distribution
-// channels — showing both in the UI is just noise. The npm package name is
-// still kept below because the version-picker fetches dist-tags from
-// registry.npmjs.org, but neither is rendered in the row.
-const SERVICE_NPM_PACKAGES: Record<string, string> = {
-  CONNECT: '@powerhousedao/connect',
-  SWITCHBOARD: '@powerhousedao/switchboard',
-}
-
 function ServiceRow({
   serviceType,
   prefix,
@@ -133,7 +123,6 @@ function ServiceRow({
   const [tags, setTags] = useState<string[]>([])
   const [distTags, setDistTags] = useState<Record<string, string>>({})
   const [tagsLoading, setTagsLoading] = useState(false)
-  const npmPackage = SERVICE_NPM_PACKAGES[serviceType]
   const label = SERVICE_LABELS[serviceType]
   const Icon = SERVICE_ICONS[serviceType]
   const defaultUrl = subdomain
@@ -176,18 +165,17 @@ function ServiceRow({
       setShowVersionPicker(!showVersionPicker)
       return
     }
-    if (!npmPackage) return
     setShowVersionPicker(true)
     setTagsLoading(true)
     try {
-      const res = await fetch(`https://registry.npmjs.org/${npmPackage}`)
+      const res = await fetch(`/api/registry/tags?service=${encodeURIComponent(serviceType)}`)
       if (res.ok) {
         const data = (await res.json()) as {
-          'dist-tags': Record<string, string>
-          versions: Record<string, unknown>
+          tags: string[]
+          distTags: Record<string, string>
         }
-        setDistTags(data['dist-tags'] ?? {})
-        setTags(Object.keys(data.versions ?? {}).reverse())
+        setDistTags(data.distTags ?? {})
+        setTags(data.tags ?? [])
       }
     } finally {
       setTagsLoading(false)
