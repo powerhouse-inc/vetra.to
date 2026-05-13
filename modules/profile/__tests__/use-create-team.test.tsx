@@ -40,7 +40,7 @@ describe('useCreateTeam', () => {
   })
 
   it('mints doc, dispatches required actions, resolves on success', async () => {
-    addDocumentMock.mockResolvedValueOnce({ documentId: 'doc-1' })
+    addDocumentMock.mockResolvedValueOnce({ id: 'doc-1' })
     dispatchActionsMock.mockResolvedValueOnce(undefined)
     fetchSlugMock.mockResolvedValueOnce({ id: 'doc-1' })
 
@@ -72,7 +72,7 @@ describe('useCreateTeam', () => {
   })
 
   it('includes optional fields only when non-empty', async () => {
-    addDocumentMock.mockResolvedValueOnce({ documentId: 'doc-1' })
+    addDocumentMock.mockResolvedValueOnce({ id: 'doc-1' })
     dispatchActionsMock.mockResolvedValueOnce(undefined)
     fetchSlugMock.mockResolvedValueOnce({ id: 'doc-1' })
     const { result } = renderHook(() =>
@@ -98,7 +98,7 @@ describe('useCreateTeam', () => {
   })
 
   it('adds invited members as addMember+updateMemberInfo pairs', async () => {
-    addDocumentMock.mockResolvedValueOnce({ documentId: 'doc-1' })
+    addDocumentMock.mockResolvedValueOnce({ id: 'doc-1' })
     dispatchActionsMock.mockResolvedValueOnce(undefined)
     fetchSlugMock.mockResolvedValueOnce({ id: 'doc-1' })
     const { result } = renderHook(() =>
@@ -125,7 +125,7 @@ describe('useCreateTeam', () => {
   })
 
   it('rejects when dispatchActions throws', async () => {
-    addDocumentMock.mockResolvedValueOnce({ documentId: 'doc-1' })
+    addDocumentMock.mockResolvedValueOnce({ id: 'doc-1' })
     dispatchActionsMock.mockRejectedValueOnce(new Error('signing cancelled'))
     const { result } = renderHook(() =>
       useCreateTeam({ driveId: 'vetra-builder-package', creatorAddress: '0xC' }),

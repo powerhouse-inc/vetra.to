@@ -1,7 +1,8 @@
 'use client'
 import Link from 'next/link'
-import { Users } from 'lucide-react'
+import { Plus, Users } from 'lucide-react'
 import { useMyTeams } from '@/modules/profile/lib/use-my-teams'
+import { Button } from '@/modules/shared/components/ui/button'
 import { Card, CardContent } from '@/modules/shared/components/ui/card'
 import { TabErrorState } from './tab-error-state'
 import { TeamProfileCard } from './team-profile-card'
@@ -38,19 +39,27 @@ export function TeamsTab({ address }: { address: string }) {
   if (!data || data.length === 0) {
     return (
       <Card>
-        <CardContent className="flex flex-col items-center gap-3 p-12 text-center">
+        <CardContent className="flex flex-col items-center gap-4 p-12 text-center">
           <div className="bg-muted flex size-12 items-center justify-center rounded-full">
             <Users className="text-muted-foreground size-6" />
           </div>
           <div>
             <h3 className="text-base font-semibold">You&apos;re not in any builder team yet</h3>
-            <p className="text-muted-foreground mt-1 text-sm">
-              Teams you&apos;re a member of will appear here. Browse{' '}
-              <Link href="/builders" className="text-primary underline-offset-4 hover:underline">
-                existing builders
-              </Link>{' '}
-              to discover the ecosystem.
+            <p className="text-muted-foreground mx-auto mt-1 max-w-sm text-sm">
+              Create your first team to start showcasing what you&apos;re building, or browse the
+              ecosystem to find one to join.
             </p>
+          </div>
+          <div className="flex gap-2">
+            <Button asChild>
+              <Link href="/profile/create-team">
+                <Plus className="mr-1.5 size-4" />
+                Create your first team
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/builders">Browse builders</Link>
+            </Button>
           </div>
         </CardContent>
       </Card>

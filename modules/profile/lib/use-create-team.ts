@@ -56,7 +56,7 @@ export function useCreateTeam({ driveId, creatorAddress }: UseCreateTeamArgs) {
   const createTeam = useCallback(
     async (form: CreateTeamForm): Promise<{ documentId: string }> => {
       const minted = await addDocument(driveId, form.name, 'powerhouse/builder-team')
-      const documentId = (minted as { documentId: string }).documentId
+      const documentId = (minted as { id: string }).id
 
       const actions: unknown[] = []
       actions.push(setTeamName({ name: form.name }))

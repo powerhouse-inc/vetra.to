@@ -1,12 +1,17 @@
 'use client'
 import { useRenownAuth } from '@powerhousedao/reactor-browser'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Plus } from 'lucide-react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import { Button } from '@/modules/shared/components/ui/button'
 import { LoginPrompt } from './components/login-prompt'
 import { ProfileTabs } from './components/profile-tabs'
 
 function ProfilePageInner() {
   const auth = useRenownAuth()
+  const params = useSearchParams()
+  const showCreateButton = (params.get('tab') ?? 'teams') === 'teams'
 
   if (auth.status === 'loading' || auth.status === 'checking') {
     return (
@@ -26,11 +31,21 @@ function ProfilePageInner() {
 
   return (
     <div className="container mx-auto max-w-5xl px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">My profile</h1>
-        <p className="text-muted-foreground mt-1 text-sm">
-          Teams you&apos;re a member of, packages you&apos;ve published, and account settings.
-        </p>
+      <div className="mb-8 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">My profile</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Teams you&apos;re a member of, packages you&apos;ve published, and account settings.
+          </p>
+        </div>
+        {showCreateButton && (
+          <Button asChild>
+            <Link href="/profile/create-team">
+              <Plus className="mr-1.5 size-4" />
+              Create team
+            </Link>
+          </Button>
+        )}
       </div>
       <ProfileTabs address={auth.address} />
     </div>
