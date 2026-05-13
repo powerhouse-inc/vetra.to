@@ -1,0 +1,53 @@
+'use client'
+import { useRenownAuth } from '@powerhousedao/reactor-browser'
+import { Loader2 } from 'lucide-react'
+import { Suspense } from 'react'
+import { LoginPrompt } from './components/login-prompt'
+import { ProfileTabs } from './components/profile-tabs'
+
+function ProfilePageInner() {
+  const auth = useRenownAuth()
+
+  if (auth.status === 'loading' || auth.status === 'checking') {
+    return (
+      <div className="container mx-auto flex min-h-[60vh] items-center justify-center px-4 py-8">
+        <Loader2 className="text-muted-foreground size-6 animate-spin" />
+      </div>
+    )
+  }
+
+  if (auth.status !== 'authorized' || !auth.address) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <LoginPrompt onLogin={auth.login} />
+      </div>
+    )
+  }
+
+  return (
+    <div className="container mx-auto max-w-5xl px-4 py-8">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight">My profile</h1>
+        <p className="text-muted-foreground mt-1 text-sm">
+          Teams you&apos;re a member of, packages you&apos;ve published, and account settings.
+        </p>
+      </div>
+      <ProfileTabs address={auth.address} />
+    </div>
+  )
+}
+
+export default function ProfilePage() {
+  // Suspense boundary for useSearchParams (Next.js 15+ requirement).
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto flex min-h-[60vh] items-center justify-center px-4 py-8">
+          <Loader2 className="text-muted-foreground size-6 animate-spin" />
+        </div>
+      }
+    >
+      <ProfilePageInner />
+    </Suspense>
+  )
+}
