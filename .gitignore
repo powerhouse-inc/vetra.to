@@ -51,3 +51,6 @@ chromatic-diagnostics.json
 storage/
 cdn-cache/.playwright-cli/
 .playwright-cli/
+
+# Superpowers brainstorm local state (visual-companion server)
+.superpowers/
