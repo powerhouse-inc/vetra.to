@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { ArrowRight, ExternalLink, Users, Package } from 'lucide-react'
+import { ArrowRight, Users, Package } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/modules/shared/components/ui/avatar'
 import { Button } from '@/modules/shared/components/ui/button'
 import { Card, CardContent } from '@/modules/shared/components/ui/card'
@@ -69,14 +69,10 @@ export function TeamProfileCard({ team }: { team: ProfileTeam }) {
             </Link>
           </Button>
           <Button variant="ghost" size="sm" className="flex-1" asChild>
-            <a
-              href={`https://connect.vetra.io/d/${team.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link href={`/profile/teams/${team.profileSlug}`}>
               Manage
-              <ExternalLink className="ml-1 size-3.5" />
-            </a>
+              <ArrowRight className="ml-1 size-3.5" />
+            </Link>
           </Button>
         </div>
       </CardContent>
