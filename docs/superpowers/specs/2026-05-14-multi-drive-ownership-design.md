@@ -68,7 +68,7 @@ We want:
   - `spaces/*` — `addSpace`, `updateSpaceInfo`, `removeSpace`
   - `member/*` — single-member self-record (the account owner)
   - `packages/*` — `addPackage`, `updatePackageInfo`, `removePackage`, plus `setPackageDriveId` (already in schema)
-- **`BuilderTeam` tightening.** `setSlug` action becomes draft-only — after the first state transition out of draft (or always, for newly-created teams under this design), `setSlug` throws `SlugLockedError`. Existing teams keep their slug.
+- **`BuilderTeam` tightening.** `setSlug` throws `SlugLockedError` whenever the team doc lives in a `team:<slug>` drive (i.e. any new team created under this design). Legacy `'powerhouse'` teams retain their slug; no rename UI is offered.
 - **Subgraph schema.** Add `source_drive_id: text NOT NULL` to `builder_teams`, `builder_team_spaces`, `builder_team_packages`, `builder_team_members`. Add new mirror tables `builder_accounts`, `builder_account_spaces`, `builder_account_packages` (single-row-per-account; the account-spaces/packages mirror team-spaces/packages).
 - **Processor.** Drive-agnostic. Pulls operations from all drives. On `BuilderTeam` ops, writes to `builder_teams*` tagged with the drive id. On `BuilderAccount` ops, writes to `builder_accounts*`.
 - **Resolvers.** Drop the `driveId` resolver-context parameter (deprecated). Add `fetchBuilderAccount(ethAddress: String!)`. `fetchAllBuilderTeams` filters by `source_drive_id LIKE 'team:%'`. Backward compat: continue accepting `'powerhouse'`-sourced rows for legacy teams.
