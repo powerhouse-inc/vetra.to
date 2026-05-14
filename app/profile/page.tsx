@@ -4,6 +4,7 @@ import { Loader2, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import { useEnsureUserDrive } from '@/modules/profile/lib/use-ensure-user-drive'
 import { Button } from '@/modules/shared/components/ui/button'
 import { LoginPrompt } from './components/login-prompt'
 import { ProfileTabs } from './components/profile-tabs'
@@ -12,6 +13,11 @@ function ProfilePageInner() {
   const auth = useRenownAuth()
   const params = useSearchParams()
   const showCreateButton = (params.get('tab') ?? 'teams') === 'teams'
+  // Best-effort: lazily create the caller's `user:<eth>` drive + seed a
+  // BuilderAccount doc on first authenticated render. The page doesn't
+  // wait on this — bootstrap runs in the background while /profile
+  // renders immediately.
+  useEnsureUserDrive()
 
   if (auth.status === 'loading' || auth.status === 'checking') {
     return (
