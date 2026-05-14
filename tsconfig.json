@@ -21,13 +21,7 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@/shared/*": ["./modules/shared/*"],
-      "@powerhousedao/vetra-cloud-package/document-models": [
-        "./node_modules/@powerhousedao/vetra-cloud-package/dist/document-models/index.d.ts"
-      ],
-      "@powerhousedao/vetra-cloud-package/document-models/*": [
-        "./node_modules/@powerhousedao/vetra-cloud-package/dist/document-models/*/index.d.ts"
-      ]
+      "@/shared/*": ["./modules/shared/*"]
     }
   },
   "include": ["**/*", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
