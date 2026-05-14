@@ -1,6 +1,7 @@
 'use client'
 import { useCallback } from 'react'
-import { DRIVE_ID } from '@/modules/cloud/client'
+import { addDrive } from '@powerhousedao/reactor-browser'
+import { teamDriveFor } from '@/modules/cloud/drive-context'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
 import { generateId } from './builder-team-actions'
 import { createNewBuilderTeamController } from './builder-team-controller'
@@ -43,8 +44,18 @@ export function useCreateTeam() {
         throw new Error('Signer has no user address')
       }
 
+      // Create the per-team drive (`team:<slug>`) first. The reactor's
+      // addDrive call seeds it; the BuilderTeam document is then written
+      // into that drive via the controller's signed batch.
+      const driveId = teamDriveFor(form.slug)
+      await addDrive({
+        global: { name: form.name },
+        id: driveId,
+        slug: form.slug,
+      })
+
       const controller = createNewBuilderTeamController({
-        parentIdentifier: DRIVE_ID,
+        parentIdentifier: driveId,
         signer,
       })
       // Profile fields
