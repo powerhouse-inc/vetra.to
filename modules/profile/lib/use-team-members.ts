@@ -1,43 +1,50 @@
+'use client'
 import { useCallback, useState } from 'react'
-import { dispatchActions } from '@powerhousedao/reactor-browser'
 import { useQueryClient } from '@tanstack/react-query'
-import { addMember, generateId, removeMember, updateMemberInfo } from './builder-team-actions'
+import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
+import { generateId } from './builder-team-actions'
+import { loadBuilderTeamController } from './builder-team-controller'
 import type { FullTeam } from './create-team-queries'
 
 export function useTeamMembers(team: FullTeam | null | undefined) {
   const qc = useQueryClient()
+  const { signer } = useCanSign()
   const [isPending, setIsPending] = useState(false)
 
   const inviteMember = useCallback(
     async (ethAddress: string) => {
       if (!team) throw new Error('No team loaded')
-      const id = generateId()
+      if (!signer) throw new Error('You must be logged in with Renown')
       setIsPending(true)
       try {
-        await dispatchActions(
-          [addMember({ id }), updateMemberInfo({ id, ethAddress })] as never,
-          team.id,
-        )
+        const controller = await loadBuilderTeamController({ documentId: team.id, signer })
+        const id = generateId()
+        controller.addMember({ id })
+        controller.updateMemberInfo({ id, ethAddress })
+        await controller.push()
         await qc.invalidateQueries({ queryKey: ['team-by-slug'] })
       } finally {
         setIsPending(false)
       }
     },
-    [team, qc],
+    [team, signer, qc],
   )
 
   const removeMemberById = useCallback(
     async (memberId: string) => {
       if (!team) throw new Error('No team loaded')
+      if (!signer) throw new Error('You must be logged in with Renown')
       setIsPending(true)
       try {
-        await dispatchActions([removeMember({ id: memberId })] as never, team.id)
+        const controller = await loadBuilderTeamController({ documentId: team.id, signer })
+        controller.removeMember({ id: memberId })
+        await controller.push()
         await qc.invalidateQueries({ queryKey: ['team-by-slug'] })
       } finally {
         setIsPending(false)
       }
     },
-    [team, qc],
+    [team, signer, qc],
   )
 
   return { inviteMember, removeMember: removeMemberById, isPending }

@@ -1,20 +1,9 @@
+'use client'
 import { useCallback } from 'react'
-import { addDocument, dispatchActions } from '@powerhousedao/reactor-browser'
-import {
-  addMember,
-  addPackage as _unused,
-  generateId,
-  setDescription,
-  setLogo,
-  setSlug,
-  setSocials,
-  setTeamName,
-  updateMemberInfo,
-} from './builder-team-actions'
+import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
+import { generateId } from './builder-team-actions'
+import { createNewBuilderTeamController } from './builder-team-controller'
 import { fetchBuilderTeamBySlug } from './create-team-queries'
-
-// Silence the unused-import warning for re-exports we want to keep grouped.
-void _unused
 
 export type CreateTeamForm = {
   name: string
@@ -25,11 +14,6 @@ export type CreateTeamForm = {
   profileSocialsGithub: string
   profileSocialsWebsite: string
   members: { address: string }[]
-}
-
-export type UseCreateTeamArgs = {
-  driveId: string
-  creatorAddress: string
 }
 
 async function waitForSlug(slug: string, timeoutMs: number): Promise<void> {
@@ -45,39 +29,46 @@ async function waitForSlug(slug: string, timeoutMs: number): Promise<void> {
   }
 }
 
-export function useCreateTeam({ driveId, creatorAddress }: UseCreateTeamArgs) {
+export function useCreateTeam() {
+  const { signer } = useCanSign()
+
   const createTeam = useCallback(
     async (form: CreateTeamForm): Promise<{ documentId: string }> => {
-      const minted = await addDocument(driveId, form.name, 'powerhouse/builder-team')
-      const documentId = (minted as { id: string }).id
-
-      const actions: unknown[] = []
-      actions.push(setTeamName({ name: form.name }))
-      actions.push(setSlug({ slug: form.slug }))
-      if (form.description) actions.push(setDescription({ description: form.description }))
-      if (form.profileLogo) actions.push(setLogo({ logo: form.profileLogo }))
-      if (form.profileSocialsX || form.profileSocialsGithub || form.profileSocialsWebsite) {
-        actions.push(
-          setSocials({
-            xProfile: form.profileSocialsX || undefined,
-            github: form.profileSocialsGithub || undefined,
-            website: form.profileSocialsWebsite || undefined,
-          }),
-        )
+      if (!signer) {
+        throw new Error('You must be logged in with Renown to create a team')
+      }
+      const creatorAddress = signer.user?.address
+      if (!creatorAddress) {
+        throw new Error('Signer has no user address')
       }
 
+      const controller = createNewBuilderTeamController({ signer })
+      // Profile fields
+      controller.setTeamName({ name: form.name })
+      controller.setSlug({ slug: form.slug })
+      if (form.description) controller.setDescription({ description: form.description })
+      if (form.profileLogo) controller.setLogo({ logo: form.profileLogo })
+      if (form.profileSocialsX || form.profileSocialsGithub || form.profileSocialsWebsite) {
+        controller.setSocials({
+          xProfile: form.profileSocialsX || undefined,
+          github: form.profileSocialsGithub || undefined,
+          website: form.profileSocialsWebsite || undefined,
+        })
+      }
+      // Creator first, then invited members.
       const allAddresses = [creatorAddress, ...form.members.map((m) => m.address)]
       for (const ethAddress of allAddresses) {
         const id = generateId()
-        actions.push(addMember({ id }))
-        actions.push(updateMemberInfo({ id, ethAddress }))
+        controller.addMember({ id })
+        controller.updateMemberInfo({ id, ethAddress })
       }
 
-      await dispatchActions(actions as never, documentId)
+      const result = await controller.push()
+      const documentId = result.remoteDocument.id
       await waitForSlug(form.slug, 5000)
       return { documentId }
     },
-    [driveId, creatorAddress],
+    [signer],
   )
 
   return { createTeam }

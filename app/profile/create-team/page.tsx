@@ -14,8 +14,6 @@ import { isValidEthAddress, isValidSlug, isValidUrl } from '@/modules/profile/li
 import { useCreateTeam, type CreateTeamForm } from '@/modules/profile/lib/use-create-team'
 import { useSlugAvailability } from '@/modules/profile/lib/use-slug-availability'
 
-const DRIVE_ID = 'vetra-builder-package'
-
 const emptyForm: CreateTeamForm = {
   name: '',
   slug: '',
@@ -50,10 +48,7 @@ function CreateTeamInner() {
     [params, router],
   )
 
-  const { createTeam } = useCreateTeam({
-    driveId: DRIVE_ID,
-    creatorAddress: auth.address ?? '',
-  })
+  const { createTeam } = useCreateTeam()
 
   const allMembersValid = useMemo(() => {
     const creator = (auth.address ?? '').toLowerCase()
