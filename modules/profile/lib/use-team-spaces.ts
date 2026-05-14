@@ -1,7 +1,6 @@
 'use client'
 import { useCallback, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { DRIVE_ID } from '@/modules/cloud/client'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
 import {
   generateId,
@@ -29,7 +28,7 @@ export function useTeamSpaces(team: FullTeam | null | undefined) {
       try {
         const controller = await loadBuilderTeamController({
           documentId: team.id,
-          parentIdentifier: DRIVE_ID,
+          parentIdentifier: team.sourceDriveId,
           signer,
         })
         apply(controller)
