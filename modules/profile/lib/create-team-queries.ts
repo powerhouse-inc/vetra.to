@@ -13,6 +13,7 @@ export const FETCH_FULL_BUILDER_TEAM_BY_SLUG = gql`
   query fetchFullBuilderTeamBySlug($slug: String!) {
     fetchBuilderTeam(slug: $slug) {
       id
+      sourceDriveId
       profileName
       profileSlug
       profileLogo
@@ -74,6 +75,7 @@ export type FullTeamSpace = {
 
 export type FullTeam = {
   id: string
+  sourceDriveId: string
   profileName: string
   profileSlug: string
   profileLogo: string | null

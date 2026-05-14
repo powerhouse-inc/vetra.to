@@ -4,6 +4,7 @@ import type { FullTeam } from '@/modules/profile/lib/create-team-queries'
 
 const team = (over: Partial<FullTeam> = {}): FullTeam => ({
   id: 't',
+  sourceDriveId: 'powerhouse',
   profileName: 'Acme',
   profileSlug: 'acme',
   profileLogo: null,
