@@ -2,9 +2,7 @@ import type { ISigner } from 'document-model'
 import { PHDocumentController } from 'document-model'
 import { RemoteDocumentController } from '@powerhousedao/reactor-browser'
 import { BuilderTeamV1 as BuilderTeam } from '@powerhousedao/vetra-builder-package/document-models'
-import { client } from '@/modules/cloud/client'
-
-const DRIVE_ID = 'vetra-builder-package'
+import { client, DRIVE_ID } from '@/modules/cloud/client'
 
 /**
  * Action methods the BuilderTeam controller exposes. Shaped to match the
