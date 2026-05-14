@@ -112,9 +112,12 @@ export function AgentCard({
 
   const agentFeature = manifest?.features?.agent
   const agentInfo = agentFeature || null
+  // Fallback chain: manifest agent.name → package@version → service prefix.
+  // The prefix is always available (chart label sets it on the pod) and is
+  // a useful identifier even when config + manifest haven't been populated.
   const cardLabel =
     agentInfo?.name ??
-    (cfg ? `${cfg.package.name}@${cfg.package.version ?? 'latest'}` : 'unconfigured')
+    (cfg ? `${cfg.package.name}@${cfg.package.version ?? 'latest'}` : service.prefix)
   const sizeLabel = cfg?.selectedRessource ? SIZE_LABELS[cfg.selectedRessource] : null
 
   const agentPods = useMemo(

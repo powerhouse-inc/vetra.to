@@ -111,11 +111,14 @@ export function AgentDetailDrawer({
   // schema. Read it once into a typed local before pulling fields off it.
   const agentFeature = manifest?.features?.agent
   const agentInfo = agentFeature && typeof agentFeature === 'object' ? agentFeature : null
+  // Fallback chain: manifest agent.name → package@version → service prefix.
+  // The prefix is always available (chart label sets it on the pod) and is
+  // a useful identifier even when config + manifest haven't been populated.
   const cardLabel =
     agentInfo?.name ??
     (service.config
       ? `${service.config.package.name}@${service.config.package.version ?? 'latest'}`
-      : 'unconfigured')
+      : service.prefix)
 
   // Logs — env-wide query for now; until the backend `agent:` arg ships,
   // we filter client-side by matching the agent's prefix or pod-name
