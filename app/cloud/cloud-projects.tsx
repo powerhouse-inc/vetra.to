@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
+import { DRIVE_ID } from '@/modules/cloud/client'
 import { loadEnvironmentController } from '@/modules/cloud/controller'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
 import {
@@ -78,7 +79,11 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
     }
     try {
       setIsDeleting(true)
-      const ctrl = await loadEnvironmentController({ documentId: env.id, signer })
+      const ctrl = await loadEnvironmentController({
+        documentId: env.id,
+        parentIdentifier: DRIVE_ID,
+        signer,
+      })
       await ctrl.delete()
       toast.success('Environment deleted successfully')
       refreshEnvironments()

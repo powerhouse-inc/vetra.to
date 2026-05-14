@@ -1,5 +1,6 @@
 'use client'
 import { useCallback } from 'react'
+import { DRIVE_ID } from '@/modules/cloud/client'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
 import { generateId } from './builder-team-actions'
 import { createNewBuilderTeamController } from './builder-team-controller'
@@ -42,7 +43,10 @@ export function useCreateTeam() {
         throw new Error('Signer has no user address')
       }
 
-      const controller = createNewBuilderTeamController({ signer })
+      const controller = createNewBuilderTeamController({
+        parentIdentifier: DRIVE_ID,
+        signer,
+      })
       // Profile fields
       controller.setTeamName({ name: form.name })
       controller.setSlug({ slug: form.slug })

@@ -1,6 +1,7 @@
 'use client'
 import { useCallback, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { DRIVE_ID } from '@/modules/cloud/client'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
 import { generateId } from './builder-team-actions'
 import { loadBuilderTeamController } from './builder-team-controller'
@@ -17,7 +18,11 @@ export function useTeamMembers(team: FullTeam | null | undefined) {
       if (!signer) throw new Error('You must be logged in with Renown')
       setIsPending(true)
       try {
-        const controller = await loadBuilderTeamController({ documentId: team.id, signer })
+        const controller = await loadBuilderTeamController({
+          documentId: team.id,
+          parentIdentifier: DRIVE_ID,
+          signer,
+        })
         const id = generateId()
         controller.addMember({ id })
         controller.updateMemberInfo({ id, ethAddress })
@@ -36,7 +41,11 @@ export function useTeamMembers(team: FullTeam | null | undefined) {
       if (!signer) throw new Error('You must be logged in with Renown')
       setIsPending(true)
       try {
-        const controller = await loadBuilderTeamController({ documentId: team.id, signer })
+        const controller = await loadBuilderTeamController({
+          documentId: team.id,
+          parentIdentifier: DRIVE_ID,
+          signer,
+        })
         controller.removeMember({ id: memberId })
         await controller.push()
         await qc.invalidateQueries({ queryKey: ['team-by-slug'] })

@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback } from 'react'
+import { DRIVE_ID } from '../client'
 import { createNewEnvironmentController } from '../controller'
 import { useCanSign } from './use-can-sign'
 
@@ -30,7 +31,10 @@ export function useCreateEnvironment() {
       if (!ownerAddress) {
         throw new Error('Signer has no user address — cannot claim ownership')
       }
-      const controller = createNewEnvironmentController({ signer })
+      const controller = createNewEnvironmentController({
+        parentIdentifier: DRIVE_ID,
+        signer,
+      })
       // Claim ownership FIRST — every subsequent action (setLabel, initialize,
       // enableService) is owner-gated, so ownership must exist before they
       // reach the reducer. The signer's own address is used; the reducer

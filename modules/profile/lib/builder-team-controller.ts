@@ -2,7 +2,7 @@ import type { ISigner } from 'document-model'
 import { PHDocumentController } from 'document-model'
 import { RemoteDocumentController } from '@powerhousedao/reactor-browser'
 import { BuilderTeamV1 as BuilderTeam } from '@powerhousedao/vetra-builder-package/document-models'
-import { client, DRIVE_ID } from '@/modules/cloud/client'
+import { client } from '@/modules/cloud/client'
 
 /**
  * Action methods the BuilderTeam controller exposes. Shaped to match the
@@ -54,16 +54,23 @@ const BuilderTeamController = PHDocumentController.forDocumentModel<any, any>(
   BuilderTeam as any,
 )
 
-/** Load an existing BuilderTeam document for signed pushes. */
+/**
+ * Load an existing BuilderTeam document for signed pushes.
+ *
+ * `parentIdentifier` is the drive id that owns the document. Under the
+ * multi-drive ownership model this will be `team:<slug>`; for legacy
+ * callers it remains `'powerhouse'` (`DRIVE_ID`).
+ */
 export async function loadBuilderTeamController(options: {
   documentId: string
+  parentIdentifier: string
   signer: ISigner
 }): Promise<BuilderTeamControllerInstance> {
   const controller = await RemoteDocumentController.pull(BuilderTeamController, {
     client,
     documentId: options.documentId,
     mode: 'batch',
-    parentIdentifier: DRIVE_ID,
+    parentIdentifier: options.parentIdentifier,
     signer: options.signer,
     onConflict: 'rebase',
   })
@@ -72,13 +79,14 @@ export async function loadBuilderTeamController(options: {
 
 /** Create a controller for a brand-new (not-yet-persisted) BuilderTeam document. */
 export function createNewBuilderTeamController(options: {
+  parentIdentifier: string
   signer: ISigner
 }): BuilderTeamControllerInstance {
   const inner = new BuilderTeamController()
   const controller = RemoteDocumentController.from(inner, {
     client,
     mode: 'batch',
-    parentIdentifier: DRIVE_ID,
+    parentIdentifier: options.parentIdentifier,
     signer: options.signer,
   })
   return controller as unknown as BuilderTeamControllerInstance

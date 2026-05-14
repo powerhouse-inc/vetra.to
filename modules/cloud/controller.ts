@@ -6,7 +6,7 @@ import type {
   VetraCloudEnvironmentAction,
   VetraCloudEnvironmentPHState,
 } from '@powerhousedao/vetra-cloud-package/document-models/vetra-cloud-environment'
-import { client, DRIVE_ID } from './client'
+import { client } from './client'
 
 /**
  * A controller class bound to our installed document-model version.
@@ -20,25 +20,38 @@ const VetraCloudEnvironmentController = PHDocumentController.forDocumentModel<
 
 export type EnvironmentController = Awaited<ReturnType<typeof loadEnvironmentController>>
 
-/** Load an existing environment document and wrap it for signed pushes. */
-export function loadEnvironmentController(options: { documentId: string; signer: ISigner }) {
+/**
+ * Load an existing environment document and wrap it for signed pushes.
+ *
+ * `parentIdentifier` is the drive id that owns the document. Under the
+ * multi-drive ownership model this will be `user:<eth>` or `team:<slug>`;
+ * for legacy callers it remains `'powerhouse'` (`DRIVE_ID`).
+ */
+export function loadEnvironmentController(options: {
+  documentId: string
+  parentIdentifier: string
+  signer: ISigner
+}) {
   return RemoteDocumentController.pull(VetraCloudEnvironmentController, {
     client,
     documentId: options.documentId,
     mode: 'batch',
-    parentIdentifier: DRIVE_ID,
+    parentIdentifier: options.parentIdentifier,
     signer: options.signer,
     onConflict: 'rebase',
   })
 }
 
 /** Create a controller for a new (not-yet-persisted) environment document. */
-export function createNewEnvironmentController(options: { signer: ISigner }) {
+export function createNewEnvironmentController(options: {
+  parentIdentifier: string
+  signer: ISigner
+}) {
   const inner = new VetraCloudEnvironmentController()
   return RemoteDocumentController.from(inner, {
     client,
     mode: 'batch',
-    parentIdentifier: DRIVE_ID,
+    parentIdentifier: options.parentIdentifier,
     signer: options.signer,
   })
 }

@@ -21,6 +21,7 @@ import { AsyncButton } from '@/modules/cloud/components/async-button'
 import { AutoUpdateCard } from '@/modules/cloud/components/auto-update-card'
 import { CustomDomainSection } from '@/modules/cloud/components/custom-domain-section'
 import { EventTimeline } from '@/modules/cloud/components/event-timeline'
+import { DRIVE_ID } from '@/modules/cloud/client'
 import { loadEnvironmentController } from '@/modules/cloud/controller'
 import { useAsyncAction } from '@/modules/cloud/hooks/use-async-action'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
@@ -392,7 +393,11 @@ function DangerZone({
     if (!signer) {
       throw new Error('You must be logged in with Renown to delete an environment')
     }
-    const ctrl = await loadEnvironmentController({ documentId: environment.id, signer })
+    const ctrl = await loadEnvironmentController({
+      documentId: environment.id,
+      parentIdentifier: DRIVE_ID,
+      signer,
+    })
     await ctrl.delete()
     toast.success('Environment deleted')
     onClose()
