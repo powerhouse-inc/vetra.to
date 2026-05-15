@@ -9,11 +9,11 @@ export function CloudLandingHero() {
       <div className="relative z-10 mx-auto max-w-screen-xl">
         <p className="text-primary mb-4 text-sm font-semibold">Your cloud, your way.</p>
         <h1 className="mx-auto mb-4 max-w-2xl text-[clamp(28px,4vw,48px)] leading-[1.1] font-bold">
-          Run your apps{' '}
-          <span className="text-primary">wherever you want</span>
+          Independent infrastructure{' '}
+          <span className="text-primary">for independent organizations</span>
         </h1>
         <p className="text-foreground-70 mx-auto mb-8 max-w-xl text-base leading-relaxed">
-          Get the reliability of a big cloud provider — with the freedom to move your data anytime.
+          Combine the scalability and convenience of centralized cloud providers with the freedom to move your data anytime.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <CreatePackageModal />

@@ -113,7 +113,7 @@ export function CloudLandingFeatures() {
         <div className="mx-auto max-w-screen-xl text-center">
           <p className="text-foreground text-3xl font-bold">Vetra Cloud is built on</p>
           <p className="text-foreground-70 mt-2 mb-16 text-2xl">
-            {hoveredLogo || 'trusted open source tools'}
+            {hoveredLogo || 'battle tested open source tools'}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-8">
             {logos.map((logo, index) => (
@@ -135,22 +135,22 @@ export function CloudLandingFeatures() {
       {/* Key principles */}
       <section className="px-6 py-20">
         <div className="mx-auto max-w-screen-xl">
-          <h2 className="mb-12 text-center text-2xl font-bold">Our promises to you</h2>
+          <h2 className="mb-12 text-center text-2xl font-bold">Built on open principles</h2>
           <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
             <Principle
               icon={Database}
-              title="Your data is yours"
-              description="Download, move, or host it yourself at any time. No permission needed."
+              title="Data Ownership"
+              description="Your data stays yours. Export, migrate, or self-host at any time with no vendor lock-in."
             />
             <Principle
               icon={Shield}
-              title="Works offline too"
-              description="Your apps keep running without internet. Changes sync automatically when you're back online."
+              title="Local-First Resilience"
+              description="Applications remain functional offline with local-first architecture and seamless sync."
             />
             <Principle
               icon={Globe}
-              title="You're always in charge"
-              description="Choose where your data lives and what rules govern it. No surprises."
+              title="Sovereignty by Default"
+              description="Choose your jurisdiction, your infrastructure, and your terms of operation."
             />
           </div>
         </div>
@@ -160,17 +160,32 @@ export function CloudLandingFeatures() {
       <section className="space-y-20 px-6 py-12">
         <div className="mx-auto max-w-screen-xl space-y-20">
           <FeatureSection
-            subtitle="Transparency"
-            title="No surprises, ever."
-            description="Run Vetra Cloud hosted for you, or set it up on your own servers. Everything is open source — no hidden code, no black boxes."
+            subtitle="Ownership"
+            title="Open cloud. Clear sky."
+            description="Full data ownership with a clear self-hosting path. No black boxes, no proprietary APIs. Run Vetra Cloud managed or bring it to your own infrastructure."
             image="/images/cloud/cloud-layers.svg"
           />
           <FeatureSection
-            subtitle="Flexibility"
-            title="Switch anytime, no headaches."
+            subtitle="Freedom"
+            title="Cloud without Captivity."
             description={[
-              'Move between storage providers without rewriting your app. Connect to files, databases, or even the blockchain — one interface works with all of them.',
-              'You choose where your data lives: a managed server, your own hardware, or a decentralized network. Changing your mind later is always an option.',
+              <>
+                A <strong>pluggable anchoring layer</strong> that is storage-agnostic by design.
+                Switch between storage backends, anchoring providers, and sync protocols without
+                rewriting your application.
+              </>,
+              <>
+                Powerhouse Reactors are the nodes in the network that store documents, resolve
+                conflicts and verify document event histories. Reactors can be configured for local
+                storage, centralized cloud storage, or decentralized networks - giving you complete
+                control over where and how your data is stored.
+              </>,
+              <>
+                Document histories are append-only, which means they can be stored in both{' '}
+                <strong>mutable and immutable repositories</strong>. Whether as files, in browsers,
+                databases, or on the blockchain - different storage options for different use cases,
+                all accessible through the same unified interface.
+              </>,
             ]}
             image="/images/cloud/cloud-architecture.png"
             reversed

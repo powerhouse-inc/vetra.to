@@ -19,9 +19,9 @@ const differentiators = [
 ]
 
 const comparison = [
-  { feature: 'Platform is open source', others: false, vetra: true },
+  { feature: 'Platform is open source (Copyleft)', others: false, vetra: true },
   { feature: 'Self-host everything', others: false, vetra: true },
-  { feature: 'Works offline', others: false, vetra: true },
+  { feature: 'Local first & Works offline', others: false, vetra: true },
   { feature: 'Data stays portable', others: false, vetra: true },
   { feature: 'Team collaboration built in', others: false, vetra: true },
   { feature: 'Developer customizable', others: false, vetra: true },
@@ -31,7 +31,7 @@ export function WhyVetra() {
   return (
     <section className="mx-auto max-w-screen-xl px-6 py-20">
       <div className="mb-12 text-center">
-        <h2 className="text-foreground mb-4 text-3xl font-bold">Different by design</h2>
+        <h2 className="text-foreground mb-4 text-3xl font-bold">Yours to run. Yours to own.</h2>
         <p className="text-foreground-70 mt-2 text-2xl">
           Most AI builders generate code and host it for you.
           <br />

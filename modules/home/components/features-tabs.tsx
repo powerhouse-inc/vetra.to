@@ -52,7 +52,7 @@ export function FeaturesTabs() {
   return (
     <section className="mx-auto max-w-screen-xl px-[74px] pt-8 pb-20">
       <div className="mb-12 text-center">
-        <h2 className="text-foreground mb-2 text-3xl font-bold">Everything just works</h2>
+        <h2 className="text-foreground mb-2 text-3xl font-bold">The stack, not just the surface</h2>
         <p className="text-foreground-70 mt-2 text-2xl transition-all duration-500 ease-out">
           Powerful software that anyone on your team can use
         </p>

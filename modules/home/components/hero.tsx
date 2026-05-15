@@ -3,9 +3,10 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
+import { AnimatedVetraLogo } from '@/modules/shared/components/ui/animated-vetra-logo'
 
 const devFeatures = [
-  ['100% open source (MIT)', 'GraphQL API'],
+  ['100% open source (Copyleft)', 'Data instantly as GraphQL API'],
   ['TypeScript + React SDK', 'Self-hostable'],
   ['Real-time event streaming', 'Offline-first sync'],
   ['Git-like version history', 'Docker + Kubernetes'],
@@ -14,15 +15,21 @@ const devFeatures = [
 ]
 
 const chatMessages = [
-  { role: 'user', text: 'Track our hiring pipeline' },
   {
-    role: 'assistant',
-    text: "Done! I've set up a hiring board with stages: Applied → Interview → Offer → Hired. Want me to add email notifications too?",
+    role: 'user',
+    text: "Build a case tracker for our field teams. They're often offline and can't depend on any single company's servers.",
   },
-  { role: 'user', text: 'Yes, and connect it to our calendar' },
   {
     role: 'assistant',
-    text: "All set. Your team can now track every candidate and gets a calendar invite for each interview automatically.",
+    text: "Done! Case tracker set up across your own nodes. Syncs peer-to-peer when connected. Want per-case access controls?",
+  },
+  {
+    role: 'user',
+    text: "Yes. Our team is spread across 14 countries.",
+  },
+  {
+    role: 'assistant',
+    text: "Covered. It runs entirely on infrastructure you control. Real-time sync keeps your distributed team in step whenever they're connected.",
   },
 ]
 
@@ -66,10 +73,8 @@ export function Hero() {
         <div className="border-border bg-background mx-auto max-w-2xl overflow-hidden rounded-xl border shadow-lg">
           {/* Header bar */}
           <div className="border-border flex items-center gap-2 border-b px-4 py-3">
-            <div className="bg-primary flex h-6 w-6 items-center justify-center rounded-full">
-              <span className="text-primary-foreground text-xs font-bold">V</span>
-            </div>
-            <span className="text-foreground text-sm font-semibold">Vetra</span>
+            <AnimatedVetraLogo size={24} variant="loader" />
+            <span className="text-foreground text-sm font-semibold">Vetra Agent Rupert</span>
             <span className="bg-primary/15 text-primary ml-auto rounded-full px-2 py-0.5 text-xs font-medium">
               Online
             </span>
@@ -85,8 +90,8 @@ export function Hero() {
                 <div
                   className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                     msg.role === 'user'
-                      ? 'bg-primary text-primary-foreground rounded-br-sm'
-                      : 'bg-accent text-foreground rounded-bl-sm'
+                      ? 'bg-primary text-primary-foreground rounded-br-sm text-right'
+                      : 'bg-accent text-foreground rounded-bl-sm text-left'
                   }`}
                 >
                   {msg.text}
@@ -112,6 +117,7 @@ export function Hero() {
             onClick={() => setDevOpen((v) => !v)}
             className="text-foreground-70 hover:text-foreground mx-auto flex items-center gap-2 text-sm font-medium transition-colors"
           >
+            <AnimatedVetraLogo size={20} variant="threeStep" />
             For developers
             <ChevronDown
               className={`h-4 w-4 transition-transform duration-300 ${devOpen ? 'rotate-180' : ''}`}

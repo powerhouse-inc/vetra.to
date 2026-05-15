@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import * as React from 'react'
 
 const LEAF_PATH =
   'M12.7297 -9.92366e-08C13.9836 -4.44297e-08 15 1.01643 15 2.27027L15 3.64865C15 9.91783 9.91783 15 3.64865 15L2.27027 15C1.01643 15 2.82829e-07 13.9836 3.37635e-07 12.7297L7.94833e-07 2.27027C8.4964e-07 1.01643 1.01644 -6.11241e-07 2.27027 -5.56434e-07L12.7297 -9.92366e-08Z'
@@ -22,8 +21,38 @@ function basePositions() {
 interface AnimatedVetraLogoProps {
   size?: number
   duration?: number
-  variant?: 'scale' | 'movement' | 'threeStep'
+  variant?: 'scale' | 'movement' | 'threeStep' | 'loader'
   className?: string
+}
+
+// Variant 4: Loader (continuous spin)
+function LoaderAnimation({ size = 48, duration = 1.2 }: { size: number; duration: number }) {
+  return (
+    <motion.svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox={`0 0 ${FRAME} ${FRAME}`}
+      width={size}
+      height={size}
+      style={{ display: 'block', originX: '50%', originY: '50%' }}
+      animate={{ rotate: [0, 180, 180] }}
+      transition={{
+        duration,
+        times: [0, 0.4, 1],
+        ease: ['easeInOut', 'linear'],
+        repeat: Infinity,
+        repeatType: 'loop',
+      }}
+    >
+      {basePositions().map(({ key, x, y, rot }) => (
+        <g
+          key={key}
+          transform={`translate(${x} ${y}) rotate(${rot} ${LEAF_SIZE / 2} ${LEAF_SIZE / 2})`}
+        >
+          <path d={LEAF_PATH} fill="#04c161" />
+        </g>
+      ))}
+    </motion.svg>
+  )
 }
 
 // Variant 1: Scale Animation
@@ -209,6 +238,12 @@ export function AnimatedVetraLogo({
       return (
         <div className={className}>
           <ThreeStepAnimation {...props} duration={6} inward={4} />
+        </div>
+      )
+    case 'loader':
+      return (
+        <div className={className}>
+          <LoaderAnimation {...props} duration={5} />
         </div>
       )
     case 'scale':
