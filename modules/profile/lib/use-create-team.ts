@@ -1,6 +1,7 @@
 'use client'
 import { useCallback } from 'react'
-import { addDrive } from '@powerhousedao/reactor-browser'
+import { driveCreateDocument } from '@powerhousedao/shared/document-drive'
+import { client } from '@/modules/cloud/client'
 import { teamDriveFor } from '@/modules/cloud/drive-context'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
 import { generateId } from './builder-team-actions'
@@ -16,6 +17,23 @@ export type CreateTeamForm = {
   profileSocialsGithub: string
   profileSocialsWebsite: string
   members: { address: string }[]
+}
+
+// Build a powerhouse/document-drive document with a deterministic id so the
+// per-team drive lives at `team:<slug>` rather than the random uuid that
+// `driveCreateDocument` would otherwise assign. The reactor-browser
+// `addDrive()` helper can't be used here — it depends on
+// `window.ph.reactorClient` which vetra.to never initialises (vetra.to talks
+// to the remote switchboard via GraphQL, not via a browser-resident
+// reactor), and it silently drops the id/slug arguments anyway.
+function buildTeamDriveDocument(args: { id: string; slug: string; name: string }) {
+  const doc = driveCreateDocument({
+    global: { name: args.name, icon: null, nodes: [] },
+  })
+  doc.header.id = args.id
+  doc.header.slug = args.slug
+  doc.header.name = args.name
+  return doc
 }
 
 async function waitForSlug(slug: string, timeoutMs: number): Promise<void> {
@@ -44,15 +62,26 @@ export function useCreateTeam() {
         throw new Error('Signer has no user address')
       }
 
-      // Create the per-team drive (`team:<slug>`) first. The reactor's
-      // addDrive call seeds it; the BuilderTeam document is then written
-      // into that drive via the controller's signed batch.
+      // Create the per-team drive (`team:<slug>`) on the remote first. The
+      // controller's signed batch below writes the BuilderTeam document
+      // into that drive via `parentIdentifier`. Idempotent: a duplicate
+      // create on an existing drive is treated as a no-op.
       const driveId = teamDriveFor(form.slug)
-      await addDrive({
-        global: { name: form.name },
+      const driveDocument = buildTeamDriveDocument({
         id: driveId,
         slug: form.slug,
+        name: form.name,
       })
+      try {
+        await client.CreateDocument({
+          document: driveDocument as unknown as Record<string, unknown>,
+        })
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err)
+        if (!/already exists/i.test(message)) {
+          throw err
+        }
+      }
 
       const controller = createNewBuilderTeamController({
         parentIdentifier: driveId,
