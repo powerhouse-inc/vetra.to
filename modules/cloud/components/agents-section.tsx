@@ -25,9 +25,9 @@ type Props = {
   /** All pods in the env namespace; each card filters to its own. */
   pods?: readonly Pod[]
   /**
-   * If set, each agent card renders an "Open" button that calls this with the
-   * agent's prefix instead of inline-expanding. The drawer is the new edit
-   * surface for logs/metrics/activity/config.
+   * If set, each agent card renders a "Details" button that calls this with
+   * the agent's prefix instead of inline-expanding. The drawer is the new
+   * edit surface for logs/metrics/activity/config.
    */
   onOpenDetail?: (prefix: string) => void
   onSaveConfig?: (prefix: string, config: CloudServiceClintConfig) => Promise<void>

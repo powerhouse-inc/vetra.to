@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import type { VetraCloudEnvironmentState } from '@powerhousedao/vetra-cloud-package/document-models/vetra-cloud-environment'
+import { DRIVE_ID } from '../client'
 import { loadEnvironmentController, type EnvironmentController } from '../controller'
 import { useCanSign } from './use-can-sign'
 
@@ -39,7 +40,11 @@ export function useEnvironmentController(
     setError(null)
     void (async () => {
       try {
-        const ctrl = await loadEnvironmentController({ documentId, signer })
+        const ctrl = await loadEnvironmentController({
+          documentId,
+          parentIdentifier: DRIVE_ID,
+          signer,
+        })
         if (cancelled) return
         controllerRef.current = ctrl
         setController(ctrl)

@@ -77,7 +77,7 @@ export function PackageCard(props: { manifest: Manifest; searchWords: string[] }
               </span>
             )}
             {moduleCount > 0 && (
-              <Badge variant="outline" className="text-[10px]">
+              <Badge size="xs" variant="outline">
                 {moduleCount} module{moduleCount !== 1 ? 's' : ''}
               </Badge>
             )}

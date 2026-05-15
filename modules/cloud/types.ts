@@ -94,9 +94,38 @@ export type CloudEnvironmentState = {
    * null (or undefined on envs created before the field existed) = off.
    */
   autoUpdateChannel?: AutoUpdateChannel | null
+  /**
+   * Recurring database backup intent. The frontend writes this via
+   * SET_BACKUP_SCHEDULE; a backend job runner reads it and fires
+   * `requestEnvironmentDump` on the configured cadence. `null` / `undefined`
+   * = scheduled backups disabled (or feature not yet rolled out on this env).
+   */
+  backupSchedule?: BackupSchedule | null
 }
 
 export type AutoUpdateChannel = 'DEV' | 'STAGING' | 'LATEST'
+
+export type BackupCadence = 'HOURLY' | 'DAILY' | 'WEEKLY'
+
+/**
+ * Discriminator for how a dump was triggered. Manual dumps come from a user
+ * clicking "Create dump"; scheduled dumps come from the backend job runner
+ * acting on the env's `backupSchedule`. Optional on the type for tolerance
+ * with backends that haven't rolled out the column yet — `undefined`/`null`
+ * is treated as MANUAL by the UI.
+ */
+export type DumpSource = 'MANUAL' | 'SCHEDULED'
+
+/**
+ * Frontend representation of the recurring-backup intent stored on
+ * `CloudEnvironmentState.backupSchedule`.
+ */
+export type BackupSchedule = {
+  enabled: boolean
+  cadence: BackupCadence
+  /** Number of completed scheduled dumps to retain. Default 7; 1–30. */
+  retention: number
+}
 export type ReleaseTrigger = 'AUTO' | 'MANUAL' | 'ROLLBACK'
 
 export type ReleaseIndexEntry = {
@@ -217,4 +246,79 @@ export type ClintRuntimeEndpointReport = {
 export type ClintRuntimeEndpointsForPrefix = {
   prefix: string
   endpoints: ClintRuntimeEndpointReport[]
+}
+
+// ---------------------------------------------------------------------------
+// Database Explorer (vetra-cloud-observability subgraph)
+// ---------------------------------------------------------------------------
+
+/**
+ * Result of a read-only SQL execution. Cells are serialized to strings for
+ * JSON transport; `null` represents a SQL NULL value. `truncatedAt` is set
+ * when the server capped the row count (either by the user-supplied limit
+ * or the 4 MB payload cap).
+ */
+export type DatabaseQueryResult = {
+  columns: string[]
+  rows: (string | null)[][]
+  rowCount: number
+  truncatedAt: number | null
+  executionMs: number
+}
+
+export type DatabaseColumnInfo = {
+  name: string
+  type: string
+  nullable: boolean
+  default: string | null
+  isPrimaryKey: boolean
+}
+
+export type DatabaseIndexInfo = {
+  name: string
+  columns: string[]
+  unique: boolean
+}
+
+export type DatabaseTableInfo = {
+  name: string
+  columns: DatabaseColumnInfo[]
+  indexes: DatabaseIndexInfo[]
+}
+
+export type DatabaseSchemaInfo = {
+  name: string
+  tables: DatabaseTableInfo[]
+  /** true when the table count exceeded the server cap (500). */
+  truncated?: boolean
+}
+
+export type DatabaseSchema = {
+  schemas: DatabaseSchemaInfo[]
+}
+
+export type DatabaseDumpStatus = 'PENDING' | 'RUNNING' | 'READY' | 'FAILED'
+
+/**
+ * On-demand pg_dump export of the env's Postgres. File has a 24h TTL on
+ * S3; rows are pruned after 7d. `downloadUrl` is a 15-min presigned URL
+ * minted on every read, only present when status=READY and the file
+ * hasn't expired.
+ */
+export type DatabaseDump = {
+  id: string
+  status: DatabaseDumpStatus
+  requestedAt: string
+  startedAt: string | null
+  completedAt: string | null
+  expiresAt: string
+  sizeBytes: number | null
+  errorMessage: string | null
+  downloadUrl: string | null
+  /**
+   * Whether the dump was manually requested or fired by the scheduled-backup
+   * runner. Optional for tolerance with backends that haven't rolled out the
+   * column yet — `undefined`/`null` is treated as MANUAL by the UI.
+   */
+  source?: DumpSource | null
 }

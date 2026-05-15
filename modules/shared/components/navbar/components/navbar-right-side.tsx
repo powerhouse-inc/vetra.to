@@ -1,7 +1,16 @@
 'use client'
 
 import { useRenownAuth } from '@powerhousedao/reactor-browser'
-import { LogIn, LogOut, Loader2, MoreVertical, User } from 'lucide-react'
+import {
+  ExternalLink,
+  LogIn,
+  LogOut,
+  Loader2,
+  MoreVertical,
+  Package,
+  User,
+  Users,
+} from 'lucide-react'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { ThemeToggle } from '../../theme-toggle'
@@ -9,6 +18,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../../ui/dropdown-menu'
@@ -16,6 +26,12 @@ import ThemeIconLabel from './toogle-theme-label'
 
 const btnSecondary =
   'bg-accent text-foreground hover:bg-muted inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all cursor-pointer'
+
+function shorten(addr: string | undefined): string {
+  if (!addr) return ''
+  if (addr.length < 12) return addr
+  return `${addr.slice(0, 6)}…${addr.slice(-4)}`
+}
 
 function RenownButton() {
   const auth = useRenownAuth()
@@ -39,19 +55,48 @@ function RenownButton() {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="bg-accent border-border/50 z-170 w-44 rounded-lg p-1.5"
+          className="bg-accent border-border/50 z-170 w-56 rounded-lg p-1.5"
         >
+          <DropdownMenuLabel className="px-3 py-2">
+            <div className="text-sm leading-tight font-semibold">
+              {auth.displayName ?? 'Account'}
+            </div>
+            <div className="text-muted-foreground font-mono text-xs">
+              {shorten(auth.address ?? auth.displayAddress)}
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator className="bg-border/50" />
+          <DropdownMenuItem
+            asChild
+            className="cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
+          >
+            <Link href="/profile?tab=teams">
+              <Users className="h-4 w-4" />
+              My profile
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            asChild
+            className="cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
+          >
+            <Link href="/profile?tab=packages">
+              <Package className="h-4 w-4" />
+              My packages
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="bg-border/50" />
           <DropdownMenuItem
             onClick={auth.openProfile}
             className="cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
           >
             <User className="h-4 w-4" />
-            Profile
+            Renown account
+            <ExternalLink className="ml-auto h-3 w-3" />
           </DropdownMenuItem>
           <DropdownMenuSeparator className="bg-border/50" />
           <DropdownMenuItem
             onClick={() => auth.logout()}
-            className="cursor-pointer rounded-md px-3 py-2 text-sm font-medium text-red-500 focus:text-red-500"
+            className="text-destructive focus:text-destructive cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
           >
             <LogOut className="h-4 w-4" />
             Log out

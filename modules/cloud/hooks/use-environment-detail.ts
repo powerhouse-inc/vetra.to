@@ -24,6 +24,7 @@ import {
 } from '../graphql'
 import type {
   AutoUpdateChannel,
+  BackupCadence,
   CloudEnvironment,
   CloudEnvironmentServiceType,
   CloudResourceSize,
@@ -275,6 +276,40 @@ export function useEnvironmentDetail(documentId: string) {
     (channel: AutoUpdateChannel | null) => mutate((c) => c.setAutoUpdateChannel({ channel })),
     [mutate],
   )
+  // The `setBackupSchedule` controller method ships in vetra-cloud-package
+  // 0.0.3-dev.76. Older builds of the consumer package don't yet expose it,
+  // so we feature-test before dispatching to avoid a runtime crash and the
+  // type cast lets the call type-check against either version.
+  type ControllerWithSchedule = NonNullable<typeof controller> & {
+    setBackupSchedule?: (input: {
+      enabled: boolean
+      cadence: BackupCadence
+      retention: number
+    }) => void
+  }
+
+  const setBackupSchedule = useCallback(
+    (opts: { enabled: boolean; cadence: BackupCadence; retention: number }) =>
+      mutate((c) => {
+        const fn = (c as ControllerWithSchedule).setBackupSchedule
+        if (typeof fn !== 'function') {
+          throw new Error(
+            'setBackupSchedule is not available in this controller version — update vetra-cloud-package.',
+          )
+        }
+        fn.call(c, opts)
+      }),
+    [mutate],
+  )
+
+  /**
+   * Whether the loaded controller's runtime exposes the `setBackupSchedule`
+   * action. The doc-model package shipped this in 0.0.3-dev.76; older
+   * builds of the consumer package will be missing it and we render the
+   * panel in "coming soon" mode rather than crashing on dispatch.
+   */
+  const backupScheduleSupported =
+    typeof (controller as ControllerWithSchedule | null)?.setBackupSchedule === 'function'
 
   /** Owner-triggered "update to latest" — pulls the env's subscribed
    *  channel's latest known tag and bumps all enabled services. */
@@ -312,6 +347,8 @@ export function useEnvironmentDetail(documentId: string) {
     setServiceVersion,
     setPackageVersion,
     setAutoUpdateChannel,
+    setBackupSchedule,
+    backupScheduleSupported,
     updateToLatest,
     rollbackRelease,
   }

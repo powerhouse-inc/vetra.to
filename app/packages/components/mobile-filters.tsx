@@ -54,7 +54,7 @@ export function MobileFilters(props: {
         <SlidersHorizontal className="size-4" />
         Filters
         {activeFilterCount > 0 && (
-          <Badge variant="default" className="size-5 justify-center rounded-full p-0 text-[10px]">
+          <Badge variant="default" size="xs" className="size-5 justify-center rounded-full p-0">
             {activeFilterCount}
           </Badge>
         )}

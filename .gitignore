@@ -51,3 +51,9 @@ chromatic-diagnostics.json
 storage/
 cdn-cache/.playwright-cli/
 .playwright-cli/
+
+# Superpowers brainstorming companion mockups
+.superpowers/
+
+# Claude Code local artifacts
+.claude/

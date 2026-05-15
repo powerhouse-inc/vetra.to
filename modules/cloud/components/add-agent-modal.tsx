@@ -14,6 +14,7 @@ import {
 } from '@/modules/cloud/hooks/use-registry-search'
 import { applyConfigChanges, computeConfigChanges } from '@/modules/cloud/config/apply'
 import { buildCollisionMap } from '@/modules/cloud/config/collisions'
+import { AsyncButton } from '@/modules/cloud/components/async-button'
 import {
   initialConfigFormState,
   PackageConfigForm,
@@ -53,6 +54,16 @@ import { EnvVarsEditor } from './env-vars-editor'
 
 const PREFIX_RE = /^[a-z0-9-]+$/
 
+/**
+ * Maximum agent prefix length. The chart names the agent's Service and
+ * Ingress `<release-fullname>-clint-<prefix>`, where `release-fullname` is
+ * `powerhouse-<subdomain>-<id-prefix>` (≈32-34 chars for typical envs) plus
+ * `-clint-` (7 chars) — leaving ~22 chars for the prefix before hitting
+ * Kubernetes' 63-char Service name limit. We cap at 20 to keep a safety
+ * margin and avoid threading the actual release name through this UI.
+ */
+const MAX_PREFIX_LENGTH = 20
+
 const SIZE_TO_TS: Record<string, CloudResourceSize> = {
   'vetra-agent-s': 'VETRA_AGENT_S',
   'vetra-agent-m': 'VETRA_AGENT_M',
@@ -66,6 +77,13 @@ function sanitize(s: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9-]+/g, '-')
     .replace(/^-+|-+$/g, '')
+}
+
+/** Sanitize and clip a derived prefix to the kubernetes-friendly cap.
+ *  Trailing hyphens after truncation get cleaned up so the prefix
+ *  doesn't end on `-`. */
+function sanitizeForPrefix(s: string): string {
+  return sanitize(s).slice(0, MAX_PREFIX_LENGTH).replace(/-+$/, '')
 }
 
 export type AddAgentSubmitPayload = {
@@ -137,7 +155,7 @@ export function AddAgentModal({
     const m = validation.manifest
     const agent = m.features?.agent || null
     const agentId = agent && typeof agent === 'object' ? agent.id : null
-    const defaultPrefix = agentId ? sanitize(agentId) : sanitize(m.name)
+    const defaultPrefix = agentId ? sanitizeForPrefix(agentId) : sanitizeForPrefix(m.name)
     setPrefix(defaultPrefix)
     setServiceCommand(m.serviceCommand ?? '')
     const supported = (m.supportedResources ?? []).map((s) => SIZE_TO_TS[s]).filter(Boolean)
@@ -149,10 +167,18 @@ export function AddAgentModal({
     () => new Map(env.state.services.map((s) => [s.prefix, s])),
     [env.state.services],
   )
-  const prefixError = useMemo<{ kind: 'format' | 'collision'; message: string } | null>(() => {
+  const prefixError = useMemo<{
+    kind: 'format' | 'length' | 'collision'
+    message: string
+  } | null>(() => {
     if (!prefix) return null
     if (!PREFIX_RE.test(prefix))
       return { kind: 'format', message: 'lowercase letters, digits, and hyphens only' }
+    if (prefix.length > MAX_PREFIX_LENGTH)
+      return {
+        kind: 'length',
+        message: `must be ${MAX_PREFIX_LENGTH} characters or fewer (kubernetes Service name limit)`,
+      }
     const collide = existingByPrefix.get(prefix)
     if (collide) {
       return {
@@ -188,42 +214,42 @@ export function AddAgentModal({
     [validation],
   )
 
-  const [submitting, setSubmitting] = useState(false)
-
   const handleSubmit = async () => {
-    if (!validation?.ok || !selectedPackage || !prefix || prefixError || !selectedRessource) return
     setSubmitError(null)
-
-    // Reservation check
+    // Pre-submit validation. Each failure throws so AsyncButton treats it as
+    // a failed run — modal stays open, button re-enables, inline message
+    // shows what to fix.
+    if (!validation?.ok || !selectedPackage || !prefix || prefixError || !selectedRessource) {
+      const msg = 'Form is not ready to submit.'
+      setSubmitError(msg)
+      throw new Error(msg)
+    }
+    const okValidation = validation
     const shadowed = customEnvVars.find(
       (v) => v.name && (isReservedEnvName(v.name) || manifestConfigNames.has(v.name)),
     )
     if (shadowed) {
-      setSubmitError(
-        `"${shadowed.name}" is reserved (set by the platform or declared by the agent). Pick another name.`,
-      )
-      return
+      const msg = `"${shadowed.name}" is reserved (set by the platform or declared by the agent). Pick another name.`
+      setSubmitError(msg)
+      throw new Error(msg)
     }
-
-    // Required manifest-config check
-    if ((validation.manifest.config?.length ?? 0) > 0 && tenantId) {
-      const missing = validateConfigForm(validation.manifest.config ?? [], configState, {
+    if ((okValidation.manifest.config?.length ?? 0) > 0 && tenantId) {
+      const missing = validateConfigForm(okValidation.manifest.config ?? [], configState, {
         existingVarValues,
         existingSecretKeys,
         collisions,
         ownerPackageName: selectedPackage,
       })
       if (missing.length > 0) {
-        setSubmitError(`Missing required config: ${missing.join(', ')}`)
-        return
+        const msg = `Missing required config: ${missing.join(', ')}`
+        setSubmitError(msg)
+        throw new Error(msg)
       }
     }
-
-    setSubmitting(true)
     try {
-      if ((validation.manifest.config?.length ?? 0) > 0 && tenantId) {
+      if ((okValidation.manifest.config?.length ?? 0) > 0 && tenantId) {
         const changes = computeConfigChanges(
-          validation.manifest.config ?? [],
+          okValidation.manifest.config ?? [],
           configState,
           existingVarValues,
         )
@@ -239,18 +265,20 @@ export function AddAgentModal({
           package: {
             registry: registryUrl ?? '',
             name: selectedPackage,
-            version: selectedVersion || null,
+            version: selectedVersion ?? null,
           },
           env: customEnvVars.filter((v) => v.name.trim()),
           serviceCommand: serviceCommand.trim() || null,
           selectedRessource,
         },
       })
+      // Close only on resolved success. The error path below keeps the
+      // modal open so the user can fix the input and retry.
       onOpenChange(false)
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Failed to install agent')
-    } finally {
-      setSubmitting(false)
+      const message = err instanceof Error ? err.message : 'Failed to install agent'
+      setSubmitError(message)
+      throw err instanceof Error ? err : new Error(message)
     }
   }
 
@@ -446,12 +474,24 @@ export function AddAgentModal({
           {/* Prefix */}
           {validation?.ok && (
             <div className="space-y-2">
-              <Label htmlFor="prefix">Prefix</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="prefix">Prefix</Label>
+                <span
+                  className={
+                    prefix.length > MAX_PREFIX_LENGTH
+                      ? 'text-destructive text-xs tabular-nums'
+                      : 'text-muted-foreground text-xs tabular-nums'
+                  }
+                >
+                  {prefix.length}/{MAX_PREFIX_LENGTH}
+                </span>
+              </div>
               <Input
                 id="prefix"
                 value={prefix}
                 onChange={(e) => setPrefix(e.target.value)}
                 aria-invalid={!!prefixError}
+                maxLength={MAX_PREFIX_LENGTH}
                 placeholder="agent"
               />
               {prefixError && <p className="text-destructive text-xs">{prefixError.message}</p>}
@@ -544,14 +584,13 @@ export function AddAgentModal({
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={
-              !validation?.ok || !!prefixError || !prefix || !selectedRessource || submitting
-            }
+          <AsyncButton
+            onClickAsync={handleSubmit}
+            disabled={!validation?.ok || !!prefixError || !prefix || !selectedRessource}
+            pendingLabel="Installing…"
           >
-            {submitting ? 'Installing…' : 'Install agent'}
-          </Button>
+            Install agent
+          </AsyncButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

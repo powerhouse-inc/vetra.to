@@ -7,8 +7,9 @@ import { useCallback, useMemo } from 'react'
  * Drawer scope keyed in the URL as `?drawer=<kind>:<id>&drawerTab=<tab>`.
  *
  * Two kinds: `service` (CONNECT/SWITCHBOARD/FUSION, id = lowercased type) and
- * `agent` (CLINT, id = service prefix). Anything that doesn't parse cleanly
- * means "no drawer open".
+ * `agent` (CLINT, id = service prefix). Database backups live inside the
+ * Switchboard service drawer's Database tab — there's no separate scope for
+ * them. Anything that doesn't parse cleanly means "no drawer open".
  */
 export type DrawerScope =
   | { kind: 'service'; id: 'connect' | 'switchboard' | 'fusion' }

@@ -33,7 +33,7 @@ COPY . .
 # when most of the source is unchanged — typical incremental build is 1-2min
 # faster with a warm cache.
 RUN --mount=type=cache,target=/app/.next/cache \
-    corepack enable pnpm && pnpm run build
+    corepack enable pnpm && corepack install --global pnpm@10.1.0 && pnpm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner

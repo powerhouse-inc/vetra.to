@@ -1,12 +1,15 @@
 'use client'
 
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft, ExternalLink, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, use, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { AgentDetailDrawer } from '@/modules/cloud/components/agent-detail-drawer'
+import { EnvActionBar } from '@/modules/cloud/components/env-action-bar'
+import { useDebouncedValue } from '@/modules/cloud/hooks/use-debounced-value'
+import { EnvSettingsDrawer } from '@/modules/cloud/components/env-settings-drawer'
 import { ServiceDetailDrawer } from '@/modules/cloud/components/service-detail-drawer'
 import { StatusBadge } from '@/modules/cloud/components/status-badge'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
@@ -26,7 +29,6 @@ import {
 } from '@/modules/shared/components/ui/dropdown-menu'
 import { HeroCard } from '@/modules/shared/components/ui/card'
 
-import { ConfigurationTab } from './tabs/configuration'
 import { InlineEditableTitle, OverviewTab } from './tabs/overview'
 
 // ---------------------------------------------------------------------------
@@ -48,10 +50,15 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
   const isInactive = TRULY_INACTIVE.has(state?.status ?? 'DRAFT')
 
   const {
-    status: envStatus,
+    status: rawEnvStatus,
     pods: envPods,
     isLoading: statusLoading,
   } = useEnvironmentStatus(subdomain, tenantId, documentId)
+  // Smooth out subscription resyncs that briefly oscillate before settling.
+  // 250ms is short enough that "really new" updates feel instant, long
+  // enough to collapse stale push → correction flickers into one visible
+  // transition.
+  const envStatus = useDebouncedValue(rawEnvStatus, 250)
 
   // Drawer state (per-service / per-agent detail) is keyed in the URL via
   // `?drawer=service:<id>` or `?drawer=agent:<prefix>`. Hook owns parsing and
@@ -80,26 +87,25 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [environment, detail.setDefaultPackageRegistry])
 
-  // Approve/Deploy: local "just clicked" flag shields the button from the
-  // subscription-vs-push race. The controller updates local state
-  // optimistically (flipping status away from CHANGES_PENDING / DRAFT), but
-  // an incoming subscription notification can fetch the pre-push remote
-  // state and momentarily revert it — which reads as the button flickering
-  // back for 1-2s. Holding the flag until the server confirms any post-
-  // CHANGES_PENDING status keeps the button hidden through the race.
-  const [justApproved, setJustApproved] = useState(false)
+  // Approve / Deploy intent lock. Flipped synchronously on click so the
+  // floating action bar can speculatively render "Deploying…" through any
+  // subscription-vs-push race. Cleared once status leaves the pre-click
+  // states; the bar's own 3s window covers the early window in case the
+  // useEffect below clears too early.
+  const [intentDeploying, setIntentDeploying] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const statusStr = state?.status ?? 'DRAFT'
   useEffect(() => {
-    if (justApproved && statusStr !== 'CHANGES_PENDING' && statusStr !== 'DRAFT') {
-      setJustApproved(false)
+    if (intentDeploying && statusStr !== 'CHANGES_PENDING' && statusStr !== 'DRAFT') {
+      setIntentDeploying(false)
     }
-  }, [statusStr, justApproved])
+  }, [statusStr, intentDeploying])
   const handleApprove = async () => {
-    setJustApproved(true)
+    setIntentDeploying(true)
     try {
       await detail.approveChanges()
     } catch (err) {
-      setJustApproved(false)
+      setIntentDeploying(false)
       toast.error(err instanceof Error ? err.message : 'Failed to approve changes')
     }
   }
@@ -177,24 +183,18 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Deploy/Approve button — hidden instantly on click via
-                  justApproved until the server confirms a
-                  post-CHANGES_PENDING state, to mask the
-                  subscription-vs-push race. */}
-              {state?.status === 'DRAFT' && !justApproved && (
-                <Button
-                  size="sm"
-                  onClick={handleApprove}
-                  className="bg-emerald-600 hover:bg-emerald-700"
-                >
-                  Deploy
-                </Button>
-              )}
-              {state?.status === 'CHANGES_PENDING' && !justApproved && (
-                <Button size="sm" onClick={handleApprove} className="bg-blue-600 hover:bg-blue-700">
-                  Approve Changes
-                </Button>
-              )}
+              {/* Deploy / Approve / Deploying… surfaces in <EnvActionBar/>
+                  pinned to the bottom of the viewport, not here in the hero. */}
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSettingsOpen(true)}
+                aria-label="Environment settings"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
 
               {/* Visit dropdown */}
               {subdomain && enabledServices.length > 0 && (
@@ -255,24 +255,13 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
             setServiceSize={detail.setServiceSize}
             addPackage={detail.addPackage}
             removePackage={detail.removePackage}
-            setCustomDomain={detail.setCustomDomain}
-            onTerminate={detail.terminate}
             setServiceVersion={detail.setServiceVersion}
             setPackageVersion={detail.setPackageVersion}
-            setAutoUpdateChannel={detail.setAutoUpdateChannel}
-            updateToLatest={detail.updateToLatest}
-            rollbackRelease={detail.rollbackRelease}
             initialAddPackage={searchParams.get('addPackage')}
             initialAddVersion={searchParams.get('version')}
             onOpenServiceDetail={(kind) => drawer.open({ kind: 'service', id: kind }, 'logs')}
             onOpenAgentDetail={(prefix) => drawer.open({ kind: 'agent', id: prefix }, 'logs')}
           />
-
-          {/* Configuration — env-wide package config (env vars + secrets
-              declared by manifests). This used to be a tab; now it sits
-              inline so the page is a single readable surface. Per-agent
-              config lives inside the agent drawer's Config tab. */}
-          <ConfigurationTab tenantId={tenantId} environment={environment} />
         </div>
       )}
 
@@ -289,9 +278,13 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
           tenantId={tenantId}
           documentId={documentId}
           isStopped={isInactive}
+          canEdit={canSign && !isInactive}
           pods={envPods}
           activeTab={drawer.tab ?? 'logs'}
           onTabChange={drawer.setTab}
+          backupSchedule={state.backupSchedule ?? null}
+          onSaveBackupSchedule={detail.setBackupSchedule}
+          backupScheduleSupported={detail.backupScheduleSupported}
         />
       )}
       {state && environment && drawer.scope?.kind === 'agent' && drawerAgent && (
@@ -326,6 +319,30 @@ function EnvironmentDetail({ documentId }: { documentId: string }) {
             toast.success('Agent removed')
             drawer.close()
           }}
+        />
+      )}
+
+      <EnvActionBar
+        status={state?.status}
+        intentDeploying={intentDeploying}
+        driftDetected={!!envStatus?.configDriftDetected}
+        onApprove={handleApprove}
+      />
+
+      {environment && (
+        <EnvSettingsDrawer
+          open={settingsOpen}
+          onOpenChange={setSettingsOpen}
+          environment={environment}
+          tenantId={tenantId}
+          subdomain={subdomain}
+          status={envStatus}
+          statusLoading={statusLoading}
+          onSetCustomDomain={detail.setCustomDomain}
+          onSetAutoUpdateChannel={detail.setAutoUpdateChannel}
+          onUpdateToLatest={detail.updateToLatest}
+          onRollbackRelease={detail.rollbackRelease}
+          onTerminate={detail.terminate}
         />
       )}
     </>

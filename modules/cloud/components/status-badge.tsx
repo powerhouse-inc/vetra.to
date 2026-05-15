@@ -14,8 +14,8 @@ type StatusBadgeProps = {
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
   DRAFT: { label: 'Draft', className: 'bg-muted text-muted-foreground' },
-  CHANGES_PENDING: { label: 'Pending', className: 'bg-blue-500/20 text-blue-500' },
-  CHANGES_APPROVED: { label: 'Approved', className: 'bg-blue-500/20 text-blue-500' },
+  CHANGES_PENDING: { label: 'Pending', className: 'bg-info/20 text-info' },
+  CHANGES_APPROVED: { label: 'Approved', className: 'bg-info/20 text-info' },
   CHANGES_PUSHED: { label: 'Deploying', className: 'bg-[#ffa132]/20 text-[#ffa132] animate-pulse' },
   DEPLOYING: { label: 'Deploying', className: 'bg-[#ffa132]/20 text-[#ffa132] animate-pulse' },
   DEPLOYMENt_FAILED: { label: 'Failed', className: 'bg-[#ea4335]/20 text-[#ea4335]' },
@@ -62,7 +62,7 @@ export function StatusBadge({
       return (
         <Badge
           variant="secondary"
-          className="animate-pulse rounded-full border-transparent bg-blue-500/20 text-blue-500"
+          className="bg-info/20 text-info animate-pulse rounded-full border-transparent"
         >
           Syncing
         </Badge>

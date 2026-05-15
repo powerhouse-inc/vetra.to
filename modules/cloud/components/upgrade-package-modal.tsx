@@ -21,6 +21,7 @@ import {
 } from '@/modules/cloud/hooks/use-registry-search'
 import { useTenantConfig } from '@/modules/cloud/hooks/use-tenant-config'
 import type { CloudPackage } from '@/modules/cloud/types'
+import { AsyncButton } from '@/modules/cloud/components/async-button'
 import { Button } from '@/modules/shared/components/ui/button'
 import {
   Command,
@@ -73,7 +74,6 @@ export function UpgradePackageModal({
   }
   const [selectedVersion, setSelectedVersion] = useState<string>('')
   const [versionPopoverOpen, setVersionPopoverOpen] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [configState, setConfigState] = useState<ConfigFormState>({})
 
   const { info: versionInfo, isLoading: versionsLoading } = useRegistryVersions(
@@ -176,13 +176,13 @@ export function UpgradePackageModal({
   }, [gatedEntries, configState, existingVarValues, existingSecretKeys, collisions, packageName])
 
   const handleUpgrade = async () => {
-    if (!selectedVersion) return
+    if (!selectedVersion) throw new Error('Pick a version first.')
     if (missingRequired.length > 0) {
-      toast.error(`Missing required config: ${missingRequired.join(', ')}`)
-      return
+      const msg = `Missing required config: ${missingRequired.join(', ')}`
+      toast.error(msg)
+      throw new Error(msg)
     }
     try {
-      setIsSubmitting(true)
       if (tenantId && gatedEntries.length > 0) {
         const changes = computeConfigChanges(gatedEntries, configState, existingVarValues)
         if (changes.length > 0) {
@@ -191,18 +191,18 @@ export function UpgradePackageModal({
       }
       await onUpgrade(packageName, selectedVersion)
       toast.success(`Upgraded ${packageName} to ${selectedVersion}`)
+      // Close only after the mutation has actually resolved successfully.
       setOpen(false)
       setSelectedVersion('')
     } catch (error) {
       console.error('Failed to upgrade package:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to upgrade package')
-    } finally {
-      setIsSubmitting(false)
+      const msg = error instanceof Error ? error.message : 'Failed to upgrade package'
+      toast.error(msg)
+      throw error instanceof Error ? error : new Error(msg)
     }
   }
 
   const isDisabled =
-    isSubmitting ||
     !selectedVersion ||
     targetLoading ||
     missingRequired.length > 0 ||
@@ -346,9 +346,9 @@ export function UpgradePackageModal({
           )}
         </div>
         <div className="mt-2 flex gap-2">
-          <Button onClick={handleUpgrade} disabled={isDisabled}>
-            {isSubmitting ? 'Upgrading...' : 'Upgrade'}
-          </Button>
+          <AsyncButton onClickAsync={handleUpgrade} disabled={isDisabled} pendingLabel="Upgrading…">
+            Upgrade
+          </AsyncButton>
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>

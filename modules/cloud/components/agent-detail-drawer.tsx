@@ -7,6 +7,8 @@ import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-even
 import { useEnvironmentLogs } from '@/modules/cloud/hooks/use-environment-logs'
 import { useEnvironmentMetrics } from '@/modules/cloud/hooks/use-environment-metrics'
 import { deriveClintAgentStatus, findClintAgentPods } from '@/modules/cloud/lib/clint-agent-status'
+import { getServiceQuota } from '@/modules/cloud/lib/resource-maps'
+import { extractRestartTimestamps } from '@/modules/cloud/lib/restart-events'
 import type {
   ClintRuntimeEndpointsForPrefix,
   CloudEnvironment,
@@ -52,12 +54,6 @@ type Props = {
   onTabChange: (tab: string) => void
   onSaveConfig?: (config: CloudServiceClintConfig) => Promise<void>
   onDisable?: () => Promise<void>
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
 }
 
 /** Filter MetricSeries[] so only those whose pod label belongs to this agent remain. */
@@ -115,19 +111,33 @@ export function AgentDetailDrawer({
   // schema. Read it once into a typed local before pulling fields off it.
   const agentFeature = manifest?.features?.agent
   const agentInfo = agentFeature && typeof agentFeature === 'object' ? agentFeature : null
+  // Fallback chain: manifest agent.name → package@version → service prefix.
+  // The prefix is always available (chart label sets it on the pod) and is
+  // a useful identifier even when config + manifest haven't been populated.
   const cardLabel =
     agentInfo?.name ??
     (service.config
       ? `${service.config.package.name}@${service.config.package.version ?? 'latest'}`
-      : 'unconfigured')
+      : service.prefix)
 
-  // Logs — env-wide for now; per-agent filtering ships with the
-  // backend `agent:` arg. We render a disclaimer above the viewer.
+  // Logs — env-wide query for now; until the backend `agent:` arg ships,
+  // we filter client-side by matching the agent's prefix or pod-name
+  // anywhere in the log line. This is a best-effort substring match;
+  // false positives are possible if the prefix collides with another
+  // service's log text. The disclaimer below the viewer states this.
   const {
-    logs,
+    logs: rawLogs,
     isLoading: logsLoading,
     refresh: refreshLogs,
   } = useEnvironmentLogs(subdomain, tenantId, null, range, false)
+  const logs = useMemo(() => {
+    if (rawLogs.length === 0) return rawLogs
+    const needles = [service.prefix, ...agentPods.map((p) => p.name)].filter(
+      (s): s is string => !!s && s.length > 0,
+    )
+    if (needles.length === 0) return rawLogs
+    return rawLogs.filter((entry) => needles.some((n) => entry.line.includes(n)))
+  }, [rawLogs, service.prefix, agentPods])
 
   // Metrics — fetched env-wide and filtered client-side by pod name.
   const { metrics, isLoading: metricsLoading } = useEnvironmentMetrics(
@@ -153,12 +163,16 @@ export function AgentDetailDrawer({
     refresh: refreshEvents,
   } = useEnvironmentEvents(subdomain, tenantId, 100, env.id)
   const filteredEvents = useMemo(() => filterEventsByPods(events, podNameSet), [events, podNameSet])
+  const restartTimestamps = useMemo(
+    () => extractRestartTimestamps(filteredEvents),
+    [filteredEvents],
+  )
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent
         side="right"
-        className="flex w-full flex-col gap-0 p-0 sm:max-w-2xl lg:max-w-3xl"
+        className="top-16 flex h-[calc(100vh-4rem)] w-full flex-col gap-0 p-0 sm:max-w-2xl lg:max-w-3xl"
       >
         <SheetHeader className="border-b px-6 py-4">
           <div className="flex items-start gap-3">
@@ -228,10 +242,16 @@ export function AgentDetailDrawer({
                   <div className="bg-muted/40 text-muted-foreground flex items-start gap-2 rounded-md border p-3 text-xs">
                     <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <span>
-                      Per-agent log filtering ships in a follow-up. Showing all environment logs —
-                      the JSON <span className="font-mono">logging_pod</span> field is{' '}
-                      <span className="font-mono">{agentPods[0]?.name ?? 'unknown'}</span> for this
-                      agent.
+                      Showing log lines matching this agent (prefix{' '}
+                      <span className="font-mono">{service.prefix}</span>
+                      {agentPods[0] && (
+                        <>
+                          {' '}
+                          / pod <span className="font-mono">{agentPods[0].name}</span>
+                        </>
+                      )}
+                      ). Substring match client-side until the backend ships an{' '}
+                      <span className="font-mono">agent:</span> filter.
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -265,14 +285,18 @@ export function AgentDetailDrawer({
                       title="CPU Usage"
                       description="CPU cores consumed by this agent's pod(s)"
                       series={filteredMetrics?.cpu ?? []}
-                      formatValue={(v) => `${(v * 100).toFixed(1)}%`}
+                      kind="cpu"
+                      quota={getServiceQuota(service, 'cpu')}
+                      restarts={restartTimestamps}
                       isLoading={metricsLoading}
                     />
                     <MetricCard
                       title="Memory"
                       description="Working set memory by this agent's pod(s)"
                       series={filteredMetrics?.memory ?? []}
-                      formatValue={formatBytes}
+                      kind="memory"
+                      quota={getServiceQuota(service, 'memory')}
+                      restarts={restartTimestamps}
                       isLoading={metricsLoading}
                     />
                     <MetricCard

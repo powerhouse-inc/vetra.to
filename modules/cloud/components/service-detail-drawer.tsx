@@ -1,12 +1,25 @@
 'use client'
 
-import { Activity, BarChart2, FileText, Globe, RefreshCw, Server, Zap } from 'lucide-react'
+import {
+  Activity,
+  BarChart2,
+  Database,
+  FileText,
+  Globe,
+  RefreshCw,
+  Server,
+  Zap,
+} from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import { useEnvironmentEvents } from '@/modules/cloud/hooks/use-environment-events'
 import { useEnvironmentLogs } from '@/modules/cloud/hooks/use-environment-logs'
 import { useEnvironmentMetrics } from '@/modules/cloud/hooks/use-environment-metrics'
+import { getServiceQuota } from '@/modules/cloud/lib/resource-maps'
+import { extractRestartTimestamps } from '@/modules/cloud/lib/restart-events'
 import type {
+  BackupCadence,
+  BackupSchedule,
   CloudEnvironmentService,
   KubeEvent,
   MetricRange,
@@ -24,6 +37,7 @@ import {
 } from '@/modules/shared/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/modules/shared/components/ui/tabs'
 
+import { DatabaseTabBody } from './database-tab-body'
 import { EventTimeline } from './event-timeline'
 import { LogViewer } from './log-viewer'
 import { MetricCard } from './metric-card'
@@ -47,12 +61,6 @@ function toTenantService(kind: ServiceKind): TenantService | null {
   if (kind === 'connect') return 'CONNECT'
   if (kind === 'switchboard') return 'SWITCHBOARD'
   return null
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
 }
 
 function filterSeriesByPods(series: MetricSeries[], podNames: Set<string>): MetricSeries[] {
@@ -79,9 +87,27 @@ type Props = {
   tenantId: string | null
   documentId: string
   isStopped: boolean
+  /**
+   * Whether the viewer can mutate env resources. Only used by the Database
+   * tab (switchboard-only) to gate the "Create dump" button. Other tabs are
+   * read-only.
+   */
+  canEdit: boolean
   pods?: readonly Pod[]
   activeTab: string
   onTabChange: (tab: string) => void
+  /**
+   * Schedule + write-handler for the Database tab's BackupSchedulePanel.
+   * Threaded through the drawer so the tab doesn't need to call
+   * `useEnvironmentDetail` twice. Only consumed when `kind === 'switchboard'`.
+   */
+  backupSchedule?: BackupSchedule | null
+  onSaveBackupSchedule?: (opts: {
+    enabled: boolean
+    cadence: BackupCadence
+    retention: number
+  }) => Promise<void>
+  backupScheduleSupported?: boolean
 }
 
 export function ServiceDetailDrawer({
@@ -93,10 +119,19 @@ export function ServiceDetailDrawer({
   tenantId,
   documentId,
   isStopped,
+  canEdit,
   pods,
   activeTab,
   onTabChange,
+  backupSchedule,
+  onSaveBackupSchedule,
+  backupScheduleSupported,
 }: Props) {
+  // The Switchboard service is the chart's gating service for the CNPG
+  // database cluster, so its drawer also surfaces DB backups. CONNECT and
+  // FUSION never get a Database tab.
+  const showDatabaseTab = kind === 'switchboard' && !!tenantId
+  const clusterName = tenantId ? `${tenantId}-pg` : null
   const Icon = SERVICE_ICON[kind]
   const label = SERVICE_LABEL[kind]
   const tenantService = toTenantService(kind)
@@ -137,12 +172,16 @@ export function ServiceDetailDrawer({
     refresh: refreshEvents,
   } = useEnvironmentEvents(subdomain, tenantId, 100, documentId)
   const filteredEvents = useMemo(() => filterEventsByPods(events, podNameSet), [events, podNameSet])
+  const restartTimestamps = useMemo(
+    () => extractRestartTimestamps(filteredEvents),
+    [filteredEvents],
+  )
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent
         side="right"
-        className="flex w-full flex-col gap-0 p-0 sm:max-w-2xl lg:max-w-3xl"
+        className="top-16 flex h-[calc(100vh-4rem)] w-full flex-col gap-0 p-0 sm:max-w-2xl lg:max-w-3xl"
       >
         <SheetHeader className="border-b px-6 py-4">
           <SheetTitle className="flex items-center gap-2">
@@ -173,6 +212,11 @@ export function ServiceDetailDrawer({
             <TabsTrigger value="activity" className="gap-1.5">
               <Activity className="h-3.5 w-3.5" /> Activity
             </TabsTrigger>
+            {showDatabaseTab && (
+              <TabsTrigger value="database" className="gap-1.5">
+                <Database className="h-3.5 w-3.5" /> Database
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <div className="flex-1 overflow-y-auto px-6 py-4">
@@ -214,14 +258,18 @@ export function ServiceDetailDrawer({
                       title="CPU Usage"
                       description="CPU cores consumed by this service"
                       series={filteredMetrics?.cpu ?? []}
-                      formatValue={(v) => `${(v * 100).toFixed(1)}%`}
+                      kind="cpu"
+                      quota={service ? getServiceQuota(service, 'cpu') : null}
+                      restarts={restartTimestamps}
                       isLoading={metricsLoading}
                     />
                     <MetricCard
                       title="Memory"
                       description="Working set memory by this service"
                       series={filteredMetrics?.memory ?? []}
-                      formatValue={formatBytes}
+                      kind="memory"
+                      quota={service ? getServiceQuota(service, 'memory') : null}
+                      restarts={restartTimestamps}
                       isLoading={metricsLoading}
                     />
                     <MetricCard
@@ -261,6 +309,25 @@ export function ServiceDetailDrawer({
                 </p>
               )}
             </TabsContent>
+
+            {showDatabaseTab && (
+              <TabsContent value="database" className="mt-0">
+                <div className="text-muted-foreground mb-4 text-xs">
+                  <span className="font-mono">{clusterName}</span> · postgres 16
+                </div>
+                <DatabaseTabBody
+                  tenantId={tenantId}
+                  canEdit={canEdit}
+                  schedule={backupSchedule}
+                  onSaveSchedule={onSaveBackupSchedule}
+                  scheduleSupported={backupScheduleSupported}
+                />
+                <p className="text-muted-foreground mt-4 text-[11px]">
+                  Detailed metrics, replication lag and connection counts live in the cluster-wide
+                  Grafana dashboards.
+                </p>
+              </TabsContent>
+            )}
           </div>
         </Tabs>
       </SheetContent>

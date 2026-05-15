@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+import { DRIVE_ID } from '@/modules/cloud/client'
 import { loadEnvironmentController } from '@/modules/cloud/controller'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
 import { useCreateEnvironment } from '@/modules/cloud/hooks/use-create-environment'
@@ -74,7 +75,11 @@ function NewEnvironmentFormInner({
         if (!signer) {
           throw new Error('You must be logged in with Renown to rename an environment')
         }
-        const ctrl = await loadEnvironmentController({ documentId: docId, signer })
+        const ctrl = await loadEnvironmentController({
+          documentId: docId,
+          parentIdentifier: DRIVE_ID,
+          signer,
+        })
         ctrl.setLabel({ label: values.name })
         await ctrl.push()
       } else {

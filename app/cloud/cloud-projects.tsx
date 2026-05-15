@@ -1,10 +1,11 @@
 'use client'
 
-import { Trash2, Server, Package } from 'lucide-react'
+import { ExternalLink, Package, Server, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
+import { DRIVE_ID } from '@/modules/cloud/client'
 import { loadEnvironmentController } from '@/modules/cloud/controller'
 import { useCanSign } from '@/modules/cloud/hooks/use-can-sign'
 import {
@@ -30,8 +31,8 @@ import type { CloudEnvironment } from './types'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   DRAFT: { label: 'Draft', color: 'bg-muted-foreground' },
-  CHANGES_PENDING: { label: 'Pending', color: 'bg-blue-500' },
-  CHANGES_APPROVED: { label: 'Approved', color: 'bg-blue-500' },
+  CHANGES_PENDING: { label: 'Pending', color: 'bg-info' },
+  CHANGES_APPROVED: { label: 'Approved', color: 'bg-info' },
   CHANGES_PUSHED: { label: 'Deploying', color: 'bg-warning' },
   DEPLOYING: { label: 'Deploying', color: 'bg-warning' },
   DEPLOYMENt_FAILED: { label: 'Failed', color: 'bg-destructive' },
@@ -61,6 +62,16 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
   const displayName = env.state.label || env.name || 'Unnamed'
   const packageCount = env.state.packages.length
 
+  // Visit link to the live env (CONNECT URL). Mirror the field accessors
+  // used by app/cloud/[project]/page.tsx so listing + detail stay in sync.
+  const connectService = env.state.services.find((s) => s.type === 'CONNECT' && s.enabled)
+  const subdomain = env.state.genericSubdomain ?? null
+  const baseDomain = env.state.genericBaseDomain ?? 'vetra.io'
+  const visitUrl =
+    env.state.status === 'READY' && subdomain && connectService
+      ? `https://${connectService.prefix}.${subdomain}.${baseDomain}`
+      : null
+
   const handleDelete = async () => {
     if (!signer) {
       toast.error('You must be logged in with Renown to delete an environment')
@@ -68,7 +79,11 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
     }
     try {
       setIsDeleting(true)
-      const ctrl = await loadEnvironmentController({ documentId: env.id, signer })
+      const ctrl = await loadEnvironmentController({
+        documentId: env.id,
+        parentIdentifier: DRIVE_ID,
+        signer,
+      })
       await ctrl.delete()
       toast.success('Environment deleted successfully')
       refreshEnvironments()
@@ -106,9 +121,22 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
         </div>
 
         <div className="flex gap-2">
-          <Button variant="default" asChild className="flex-1">
-            <Link href={`/cloud/${env.id}`}>Open</Link>
+          <Button variant="default" size="sm" asChild className="flex-1">
+            <Link href={`/cloud/${env.id}`}>Manage</Link>
           </Button>
+          {visitUrl && (
+            <Button variant="outline" size="sm" asChild className="shrink-0">
+              <a
+                href={visitUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Visit ${displayName}`}
+              >
+                <ExternalLink className="h-4 w-4" />
+                Visit
+              </a>
+            </Button>
+          )}
           <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
             <Button
               variant="outline"
@@ -146,47 +174,53 @@ function CloudEnvironmentCard({ env }: { env: CloudEnvironment }) {
   )
 }
 
-const SCOPE_LABELS: Record<ViewScope, string> = {
+// `UNCLAIMED` exists in ViewScope for the hook's in-memory filtering but is
+// no longer surfaced in the UI. Non-admins only see their own environments
+// (no toggle); admins can flip between Mine / All.
+type VisibleScope = Exclude<ViewScope, 'UNCLAIMED'>
+
+const SCOPE_LABELS: Record<VisibleScope, string> = {
   MINE: 'Mine',
-  UNCLAIMED: 'Unclaimed',
   ALL: 'All',
 }
 
-const EMPTY_COPY: Record<ViewScope, string> = {
+const EMPTY_COPY: Record<VisibleScope, string> = {
   MINE: 'Create your first environment to get started.',
-  UNCLAIMED: 'No unclaimed environments available.',
   ALL: 'No environments exist in the system.',
 }
 
+const ADMIN_SCOPE_OPTIONS: VisibleScope[] = ['MINE', 'ALL']
+
 export function CloudEnvironments() {
-  const [scope, setScope] = useState<ViewScope>('MINE')
+  const [scope, setScope] = useState<VisibleScope>('MINE')
   const { viewer } = useViewer()
   const environments = useEnvironments(scope, viewer?.address ?? null)
   const isAdmin = viewer?.isAdmin ?? false
 
-  const scopeOptions: ViewScope[] = isAdmin ? ['MINE', 'UNCLAIMED', 'ALL'] : ['MINE', 'UNCLAIMED']
-
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 text-sm">
-        <span className="text-muted-foreground">View:</span>
-        <div className="bg-muted inline-flex rounded-md p-0.5">
-          {scopeOptions.map((option) => (
-            <button
-              key={option}
-              type="button"
-              onClick={() => setScope(option)}
-              className={`rounded px-3 py-1 transition-colors ${
-                scope === option
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {SCOPE_LABELS[option]}
-            </button>
-          ))}
+      {/* Scope toggle is admin-only. Non-admins always see their own envs. */}
+      {isAdmin && (
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-muted-foreground">View:</span>
+          <div className="bg-muted inline-flex rounded-md p-0.5">
+            {ADMIN_SCOPE_OPTIONS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => setScope(option)}
+                className={`rounded px-3 py-1 transition-colors ${
+                  scope === option
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {SCOPE_LABELS[option]}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {environments.length === 0 ? (
         <div className="flex min-h-[300px] flex-col items-center justify-center space-y-4 py-12">

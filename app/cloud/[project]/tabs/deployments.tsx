@@ -55,10 +55,10 @@ export function DeploymentsTab({ subdomain, tenantId, documentId }: DeploymentsT
     <div className="space-y-4">
       {/* Sync Banner */}
       {showDriftBanner && (
-        <Card className="border-amber-500/50 bg-amber-500/5">
+        <Card className="border-warning/50 bg-warning/5">
           <CardContent className="flex items-center gap-3 pt-4">
-            <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500" />
-            <p className="text-sm text-amber-700 dark:text-amber-400">
+            <AlertTriangle className="text-warning h-4 w-4 shrink-0" />
+            <p className="text-warning dark:text-warning text-sm">
               {status?.configDriftDetected
                 ? 'Configuration drift detected — the live state does not match the desired state.'
                 : 'ArgoCD is out of sync — a deployment may be in progress or pending.'}

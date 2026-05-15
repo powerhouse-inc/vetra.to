@@ -677,7 +677,12 @@ export async function fetchLogs(
 // Clint runtime-announced endpoints (vetra-cloud-observability subgraph)
 // ---------------------------------------------------------------------------
 
-import type { ClintRuntimeEndpointsForPrefix } from './types'
+import type {
+  ClintRuntimeEndpointsForPrefix,
+  DatabaseDump,
+  DatabaseQueryResult,
+  DatabaseSchema,
+} from './types'
 
 export async function fetchClintRuntimeEndpointsByEnv(
   subdomain: string,
@@ -698,4 +703,138 @@ export async function fetchClintRuntimeEndpointsByEnv(
     token,
   )
   return data.clintRuntimeEndpointsByEnv
+}
+
+// ---------------------------------------------------------------------------
+// On-demand database dumps (vetra-cloud-observability subgraph)
+// ---------------------------------------------------------------------------
+
+const DUMP_FIELDS = `
+  id status requestedAt startedAt completedAt expiresAt
+  sizeBytes errorMessage downloadUrl source
+`
+
+export async function fetchEnvironmentDumps(
+  tenantId: string,
+  token?: string | null,
+): Promise<DatabaseDump[]> {
+  const data = await gqlObservability<{ environmentDumps: DatabaseDump[] }>(
+    '',
+    `query ($tenantId: String!) {
+      environmentDumps(tenantId: $tenantId) { ${DUMP_FIELDS} }
+    }`,
+    { tenantId },
+    token,
+  )
+  return data.environmentDumps
+}
+
+export async function requestEnvironmentDump(
+  tenantId: string,
+  token?: string | null,
+): Promise<DatabaseDump> {
+  const data = await gqlObservability<{ requestEnvironmentDump: DatabaseDump }>(
+    '',
+    `mutation ($tenantId: String!) {
+      requestEnvironmentDump(tenantId: $tenantId) { ${DUMP_FIELDS} }
+    }`,
+    { tenantId },
+    token,
+  )
+  return data.requestEnvironmentDump
+}
+
+export async function cancelEnvironmentDump(
+  dumpId: string,
+  token?: string | null,
+): Promise<DatabaseDump> {
+  const data = await gqlObservability<{ cancelEnvironmentDump: DatabaseDump }>(
+    '',
+    `mutation ($dumpId: ID!) {
+      cancelEnvironmentDump(dumpId: $dumpId) { ${DUMP_FIELDS} }
+    }`,
+    { dumpId },
+    token,
+  )
+  return data.cancelEnvironmentDump
+}
+
+// ---------------------------------------------------------------------------
+// Database Explorer (vetra-cloud-observability subgraph)
+// ---------------------------------------------------------------------------
+
+const DB_SCHEMA_FRAGMENT = `
+  schemas {
+    name
+    truncated
+    tables {
+      name
+      columns { name type nullable default isPrimaryKey }
+      indexes { name columns unique }
+    }
+  }
+`
+
+/**
+ * Owner-gated read-only describe of the env's Postgres. Returns a static
+ * structural snapshot — schemas, tables, columns and indexes. No row data.
+ * Capped at 500 tables per schema on the server.
+ */
+export async function describeDatabase(
+  tenantId: string,
+  token?: string | null,
+): Promise<DatabaseSchema> {
+  const data = await gqlObservability<{ describeDatabase: DatabaseSchema }>(
+    '',
+    `query ($tenantId: String!) {
+      describeDatabase(tenantId: $tenantId) { ${DB_SCHEMA_FRAGMENT} }
+    }`,
+    { tenantId },
+    token,
+  )
+  return data.describeDatabase
+}
+
+const DB_QUERY_RESULT_FRAGMENT = `columns rows rowCount truncatedAt executionMs`
+
+/**
+ * Owner-gated read-only SQL execution. The resolver wraps every call in
+ * `BEGIN READ ONLY … ROLLBACK` with a 5s statement timeout and rejects any
+ * statement whose leading keyword is a mutation (INSERT, UPDATE, etc.).
+ * Multi-statement input is silently truncated to the first statement.
+ */
+export async function executeReadOnlyQuery(
+  tenantId: string,
+  sql: string,
+  limit: number,
+  token?: string | null,
+): Promise<DatabaseQueryResult> {
+  const data = await gqlObservability<{ executeReadOnlyQuery: DatabaseQueryResult }>(
+    '',
+    `mutation ($tenantId: String!, $sql: String!, $limit: Int) {
+      executeReadOnlyQuery(tenantId: $tenantId, sql: $sql, limit: $limit) {
+        ${DB_QUERY_RESULT_FRAGMENT}
+      }
+    }`,
+    { tenantId, sql, limit },
+    token,
+  )
+  return data.executeReadOnlyQuery
+}
+
+export async function restoreEnvironmentDump(
+  dumpId: string,
+  token?: string | null,
+): Promise<{ ok: boolean; message: string | null }> {
+  const data = await gqlObservability<{
+    restoreEnvironmentDump: { ok: boolean; message: string | null }
+  }>(
+    '',
+    `mutation ($dumpId: ID!) {
+      restoreEnvironmentDump(dumpId: $dumpId) { ok message }
+    }`,
+    { dumpId },
+    token,
+  )
+  return data.restoreEnvironmentDump
 }
