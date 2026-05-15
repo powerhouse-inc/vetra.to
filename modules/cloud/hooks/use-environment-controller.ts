@@ -31,6 +31,7 @@ export function useEnvironmentController(
 
   useEffect(() => {
     if (!signer || !documentId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoading(false)
       return
     }
@@ -48,8 +49,10 @@ export function useEnvironmentController(
         if (cancelled) return
         controllerRef.current = ctrl
         setController(ctrl)
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         setState(ctrl.state.global as VetraCloudEnvironmentState)
         unsubscribe = ctrl.onChange(() => {
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
           setState(ctrl.state.global as VetraCloudEnvironmentState)
         })
         setIsLoading(false)

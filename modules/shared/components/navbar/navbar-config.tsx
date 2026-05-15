@@ -4,7 +4,9 @@ import type { NavbarConfig } from './types'
 
 export const NAVBAR_CONFIGS: Record<string, NavbarConfig> = {
   '/vetra': {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     isotype: VetraIcon,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     logotype: VetraLogoWithText,
     logoHref: '/',
     navItems: [
@@ -25,6 +27,7 @@ export const NAVBAR_CONFIGS: Record<string, NavbarConfig> = {
   },
 }
 
-export const getNavbarConfig = (pathname: string): NavbarConfig => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const getNavbarConfig = (_pathname: string): NavbarConfig => {
   return NAVBAR_CONFIGS['/vetra']
 }

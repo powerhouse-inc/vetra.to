@@ -167,7 +167,8 @@ function ChartTooltipContent({
         {payload.map((item, index) => {
           const key = `${nameKey || item.name || item.dataKey || 'value'}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
-          const indicatorColor = color || item.payload.fill || item.color
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          const indicatorColor = (color ?? item.payload.fill ?? item.color) as string | undefined
 
           return (
             <div
@@ -178,6 +179,7 @@ function ChartTooltipContent({
               )}
             >
               {formatter && item?.value !== undefined && item.name ? (
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 formatter(item.value, item.name, item, index, item.payload)
               ) : (
                 <>
@@ -266,6 +268,7 @@ function ChartLegendContent({
 
         return (
           <div
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             key={item.value}
             className={cn(
               '[&>svg]:text-muted-foreground flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3',

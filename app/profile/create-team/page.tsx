@@ -166,7 +166,7 @@ function CreateTeamInner() {
         isLast={stepIdx === STEPS.length - 1}
         isSubmitting={submitting}
         onBack={() => goToStep(stepIdx - 1)}
-        onNext={onNext}
+        onNext={() => void onNext()}
       />
     </div>
   )

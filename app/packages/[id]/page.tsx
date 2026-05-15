@@ -3,7 +3,6 @@ import {
   Calendar,
   Download,
   ExternalLink,
-  FileCode2,
   Github,
   PackageIcon,
   Scale,
@@ -39,6 +38,7 @@ interface PackageDetailPageProps {
 
 export async function generateMetadata({ params }: PackageDetailPageProps): Promise<unknown> {
   try {
+    // eslint-disable-next-line @typescript-eslint/await-thenable
     const decodedName = decodeURIComponent((await params).id)
     const pkg = await getPackageManifest(decodedName)
     if (!pkg?.manifest) {
@@ -120,6 +120,7 @@ async function fetchCdnFile(
 }
 
 export default async function PackageDetailPage({ params, searchParams }: PackageDetailPageProps) {
+  // eslint-disable-next-line @typescript-eslint/await-thenable
   const decodedName = decodeURIComponent((await params).id)
   const { v: selectedVersion } = await searchParams
 

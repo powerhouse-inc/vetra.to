@@ -158,8 +158,10 @@ describe('AddAgentModal', () => {
         defaultSelectedPackage="@x/foo-cli"
       />,
     )
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     expect((screen.getByLabelText(/prefix/i) as HTMLInputElement).value).toBe('foo')
     expect(screen.queryByText('Medium')).not.toBeNull() // first supported size label from ResourceSizePicker
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     expect((screen.getByLabelText(/service command/i) as HTMLTextAreaElement).value).toBe(
       'foo --run',
     )
@@ -232,7 +234,7 @@ describe('AddAgentModal', () => {
     expect(screen.queryByText('API_KEY')).not.toBeNull()
   })
 
-  it('blocks submit when a custom env var name collides with a SERVICE_* var', async () => {
+  it('blocks submit when a custom env var name collides with a SERVICE_* var', () => {
     vi.mocked(useRegistryManifest).mockReturnValue({
       manifest: {
         name: '@x/foo-cli',
@@ -323,7 +325,7 @@ describe('AddAgentModal', () => {
       isLoading: false,
     })
     const onOpenChange = vi.fn()
-    const onSubmit = vi.fn(async () => {
+    const onSubmit = vi.fn(() => {
       throw new Error('addPackage failed')
     })
     render(

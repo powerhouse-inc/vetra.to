@@ -3,6 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 
 const fetcher = vi.fn()
 vi.mock('@/modules/profile/lib/create-team-queries', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   fetchBuilderTeamBySlug: (...args: unknown[]) => fetcher(...args),
 }))
 

@@ -90,7 +90,7 @@ export function AvailableUpdatesCard({
               {totalUpdates}
             </Badge>
           </div>
-          <Button size="sm" onClick={handleUpdateAll} disabled={updatingAll}>
+          <Button size="sm" onClick={() => void handleUpdateAll()} disabled={updatingAll}>
             {updatingAll ? 'Updating...' : 'Update All'}
           </Button>
         </div>
@@ -118,7 +118,7 @@ export function AvailableUpdatesCard({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleUpdateService(update.serviceType, update.latestVersion)}
+                onClick={() => void handleUpdateService(update.serviceType, update.latestVersion)}
                 disabled={updating.has(key) || updatingAll}
               >
                 {updating.has(key) ? 'Updating...' : 'Update'}
@@ -133,8 +133,10 @@ export function AvailableUpdatesCard({
               <div>
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-medium">{update.packageName}</p>
+                  {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion */}
                   {'channel' in update && (update as PackageUpdate).channel !== 'latest' && (
                     <Badge size="xs" variant="secondary">
+                      {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion */}
                       {(update as PackageUpdate).channel}
                     </Badge>
                   )}
@@ -148,7 +150,7 @@ export function AvailableUpdatesCard({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleUpdatePackage(update.packageName, update.latestVersion)}
+                onClick={() => void handleUpdatePackage(update.packageName, update.latestVersion)}
                 disabled={updating.has(key) || updatingAll}
               >
                 {updating.has(key) ? 'Updating...' : 'Update'}

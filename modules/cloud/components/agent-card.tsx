@@ -437,7 +437,7 @@ export function AgentCard({
               </Button>
               <Button
                 size="sm"
-                onClick={handleSave}
+                onClick={() => void handleSave()}
                 disabled={!dirty || !onSave || saving || disabling}
               >
                 {saving ? 'Saving…' : 'Save'}

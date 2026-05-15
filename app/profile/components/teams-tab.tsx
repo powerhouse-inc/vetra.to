@@ -33,7 +33,7 @@ export function TeamsTab({ address }: { address: string }) {
   }
 
   if (isError) {
-    return <TabErrorState message="Couldn’t load your teams" onRetry={() => refetch?.()} />
+    return <TabErrorState message="Couldn’t load your teams" onRetry={() => void refetch?.()} />
   }
 
   if (!data || data.length === 0) {

@@ -12,7 +12,7 @@ const config: StorybookConfig = {
   ],
   framework: '@storybook/nextjs',
   staticDirs: ['../public'],
-  async webpackFinal(config) {
+  webpackFinal(config) {
     if (config.module?.rules) {
       const imageRule = config.module.rules.find(
         (rule) =>

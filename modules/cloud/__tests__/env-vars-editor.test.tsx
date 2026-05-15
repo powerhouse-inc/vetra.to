@@ -5,7 +5,9 @@ import { EnvVarsEditor } from '@/modules/cloud/components/env-vars-editor'
 describe('EnvVarsEditor', () => {
   it('renders existing env vars', () => {
     render(<EnvVarsEditor value={[{ name: 'FOO', value: 'bar' }]} onChange={() => {}} />)
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     expect((screen.getByLabelText('env-name-0') as HTMLInputElement).value).toBe('FOO')
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     expect((screen.getByLabelText('env-value-0') as HTMLInputElement).value).toBe('bar')
   })
 

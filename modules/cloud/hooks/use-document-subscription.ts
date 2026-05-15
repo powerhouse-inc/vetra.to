@@ -64,6 +64,7 @@ const SUBSCRIPTION_QUERY = `
  */
 export function useDocumentSubscription(documentId: string | null, onEvent: () => void) {
   const onEventRef = useRef(onEvent)
+  // eslint-disable-next-line react-hooks/refs
   onEventRef.current = onEvent
   const renown = useRenown()
 
@@ -114,6 +115,7 @@ export function useDocumentSubscription(documentId: string | null, onEvent: () =
  */
 export function useDocumentListSubscription(onEvent: () => void) {
   const onEventRef = useRef(onEvent)
+  // eslint-disable-next-line react-hooks/refs
   onEventRef.current = onEvent
   const renown = useRenown()
 

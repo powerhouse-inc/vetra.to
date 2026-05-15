@@ -10,6 +10,7 @@ export function useEnsResolver(address: string): string | null {
 
   useEffect(() => {
     if (!isValidEthAddress(address)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setName(null)
       return
     }

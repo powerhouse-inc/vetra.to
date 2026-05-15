@@ -61,6 +61,7 @@ function RenownLoginGuard() {
     }
 
     // Give the SDK a moment to handle it first
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     const timeout = setTimeout(attempt, 1500)
 
     return () => {
@@ -76,6 +77,7 @@ export function RenownProvider({ appName, url }: { appName: string; url?: string
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true)
   }, [])
 

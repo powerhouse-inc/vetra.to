@@ -25,6 +25,7 @@ export function useDatabaseSchema(tenantId: string | null): {
 } {
   const renown = useRenown()
   const renownRef = useRef(renown)
+  // eslint-disable-next-line react-hooks/refs
   renownRef.current = renown
 
   const [state, setState] = useState<State>({

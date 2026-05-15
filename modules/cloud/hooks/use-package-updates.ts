@@ -49,6 +49,7 @@ export function usePackageUpdates(packages: CloudPackage[], registryUrl: string 
 
   useEffect(() => {
     if (!registryUrl || packages.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUpdates([])
       return
     }
@@ -59,7 +60,7 @@ export function usePackageUpdates(packages: CloudPackage[], registryUrl: string 
 
     setIsLoading(true)
 
-    Promise.all(
+    void Promise.all(
       packages.map(async (pkg) => {
         try {
           const params = new URLSearchParams({

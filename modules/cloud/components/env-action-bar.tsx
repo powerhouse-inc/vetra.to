@@ -71,6 +71,7 @@ export function EnvActionBar({ status, intentDeploying, driftDetected, onApprove
     return () => clearTimeout(t)
   }, [intentSince])
 
+  // eslint-disable-next-line react-hooks/purity
   const intentActive = intentSince !== null && Date.now() - intentSince < INTENT_WINDOW_MS
 
   const body = renderBody({ status, intentActive, driftDetected, onApprove })

@@ -201,7 +201,7 @@ export function IsoGrid() {
     let mounted = true
     let cleanupFn: (() => void) | undefined
 
-    loadThreeJS().then((fn) => {
+    void loadThreeJS().then((fn) => {
       cleanupFn = fn
       if (!mounted) cleanupFn?.()
     })

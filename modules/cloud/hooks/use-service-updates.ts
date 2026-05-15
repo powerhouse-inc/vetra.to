@@ -31,6 +31,7 @@ export function useServiceUpdates(services: CloudEnvironmentService[]) {
   useEffect(() => {
     const enabledServices = services.filter((s) => s.enabled)
     if (enabledServices.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUpdates([])
       return
     }
@@ -41,7 +42,7 @@ export function useServiceUpdates(services: CloudEnvironmentService[]) {
 
     setIsLoading(true)
 
-    Promise.all(
+    void Promise.all(
       enabledServices.map(async (service) => {
         try {
           const res = await fetch(

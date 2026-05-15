@@ -42,6 +42,7 @@ export function ConfigRow({ entry, currentValue, isSet, onSave, onDelete }: Conf
   // Drop the optimistic overlay once the server has caught up.
   useEffect(() => {
     if (optimisticDraft === null) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (isVar && optimisticDraft === currentValue) setOptimisticDraft(null)
     else if (!isVar && isSet) setOptimisticDraft(null)
   }, [optimisticDraft, currentValue, isSet, isVar])

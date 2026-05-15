@@ -32,6 +32,7 @@ export function useAsyncAction<Args extends unknown[], R>(
   }, [])
 
   const fnRef = useRef(fn)
+  // eslint-disable-next-line react-hooks/refs
   fnRef.current = fn
 
   const run = useCallback(async (...args: Args) => {

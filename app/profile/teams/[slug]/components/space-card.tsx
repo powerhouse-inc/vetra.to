@@ -66,7 +66,7 @@ export function SpaceCard({ team, space }: { team: FullTeam; space: FullTeamSpac
                 placeholder="Space title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                onBlur={() => saveIfChanged('title', title, space.title)}
+                onBlur={() => void saveIfChanged('title', title, space.title)}
               />
             </div>
             <div>
@@ -76,7 +76,7 @@ export function SpaceCard({ team, space }: { team: FullTeam; space: FullTeamSpac
                 className="bg-background focus:ring-primary w-full rounded-md border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                onBlur={() => saveIfChanged('description', description, space.description)}
+                onBlur={() => void saveIfChanged('description', description, space.description)}
               />
             </div>
             {savingField && (
@@ -104,7 +104,7 @@ export function SpaceCard({ team, space }: { team: FullTeam; space: FullTeamSpac
           {space.packages.map((p) => (
             <PackageRow key={p.id} team={team} pkg={p} />
           ))}
-          <Button variant="outline" size="sm" onClick={doAddPackage} disabled={isPending}>
+          <Button variant="outline" size="sm" onClick={() => void doAddPackage()} disabled={isPending}>
             <Plus className="mr-1.5 size-3.5" />
             Add package
           </Button>
@@ -117,7 +117,7 @@ export function SpaceCard({ team, space }: { team: FullTeam; space: FullTeamSpac
         description={`This removes "${title || 'Untitled space'}" and all packages inside it.`}
         confirmLabel="Delete"
         destructive
-        onConfirm={doDelete}
+        onConfirm={() => void doDelete()}
         onCancel={() => setConfirmDelete(false)}
       />
     </Card>

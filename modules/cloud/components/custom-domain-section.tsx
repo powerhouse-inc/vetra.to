@@ -112,7 +112,9 @@ export function CustomDomainSection({
         const res = await fetch(
           `https://dns.google/resolve?name=${encodeURIComponent(record.host)}&type=A`,
         )
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const data = await res.json()
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         const answers = (data.Answer ?? []) as Array<{ data: string }>
         results[record.host] = answers.some((a: { data: string }) => a.data === record.value)
       } catch {
@@ -130,7 +132,7 @@ export function CustomDomainSection({
           <Checkbox
             id="custom-domain"
             checked={enabled}
-            onCheckedChange={(checked) => handleToggle(checked === true)}
+            onCheckedChange={(checked) => void handleToggle(checked === true)}
           />
           <label htmlFor="custom-domain" className="text-sm font-medium">
             Custom Domain
@@ -143,13 +145,13 @@ export function CustomDomainSection({
               value={domainInput}
               onChange={(e) => setDomainInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSaveDomain()
+                if (e.key === 'Enter') void handleSaveDomain()
               }}
               className="font-mono text-sm"
             />
             <Button
               size="sm"
-              onClick={handleSaveDomain}
+              onClick={() => void handleSaveDomain()}
               disabled={!domainInput.trim() || domainInput === customDomain?.domain}
             >
               Save
@@ -202,7 +204,7 @@ export function CustomDomainSection({
             <Button
               variant="outline"
               size="sm"
-              onClick={handleVerifyDns}
+              onClick={() => void handleVerifyDns()}
               disabled={isVerifying}
               className="text-xs"
             >

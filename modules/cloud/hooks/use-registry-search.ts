@@ -64,6 +64,7 @@ export function useRegistryVersions(registryUrl: string | null, packageName: str
 
   useEffect(() => {
     if (!registryUrl || !packageName) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setInfo(null)
       return
     }
@@ -77,6 +78,7 @@ export function useRegistryVersions(registryUrl: string | null, packageName: str
     )
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         if (data) setInfo(data)
       })
       .catch(() => {})
@@ -103,6 +105,7 @@ export function useRegistryManifest(
 
   useEffect(() => {
     if (!registryUrl || !packageName) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setManifest(null)
       setError(null)
       return
@@ -165,7 +168,7 @@ export function useRegistryManifests(
     const controller = new AbortController()
     setIsLoading(true)
 
-    Promise.all(
+    void Promise.all(
       packages.map(async (p) => {
         const params = new URLSearchParams({ registry: registryUrl, package: p.name })
         if (p.version) params.set('version', p.version)

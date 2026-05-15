@@ -266,7 +266,7 @@ function ServiceRow({
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={copy}
+                    onClick={() => void copy()}
                     aria-label={`Copy ${label} URL`}
                     className="text-muted-foreground hover:text-foreground h-5 w-5 shrink-0 p-0"
                   >
@@ -306,7 +306,7 @@ function ServiceRow({
           )}
           <Switch
             checked={isEnabled}
-            onCheckedChange={handleToggle}
+            onCheckedChange={(checked) => void handleToggle(checked)}
             aria-label={`Toggle ${label}`}
             className={cn(
               isEnabled
@@ -330,7 +330,7 @@ function ServiceRow({
           {onSetVersion && (
             <div>
               <button
-                onClick={loadTags}
+                onClick={() => void loadTags()}
                 className="text-primary hover:text-primary/80 text-xs font-medium hover:underline"
               >
                 {showVersionPicker ? 'Hide versions' : 'Change version'}
@@ -343,7 +343,7 @@ function ServiceRow({
                       {Object.entries(distTags).map(([tag, version]) => (
                         <button
                           key={tag}
-                          onClick={() => handleSetVersion(version)}
+                          onClick={() => void handleSetVersion(version)}
                           className={cn(
                             'hover:border-primary hover:bg-primary/5 flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] transition-colors',
                             version === displayedVersion && 'border-primary bg-primary/5',
@@ -371,7 +371,7 @@ function ServiceRow({
                         return (
                           <button
                             key={tag}
-                            onClick={() => handleSetVersion(tag)}
+                            onClick={() => void handleSetVersion(tag)}
                             className={cn(
                               'hover:bg-accent flex w-full items-center justify-between px-3 py-1.5 text-left text-xs transition-colors',
                               tag === displayedVersion && 'bg-primary/5',
@@ -451,7 +451,7 @@ export function InlineEditableTitle({
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleSave()
+    if (e.key === 'Enter') void handleSave()
     if (e.key === 'Escape') handleCancel()
   }
 
@@ -463,10 +463,10 @@ export function InlineEditableTitle({
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          onBlur={handleSave}
+          onBlur={() => void handleSave()}
           className="h-9 text-2xl font-bold"
         />
-        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={handleSave}>
+        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => void handleSave()}>
           <Check className="h-4 w-4" />
         </Button>
         <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={handleCancel}>

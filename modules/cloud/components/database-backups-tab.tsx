@@ -161,7 +161,7 @@ export function DatabaseBackupsTab({
           {schedule?.enabled ? `Sched. · ${schedule.retention} kept` : '24h retention'}
         </div>
         {canEdit && (
-          <Button size="sm" onClick={handleCreate} disabled={inFlight || isRequesting}>
+          <Button size="sm" onClick={() => void handleCreate()} disabled={inFlight || isRequesting}>
             <Plus className="mr-1.5 h-3.5 w-3.5" />
             {isRequesting ? 'Starting…' : inFlight ? 'In progress…' : 'Create dump'}
           </Button>
@@ -195,7 +195,7 @@ export function DatabaseBackupsTab({
             </p>
           </div>
           {canEdit && (
-            <Button size="sm" variant="outline" onClick={handleCreate} disabled={isRequesting}>
+            <Button size="sm" variant="outline" onClick={() => void handleCreate()} disabled={isRequesting}>
               <Plus className="mr-1.5 h-3.5 w-3.5" />
               {isRequesting ? 'Starting…' : 'Create dump'}
             </Button>
@@ -208,10 +208,10 @@ export function DatabaseBackupsTab({
               key={d.id}
               dump={d}
               source={d.source}
-              onRetry={d.status === 'FAILED' && canEdit ? handleCreate : undefined}
+              onRetry={d.status === 'FAILED' && canEdit ? () => void handleCreate() : undefined}
               onCancel={
                 canEdit && (d.status === 'PENDING' || d.status === 'RUNNING')
-                  ? () => handleCancel(d.id)
+                  ? () => void handleCancel(d.id)
                   : undefined
               }
               isCancelling={cancellingId === d.id}

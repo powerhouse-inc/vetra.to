@@ -27,7 +27,7 @@ export function SpacesSection({ team }: { team: FullTeam }) {
         <p className="text-muted-foreground max-w-prose text-sm">
           Group your packages into spaces. Both appear on your team&apos;s public page.
         </p>
-        <Button onClick={doCreate} disabled={isPending}>
+        <Button onClick={() => void doCreate()} disabled={isPending}>
           {isPending ? (
             <Loader2 className="mr-2 size-4 animate-spin" />
           ) : (

@@ -1,5 +1,6 @@
 'use client'
 import { Loader2, Plus, ShieldCheck, Trash2 } from 'lucide-react'
+import Image from 'next/image'
 import { useState } from 'react'
 import { usePHToast } from '@powerhousedao/reactor-browser'
 import { Avatar, AvatarFallback } from '@/modules/shared/components/ui/avatar'
@@ -87,7 +88,7 @@ export function MembersSection({
               {ens && !inviteError && <p className="text-muted-foreground mt-1 text-xs">→ {ens}</p>}
               {inviteError && <p className="text-destructive mt-1 text-xs">{inviteError}</p>}
             </div>
-            <Button onClick={doInvite} disabled={!canInvite}>
+            <Button onClick={() => void doInvite()} disabled={!canInvite}>
               {isPending ? (
                 <Loader2 className="mr-2 size-4 animate-spin" />
               ) : (
@@ -117,7 +118,7 @@ export function MembersSection({
             : 'Remove'
         }
         destructive
-        onConfirm={doRemove}
+        onConfirm={() => void doRemove()}
         onCancel={() => setPendingRemove(null)}
       />
     </div>
@@ -141,7 +142,15 @@ function MemberRow({
     <Card>
       <CardContent className="flex items-center gap-3 p-4">
         <Avatar className="size-10">
-          {member.profileImage && <img src={member.profileImage} alt={displayName} />}
+          {member.profileImage && (
+            <Image
+              src={member.profileImage}
+              alt={displayName}
+              width={40}
+              height={40}
+              className="object-cover"
+            />
+          )}
           <AvatarFallback className="bg-primary/15 text-primary text-xs font-semibold">
             {isSelf ? <ShieldCheck className="size-4" /> : (ens?.[0] ?? '?').toUpperCase()}
           </AvatarFallback>

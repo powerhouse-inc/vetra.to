@@ -50,7 +50,7 @@ export type BuilderTeamControllerInstance = BuilderTeamActions & {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const BuilderTeamController = PHDocumentController.forDocumentModel<any, any>(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
   BuilderTeam as any,
 )
 

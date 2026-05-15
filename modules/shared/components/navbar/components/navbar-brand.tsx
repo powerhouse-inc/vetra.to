@@ -1,7 +1,5 @@
 import Link from 'next/link'
 import React from 'react'
-import AchraIsotype from '@/modules/shared/components/svgs/achra-imagotipo.svg'
-import AchraLogo from '@/modules/shared/components/svgs/achra-logo.svg'
 import { cn } from '@/modules/shared/lib/utils'
 import type { RouteWithDynamicPages } from '@/modules/shared/types/routes'
 
@@ -20,15 +18,7 @@ export function NavbarBrand({
   logotypeClassName,
   logoHref,
 }: NavbarBrandProps) {
-  const MainLogoComponent = isAchraPage ? AchraIsotype : AchraLogo
   const showIsotype = !isAchraPage && IsotypeLogo && Logotype
-  const logoContainerClasses = cn(
-    'text-border flex items-center justify-center overflow-hidden py-4.5',
-    {
-      'md:rounded-l-2xl border-r bg-primary/5 border-border px-4 md:px-6': !isAchraPage,
-      'pl-6': isAchraPage,
-    },
-  )
 
   return (
     <div className="flex items-center gap-4 p-4 md:gap-6">

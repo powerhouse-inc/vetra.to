@@ -9,6 +9,7 @@ export function useSlugAvailability(slug: string, enabled: boolean): SlugStatus 
 
   useEffect(() => {
     if (!enabled || !isValidSlug(slug)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatus('idle')
       return
     }

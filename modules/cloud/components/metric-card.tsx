@@ -66,8 +66,8 @@ export function MetricCard({
         ) : limitMode ? (
           <LimitedView
             series={series}
-            quota={quota as number}
-            kind={kind as 'cpu' | 'memory'}
+            quota={quota}
+            kind={kind}
             restarts={restarts}
             hasData={hasData}
           />

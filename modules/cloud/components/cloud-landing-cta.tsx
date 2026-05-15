@@ -8,7 +8,7 @@ export function CloudLandingCTA() {
         See Vetra Cloud in action
         </h2>
         <p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-lg">
-        Book a short demo and we'll show you how Vetra Cloud can run your team's workflows — managed or on your own infrastructure.
+        Book a short demo and we&apos;ll show you how Vetra Cloud can run your team&apos;s workflows — managed or on your own infrastructure.
         </p>
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <BookMeetingModal />

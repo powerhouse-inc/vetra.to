@@ -263,7 +263,7 @@ export function useEnvironmentDetail(documentId: string) {
   const terminate = useCallback(() => mutate((c) => c.terminateEnvironment({})), [mutate])
   const setServiceVersion = useCallback(
     (type: CloudEnvironmentServiceType, version: string) =>
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
       mutate((c) => c.setServiceVersion({ type: type as any, version })),
     [mutate],
   )

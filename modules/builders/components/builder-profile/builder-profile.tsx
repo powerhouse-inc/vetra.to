@@ -1,4 +1,4 @@
-import { ExternalLink, Github, Globe } from 'lucide-react'
+import { Github, Globe } from 'lucide-react'
 import React from 'react'
 
 import XLogo from '@/modules/shared/components/icons/x-logo'

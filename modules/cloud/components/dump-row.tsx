@@ -1,7 +1,7 @@
 'use client'
 
 import { Clock, Database, Download, Loader2, RefreshCw, RotateCcw, X } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { AsyncButton } from '@/modules/cloud/components/async-button'
 import { fmtBytes, timeAgo, timeUntil } from '@/modules/cloud/lib/time-format'
 import type { DatabaseDump, DatabaseDumpStatus, DumpSource } from '@/modules/cloud/types'
@@ -43,7 +43,9 @@ type Props = {
 export function DumpRow({ dump, onRetry, onCancel, isCancelling, onRestore, source }: Props) {
   const effectiveSource = source ?? dump.source ?? null
   const [confirmOpen, setConfirmOpen] = useState(false)
-  const isExpired = new Date(dump.expiresAt).getTime() < Date.now()
+  // eslint-disable-next-line react-hooks/purity
+  const now = useMemo(() => Date.now(), [])
+  const isExpired = new Date(dump.expiresAt).getTime() < now
   const isExpiredReady = isExpired && dump.status === 'READY'
   const pill = isExpiredReady ? EXPIRED_PILL : PILL_BY_STATUS[dump.status]
   const filename = `dump-${dump.id}.dump`

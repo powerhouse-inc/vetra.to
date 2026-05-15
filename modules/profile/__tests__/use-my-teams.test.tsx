@@ -6,6 +6,7 @@ import type { ProfileTeam } from '@/modules/profile/lib/queries'
 
 const fetcher = vi.fn()
 vi.mock('@/modules/profile/lib/fetcher', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   fetchBuilderTeamsByMember: (...args: unknown[]) => fetcher(...args),
 }))
 

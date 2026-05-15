@@ -23,7 +23,7 @@ export type BuilderAccountControllerInstance = BuilderAccountActions & {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const BuilderAccountController = PHDocumentController.forDocumentModel<any, any>(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
   BuilderAccount as any,
 )
 

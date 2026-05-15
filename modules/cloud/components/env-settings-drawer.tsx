@@ -360,7 +360,7 @@ function MetadataField({
         {copyable && (
           <button
             type="button"
-            onClick={handleCopy}
+            onClick={() => void handleCopy()}
             className="text-muted-foreground hover:text-foreground shrink-0"
             aria-label={`Copy ${label}`}
           >

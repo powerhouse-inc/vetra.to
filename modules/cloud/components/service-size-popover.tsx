@@ -64,7 +64,7 @@ export function ServiceSizePopover({ serviceType, prefix, currentSize, canEdit, 
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-96 space-y-3 p-3">
-        <SelectableSizeTable map={map} value={display} pending={pending} onSelect={handleChange} />
+        <SelectableSizeTable map={map} value={display} pending={pending} onSelect={(size) => void handleChange(size)} />
         <p className="text-muted-foreground text-[11px] leading-snug">
           Picking a size moves the environment to <code className="font-mono">CHANGES_PENDING</code>
           . Approve from the Overview tab to deploy.

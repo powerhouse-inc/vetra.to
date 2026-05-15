@@ -25,20 +25,6 @@ interface TeamMembersProps {
 }
 
 const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
-  // Generate initials from eth address or name
-  const getInitials = (member: TeamMember) => {
-    if (member.name) {
-      return member.name
-        .split(' ')
-        .map((word) => word.charAt(0))
-        .join('')
-        .toUpperCase()
-        .slice(0, 2)
-    }
-    // Fallback to first 2 characters of eth address
-    return (member.ethAddress?.slice(2, 4) || member.id.slice(0, 2)).toUpperCase()
-  }
-
   // Generate a name from eth address if not provided
   const getDisplayName = (member: TeamMember) => {
     if (member.name) return member.name
@@ -55,7 +41,7 @@ const TeamMembers: React.FC<TeamMembersProps> = ({ members, className }) => {
   // Copy to clipboard function
   const copyToClipboard = (text: string, event: React.MouseEvent) => {
     event.preventDefault()
-    navigator.clipboard.writeText(text)
+    void navigator.clipboard.writeText(text)
   }
 
   return (

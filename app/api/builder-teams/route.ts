@@ -38,8 +38,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const { search } = await request.json()
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const builders = await fetchAllBuilderTeams(search)
 
     const response = NextResponse.json({

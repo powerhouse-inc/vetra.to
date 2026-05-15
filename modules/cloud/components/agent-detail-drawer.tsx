@@ -259,7 +259,7 @@ export function AgentDetailDrawer({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => refreshLogs()}
+                      onClick={() => void refreshLogs()}
                       className="ml-auto gap-1.5"
                     >
                       <RefreshCw className="h-3.5 w-3.5" /> Refresh
@@ -323,7 +323,7 @@ export function AgentDetailDrawer({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => refreshEvents()}
+                  onClick={() => void refreshEvents()}
                   className="gap-1.5"
                 >
                   <RefreshCw className="h-3.5 w-3.5" /> Refresh

@@ -74,7 +74,8 @@ describe('useEnvironmentController', () => {
     const { result } = renderHook(() => useEnvironmentController('doc1'))
     await waitFor(() => expect(result.current.state).toEqual({ label: 'old' }))
 
-    await act(async () => {
+    // eslint-disable-next-line @typescript-eslint/await-thenable
+    await act(() => {
       ctrl.state.global = { label: 'new' }
       ctrl._emit()
     })

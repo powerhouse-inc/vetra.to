@@ -1,12 +1,11 @@
 'use client'
 
 import { type Manifest } from '@powerhousedao/shared'
-import { ArrowDown, ArrowUp, ArrowUpDown, LayoutGrid, List, PackageIcon } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, LayoutGrid, List } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { capitalCase } from 'change-case'
 import Link from 'next/link'
 import { Button } from '@/modules/shared/components/ui/button'
-import { Badge } from '@/modules/shared/components/ui/badge'
 import { cn } from '@/modules/shared/lib/utils'
 import { getCategoryStyle } from '../lib/category-colors'
 import { PackageCard } from './package-card'

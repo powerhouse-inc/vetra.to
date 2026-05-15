@@ -172,7 +172,7 @@ export function ProfileSection({ team }: { team: FullTeam }) {
         {!hasChanges && !isSaving && (
           <span className="text-muted-foreground text-xs">No changes to save</span>
         )}
-        <Button disabled={!canSave} onClick={onSave}>
+        <Button disabled={!canSave} onClick={() => void onSave()}>
           {isSaving ? (
             <>
               <Loader2 className="mr-2 size-4 animate-spin" />

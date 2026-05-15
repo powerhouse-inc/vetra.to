@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, ChevronDown, Copy, ExternalLink, Github } from 'lucide-react'
+import { Check, ChevronDown, Copy } from 'lucide-react'
 import { useState } from 'react'
 
 import VetraLogo from '@/modules/shared/components/svgs/vetra-logo.svg'
@@ -82,7 +82,7 @@ export function RepositoryActionButton({
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 flex-shrink-0"
-                    onClick={() => copyToClipboard(phCheckoutCommand)}
+                    onClick={() => void copyToClipboard(phCheckoutCommand)}
                   >
                     {copiedCommand === phCheckoutCommand ? (
                       <Check className="h-4 w-4 text-green-500" />
@@ -103,7 +103,7 @@ export function RepositoryActionButton({
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 flex-shrink-0"
-                  onClick={() => copyToClipboard(phInitCommand)}
+                  onClick={() => void copyToClipboard(phInitCommand)}
                 >
                   {copiedCommand === phInitCommand ? (
                     <Check className="h-4 w-4 text-green-500" />

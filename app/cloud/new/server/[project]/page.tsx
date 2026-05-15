@@ -120,7 +120,7 @@ export default function AddPackagePage({ params }: PageProps) {
           <StripedCardContent className="p-4">
             <RequireSigner>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleSubmit)}>
+                <form onSubmit={(e) => void form.handleSubmit(handleSubmit)(e)}>
                   <div className="space-y-4">
                     <FormField
                       control={form.control}

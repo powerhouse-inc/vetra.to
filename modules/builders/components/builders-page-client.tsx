@@ -48,7 +48,9 @@ export function BuildersPageClient({ children }: BuildersPageClientProps) {
         throw new Error('Failed to fetch builders')
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const data = await response.json()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
       setBuilders(data.builders)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
@@ -62,12 +64,12 @@ export function BuildersPageClient({ children }: BuildersPageClientProps) {
   useEffect(() => {
     // Skip if searchTerm is empty (initial state) - let the initial load effect handle it
     if (searchTerm.trim() === '') {
-      fetchBuilders()
+      void fetchBuilders()
       return
     }
 
     const timeoutId = setTimeout(() => {
-      fetchBuilders(searchTerm)
+      void fetchBuilders(searchTerm)
     }, 300)
 
     return () => clearTimeout(timeoutId)

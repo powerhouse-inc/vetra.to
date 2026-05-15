@@ -66,7 +66,7 @@ export function PackageRow({ team, pkg }: { team: FullTeam; pkg: FullTeamPackage
               className="bg-background focus:ring-primary w-full rounded-md border px-3 py-1.5 text-sm focus:ring-2 focus:outline-none"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              onBlur={() => saveIfChanged('title', title, pkg.name)}
+              onBlur={() => void saveIfChanged('title', title, pkg.name)}
             />
             <StatusChip saving={savingField === 'title'} saved={savedField === 'title'} />
           </div>
@@ -90,7 +90,7 @@ export function PackageRow({ team, pkg }: { team: FullTeam; pkg: FullTeamPackage
             className="bg-background focus:ring-primary w-full rounded-md border px-3 py-1.5 text-sm focus:ring-2 focus:outline-none"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            onBlur={() => saveIfChanged('description', description, pkg.description)}
+            onBlur={() => void saveIfChanged('description', description, pkg.description)}
           />
           <StatusChip saving={savingField === 'description'} saved={savedField === 'description'} />
         </div>
@@ -108,7 +108,7 @@ export function PackageRow({ team, pkg }: { team: FullTeam; pkg: FullTeamPackage
               placeholder="https://github.com/…"
               value={github}
               onChange={(e) => setGithub(e.target.value)}
-              onBlur={() => saveIfChanged('github', github, pkg.githubUrl)}
+              onBlur={() => void saveIfChanged('github', github, pkg.githubUrl)}
             />
             <StatusChip saving={savingField === 'github'} saved={savedField === 'github'} />
           </div>
@@ -124,7 +124,7 @@ export function PackageRow({ team, pkg }: { team: FullTeam; pkg: FullTeamPackage
               placeholder="https://www.npmjs.com/package/…"
               value={npm}
               onChange={(e) => setNpm(e.target.value)}
-              onBlur={() => saveIfChanged('npm', npm, pkg.npmUrl)}
+              onBlur={() => void saveIfChanged('npm', npm, pkg.npmUrl)}
             />
             <StatusChip saving={savingField === 'npm'} saved={savedField === 'npm'} />
           </div>
@@ -137,7 +137,7 @@ export function PackageRow({ team, pkg }: { team: FullTeam; pkg: FullTeamPackage
         description={`This removes "${title || 'Untitled package'}" from the space.`}
         confirmLabel="Delete"
         destructive
-        onConfirm={doDelete}
+        onConfirm={() => void doDelete()}
         onCancel={() => setConfirmDelete(false)}
       />
     </div>

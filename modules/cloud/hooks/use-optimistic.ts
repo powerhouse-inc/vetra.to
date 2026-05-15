@@ -33,6 +33,7 @@ export function useOptimistic<T>(
   // future changes follow the server-truth path again.
   useEffect(() => {
     if (pending !== null && Object.is(pending.value, serverValue)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPending(null)
     }
   }, [pending, serverValue])
