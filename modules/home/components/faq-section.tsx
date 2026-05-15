@@ -11,13 +11,13 @@ const faqs = [
   {
     question: 'What can I do with Vetra?',
     answer:
-      'Vetra helps you build any type of web application, ERP, CMS, or SaaS Backend on a reactive document architecture. You can browse packages from other builders, create your own packages using specification-driven AI, and deploy applications with local-first capabilities. Define workflows once, deploy them globally, and co-own the software you create.',
+      "Vetra lets you build software for your team using a simple chat interface — no coding required. Describe the workflow you need (a hiring tracker, a project board, a client portal) and Vetra sets it up. You can also browse ready-made templates from the community and customize them to fit your needs.",
   },
   {
-    question: 'Where to get started?',
+    question: 'How do I get started?',
     answer: (
       <>
-        Start by exploring the{' '}
+        The fastest way is to head to{' '}
         <a
           href="https://academy.vetra.io/"
           target="_blank"
@@ -26,38 +26,35 @@ const faqs = [
         >
           Vetra Academy
         </a>{' '}
-        for comprehensive developer documentation and tutorials. You can also get hands-on by trying
-        Vetra Cloud for deployment or browsing the package ecosystem to see what others have built.
-        The platform supports both technical builders and tech-enthusiasts through guided
-        experiences.
+        for step-by-step guides. You can also sign up for Vetra Cloud and explore the platform
+        hands-on — no setup required. Most teams are up and running within an hour.
       </>
     ),
   },
   {
-    question: 'What code languages are required?',
+    question: 'Do I need to know how to code?',
     answer:
-      'Vetra is built on a minimal tech stack that scales: TypeScript, GraphQL, and React. These form the core foundation, but with our specification-driven AI tooling and Academy resources, even tech-enthusiasts can build effectively without deep expertise in all technologies.',
+      "No. Vetra is designed so that anyone on your team can use it through a chat-style interface. Just describe what you need in plain language. If you are a developer, you also have full access to the underlying code and can customize everything — but it's completely optional.",
   },
   {
-    question: 'Is all code open-source?',
+    question: 'Is Vetra open source?',
     answer:
-      'Yes, Vetra is 100% open source. All Powerhouse code is created under the Daimon Dual Phase License (DDPL), which combines copyleft licensing with eventual permissive licensing, ensuring the codebase remains open and accessible.',
+      'Yes, Vetra is fully open source. That means you can inspect every line of code, modify it, and run it on your own servers. Unlike most AI tools, the platform itself is open — not just the apps it creates.',
   },
   {
-    question: 'How can I get support?',
+    question: 'How can I get help?',
     answer: (
       <>
-        The easiest way to get support is through the{' '}
+        Join the{' '}
         <a
           href="https://discord.com/invite/pwQJwgaQKd"
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary hover:underline"
         >
-          Powerhouse Discord server
+          Powerhouse Discord
         </a>{' '}
-        where you can directly communicate with the team and community. You can also find
-        comprehensive documentation and tutorials at the{' '}
+        to chat directly with the team and community. You can also browse guides and tutorials at{' '}
         <a
           href="https://academy.vetra.io/"
           target="_blank"
@@ -71,26 +68,26 @@ const faqs = [
     ),
   },
   {
-    question: 'Can I integrate other tools?',
+    question: 'Can I connect Vetra to other tools?',
     answer:
-      'Absolutely! Vetra is designed as an open framework that welcomes integration with your preferred tools and services. The reactive document architecture and modular package system make it easy to extend and customize for your specific needs.',
+      'Yes. Vetra is built to work alongside your existing tools. You can connect it to calendars, databases, external APIs, and more. The platform is designed to be extended, so you can add integrations as your needs grow.',
   },
   {
     question: 'What is Vetra Cloud?',
     answer:
-      'Vetra Cloud is a real-time sync and storage infrastructure that scales your workflows up to millions of users. It provides hosting and deployment solutions for builders, teams, and organizations, following the principle of "Documents as code, code as infrastructure."',
+      'Vetra Cloud is our hosted option — we run everything for you so you can focus on building. It handles storage, scaling, and backups automatically. If you prefer, you can also run Vetra on your own servers at any time.',
   },
   {
-    question: 'What is Switchboard?',
+    question: 'Can I move my data if I decide to leave?',
     answer:
-      'Switchboard is a portal for managing remote instances and accessing APIs within the Vetra ecosystem. It serves as the central hub for cloud environment management and provides the GraphQL endpoints that power the platform.',
+      'Always. Your data is yours and is always portable. You can export it, move it to your own servers, or switch providers at any time. There are no hidden dependencies or lock-in.',
   },
   {
     question: 'How can I contribute?',
     answer: (
       <>
-        You can contribute to Vetra through the Powerhouse GitHub repository, join the community
-        discussions on{' '}
+        Vetra is open source and welcomes contributions of all kinds — code, documentation, or
+        templates. Join the conversation on{' '}
         <a
           href="https://discord.com/invite/pwQJwgaQKd"
           target="_blank"
@@ -98,24 +95,15 @@ const faqs = [
           className="text-primary hover:underline"
         >
           Discord
-        </a>
-        , create and share packages, or contribute to the{' '}
-        <a
-          href="https://academy.vetra.io/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary hover:underline"
-        >
-          Academy
         </a>{' '}
-        documentation. The open-source nature welcomes contributions at all levels.
+        or explore the codebase on GitHub to get started.
       </>
     ),
   },
   {
-    question: 'What blockchains do you integrate with?',
+    question: 'Does Vetra support blockchain or crypto wallets?',
     answer:
-      'Vetra currently supports Web3 authentication through Ethereum and Solana wallets via the Renown identity system. This enables blockchain-based login and identity management across all host applications in the ecosystem.',
+      'Yes. If your team needs it, Vetra supports logging in with a crypto wallet (Ethereum or Solana) and storing records on the blockchain. This is entirely optional — most teams never need it, but it is there if you do.',
   },
 ]
 

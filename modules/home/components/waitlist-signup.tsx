@@ -25,10 +25,9 @@ export function WaitlistSignup() {
         <div className="from-background to-background absolute inset-0 bg-gradient-to-b via-transparent opacity-100"></div>
       </div>
       <div className="relative z-10 mx-auto max-w-screen-xl px-6 py-20 text-center">
-        <h2 className="mb-4 text-3xl font-bold">Stay updated</h2>
+        <h2 className="mb-4 text-3xl font-bold">Stay in the loop</h2>
         <p className="text-foreground-70 mt-2 mb-8 text-2xl transition-all duration-500 ease-out">
-          Own your coordination infrastructure <br /> and run it on an independent open source
-          back-end.
+          Be the first to know about new features. <br /> No spam, unsubscribe any time.
         </p>
 
         <form

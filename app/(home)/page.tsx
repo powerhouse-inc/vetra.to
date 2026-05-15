@@ -9,12 +9,13 @@ import { PowerhouseStack } from '@/modules/home/components/powerhouse-stack'
 import { SpecToScale } from '@/modules/home/components/spec-to-scale'
 import { TrustBar } from '@/modules/home/components/trust-bar'
 import { WaitlistSignup } from '@/modules/home/components/waitlist-signup'
+import { WhyVetra } from '@/modules/home/components/why-vetra'
 import { GridBackground } from '@/modules/shared/components/ui/grid-background'
 
 export const metadata = {
-  title: 'Vetra — Local first. Built to scale.',
+  title: 'Vetra — Work smarter, together.',
   description:
-    'Build any type of web application, ERP, CMS, or SaaS Backend on a reactive document architecture.',
+    'Vetra turns your ideas into working software through a simple chat interface. Your whole team stays in sync — and developers keep full control under the hood.',
 }
 
 export default function HomePage() {
@@ -47,12 +48,13 @@ export default function HomePage() {
       </div>
       <TrustBar />
       <FeaturesTabs />
-      <SpecToScale />
+      <WhyVetra />
       <AudienceCards />
       <FeatureShowcase />
       <PackageCta />
       <CloudCta />
       <PowerhouseStack />
+      <SpecToScale />
       <WaitlistSignup />
       <FaqSection />
     </div>

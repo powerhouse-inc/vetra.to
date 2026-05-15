@@ -111,9 +111,9 @@ export function CloudLandingFeatures() {
       {/* Infrastructure bar */}
       <section className="from-primary-30/50 to-primary-30 bg-gradient-to-b px-6 py-12">
         <div className="mx-auto max-w-screen-xl text-center">
-          <p className="text-foreground text-3xl font-bold">Vetra Cloud runs on</p>
+          <p className="text-foreground text-3xl font-bold">Vetra Cloud is built on</p>
           <p className="text-foreground-70 mt-2 mb-16 text-2xl">
-            {hoveredLogo || 'your trusted open source stack'}
+            {hoveredLogo || 'battle tested open source tools'}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-8">
             {logos.map((logo, index) => (
@@ -191,9 +191,9 @@ export function CloudLandingFeatures() {
             reversed
           />
           <FeatureSection
-            subtitle="Performance"
-            title="Integrated RAD support"
-            description="Purpose-built for the Reactive Document Architecture. Optimized for document sync, real-time collaboration, and event-driven workflows out of the box."
+            subtitle="Purpose-built"
+            title="Made for Vetra apps."
+            description="Vetra Cloud is designed specifically to run apps built with Vetra. Real-time collaboration, automatic sync, and instant updates all work out of the box."
             image="/images/cloud/powerhouse-package.png"
           />
         </div>

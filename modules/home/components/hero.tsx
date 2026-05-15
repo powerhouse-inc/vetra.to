@@ -1,109 +1,152 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { GridBackground } from '@/modules/shared/components/ui/grid-background'
-import { CreatePackageModal } from '@/app/packages/components/create-package-modal'
+import { useState } from 'react'
+import { ChevronDown } from 'lucide-react'
+import { AnimatedVetraLogo } from '@/modules/shared/components/ui/animated-vetra-logo'
 
-const phrases = ['Specification driven AI.', 'Web3 enabled features.', '100% open source.']
+const devFeatures = [
+  ['100% open source (Copyleft)', 'Data instantly as GraphQL API'],
+  ['TypeScript + React SDK', 'Self-hostable'],
+  ['Real-time event streaming', 'Offline-first sync'],
+  ['Git-like version history', 'Docker + Kubernetes'],
+  ['Blockchain / Web3 support', 'Role-based permissions'],
+  ['REST + WebSocket support', 'Custom extensions'],
+]
+
+const chatMessages = [
+  {
+    role: 'user',
+    text: "Build a case tracker for our field teams. They're often offline and can't depend on any single company's servers.",
+  },
+  {
+    role: 'assistant',
+    text: "Done! Case tracker set up across your own nodes. Syncs peer-to-peer when connected. Want per-case access controls?",
+  },
+  {
+    role: 'user',
+    text: "Yes. Our team is spread across 14 countries.",
+  },
+  {
+    role: 'assistant',
+    text: "Covered. It runs entirely on infrastructure you control. Real-time sync keeps your distributed team in step whenever they're connected.",
+  },
+]
 
 export function Hero() {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [displayText, setDisplayText] = useState('')
-  const [phraseIndex, setPhraseIndex] = useState(0)
-  const [isDeleting, setIsDeleting] = useState(false)
-
-  useEffect(() => {
-    const currentPhrase = phrases[phraseIndex]
-    const timeout = setTimeout(
-      () => {
-        if (!isDeleting) {
-          setDisplayText(currentPhrase.substring(0, displayText.length + 1))
-          if (displayText.length === currentPhrase.length) {
-            setTimeout(() => setIsDeleting(true), 2000)
-            return
-          }
-        } else {
-          setDisplayText(currentPhrase.substring(0, displayText.length - 1))
-          if (displayText.length === 0) {
-            setIsDeleting(false)
-            setPhraseIndex((prev) => (prev + 1) % phrases.length)
-          }
-        }
-      },
-      isDeleting ? 40 : 80,
-    )
-    return () => clearTimeout(timeout)
-  }, [displayText, isDeleting, phraseIndex])
+  const [devOpen, setDevOpen] = useState(false)
 
   return (
     <section className="relative bg-transparent px-[74px] py-20 text-center md:py-28">
       <div className="relative mx-auto max-w-screen-xl">
-        <div className="bg-primary-30 text-primary mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold">
-          Local-first
-        </div>
-        <h1 className="mx-auto mb-1 max-w-3xl text-[clamp(40px,5vw,64px)] leading-[1.1] font-bold tracking-tight">
-          Built to scale.
+        <h1 className="mx-auto mb-3 max-w-3xl text-[clamp(40px,5vw,64px)] leading-[1.1] font-bold tracking-tight">
+          Describe what you want.
+          <br />
+          Own what gets built.
         </h1>
-        <p className="text-muted-foreground mx-auto mb-5 h-12 max-w-3xl text-[clamp(24px,3vw,40px)] leading-[1.2] font-bold">
-          {displayText}
-          <span className="border-primary ml-0.5 inline-block h-[1em] w-[2px] translate-y-[0.1em] animate-pulse border-l-2" />
+        <p className="text-muted-foreground mx-auto mb-4 max-w-2xl text-[clamp(20px,2.5vw,28px)] leading-[1.3] font-semibold">
+          AI that builds software your team uses every day — on infrastructure that&apos;s always
+          yours.
         </p>
         <p className="text-foreground-70 mx-auto mb-9 max-w-xl text-lg leading-relaxed">
-          Vetra helps you build any type of web application, ERP, CMS, or SaaS Backend on a reactive
-          document architecture. Define workflows once, deploy them globally, and co-own the
-          software you create.
+          Unlike other AI builders, the platform is fully open source and runs wherever
+          you choose — your cloud or ours. No lock-in, ever.
         </p>
-        <div className="flex flex-wrap justify-center gap-3">
-          <CreatePackageModal />
+        <div className="mb-12 flex flex-wrap justify-center gap-3">
+          <Link
+            href="/cloud"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center rounded-lg px-8 py-3.5 text-base font-semibold transition-colors"
+          >
+            Get started
+          </Link>
           <Link
             href="https://academy.vetra.io/"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-accent text-foreground hover:bg-accent/80 inline-flex h-10 items-center rounded-lg px-8 py-3.5 text-base font-semibold transition-colors"
           >
-            Explore Vetra Academy
+            See how it works
           </Link>
         </div>
 
-        {/* Video embed */}
-        <div className="border-border mx-auto mt-12 max-w-4xl overflow-hidden rounded-xl border shadow-lg">
-          {isPlaying ? (
-            <div className="relative aspect-video">
-              <iframe
-                src="https://www.youtube.com/embed/wCrUgPrMtak?autoplay=1&rel=0"
-                title="Vetra Platform Demo"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="absolute inset-0 h-full w-full"
-              />
-            </div>
-          ) : (
-            <button
-              onClick={() => setIsPlaying(true)}
-              className="group relative aspect-video w-full cursor-pointer"
-            >
-              <Image
-                src="/images/home/hero-video-thumb.webp"
-                alt="Vetra Platform Demo"
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/20">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110">
-                  <svg
-                    className="ml-1 h-6 w-6 text-gray-900"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
+        {/* Chat mockup */}
+        <div className="border-border bg-background mx-auto max-w-2xl overflow-hidden rounded-xl border shadow-lg">
+          {/* Header bar */}
+          <div className="border-border flex items-center gap-2 border-b px-4 py-3">
+            <AnimatedVetraLogo size={24} variant="loader" />
+            <span className="text-foreground text-sm font-semibold">Vetra Agent Rupert</span>
+            <span className="bg-primary/15 text-primary ml-auto rounded-full px-2 py-0.5 text-xs font-medium">
+              Online
+            </span>
+          </div>
+
+          {/* Messages */}
+          <div className="space-y-3 p-4">
+            {chatMessages.map((msg, i) => (
+              <div
+                key={i}
+                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                    msg.role === 'user'
+                      ? 'bg-primary text-primary-foreground rounded-br-sm text-right'
+                      : 'bg-accent text-foreground rounded-bl-sm text-left'
+                  }`}
+                >
+                  {msg.text}
                 </div>
               </div>
+            ))}
+          </div>
+
+          {/* Input area */}
+          <div className="border-border flex items-center gap-2 border-t px-4 py-3">
+            <div className="bg-muted text-muted-foreground flex-1 rounded-lg px-4 py-2 text-left text-sm">
+              Ask Vetra anything...
+            </div>
+            <button className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold transition-opacity hover:opacity-80">
+              ↑
             </button>
-          )}
+          </div>
+        </div>
+
+        {/* Developer disclosure */}
+        <div className="mx-auto mt-6 max-w-2xl">
+          <button
+            onClick={() => setDevOpen((v) => !v)}
+            className="text-foreground-70 hover:text-foreground mx-auto flex items-center gap-2 text-sm font-medium transition-colors"
+          >
+            <AnimatedVetraLogo size={20} variant="threeStep" />
+            For developers
+            <ChevronDown
+              className={`h-4 w-4 transition-transform duration-300 ${devOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          <div
+            className={`overflow-hidden transition-all duration-300 ${devOpen ? 'mt-4 max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+          >
+            <div className="border-border bg-accent/40 rounded-xl border p-5">
+              <p className="text-foreground-70 mb-3 text-center text-xs font-semibold uppercase tracking-wider">
+                Under the hood
+              </p>
+              <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                {devFeatures.map(([left, right], i) => (
+                  <div key={i} className="contents">
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-primary font-bold">✓</span>
+                      <span className="text-foreground-70">{left}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-primary font-bold">✓</span>
+                      <span className="text-foreground-70">{right}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
